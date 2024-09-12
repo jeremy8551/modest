@@ -1,0 +1,13 @@
+package indi.webapp.springboot;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication(scanBasePackages = {"indi.webapp.springboot", "indi.jeremy.*"}, excludeName = "indi.jeremy.unexclude")
+public class Application {
+
+    public static void main(String[] args) {
+        SpringApplication.run(Application.class, args);
+    }
+}
+

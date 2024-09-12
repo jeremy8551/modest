@@ -1,0 +1,60 @@
+package cn.org.expect.jdk;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+
+import cn.org.expect.util.JUL;
+
+public class JDK21 extends JDK8 {
+
+    public <E> void setField(Object obj, String fieldRegex, Class<E> fieldClass, E newValue) {
+        Field[] list = obj.getClass().getDeclaredFields();
+        for (Field field : list) {
+            String name = field.getName();
+            if (name.matches(fieldRegex) && field.getType().equals(fieldClass)) {
+                try {
+                    JUL.debug("change Class: " + obj.getClass().getName() + ", Field: " + name + ", Type: " + field.getType().getName());
+
+                    field.setAccessible(true);
+                    int modifiers = field.getModifiers();
+                    if (Modifier.isStatic(modifiers)) {
+                        field.set(null, newValue);
+                    } else {
+                        field.set(obj, newValue);
+                    }
+                } catch (Throwable e) {
+                    JUL.warn(obj.getClass().getName(), e);
+                }
+            }
+        }
+    }
+
+    public void setField(Object obj, Field field, Object value) {
+        try {
+            field.setAccessible(true);
+            int modifiers = field.getModifiers();
+            if (Modifier.isStatic(modifiers)) {
+                field.set(null, value);
+            } else {
+                field.set(obj, value);
+            }
+        } catch (Throwable e) {
+            throw new RuntimeException(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public <E> Object getField(Object obj, Field field) {
+        try {
+            field.setAccessible(true);
+            int modifiers = field.getModifiers();
+            if (Modifier.isStatic(modifiers)) {
+                return field.get(null);
+            } else {
+                return field.get(obj);
+            }
+        } catch (Throwable e) {
+            throw new RuntimeException(e.getLocalizedMessage(), e);
+        }
+    }
+
+}
