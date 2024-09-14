@@ -5,12 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.org.expect</groupId>
-        <artifactId>modest</artifactId>
+        <artifactId>modest-core</artifactId>
         <version>${revision}</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>modest-expression</artifactId>
+    <artifactId>modest-crypto</artifactId>
 
     <dependencies>
         <dependency>
@@ -20,7 +19,7 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-logger</artifactId>
+            <artifactId>modest-concurrent</artifactId>
         </dependency>
     </dependencies>
 </project>

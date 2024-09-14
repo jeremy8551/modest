@@ -24,6 +24,9 @@ import org.apache.maven.project.MavenProject;
 @Mojo(name = "dependency", defaultPhase = LifecyclePhase.INITIALIZE)
 public class DependencyMojo extends AbstractMojo {
 
+    /** true表示已经执行过一次当前插件目标，false表示还未执行 */
+    public static volatile boolean EXECUTED = false;
+
     /**
      * 插件信息
      */
@@ -74,6 +77,12 @@ public class DependencyMojo extends AbstractMojo {
     };
 
     public void execute() throws MojoExecutionException {
+        if (EXECUTED) {
+            return;
+        } else {
+            EXECUTED = true;
+        }
+        
         try {
             this.run();
         } catch (Throwable e) {
@@ -94,7 +103,7 @@ public class DependencyMojo extends AbstractMojo {
 
         // 搜索要从哪个项目中复制依赖
         MavenProject project = MavenUtils.find(allProjects, this.dependencyModule);
-        Ensure.notNull(project);
+        Ensure.notNull(project, this.dependencyModule);
         List<Dependency> dependencies = project.getModel().getDependencies();
 
         // 将依赖添加到哪个项目中

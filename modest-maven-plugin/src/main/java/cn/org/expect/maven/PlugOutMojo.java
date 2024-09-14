@@ -24,6 +24,9 @@ import org.apache.maven.project.MavenProject;
 @Mojo(name = "plug-out", defaultPhase = LifecyclePhase.INITIALIZE)
 public class PlugOutMojo extends AbstractMojo {
 
+    /** true表示已经执行过一次当前插件目标，false表示还未执行 */
+    public static volatile boolean EXECUTED = false;
+
     /**
      * 禁用插件的模块
      */
@@ -55,6 +58,12 @@ public class PlugOutMojo extends AbstractMojo {
     private MavenSession session;
 
     public void execute() throws MojoExecutionException {
+        if (EXECUTED) {
+            return;
+        } else {
+            EXECUTED = true;
+        }
+
         List<String> modules = ObjectUtils.coalesce(this.plugOutModules, this.sourceModules);
         MavenUtils.assertContains(this.session.getAllProjects(), modules);
         try {

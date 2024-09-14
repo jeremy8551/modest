@@ -17,6 +17,9 @@ import org.apache.maven.plugins.annotations.Parameter;
 @Mojo(name = "lastupdated", requiresProject = false, defaultPhase = LifecyclePhase.CLEAN)
 public class LastupdatedMojo extends AbstractMojo {
 
+    /** true表示已经执行过一次当前插件目标，false表示还未执行 */
+    public static volatile boolean EXECUTED = false;
+
     /**
      * 本地仓库的绝对路径
      */
@@ -24,6 +27,12 @@ public class LastupdatedMojo extends AbstractMojo {
     private File localRepository;
 
     public void execute() {
+        if (EXECUTED) {
+            return;
+        } else {
+            EXECUTED = true;
+        }
+
         getLog().info("Check localRepository: " + this.localRepository.getAbsolutePath());
         FileUtils.assertDirectory(this.localRepository);
         this.clear(this.localRepository);

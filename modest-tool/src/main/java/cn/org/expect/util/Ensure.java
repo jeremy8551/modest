@@ -143,9 +143,9 @@ public class Ensure {
      * @param obj 对象
      * @return 对象
      */
-    public static <E> E notNull(E obj) {
+    public static <E> E notNull(E obj, String... messages) {
         if (obj == null) {
-            throw new NullPointerException();
+            throw new NullPointerException(Arrays.deepToString(messages));
         }
         return obj;
     }

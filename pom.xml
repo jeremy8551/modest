@@ -8,6 +8,7 @@
     <groupId>cn.org.expect</groupId>
     <artifactId>modest</artifactId>
     <version>${revision}</version>
+
     <name>modest</name>
     <url>https://github.com/jeremy8551/modest/</url>
     <description>modest</description>
@@ -55,24 +56,8 @@
     <modules>
         <module>modest-tool</module>
         <module>modest-maven-plugin</module>
-
-        <module>modest-blank</module>
-        <module>modest-jdk</module>
-        <module>modest-logger</module>
-        <module>modest-concurrent</module>
-        <module>modest-expression</module>
-        <module>modest-crypto</module>
-        <module>modest-printer</module>
-        <module>modest-ioc</module>
-        <module>modest-io</module>
-        <module>modest-cn</module>
-        <module>modest-os</module>
-        <module>modest-database</module>
-        <module>modest-increment</module>
-        <module>modest-compress</module>
-        <module>modest-script</module>
+        <module>modest-core</module>
         <module>modest-engine</module>
-
         <module>modest-markdown</module>
         <module>modest-spring-boot-starter</module>
     </modules>
@@ -285,7 +270,7 @@
             <!-- modest 包括所有子模块（日志、输出、容器等模块） -->
             <dependency>
                 <groupId>cn.org.expect</groupId>
-                <artifactId>modest-package</artifactId>
+                <artifactId>modest-core</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -386,6 +371,13 @@
                 <artifactId>modest-crypto</artifactId>
                 <version>${revision}</version>
             </dependency>
+
+            <!-- modest 脚本引擎 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-engine</artifactId>
+                <version>${revision}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -417,58 +409,6 @@
                     </executions>
                     <configuration>
                         <includeVersion>*</includeVersion> <!-- 卸载本地maven库中所有版本的jar文件 -->
-                        <sourceModules>
-                            <module>modest-jdk</module>
-                            <module>modest-logger</module>
-                            <module>modest-concurrent</module>
-                            <module>modest-expression</module>
-                            <module>modest-crypto</module>
-                            <module>modest-printer</module>
-                            <module>modest-ioc</module>
-                            <module>modest-io</module>
-                            <module>modest-cn</module>
-                            <module>modest-os</module>
-                            <module>modest-database</module>
-                            <module>modest-increment</module>
-                            <module>modest-compress</module>
-                            <module>modest-script</module>
-                        </sourceModules>
-                        <hidePlugins>
-                            <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-source-plugin</artifactId>
-                            </plugin>
-                            <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-javadoc-plugin</artifactId>
-                            </plugin>
-                            <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-jar-plugin</artifactId>
-                            </plugin>
-                            <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-install-plugin</artifactId>
-                            </plugin>
-                            <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-deploy-plugin</artifactId>
-                            </plugin>
-                            <plugin>
-                                <groupId>io.github.git-commit-id</groupId>
-                                <artifactId>git-commit-id-maven-plugin</artifactId>
-                            </plugin>
-                            <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-gpg-plugin</artifactId>
-                            </plugin>
-                            <plugin>
-                                <groupId>org.sonatype.plugins</groupId>
-                                <artifactId>nexus-staging-maven-plugin</artifactId>
-                            </plugin>
-                        </hidePlugins>
-                        <dependencyModule>modest-script</dependencyModule>
-                        <dependencyModuleDest>modest-engine</dependencyModuleDest>
                     </configuration>
                 </plugin>
 

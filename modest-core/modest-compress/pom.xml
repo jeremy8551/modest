@@ -5,14 +5,23 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.org.expect</groupId>
-        <artifactId>modest</artifactId>
+        <artifactId>modest-core</artifactId>
         <version>${revision}</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>modest-ioc</artifactId>
+    <artifactId>modest-compress</artifactId>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.junrar</groupId>
+            <artifactId>junrar</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-tool</artifactId>
@@ -20,29 +29,12 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-logger</artifactId>
+            <artifactId>modest-ioc</artifactId>
         </dependency>
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-jdk</artifactId>
+            <artifactId>modest-logger</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>cn.org.expect</groupId>
-                <artifactId>modest-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>pom</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
 </project>

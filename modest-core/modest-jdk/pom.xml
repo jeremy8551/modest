@@ -5,14 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.org.expect</groupId>
-        <artifactId>modest</artifactId>
+        <artifactId>modest-core</artifactId>
         <version>${revision}</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>modest-package</artifactId>
+    <artifactId>modest-jdk</artifactId>
+
+    <properties>
+        <maven.compiler.charset>${project.build.sourceEncoding}</maven.compiler.charset>
+    </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-tool</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -22,21 +29,13 @@
                 <artifactId>modest-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>clean</id>
-                        <goals>
-                            <goal>reset</goal> <!-- 删除当前模块中的所有源代码和测试代码 -->
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>install</id>
                         <goals>
-                            <goal>sources</goal> <!-- 复制指定模块代码到当前工程中 -->
-                            <goal>pom</goal> <!-- 生成POM类 -->
+                            <goal>jdk</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
 </project>

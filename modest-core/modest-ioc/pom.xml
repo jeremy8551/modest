@@ -5,21 +5,26 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.org.expect</groupId>
-        <artifactId>modest</artifactId>
+        <artifactId>modest-core</artifactId>
         <version>${revision}</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>modest-jdk</artifactId>
-
-    <properties>
-        <maven.compiler.charset>${project.build.sourceEncoding}</maven.compiler.charset>
-    </properties>
+    <artifactId>modest-ioc</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-tool</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-logger</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-jdk</artifactId>
         </dependency>
     </dependencies>
 
@@ -30,9 +35,9 @@
                 <artifactId>modest-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>install</id>
+                        <phase>generate-sources</phase>
                         <goals>
-                            <goal>jdk</goal>
+                            <goal>pom</goal>
                         </goals>
                     </execution>
                 </executions>

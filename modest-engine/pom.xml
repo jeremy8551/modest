@@ -10,23 +10,45 @@
     </parent>
 
     <artifactId>modest-engine</artifactId>
-    <packaging>pom</packaging>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-maven-plugin</artifactId>
-                <version>${revision}</version>
                 <executions>
                     <execution>
-                        <phase>install</phase>
+                        <id>clean</id>
                         <goals>
-                            <goal>plug-out</goal>
-                            <goal>dependency</goal>
+                            <goal>reset</goal> <!-- 删除当前模块中的所有源代码和测试代码 -->
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>install</id>
+                        <goals>
+                            <goal>sources</goal> <!-- 复制指定模块代码到当前工程中 -->
+                            <goal>pom</goal> <!-- 生成POM类 -->
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <sourceModules>
+                        <module>modest-jdk</module>
+                        <module>modest-logger</module>
+                        <module>modest-concurrent</module>
+                        <module>modest-expression</module>
+                        <module>modest-crypto</module>
+                        <module>modest-printer</module>
+                        <module>modest-ioc</module>
+                        <module>modest-io</module>
+                        <module>modest-cn</module>
+                        <module>modest-os</module>
+                        <module>modest-database</module>
+                        <module>modest-increment</module>
+                        <module>modest-compress</module>
+                        <module>modest-script</module>
+                    </sourceModules>
+                </configuration>
             </plugin>
         </plugins>
     </build>

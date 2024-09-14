@@ -5,22 +5,21 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>cn.org.expect</groupId>
-        <artifactId>modest</artifactId>
+        <artifactId>modest-core</artifactId>
         <version>${revision}</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>modest-database</artifactId>
+    <artifactId>modest-increment</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-database</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>com.ibm.db2.jcc</groupId>
-            <artifactId>db2jcc</artifactId>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-concurrent</artifactId>
         </dependency>
 
         <dependency>
@@ -31,21 +30,6 @@
         <dependency>
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-io</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-os</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-jdk</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-concurrent</artifactId>
         </dependency>
 
         <dependency>

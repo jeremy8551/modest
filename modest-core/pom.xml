@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.org.expect</groupId>
+        <artifactId>modest</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>modest-core</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>modest-jdk</module>
+        <module>modest-logger</module>
+        <module>modest-concurrent</module>
+        <module>modest-expression</module>
+        <module>modest-crypto</module>
+        <module>modest-printer</module>
+        <module>modest-ioc</module>
+        <module>modest-io</module>
+        <module>modest-cn</module>
+        <module>modest-os</module>
+        <module>modest-database</module>
+        <module>modest-increment</module>
+        <module>modest-compress</module>
+        <module>modest-script</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${modest.logback.version}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.junrar</groupId>
+            <artifactId>junrar</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-email</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-tool</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install</id>
+                        <goals>
+                            <goal>plug-out</goal>
+                            <goal>dependency</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <dependencyModule>modest-script</dependencyModule>
+                    <dependencyModuleDest>modest-engine</dependencyModuleDest>
+                    <plugOutModules>
+                        <module>modest-jdk</module>
+                        <module>modest-logger</module>
+                        <module>modest-concurrent</module>
+                        <module>modest-expression</module>
+                        <module>modest-crypto</module>
+                        <module>modest-printer</module>
+                        <module>modest-ioc</module>
+                        <module>modest-io</module>
+                        <module>modest-cn</module>
+                        <module>modest-os</module>
+                        <module>modest-database</module>
+                        <module>modest-increment</module>
+                        <module>modest-compress</module>
+                        <module>modest-script</module>
+                    </plugOutModules>
+                    <hidePlugins>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-source-plugin</artifactId>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-jar-plugin</artifactId>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-install-plugin</artifactId>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-deploy-plugin</artifactId>
+                        </plugin>
+                        <plugin>
+                            <groupId>io.github.git-commit-id</groupId>
+                            <artifactId>git-commit-id-maven-plugin</artifactId>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-gpg-plugin</artifactId>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.sonatype.plugins</groupId>
+                            <artifactId>nexus-staging-maven-plugin</artifactId>
+                        </plugin>
+                    </hidePlugins>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

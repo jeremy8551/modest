@@ -1,4 +1,5 @@
 target/
+**/target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -47,8 +48,8 @@ build/
 ### 运行配置 ###
 .run/
 
-# 过滤 easyetl 工程下的代码
+# 过滤代码
 modest-engine/src/**
 
 # 过滤JDK方言的实现类
-modest-jdk/src/main/java/cn/org/expect/jdk/JDK*.java
+modest-core/modest-jdk/src/main/java/cn/org/expect/jdk/JDK*.java
