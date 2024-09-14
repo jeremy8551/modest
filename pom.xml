@@ -56,6 +56,7 @@
         <module>modest-tool</module>
         <module>modest-maven-plugin</module>
 
+        <module>modest-blank</module>
         <module>modest-jdk</module>
         <module>modest-logger</module>
         <module>modest-concurrent</module>
@@ -415,6 +416,7 @@
                         </execution>
                     </executions>
                     <configuration>
+                        <includeVersion>*</includeVersion> <!-- 卸载本地maven库中所有版本的jar文件 -->
                         <sourceModules>
                             <module>modest-jdk</module>
                             <module>modest-logger</module>
@@ -464,8 +466,27 @@
                                 <groupId>org.sonatype.plugins</groupId>
                                 <artifactId>nexus-staging-maven-plugin</artifactId>
                             </plugin>
+                            <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-source-plugin</artifactId>
+                            </plugin>
+                            <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-javadoc-plugin</artifactId>
+                            </plugin>
+                            <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-jar-plugin</artifactId>
+                            </plugin>
+                            <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-install-plugin</artifactId>
+                            </plugin>
+                            <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-deploy-plugin</artifactId>
+                            </plugin>
                         </hidePlugins>
-                        <includeVersion>*</includeVersion> <!-- 卸载本地maven库中所有版本的jar文件 -->
                         <dependencyModule>modest-script</dependencyModule>
                         <dependencyModuleDest>modest-engine</dependencyModuleDest>
                     </configuration>

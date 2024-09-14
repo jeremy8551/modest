@@ -10,29 +10,21 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>modest-jdk</artifactId>
-
-    <properties>
-        <maven.compiler.charset>${project.build.sourceEncoding}</maven.compiler.charset>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-tool</artifactId>
-        </dependency>
-    </dependencies>
+    <artifactId>modest-blank</artifactId>
+    <packaging>pom</packaging>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-maven-plugin</artifactId>
+                <version>${revision}</version>
                 <executions>
                     <execution>
-                        <id>install</id>
+                        <phase>install</phase>
                         <goals>
-                            <goal>jdk</goal>
+                            <goal>plug-out</goal>
+                            <goal>dependency</goal>
                         </goals>
                     </execution>
                 </executions>
