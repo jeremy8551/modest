@@ -9,6 +9,7 @@ import java.util.List;
 
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
+import cn.org.expect.util.ObjectUtils;
 import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 import org.apache.maven.execution.MavenSession;
@@ -60,6 +61,12 @@ public class SourcesMojo extends AbstractMojo {
     @Parameter
     private List<String> sourceModules;
 
+    /**
+     * 禁用插件的模块
+     */
+    @Parameter
+    private List<String> plugOutModules;
+
     public void execute() throws MojoExecutionException {
         try {
             this.run();
@@ -71,8 +78,9 @@ public class SourcesMojo extends AbstractMojo {
 
     public void run() throws Exception {
         List<MavenProject> allProjects = this.session.getAllProjects();
-        MavenUtils.assertContains(allProjects, this.sourceModules);
-
+        List<String> modules = ObjectUtils.coalesce(this.sourceModules, this.plugOutModules);
+        MavenUtils.assertContains(allProjects, modules);
+        
         if (StringUtils.isBlank(this.charsetName)) {
             this.charsetName = Settings.getFileEncoding();
         }
@@ -90,7 +98,7 @@ public class SourcesMojo extends AbstractMojo {
         FileUtils.assertCreateDirectory(srcMainResources);
 
         for (MavenProject project : allProjects) {
-            if (this.sourceModules.contains(project.getName())) {
+            if (modules.contains(project.getName())) {
                 this.copy(project, srcMainJava, srcMainResources);
             }
         }

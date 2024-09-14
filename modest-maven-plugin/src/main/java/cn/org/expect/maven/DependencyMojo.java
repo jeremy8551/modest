@@ -2,11 +2,13 @@ package cn.org.expect.maven;
 
 import java.io.File;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
+import cn.org.expect.util.ObjectUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.model.Model;
@@ -52,6 +54,9 @@ public class DependencyMojo extends AbstractMojo {
     @Parameter
     private List<String> sourceModules;
 
+    /**
+     * 依赖排序规则
+     */
     private Comparator<Dependency> comparator = new Comparator<Dependency>() {
         public int compare(Dependency o1, Dependency o2) {
             int g = o1.getGroupId().compareTo(o2.getGroupId());
@@ -78,26 +83,38 @@ public class DependencyMojo extends AbstractMojo {
     }
 
     public void run() throws Exception {
+        List<String> sourceModules = ObjectUtils.coalesce(this.sourceModules, new ArrayList<String>());
         List<MavenProject> allProjects = this.session.getAllProjects();
+
+        // 搜索需要合并源码的项目集合
+        List<MavenProject> projects = MavenUtils.find(allProjects, sourceModules);
+        if (projects.size() != sourceModules.size()) {
+            throw new MojoExecutionException(MavenUtils.toMavenProjectString(projects));
+        }
+
+        // 搜索要从哪个项目中复制依赖
         MavenProject project = MavenUtils.find(allProjects, this.dependencyModule);
         Ensure.notNull(project);
-        Model model = project.getModel();
-        List<Dependency> list = model.getDependencies();
+        List<Dependency> dependencies = project.getModel().getDependencies();
 
+        // 将依赖添加到哪个项目中
         MavenProject dest = MavenUtils.find(allProjects, this.dependencyModuleDest);
         Model newModel = Ensure.notNull(dest).getModel().clone();
-        newModel.getDependencies().addAll(this.parse(list));
 
-        // 排序，去重，去test
+        // 将内部模块中的依赖合并到目标项目中，对依赖进行排序，去重
+        List<Dependency> dependencyList = MavenUtils.deepReplace(dependencies, projects);
+        newModel.getDependencies().addAll(dependencyList);
         List<Dependency> newModelDependencies = newModel.getDependencies();
         MavenUtils.removeDuplicate(newModelDependencies, this.comparator);
         MavenUtils.dealScope(newModelDependencies);
 
+        // 生成pom
         MavenXpp3Writer writer = new MavenXpp3Writer();
         StringWriter buffer = new StringWriter(1024 * 50);
         writer.write(buffer, newModel);
         String pom = buffer.getBuffer().toString();
 
+        // 写入pom文件
         File target = new File(dest.getBuild().getDirectory());
         File pomfile = new File(target, ".dependency-pom.xml");
         getLog().info("Generating " + pomfile.getAbsolutePath() + " ..");
@@ -107,30 +124,10 @@ public class DependencyMojo extends AbstractMojo {
             getLog().error("Generating " + pomfile + " fail!");
         }
 
+        // 更新pom
         dest.setPomFile(pomfile);
         dest.setOriginalModel(newModel);
         dest.setModel(newModel);
-    }
-
-    public List<Dependency> parse(List<Dependency> list) {
-        List<Dependency> all = MavenUtils.copy(list);
-        List<MavenProject> allProjects = this.session.getAllProjects();
-        List<MavenProject> projects = MavenUtils.find3(allProjects, this.sourceModules);
-
-        for (Dependency dependency : list) {
-            MavenProject project = MavenUtils.find(projects, dependency);
-            if (project != null) {
-                MavenUtils.remove(all, dependency);
-                List<Dependency> dependencyList = MavenUtils.copy(project.getModel().getDependencies());
-                all.addAll(dependencyList);
-            }
-        }
-
-        if (MavenUtils.count(all, projects) == 0) {
-            return all;
-        } else {
-            return this.parse(all);
-        }
     }
 
 }

@@ -433,39 +433,7 @@
                             <module>modest-compress</module>
                             <module>modest-script</module>
                         </sourceModules>
-                        <plugOutModules>
-                            <module>modest-jdk</module>
-                            <module>modest-logger</module>
-                            <module>modest-concurrent</module>
-                            <module>modest-expression</module>
-                            <module>modest-crypto</module>
-                            <module>modest-printer</module>
-                            <module>modest-ioc</module>
-                            <module>modest-io</module>
-                            <module>modest-cn</module>
-                            <module>modest-os</module>
-                            <module>modest-database</module>
-                            <module>modest-increment</module>
-                            <module>modest-compress</module>
-                            <module>modest-script</module>
-                        </plugOutModules>
                         <hidePlugins>
-                            <plugin>
-                                <groupId>io.github.git-commit-id</groupId>
-                                <artifactId>git-commit-id-maven-plugin</artifactId>
-                            </plugin>
-                            <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-gpg-plugin</artifactId>
-                            </plugin>
-                            <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-deploy-plugin</artifactId>
-                            </plugin>
-                            <plugin>
-                                <groupId>org.sonatype.plugins</groupId>
-                                <artifactId>nexus-staging-maven-plugin</artifactId>
-                            </plugin>
                             <plugin>
                                 <groupId>org.apache.maven.plugins</groupId>
                                 <artifactId>maven-source-plugin</artifactId>
@@ -485,6 +453,18 @@
                             <plugin>
                                 <groupId>org.apache.maven.plugins</groupId>
                                 <artifactId>maven-deploy-plugin</artifactId>
+                            </plugin>
+                            <plugin>
+                                <groupId>io.github.git-commit-id</groupId>
+                                <artifactId>git-commit-id-maven-plugin</artifactId>
+                            </plugin>
+                            <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-gpg-plugin</artifactId>
+                            </plugin>
+                            <plugin>
+                                <groupId>org.sonatype.plugins</groupId>
+                                <artifactId>nexus-staging-maven-plugin</artifactId>
                             </plugin>
                         </hidePlugins>
                         <dependencyModule>modest-script</dependencyModule>

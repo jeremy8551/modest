@@ -8,6 +8,7 @@ import java.util.List;
 
 import cn.org.expect.maven.entity.HidePlugin;
 import cn.org.expect.util.FileUtils;
+import cn.org.expect.util.ObjectUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
@@ -30,6 +31,12 @@ public class PlugOutMojo extends AbstractMojo {
     private List<String> plugOutModules;
 
     /**
+     * 复制源代码的模块名集合
+     */
+    @Parameter
+    private List<String> sourceModules;
+
+    /**
      * 需要禁用的插件
      */
     @Parameter
@@ -48,17 +55,18 @@ public class PlugOutMojo extends AbstractMojo {
     private MavenSession session;
 
     public void execute() throws MojoExecutionException {
-        MavenUtils.assertContains(this.session.getAllProjects(), this.plugOutModules);
+        List<String> modules = ObjectUtils.coalesce(this.plugOutModules, this.sourceModules);
+        MavenUtils.assertContains(this.session.getAllProjects(), modules);
         try {
-            this.run();
+            this.run(modules);
         } catch (Throwable e) {
             String message = this.plugin.getGroupId() + ":" + this.plugin.getArtifactId() + ":" + this.plugin.getVersion();
             throw new MojoExecutionException(message, e);
         }
     }
 
-    public void run() throws Exception {
-        for (String module : this.plugOutModules) {
+    public void run(List<String> modules) throws Exception {
+        for (String module : modules) {
             getLog().info("Disable Module Plugin: " + module);
         }
 
@@ -68,7 +76,7 @@ public class PlugOutMojo extends AbstractMojo {
 
         List<MavenProject> allProjects = this.session.getAllProjects();
         for (MavenProject project : allProjects) {
-            if (this.plugOutModules.contains(project.getName())) {
+            if (modules.contains(project.getName())) {
                 this.run(project);
             }
         }

@@ -15,7 +15,13 @@ import org.apache.maven.project.MavenProject;
  */
 public class MavenUtils {
 
-    public static List<Dependency> copy(List<Dependency> list) {
+    /**
+     * 深拷贝一个依赖集合
+     *
+     * @param list 依赖集合
+     * @return 深拷贝
+     */
+    public static List<Dependency> clone(List<Dependency> list) {
         List<Dependency> newlist = new ArrayList<Dependency>(list.size());
         for (Dependency dependency : list) {
             newlist.add(dependency.clone());
@@ -62,11 +68,11 @@ public class MavenUtils {
     }
 
     /**
-     * 查找模块
+     * 查找项目
      *
-     * @param list 模块集合
-     * @param name 模块名
-     * @return 模块信息
+     * @param list 项目集合
+     * @param name 项目名
+     * @return 项目信息
      */
     public static MavenProject find(List<MavenProject> list, String name) {
         for (MavenProject project : list) {
@@ -77,7 +83,14 @@ public class MavenUtils {
         return null;
     }
 
-    public static List<MavenProject> find3(List<MavenProject> list, List<String> names) {
+    /**
+     * 查找项目信息
+     *
+     * @param list  项目集合
+     * @param names 项目名
+     * @return 项目集合
+     */
+    public static List<MavenProject> find(List<MavenProject> list, List<String> names) {
         List<MavenProject> newlist = new ArrayList<MavenProject>(list.size());
         for (String name : names) {
             MavenProject project = MavenUtils.find(list, name);
@@ -88,51 +101,61 @@ public class MavenUtils {
         return newlist;
     }
 
+    /**
+     * 在项目集合中搜索
+     *
+     * @param list       项目集合
+     * @param dependency 依赖
+     * @return 项目
+     */
     public static MavenProject find(List<MavenProject> list, Dependency dependency) {
         for (MavenProject project : list) {
-            if (project.getGroupId().equals(dependency.getGroupId()) && project.getArtifactId().equals(dependency.getArtifactId())) {
+            if (project.getGroupId().equals(dependency.getGroupId()) //
+                    && project.getArtifactId().equals(dependency.getArtifactId()) //
+            ) {
                 return project;
             }
         }
         return null;
     }
 
-    public static List<MavenProject> find(List<MavenProject> list, List<Dependency> dependencys) {
-        List<MavenProject> projects = new ArrayList<MavenProject>(list.size());
-        for (Dependency dependency : dependencys) {
-            MavenProject project = MavenUtils.find(list, dependency);
+    /**
+     * 将项目集合中的所有项目从依赖集合 {@code list} 中移除，并解析被移除项目的依赖信息，将这些依赖合并到参数 {@code list} 中
+     *
+     * @param list     依赖集合
+     * @param projects 项目集合
+     * @return 依赖集合
+     */
+    public static List<Dependency> deepReplace(List<Dependency> list, List<MavenProject> projects) {
+        List<Dependency> newList = MavenUtils.clone(list);
+        for (int i = 0; i < list.size(); i++) {
+            Dependency dependency = list.get(i);
+            MavenProject project = MavenUtils.find(projects, dependency);
             if (project != null) {
-                projects.add(project);
+                MavenUtils.remove(newList, dependency); // 移除依赖
+                newList.addAll(i, MavenUtils.clone(project.getModel().getDependencies()));
             }
         }
-        return projects;
-    }
 
-    public static List<MavenProject> find2(List<MavenProject> list, List<MavenProject> searchs) {
-        List<MavenProject> projects = new ArrayList<MavenProject>(list.size());
-        for (MavenProject project : searchs) {
-            MavenProject mp = find1(list, project);
-            if (mp != null) {
-                projects.add(mp);
-            }
+        if (MavenUtils.intersect(newList, projects) == 0) {
+            return newList;
+        } else {
+            return deepReplace(newList, projects);
         }
-        return projects;
     }
 
-    public static MavenProject find1(List<MavenProject> list, MavenProject project) {
-        for (MavenProject mp : list) {
-            if (mp.getName().equals(project.getName())) {
-                return mp;
-            }
-        }
-        return null;
-    }
-
-    public static int count(List<Dependency> list, List<MavenProject> searchs) {
+    /**
+     * 计算依赖集合与项目集合的交集个数
+     *
+     * @param dependencies 依赖集合
+     * @param projects     项目集合
+     * @return 个数
+     */
+    public static int intersect(List<Dependency> dependencies, List<MavenProject> projects) {
         int count = 0;
-        for (Dependency dependency : list) {
-            for (MavenProject mp : searchs) {
-                if (dependency.getGroupId().equals(mp.getGroupId()) && dependency.getArtifactId().equals(mp.getArtifactId())) {
+        for (Dependency dependency : dependencies) {
+            for (MavenProject project : projects) {
+                if (dependency.getGroupId().equals(project.getGroupId()) && dependency.getArtifactId().equals(project.getArtifactId())) {
                     count++;
                     break;
                 }
@@ -141,31 +164,29 @@ public class MavenUtils {
         return count;
     }
 
-    public static String toString(List<MavenProject> projects) {
-        StringBuilder buf = new StringBuilder(100);
-        for (MavenProject project : projects) {
-            buf.append(project.getGroupId()).append(':').append(project.getArtifactId()).append(", ");
-        }
-        return buf.toString();
-    }
-
-    public static String toDependencyString(List<Dependency> dependencys) {
-        StringBuilder buf = new StringBuilder(100);
-        for (Dependency dependency : dependencys) {
-            buf.append(dependency.getGroupId()).append(':').append(dependency.getArtifactId()).append(", ");
-        }
-        return buf.toString();
-    }
-
+    /**
+     * 删除指定依赖
+     *
+     * @param list       依赖集合
+     * @param dependency 需要删除的依赖
+     */
     public static void remove(List<Dependency> list, Dependency dependency) {
         for (Iterator<Dependency> it = list.iterator(); it.hasNext(); ) {
             Dependency obj = it.next();
-            if (obj.getGroupId().equals(dependency.getGroupId()) && obj.getArtifactId().equals(dependency.getArtifactId()) && obj.getVersion().equals(dependency.getVersion())) {
+            if (obj.getGroupId().equals(dependency.getGroupId()) //
+                    && obj.getArtifactId().equals(dependency.getArtifactId()) //
+                    && obj.getVersion().equals(dependency.getVersion()) //
+            ) {
                 it.remove();
             }
         }
     }
 
+    /**
+     * 删除范围是 test 与 runtime 的依赖，将 provided 依赖设置为不向下传递
+     *
+     * @param list 依赖集合
+     */
     public static void dealScope(List<Dependency> list) {
         for (Iterator<Dependency> it = list.iterator(); it.hasNext(); ) {
             Dependency obj = it.next();
@@ -180,19 +201,23 @@ public class MavenUtils {
         }
     }
 
+    /**
+     * 删除重复依赖
+     *
+     * @param list 依赖集合
+     * @param c    依赖排序规则
+     */
     public static void removeDuplicate(List<Dependency> list, Comparator<Dependency> c) {
         for (int i = 0; i < list.size(); i++) {
             Dependency obj = list.get(i);
-            if (obj == null) {
-                continue;
-            }
-
-            for (int j = i + 1; j < list.size(); j++) {
-                Dependency next = list.get(j);
-                if (next != null) {
-                    int v = c.compare(obj, next);
-                    if (v == 0) {
-                        list.set(j, null);
+            if (obj != null) {
+                for (int j = i + 1; j < list.size(); j++) {
+                    Dependency next = list.get(j);
+                    if (next != null) {
+                        int v = c.compare(obj, next);
+                        if (v == 0) {
+                            list.set(j, null);
+                        }
                     }
                 }
             }
@@ -204,5 +229,21 @@ public class MavenUtils {
                 it.remove();
             }
         }
+    }
+
+    public static String toMavenProjectString(List<MavenProject> projects) {
+        StringBuilder buf = new StringBuilder(100);
+        for (MavenProject project : projects) {
+            buf.append(project.getGroupId()).append(':').append(project.getArtifactId()).append(", ");
+        }
+        return buf.toString();
+    }
+
+    public static String toDependencyString(List<Dependency> dependencys) {
+        StringBuilder buf = new StringBuilder(100);
+        for (Dependency dependency : dependencys) {
+            buf.append(dependency.getGroupId()).append(':').append(dependency.getArtifactId()).append(", ");
+        }
+        return buf.toString();
     }
 }
