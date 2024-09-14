@@ -78,11 +78,12 @@ public class DependencyMojo extends AbstractMojo {
 
     public void execute() throws MojoExecutionException {
         if (EXECUTED) {
+            getLog().info("Skip this goal!");
             return;
         } else {
             EXECUTED = true;
         }
-        
+
         try {
             this.run();
         } catch (Throwable e) {

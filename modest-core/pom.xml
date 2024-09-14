@@ -29,58 +29,6 @@
         <module>modest-script</module>
     </modules>
 
-    <dependencies>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${modest.logback.version}</version>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.junrar</groupId>
-            <artifactId>junrar</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-net</groupId>
-            <artifactId>commons-net</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-email</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-tool</artifactId>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -98,7 +46,7 @@
                 <configuration>
                     <dependencyModule>modest-script</dependencyModule>
                     <dependencyModuleDest>modest-engine</dependencyModuleDest>
-                    <plugOutModules>
+                    <sourceModules>
                         <module>modest-jdk</module>
                         <module>modest-logger</module>
                         <module>modest-concurrent</module>
@@ -113,7 +61,7 @@
                         <module>modest-increment</module>
                         <module>modest-compress</module>
                         <module>modest-script</module>
-                    </plugOutModules>
+                    </sourceModules>
                     <hidePlugins>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>

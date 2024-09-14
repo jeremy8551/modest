@@ -28,6 +28,7 @@ public class LastupdatedMojo extends AbstractMojo {
 
     public void execute() {
         if (EXECUTED) {
+            getLog().info("Skip this goal!");
             return;
         } else {
             EXECUTED = true;
