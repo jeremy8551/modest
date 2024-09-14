@@ -7,19 +7,20 @@
         <groupId>cn.org.expect</groupId>
         <artifactId>modest</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <!-- 项目信息 -->
-    <artifactId>modest-markdown</artifactId>
-    <packaging>jar</packaging>
-    <description>markdown功能</description>
+    <artifactId>modest-printer</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-package</artifactId>
+            <artifactId>modest-tool</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-logger</artifactId>
         </dependency>
     </dependencies>
-
 </project>

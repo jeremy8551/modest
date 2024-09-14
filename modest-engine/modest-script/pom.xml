@@ -7,10 +7,10 @@
         <groupId>cn.org.expect</groupId>
         <artifactId>modest</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>modest-database</artifactId>
+    <artifactId>modest-script</artifactId>
 
     <dependencies>
         <dependency>
@@ -19,8 +19,28 @@
         </dependency>
 
         <dependency>
-            <groupId>com.ibm.db2.jcc</groupId>
-            <artifactId>db2jcc</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-email</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-tool</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-logger</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-ioc</artifactId>
         </dependency>
 
         <dependency>
@@ -35,7 +55,7 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-os</artifactId>
+            <artifactId>modest-cn</artifactId>
         </dependency>
 
         <dependency>
@@ -50,12 +70,17 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-ioc</artifactId>
+            <artifactId>modest-os</artifactId>
         </dependency>
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-logger</artifactId>
+            <artifactId>modest-database</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-increment</artifactId>
         </dependency>
 
         <dependency>
@@ -65,7 +90,29 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-tool</artifactId>
+            <artifactId>modest-compress</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-crypto</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>pom</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

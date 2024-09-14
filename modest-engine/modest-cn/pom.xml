@@ -7,22 +7,12 @@
         <groupId>cn.org.expect</groupId>
         <artifactId>modest</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>modest-compress</artifactId>
+    <artifactId>modest-cn</artifactId>
 
     <dependencies>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.junrar</groupId>
-            <artifactId>junrar</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-tool</artifactId>
@@ -30,12 +20,22 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-ioc</artifactId>
+            <artifactId>modest-logger</artifactId>
         </dependency>
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-logger</artifactId>
+            <artifactId>modest-concurrent</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-jdk</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-ioc</artifactId>
         </dependency>
     </dependencies>
 </project>

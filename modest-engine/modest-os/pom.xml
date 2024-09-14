@@ -7,35 +7,30 @@
         <groupId>cn.org.expect</groupId>
         <artifactId>modest</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>modest-increment</artifactId>
+    <artifactId>modest-os</artifactId>
 
     <dependencies>
         <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-database</artifactId>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
         </dependency>
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-concurrent</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-expression</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-io</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-ioc</artifactId>
+            <artifactId>modest-tool</artifactId>
         </dependency>
 
         <dependency>
@@ -45,12 +40,37 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-printer</artifactId>
+            <artifactId>modest-concurrent</artifactId>
         </dependency>
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-tool</artifactId>
+            <artifactId>modest-jdk</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-ioc</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-cn</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-expression</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-crypto</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-io</artifactId>
         </dependency>
     </dependencies>
 </project>

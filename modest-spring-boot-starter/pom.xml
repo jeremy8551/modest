@@ -107,7 +107,7 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-engine</artifactId>
+            <artifactId>modest-package</artifactId>
         </dependency>
     </dependencies>
 

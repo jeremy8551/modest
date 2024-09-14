@@ -285,7 +285,7 @@
             <!-- modest 包括所有子模块（日志、输出、容器等模块） -->
             <dependency>
                 <groupId>cn.org.expect</groupId>
-                <artifactId>modest-engine</artifactId>
+                <artifactId>modest-package</artifactId>
                 <version>${revision}</version>
             </dependency>
 

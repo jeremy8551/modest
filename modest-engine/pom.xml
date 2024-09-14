@@ -7,36 +7,27 @@
         <groupId>cn.org.expect</groupId>
         <artifactId>modest</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>modest-engine</artifactId>
-
-    <dependencies>
-    </dependencies>
+    <packaging>pom</packaging>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-maven-plugin</artifactId>
+                <version>${revision}</version>
                 <executions>
                     <execution>
-                        <id>clean</id>
+                        <phase>install</phase>
                         <goals>
-                            <goal>reset</goal> <!-- 删除当前模块中的所有源代码和测试代码 -->
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>install</id>
-                        <goals>
-                            <goal>sources</goal> <!-- 复制指定模块代码到当前工程中 -->
-                            <goal>pom</goal> <!-- 生成POM类 -->
+                            <goal>plug-out</goal>
+                            <goal>dependency</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
 </project>

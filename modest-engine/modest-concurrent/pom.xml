@@ -7,10 +7,10 @@
         <groupId>cn.org.expect</groupId>
         <artifactId>modest</artifactId>
         <version>${revision}</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>modest-io</artifactId>
+    <artifactId>modest-concurrent</artifactId>
 
     <dependencies>
         <dependency>
@@ -21,26 +21,6 @@
         <dependency>
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-logger</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-concurrent</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-ioc</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-cn</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-printer</artifactId>
         </dependency>
     </dependencies>
 </project>
