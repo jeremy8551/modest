@@ -48,7 +48,7 @@ public class CopySourceMojo extends AbstractMojo {
     /**
      * 源代码文件的字符集
      */
-    @Parameter(defaultValue = "${maven.compiler.charset}")
+    @Parameter(defaultValue = "${project.build.sourceEncoding}")
     private String charsetName;
 
     /**

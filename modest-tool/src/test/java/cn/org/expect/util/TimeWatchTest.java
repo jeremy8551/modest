@@ -2,10 +2,9 @@ package cn.org.expect.util;
 
 import java.io.File;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 public class TimeWatchTest {
 
@@ -20,14 +19,14 @@ public class TimeWatchTest {
         TimeWatch watch = new TimeWatch();
 
         // 测试暂停
-        assertEquals(watch.useSeconds(), 0);
+        Assert.assertEquals(watch.useSeconds(), 0);
         watch.pauseOrKeep();
         try {
             Thread.sleep(1000);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        assertEquals(watch.useSeconds(), 0);
+        Assert.assertEquals(watch.useSeconds(), 0);
 
         // 测试暂停后启动
         watch.pauseOrKeep();
@@ -36,16 +35,16 @@ public class TimeWatchTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        assertEquals(watch.useSeconds(), 2);
+        Assert.assertEquals(watch.useSeconds(), 2);
 
         // 测试用时
         watch.start();
-        assertEquals(watch.useSeconds(), 0);
+        Assert.assertEquals(watch.useSeconds(), 0);
         try {
             Thread.sleep(1000);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        assertEquals(watch.useSeconds(), 1);
+        Assert.assertEquals(watch.useSeconds(), 1);
     }
 }

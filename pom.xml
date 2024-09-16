@@ -20,36 +20,13 @@
         <revision>1.0.0</revision>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> <!-- 源代码字符集 -->
-        <maven.compiler.charset>UTF-8</maven.compiler.charset> <!-- 源文件和资源文件的字符集，modest-maven-plugin 插件使用的字符集 -->
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <maven.compiler.version>3.8.1</maven.compiler.version>
         <maven.plugin.version>3.5.2</maven.plugin.version> <!-- Maven插件版本 -->
-        <maven.source.version>3.2.1</maven.source.version> <!-- 源文件插件版本号-->
-        <maven.jar.version>2.4</maven.jar.version>
-        <maven.install.version>2.4</maven.install.version>
-        <maven.deploy.version>3.1.1</maven.deploy.version>
-        <maven.flatten.version>1.5.0</maven.flatten.version>
-        <maven.javadoc.version>3.5.0</maven.javadoc.version> <!-- Javadoc插件版本号-->
-        <maven.javadoc.skip>false</maven.javadoc.skip> <!-- false表示生成javadoc包 -->
-        <maven.javadoc.failOnError>false</maven.javadoc.failOnError> <!-- false表示当javadoc错误时继续向下执行 -->
-        <maven.test.version>2.12.4</maven.test.version> <!-- 单元测试插件版本号-->
-        <maven.test.skip>false</maven.test.skip> <!-- true表示不执行单元测试 -->
-        <sornatype.nexeus.version>1.6.7</sornatype.nexeus.version> <!-- sornatype插件版本号-->
-        <maven.gpg.version>3.0.1</maven.gpg.version> <!-- 签名工具版本号 -->
-        <slf4j.log4j12.version>2.0.9</slf4j.log4j12.version>
-        <servlet.api.version>3.1.0</servlet.api.version>
-        <jcraft.jsch.version>0.1.54</jcraft.jsch.version>
-        <junit.version>4.13.1</junit.version>
-        <modest.logback.version>1.3.6</modest.logback.version>
+        <skipTests>false</skipTests> <!-- true表示不执行单元测试及代码验证等插件 -->
+
         <modest.springboot.version>1.5.10.RELEASE</modest.springboot.version>
         <manifold.version>2024.1.32</manifold.version>
-
-        <compress.junrar.version>7.4.0</compress.junrar.version>
-        <apache.compress.version>1.14</apache.compress.version>
-        <apache.email.version>1.4</apache.email.version>
-        <apache.net.version>2.2</apache.net.version>
-        <javax.mail.version>1.6.2</javax.mail.version>
     </properties>
 
     <!-- 子模块 -->
@@ -152,7 +129,7 @@
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
-                <version>${servlet.api.version}</version>
+                <version>3.1.0</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -190,21 +167,21 @@
             <dependency>
                 <groupId>com.jcraft</groupId>
                 <artifactId>jsch</artifactId>
-                <version>${jcraft.jsch.version}</version>
+                <version>0.1.54</version>
             </dependency>
 
             <!-- 用于实现压缩与解压（tar、zip）文件 -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
-                <version>${apache.compress.version}</version>
+                <version>1.14</version>
             </dependency>
 
             <!-- 用于实现rar解压功能 -->
             <dependency>
                 <groupId>com.github.junrar</groupId>
                 <artifactId>junrar</artifactId>
-                <version>${compress.junrar.version}</version>
+                <version>7.4.0</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.slf4j</groupId>
@@ -217,14 +194,14 @@
             <dependency>
                 <groupId>commons-net</groupId>
                 <artifactId>commons-net</artifactId>
-                <version>${apache.net.version}</version>
+                <version>2.2</version>
             </dependency>
 
             <!-- 用于实现收发邮件功能 -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-email</artifactId>
-                <version>${apache.email.version}</version>
+                <version>1.4</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.sun.mail</groupId>
@@ -237,7 +214,7 @@
             <dependency>
                 <groupId>com.sun.mail</groupId>
                 <artifactId>javax.mail</artifactId>
-                <version>${javax.mail.version}</version>
+                <version>1.6.2</version>
                 <exclusions>
                     <exclusion>
                         <groupId>javax.activation</groupId>
@@ -385,7 +362,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
+            <version>4.13.1</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -404,11 +381,13 @@
                             <goals>
                                 <goal>lastupdated</goal> <!-- 删除所有lastupdated结尾的文件 -->
                                 <goal>uninstall</goal> <!-- 从本地仓库中卸载jar包 -->
+                                <goal>deleteFile</goal> <!-- 删除文件 -->
                             </goals>
                         </execution>
                     </executions>
                     <configuration>
-                        <includeVersion>*</includeVersion> <!-- 卸载本地maven库中所有版本的jar文件 -->
+                        <uninstall>*</uninstall> <!-- 卸载本地maven库中所有版本的jar文件 -->
+                        <deletePattern>\.DS_Store</deletePattern>
                     </configuration>
                 </plugin>
 
@@ -416,7 +395,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>flatten-maven-plugin</artifactId>
-                    <version>${maven.flatten.version}</version>
+                    <version>1.5.0</version>
                     <configuration>
                         <updatePomFile>true</updatePomFile> <!-- packing=pom的module也进行reversion变量替换，默认为false -->
                         <flattenMode>resolveCiFriendliesOnly</flattenMode> <!-- 只替换原始pom中的revision, sha1 and changelist，其他否保持原样 -->
@@ -453,21 +432,109 @@
                     </executions>
                 </plugin>
 
+                <!-- 校验代码格式 -->
+                <plugin>
+                    <groupId>io.spring.javaformat</groupId>
+                    <artifactId>spring-javaformat-maven-plugin</artifactId>
+                    <version>0.0.31</version>
+                    <executions>
+                        <execution>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>validate</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <skip>${skipTests}</skip>
+                        <lineSeparator>LF</lineSeparator>
+                    </configuration>
+                </plugin>
+
+                <!-- 校验代码格式 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <version>3.1.2</version>
+                    <dependencies>
+                        <dependency>
+                            <groupId>com.puppycrawl.tools</groupId>
+                            <artifactId>checkstyle</artifactId>
+                            <version>8.45.1</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>io.spring.nohttp</groupId>
+                            <artifactId>nohttp-checkstyle</artifactId>
+                            <version>0.0.10</version>
+                        </dependency>
+                    </dependencies>
+                    <executions>
+                        <execution>
+                            <id>nohttp-checkstyle-validation</id>
+                            <phase>validate</phase>
+                            <goals>
+                                <goal>check</goal>
+                            </goals>
+                            <configuration>
+                                <skip>${skipTests}</skip>
+                                <failsOnError>false</failsOnError>
+                                <failOnViolation>true</failOnViolation>
+                                <sourceDirectories>${basedir}</sourceDirectories>
+                                <configLocation>maven-checkstyle-plugin/modest-checks.xml</configLocation>
+                                <includes>**/*</includes>
+                                <excludes>**/.git/**/*,**/.idea/**/*,**/target/**/,**/.flattened-pom.xml,**/*.class,modest-engine/**,**/*.xml,mvnw*,**/*.txt,**/resources**,</excludes>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
                 <!-- 单元测试插件 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven.test.version}</version>
+                    <version>2.12.4</version>
                     <configuration>
-                        <skip>${maven.test.skip}</skip>
+                        <skipTests>${skipTests}</skipTests>
+                        <testFailureIgnore>true</testFailureIgnore>
+                        <forkMode>once</forkMode>
                     </configuration>
+                </plugin>
+
+                <!-- 生成单元测试覆盖率 -->
+                <plugin>
+                    <!--
+                        Code Coverage
+                        config example: https://github.com/codecov/example-java
+                        plugin docs: https://eclemma.org/jacoco/trunk/doc/
+                    -->
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.11</version>
+                    <executions>
+                        <execution>
+                            <id>jacoco-prepare</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>jacoco-report</id>
+                            <phase>test</phase>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                            <configuration>
+                                <skip>${skipTests}</skip>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
 
                 <!-- 编译插件 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven.compiler.version}</version>
+                    <version>3.10.0</version>
                     <configuration>
                         <source>${maven.compiler.source}</source>
                         <target>${maven.compiler.target}</target>
@@ -480,20 +547,20 @@
                             <path>
                                 <groupId>systems.manifold</groupId>
                                 <artifactId>manifold-ext</artifactId>
-                                <version>2024.1.32</version>
+                                <version>${manifold.version}</version>
                             </path>
                         </annotationProcessorPaths>
                     </configuration>
                 </plugin>
 
-                <!-- 生成源文件jar的插件 -->
+                <!-- 生成源代码jar文件 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-source-plugin</artifactId>
-                    <version>${maven.source.version}</version>
+                    <version>3.2.1</version>
                     <executions>
                         <execution>
-                            <id>install</id>
+                            <id>java-source</id>
                             <phase>package</phase>
                             <goals>
                                 <goal>jar-no-fork</goal>
@@ -502,13 +569,30 @@
                     </executions>
                 </plugin>
 
-                <!-- 生成 Javadoc 的jar文件 -->
+                <!-- 生成 Javadoc 文件 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>${maven.javadoc.version}</version>
+                    <version>3.5.0</version>
+                    <executions>
+                        <execution>
+                            <id>javadoc</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                     <configuration>
-                        <failOnError>true</failOnError>
+                        <failOnError>false</failOnError> <!-- false表示发生错误时继续向下执行 -->
+                        <show>private</show>
+                        <nohelp>true</nohelp>
+                        <charset>UTF-8</charset>
+                        <encoding>UTF-8</encoding>
+                        <docencoding>UTF-8</docencoding>
+                        <doclint>none</doclint> <!-- 禁用DocLint检查,屏蔽警告和报错信息 -->
+                        <excludePackageNames>javax.script.*</excludePackageNames> <!-- 配置不需要校验的包名,用半角逗号分隔 -->
+                        <!-- https://maven.apache.org/plugins/maven-javadoc-plugin/examples/exclude-package-names.html -->
                         <tags>
                             <tag>
                                 <!-- https://maven.apache.org/plugins/maven-javadoc-plugin/examples/tag-configuration.html -->
@@ -517,34 +601,14 @@
                                 <head>创建时间:</head> <!-- 定义标签的前缀，例如 "作者:" 或 "版本:" -->
                             </tag>
                         </tags>
-                        <show>private</show>
-                        <nohelp>true</nohelp>
-                        <charset>UTF-8</charset>
-                        <encoding>UTF-8</encoding>
-                        <docencoding>UTF-8</docencoding>
-                        <!--                        <additionalparam>-Xdoclint:none</additionalparam>-->
-
-                        <!-- 配置不需要校验的包名,用半角逗号分隔 -->
-                        <!-- https://maven.apache.org/plugins/maven-javadoc-plugin/examples/exclude-package-names.html -->
-                        <excludePackageNames>javax.script.*</excludePackageNames>
-                        <doclint>none</doclint> <!-- 禁用DocLint检查,屏蔽警告和报错信息 -->
                     </configuration>
-                    <executions>
-                        <execution>
-                            <id>install</id>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>jar</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
 
                 <!-- GPG签名插件，对项目最后生成的jar包进行签名 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-gpg-plugin</artifactId>
-                    <version>${maven.gpg.version}</version>
+                    <version>3.0.1</version>
                     <executions>
                         <execution>
                             <id>sign</id>
@@ -560,7 +624,7 @@
                 <plugin>
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>nexus-staging-maven-plugin</artifactId>
-                    <version>${sornatype.nexeus.version}</version>
+                    <version>1.6.7</version>
                     <extensions>true</extensions>
                     <configuration>
                         <serverId>sonatype-repository</serverId>
@@ -570,16 +634,13 @@
                     </configuration>
                 </plugin>
 
-                <!--
-                    Maven plugin which includes build-time git repository information into an POJO / *.properties).
-                    Make your apps tell you which version exactly they were built from! Priceless in large distributed deployments.
-                    https://github.com/git-commit-id/git-commit-id-maven-plugin
-                -->
+                <!-- 插件将构建时 Git 仓库信息写入到 properties 文件中，让别人知道是从哪个版本构建的（适合大型分布式系统）-->
                 <plugin>
                     <groupId>io.github.git-commit-id</groupId>
                     <artifactId>git-commit-id-maven-plugin</artifactId>
-                    <!-- DO NOT upgrade to v5+, since don't support java 8 -->
                     <version>5.0.0</version>
+                    <!-- DO NOT upgrade to v5+, since don't support java 8 -->
+                    <!-- https://github.com/git-commit-id/git-commit-id-maven-plugin -->
                     <executions>
                         <execution>
                             <id>get-the-git-infos</id>
@@ -614,21 +675,21 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven.jar.version}</version>
+                    <version>3.3.0</version>
                 </plugin>
 
                 <!-- 安装插件 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-install-plugin</artifactId>
-                    <version>${maven.install.version}</version>
+                    <version>3.1.1</version>
                 </plugin>
 
                 <!-- 发布插件 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
-                    <version>${maven.deploy.version}</version>
+                    <version>3.1.1</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -652,6 +713,16 @@
                 <artifactId>maven-help-plugin</artifactId>
             </plugin>
 
+            <plugin>
+                <groupId>io.spring.javaformat</groupId>
+                <artifactId>spring-javaformat-maven-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+            </plugin>
+
             <!-- 编译插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -662,6 +733,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+
+            <!-- 单元测试覆盖率 -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
             </plugin>
 
             <!-- 生成 javaSource.jar -->

@@ -9,7 +9,6 @@ public class Attribute2Impl implements Attribute<String> {
     }
 
     public void setAttribute(String key, String value) {
-
     }
 
     public String getAttribute(String key) {

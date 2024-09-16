@@ -38,7 +38,7 @@ public class UninstallMojo extends AbstractMojo {
      * 卸载本地仓库中哪个版本的 jar
      */
     @Parameter
-    private String includeVersion;
+    private String uninstall;
 
     public void execute() {
         String groupId = this.project.getGroupId();
@@ -64,7 +64,7 @@ public class UninstallMojo extends AbstractMojo {
         }
 
         // 删除全部版本
-        if (StringUtils.inArrayIgnoreCase(this.includeVersion, "all", "*")) {
+        if (StringUtils.inArrayIgnoreCase(this.uninstall, "all", "*")) {
             getLog().info("Remove the component " + groupId + ":" + artifactId + " from localRepository " + localRepository.getAbsolutePath());
             for (Iterator<File> it = Arrays.asList(FileUtils.array(rep2.listFiles())).iterator(); it.hasNext(); ) {
                 File file = it.next();

@@ -11,10 +11,6 @@
 
     <artifactId>modest-jdk</artifactId>
 
-    <properties>
-        <maven.compiler.charset>${project.build.sourceEncoding}</maven.compiler.charset>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>cn.org.expect</groupId>
