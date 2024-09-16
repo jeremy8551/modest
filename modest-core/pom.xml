@@ -38,15 +38,14 @@
                     <execution>
                         <id>install</id>
                         <goals>
-                            <goal>plug-out</goal>
-                            <goal>dependency</goal>
+                            <goal>plugOut</goal>
+                            <goal>copySource</goal>
+                            <goal>copyDependency</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
-                    <dependencyModule>modest-script</dependencyModule>
-                    <dependencyModuleDest>modest-engine</dependencyModuleDest>
-                    <sourceModules>
+                    <copySource>
                         <module>modest-jdk</module>
                         <module>modest-logger</module>
                         <module>modest-concurrent</module>
@@ -61,8 +60,14 @@
                         <module>modest-increment</module>
                         <module>modest-compress</module>
                         <module>modest-script</module>
-                    </sourceModules>
-                    <hidePlugins>
+                    </copySource>
+                    <copyDependency>
+                        <module>modest-script</module>
+                    </copyDependency>
+                    <pasteModule>
+                        <module>modest-engine</module>
+                    </pasteModule>
+                    <plugOut>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-source-plugin</artifactId>
@@ -95,7 +100,7 @@
                             <groupId>org.sonatype.plugins</groupId>
                             <artifactId>nexus-staging-maven-plugin</artifactId>
                         </plugin>
-                    </hidePlugins>
+                    </plugOut>
                 </configuration>
             </plugin>
         </plugins>

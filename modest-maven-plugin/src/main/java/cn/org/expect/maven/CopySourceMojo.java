@@ -9,7 +9,6 @@ import java.util.List;
 
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
-import cn.org.expect.util.ObjectUtils;
 import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 import org.apache.maven.execution.MavenSession;
@@ -28,20 +27,17 @@ import org.apache.maven.project.MavenProject;
  * @author jeremy8551@qq.com
  * @createtime 2023-10-01
  */
-@Mojo(name = "sources", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
-public class SourcesMojo extends AbstractMojo {
+@Mojo(name = "copySource", defaultPhase = LifecyclePhase.GENERATE_SOURCES)
+public class CopySourceMojo extends AbstractMojo {
+
+    /** true表示已经执行过一次当前插件目标，false表示还未执行 */
+    public static volatile boolean EXECUTED = false;
 
     /**
      * 当前插件信息
      */
     @Parameter(defaultValue = "${plugin}", readonly = true)
     private PluginDescriptor plugin;
-
-    /**
-     * 项目信息
-     */
-    @Parameter(defaultValue = "${project}", readonly = true, required = true)
-    private MavenProject project;
 
     /**
      * Maven会话信息
@@ -56,18 +52,25 @@ public class SourcesMojo extends AbstractMojo {
     private String charsetName;
 
     /**
-     * 复制源代码的模块名集合
+     * 源项目名集合（复制哪些项目中的源代码）
      */
     @Parameter
-    private List<String> sourceModules;
+    private List<String> copySource;
 
     /**
-     * 禁用插件的模块
+     * 目标项目名（复制源代码复制到哪个项目中）
      */
     @Parameter
-    private List<String> plugOutModules;
+    private List<String> pasteModule;
 
     public void execute() throws MojoExecutionException {
+        if (EXECUTED) {
+            getLog().info("Skip this goal!");
+            return;
+        } else {
+            EXECUTED = true;
+        }
+
         try {
             this.run();
         } catch (Throwable e) {
@@ -78,28 +81,30 @@ public class SourcesMojo extends AbstractMojo {
 
     public void run() throws Exception {
         List<MavenProject> allProjects = this.session.getAllProjects();
-        List<String> modules = ObjectUtils.coalesce(this.sourceModules, this.plugOutModules);
-        MavenUtils.assertContains(allProjects, modules);
-        
         if (StringUtils.isBlank(this.charsetName)) {
             this.charsetName = Settings.getFileEncoding();
         }
         getLog().info("Project sourceFileEncoding: " + this.charsetName);
 
-        File srcMainJava = new File(this.project.getBuild().getSourceDirectory());
-        FileUtils.assertCreateDirectory(srcMainJava);
+        for (String module : this.pasteModule) {
+            MavenProject dest = MavenUtils.find(allProjects, module);
+            String source = dest.getBuild().getSourceDirectory(); // src/main/java
+            String resource = dest.getResources().isEmpty() ? null : dest.getResources().get(0).getDirectory();
 
-        List<Resource> resources = this.project.getResources(); // src/main/resources
-        if (resources == null || resources.isEmpty()) {
-            throw new IOException();
-        }
+            File sourceDir = StringUtils.isBlank(source) ? null : FileUtils.assertCreateDirectory(new File(source));
+            File resourceDir = StringUtils.isBlank(resource) ? null : FileUtils.assertCreateDirectory(new File(resource));
 
-        File srcMainResources = new File(resources.get(0).getDirectory());
-        FileUtils.assertCreateDirectory(srcMainResources);
+            if (sourceDir != null) {
+                FileUtils.clearDirectory(sourceDir);
+            }
+            if (resourceDir != null) {
+                FileUtils.clearDirectory(resourceDir);
+            }
 
-        for (MavenProject project : allProjects) {
-            if (modules.contains(project.getName())) {
-                this.copy(project, srcMainJava, srcMainResources);
+            // 从各个模块中复制代码与资源文件
+            for (String name : this.copySource) {
+                MavenProject project = MavenUtils.find(allProjects, name);
+                this.copy(project, sourceDir, resourceDir);
             }
         }
     }
@@ -113,16 +118,20 @@ public class SourcesMojo extends AbstractMojo {
      * @throws IOException 复制文件发生错误
      */
     protected void copy(MavenProject project, File srcMainJava, File srcMainResources) throws IOException {
-        File moduleSrcMainJava = new File(project.getBuild().getSourceDirectory());
-        getLog().info("Copy " + moduleSrcMainJava.getAbsolutePath() + " to " + srcMainJava.getAbsolutePath());
-        this.copy(moduleSrcMainJava, srcMainJava);
+        if (srcMainJava != null) {
+            File moduleSrcMainJava = new File(project.getBuild().getSourceDirectory());
+            getLog().info("Copy " + moduleSrcMainJava.getAbsolutePath() + " to " + srcMainJava.getAbsolutePath());
+            this.copy(moduleSrcMainJava, srcMainJava);
+        }
 
-        List<Resource> childResources = project.getResources();
-        for (Resource resource : childResources) {
-            File childResource = new File(resource.getDirectory());
-            if (childResource.exists()) {
-                getLog().info("Copy " + childResource.getAbsolutePath() + " to " + srcMainResources.getAbsolutePath());
-                this.copy(childResource, srcMainResources);
+        if (srcMainResources != null) {
+            List<Resource> childResources = project.getResources();
+            for (Resource resource : childResources) {
+                File childResource = new File(resource.getDirectory());
+                if (childResource.exists()) {
+                    getLog().info("Copy " + childResource.getAbsolutePath() + " to " + srcMainResources.getAbsolutePath());
+                    this.copy(childResource, srcMainResources);
+                }
             }
         }
     }

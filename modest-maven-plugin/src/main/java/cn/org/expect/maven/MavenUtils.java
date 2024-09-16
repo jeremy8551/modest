@@ -7,7 +7,6 @@ import java.util.List;
 
 import cn.org.expect.util.StringUtils;
 import org.apache.maven.model.Dependency;
-import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.project.MavenProject;
 
 /**
@@ -30,44 +29,6 @@ public class MavenUtils {
     }
 
     /**
-     * 断言：模块名（项目名）集合必须在 Maven 项目中存在
-     *
-     * @param allProjects 项目信息
-     * @param names       项目名集合
-     * @throws MojoExecutionException 项目名不在 Maven 项目中
-     */
-    public static void assertContains(List<MavenProject> allProjects, List<String> names) throws MojoExecutionException {
-        for (String name : names) {
-            if (!MavenUtils.contains(allProjects, name)) {
-                String str = "";
-                for (Iterator<MavenProject> it = allProjects.iterator(); it.hasNext(); ) {
-                    str += it.next().getName();
-                    if (it.hasNext()) {
-                        str += ", ";
-                    }
-                }
-                throw new MojoExecutionException("MavenProject " + name + " not in [" + str + "]");
-            }
-        }
-    }
-
-    /**
-     * 判断模块名（项目名）是否合法
-     *
-     * @param list 项目集合
-     * @param name 模块名（项目名）
-     * @return 返回true表示模块名合法 false表示不合法
-     */
-    public static boolean contains(List<MavenProject> list, String name) {
-        for (MavenProject project : list) {
-            if (project.getName().equals(name)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * 查找项目
      *
      * @param list 项目集合
@@ -80,23 +41,20 @@ public class MavenUtils {
                 return project;
             }
         }
-        return null;
+        throw new IllegalArgumentException(name);
     }
 
     /**
      * 查找项目信息
      *
-     * @param list  项目集合
-     * @param names 项目名
+     * @param list    项目集合
+     * @param modules 项目名
      * @return 项目集合
      */
-    public static List<MavenProject> find(List<MavenProject> list, List<String> names) {
+    public static List<MavenProject> find(List<MavenProject> list, List<String> modules) {
         List<MavenProject> newlist = new ArrayList<MavenProject>(list.size());
-        for (String name : names) {
-            MavenProject project = MavenUtils.find(list, name);
-            if (project != null) {
-                newlist.add(project);
-            }
+        for (String module : modules) {
+            newlist.add(MavenUtils.find(list, module));
         }
         return newlist;
     }
@@ -109,6 +67,24 @@ public class MavenUtils {
      * @return 项目
      */
     public static MavenProject find(List<MavenProject> list, Dependency dependency) {
+        for (MavenProject project : list) {
+            if (project.getGroupId().equals(dependency.getGroupId()) //
+                    && project.getArtifactId().equals(dependency.getArtifactId()) //
+            ) {
+                return project;
+            }
+        }
+        throw new IllegalArgumentException(dependency.getGroupId() + ":" + dependency.getArtifactId());
+    }
+
+    /**
+     * 在项目集合中搜索
+     *
+     * @param list       项目集合
+     * @param dependency 依赖
+     * @return 项目
+     */
+    public static MavenProject search(List<MavenProject> list, Dependency dependency) {
         for (MavenProject project : list) {
             if (project.getGroupId().equals(dependency.getGroupId()) //
                     && project.getArtifactId().equals(dependency.getArtifactId()) //
@@ -130,7 +106,7 @@ public class MavenUtils {
         List<Dependency> newList = MavenUtils.clone(list);
         for (int i = 0; i < list.size(); i++) {
             Dependency dependency = list.get(i);
-            MavenProject project = MavenUtils.find(projects, dependency);
+            MavenProject project = MavenUtils.search(projects, dependency);
             if (project != null) {
                 MavenUtils.remove(newList, dependency); // 移除依赖
                 newList.addAll(i, MavenUtils.clone(project.getModel().getDependencies()));
@@ -178,6 +154,7 @@ public class MavenUtils {
                     && obj.getVersion().equals(dependency.getVersion()) //
             ) {
                 it.remove();
+                continue;
             }
         }
     }

@@ -1,6 +1,6 @@
 package cn.org.expect.maven.entity;
 
-public class HidePlugin {
+public class DisablePlugin {
 
     private String groupId;
 

@@ -6,7 +6,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.maven.entity.HidePlugin;
+import cn.org.expect.maven.entity.DisablePlugin;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.ObjectUtils;
 import org.apache.maven.execution.MavenSession;
@@ -21,29 +21,11 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-@Mojo(name = "plug-out", defaultPhase = LifecyclePhase.INITIALIZE)
+@Mojo(name = "plugOut", defaultPhase = LifecyclePhase.INITIALIZE)
 public class PlugOutMojo extends AbstractMojo {
 
     /** true表示已经执行过一次当前插件目标，false表示还未执行 */
     public static volatile boolean EXECUTED = false;
-
-    /**
-     * 禁用插件的模块
-     */
-    @Parameter
-    private List<String> plugOutModules;
-
-    /**
-     * 复制源代码的模块名集合
-     */
-    @Parameter
-    private List<String> sourceModules;
-
-    /**
-     * 需要禁用的插件
-     */
-    @Parameter
-    private List<HidePlugin> hidePlugins;
 
     /**
      * 插件信息
@@ -57,6 +39,24 @@ public class PlugOutMojo extends AbstractMojo {
     @Parameter(defaultValue = "${session}", readonly = true, required = true)
     private MavenSession session;
 
+    /**
+     * 禁用插件的模块
+     */
+    @Parameter
+    private List<String> plugOutModule;
+
+    /**
+     * 复制源代码的模块名集合
+     */
+    @Parameter
+    private List<String> copySource;
+
+    /**
+     * 需要禁用的插件
+     */
+    @Parameter
+    private List<DisablePlugin> plugOut;
+
     public void execute() throws MojoExecutionException {
         if (EXECUTED) {
             getLog().info("Skip this goal!");
@@ -65,30 +65,29 @@ public class PlugOutMojo extends AbstractMojo {
             EXECUTED = true;
         }
 
-        List<String> modules = ObjectUtils.coalesce(this.plugOutModules, this.sourceModules);
-        MavenUtils.assertContains(this.session.getAllProjects(), modules);
         try {
-            this.run(modules);
+            this.run();
         } catch (Throwable e) {
             String message = this.plugin.getGroupId() + ":" + this.plugin.getArtifactId() + ":" + this.plugin.getVersion();
             throw new MojoExecutionException(message, e);
         }
     }
 
-    public void run(List<String> modules) throws Exception {
+    public void run() throws Exception {
+        List<MavenProject> allProjects = this.session.getAllProjects();
+        List<String> modules = ObjectUtils.coalesce(this.plugOutModule, this.copySource);
+
         for (String module : modules) {
             getLog().info("Disable Module Plugin: " + module);
         }
 
-        for (HidePlugin plugin : this.hidePlugins) {
+        for (DisablePlugin plugin : this.plugOut) {
             getLog().info("Disable Plugin " + plugin.getGroupId() + ":" + plugin.getArtifactId());
         }
 
-        List<MavenProject> allProjects = this.session.getAllProjects();
-        for (MavenProject project : allProjects) {
-            if (modules.contains(project.getName())) {
-                this.run(project);
-            }
+        for (String module : modules) {
+            MavenProject project = MavenUtils.find(allProjects, module);
+            this.run(project);
         }
     }
 
@@ -97,7 +96,7 @@ public class PlugOutMojo extends AbstractMojo {
         Model newModel = model.clone();
 
         // 禁用插件
-        for (HidePlugin hp : this.hidePlugins) {
+        for (DisablePlugin hp : this.plugOut) {
             List<Plugin> plugins = newModel.getBuild().getPlugins();
             List<Plugin> list = new ArrayList<Plugin>(plugins);
             for (Plugin plugin : list) {

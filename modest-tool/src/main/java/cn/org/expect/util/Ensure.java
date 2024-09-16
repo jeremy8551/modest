@@ -1,6 +1,7 @@
 package cn.org.expect.util;
 
 import java.util.Arrays;
+import java.util.Collection;
 
 /**
  * 断言工具
@@ -145,13 +146,13 @@ public class Ensure {
      */
     public static <E> E notNull(E obj, String... messages) {
         if (obj == null) {
-            throw new NullPointerException(Arrays.deepToString(messages));
+            throw new NullPointerException(messages.length == 0 ? "" + obj : Arrays.toString(messages));
         }
         return obj;
     }
 
     /**
-     * 断言数组中元素
+     * 断言数组不为空或null
      *
      * @param array 数组
      * @param <E>   元素类型
@@ -162,6 +163,20 @@ public class Ensure {
             throw new IllegalArgumentException(Arrays.toString(array));
         }
         return array;
+    }
+
+    /**
+     * 断言集合不为空或null
+     *
+     * @param c   集合
+     * @param <E> 元素类型
+     * @return 集合
+     */
+    public static <E> Collection<E> notEmpty(Collection<E> c, String... messages) {
+        if (c == null || c.isEmpty()) {
+            throw new IllegalArgumentException(messages.length == 0 ? "" + c : Arrays.toString(messages));
+        }
+        return c;
     }
 
     /**
