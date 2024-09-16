@@ -1,10 +1,14 @@
 package cn.org.expect.maven.entity;
 
+import java.util.List;
+
 public class DisablePlugin {
 
     private String groupId;
 
     private String artifactId;
+
+    private List<String> goals;
 
     public String getGroupId() {
         return groupId;
@@ -22,7 +26,15 @@ public class DisablePlugin {
         this.artifactId = artifactId;
     }
 
+    public List<String> getGoals() {
+        return goals;
+    }
+
+    public void setGoals(List<String> goals) {
+        this.goals = goals;
+    }
+
     public String toString() {
-        return "HidePlugin{" + "groupId='" + groupId + '\'' + ", artifactId='" + artifactId + '\'' + '}';
+        return "DisablePlugin{" + "groupId='" + groupId + '\'' + ", artifactId='" + artifactId + '\'' + ", goals=" + goals + '}';
     }
 }

@@ -1,17 +1,19 @@
 package cn.org.expect.maven;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.maven.entity.DisablePlugin;
+import cn.org.expect.util.CollectionUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.ObjectUtils;
+import cn.org.expect.util.StringUtils;
 import org.apache.maven.execution.MavenSession;
 import org.apache.maven.model.Model;
 import org.apache.maven.model.Plugin;
+import org.apache.maven.model.PluginExecution;
 import org.apache.maven.model.io.xpp3.MavenXpp3Writer;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -46,13 +48,13 @@ public class PlugOutMojo extends AbstractMojo {
     private List<String> plugOutModule;
 
     /**
-     * 复制源代码的模块名集合
+     * 禁用插件的模块
      */
     @Parameter
     private List<String> copySource;
 
     /**
-     * 需要禁用的插件
+     * 需要禁用的插件，可用 plugOutModule 或 copySource 标签指定禁用哪些项目的插件
      */
     @Parameter
     private List<DisablePlugin> plugOut;
@@ -82,7 +84,7 @@ public class PlugOutMojo extends AbstractMojo {
         }
 
         for (DisablePlugin plugin : this.plugOut) {
-            getLog().info("Disable Plugin " + plugin.getGroupId() + ":" + plugin.getArtifactId());
+            getLog().info("Disable Plugin " + plugin.getGroupId() + ":" + plugin.getArtifactId() + (CollectionUtils.isEmpty(plugin.getGoals()) ? "" : ", goals: " + StringUtils.join(plugin.getGoals(), ", ")));
         }
 
         for (String module : modules) {
@@ -91,17 +93,25 @@ public class PlugOutMojo extends AbstractMojo {
         }
     }
 
-    private void run(MavenProject project) throws IOException {
+    private void run(MavenProject project) throws Exception {
         Model model = project.getModel();
         Model newModel = model.clone();
 
         // 禁用插件
         for (DisablePlugin hp : this.plugOut) {
+            List<String> removeGoals = hp.getGoals();
             List<Plugin> plugins = newModel.getBuild().getPlugins();
             List<Plugin> list = new ArrayList<Plugin>(plugins);
             for (Plugin plugin : list) {
                 if (plugin.getGroupId().equals(hp.getGroupId()) && plugin.getArtifactId().equals(hp.getArtifactId())) {
-                    plugins.remove(plugin);
+                    if (removeGoals == null || removeGoals.isEmpty()) {
+                        plugins.remove(plugin); // 禁用整个插件
+                    } else {
+                        List<PluginExecution> executions = plugin.getExecutions();
+                        for (PluginExecution pluginExecution : executions) {
+                            pluginExecution.getGoals().removeAll(removeGoals); // 禁用插件的部分目标
+                        }
+                    }
                 }
             }
         }

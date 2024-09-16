@@ -95,9 +95,11 @@ public class CopySourceMojo extends AbstractMojo {
             File resourceDir = StringUtils.isBlank(resource) ? null : FileUtils.assertCreateDirectory(new File(resource));
 
             if (sourceDir != null) {
+                getLog().info("Clear " + sourceDir.getAbsolutePath());
                 FileUtils.clearDirectory(sourceDir);
             }
             if (resourceDir != null) {
+                getLog().info("Clear " + resourceDir.getAbsolutePath());
                 FileUtils.clearDirectory(resourceDir);
             }
 

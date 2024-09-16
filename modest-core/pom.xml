@@ -100,6 +100,15 @@
                             <groupId>org.sonatype.plugins</groupId>
                             <artifactId>nexus-staging-maven-plugin</artifactId>
                         </plugin>
+                        <plugin>
+                            <groupId>cn.org.expect</groupId>
+                            <artifactId>modest-maven-plugin</artifactId>
+                            <goals>
+                                <goal>plugOut</goal>
+                                <goal>copySource</goal>
+                                <goal>copyDependency</goal>
+                            </goals>
+                        </plugin>
                     </plugOut>
                 </configuration>
             </plugin>
