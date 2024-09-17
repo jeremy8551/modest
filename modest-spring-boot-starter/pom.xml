@@ -10,7 +10,28 @@
     </parent>
 
     <artifactId>modest-spring-boot-starter</artifactId>
-    <version>${revision}</version>
+
+    <properties>
+        <modest.springboot.version>1.5.10.RELEASE</modest.springboot.version>
+    </properties>
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${modest.springboot.version}</version>
+            </dependency>
+
+            <!-- SpringBoot测试 -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-test</artifactId>
+                <version>${modest.springboot.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -19,6 +40,7 @@
             <version>2.0.15</version>
         </dependency>
 
+        <!-- SpringBoot WEB场景启动器 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -128,4 +150,47 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <!-- 让JDK版本与SpringBoot版本适配 -->
+        <profile>
+            <id>enable-springboot-1.5</id>
+            <activation>
+                <jdk>[1.,9.,10.,11.,12.,13.,14.,15.]</jdk>
+            </activation>
+            <properties>
+                <modest.springboot.version>1.5.10.RELEASE</modest.springboot.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>enable-springboot-2.5</id>
+            <activation>
+                <jdk>[16.,17.,18.,19.]</jdk>
+            </activation>
+            <properties>
+                <modest.springboot.version>2.5.0</modest.springboot.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>enable-springboot-2.5-jdk20</id>
+            <activation>
+                <jdk>20.</jdk>
+            </activation>
+            <properties>
+                <modest.springboot.version>2.5.0</modest.springboot.version>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>enable-springboot-3.3</id>
+            <activation>
+                <jdk>[21.,22.,]</jdk>
+            </activation>
+            <properties>
+                <modest.springboot.version>3.3.3</modest.springboot.version>
+            </properties>
+        </profile>
+    </profiles>
 </project>

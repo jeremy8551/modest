@@ -23,11 +23,6 @@
         </dependency>
 
         <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-tool</artifactId>
         </dependency>

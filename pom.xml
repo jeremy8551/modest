@@ -11,22 +11,17 @@
 
     <name>modest</name>
     <url>https://github.com/jeremy8551/modest/</url>
-    <description>modest</description>
+    <description>It is a script engine and some tools</description>
     <packaging>pom</packaging>
 
     <!-- 属性集合（子模块可以继承直接使用） -->
     <properties>
-        <!-- 项目的统一版本号 -->
-        <revision>1.0.0</revision>
-
+        <revision>1.0.0</revision> <!-- 统一的项目版本号 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> <!-- 源代码字符集 -->
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <maven.plugin.version>3.5.2</maven.plugin.version> <!-- Maven插件版本 -->
         <skipTests>false</skipTests> <!-- true表示不执行单元测试及代码验证等插件 -->
-
-        <modest.springboot.version>1.5.10.RELEASE</modest.springboot.version>
-        <manifold.version>2024.1.32</manifold.version>
     </properties>
 
     <!-- 子模块 -->
@@ -141,28 +136,6 @@
                 <scope>runtime</scope>
             </dependency>
 
-            <!-- SpringBoot WEB场景启动器 -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-web</artifactId>
-                <version>${modest.springboot.version}</version>
-            </dependency>
-
-            <!-- SpringBoot测试 -->
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-starter-test</artifactId>
-                <version>${modest.springboot.version}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <!-- Java编译器插件，用于扩展核心API -->
-            <dependency>
-                <groupId>systems.manifold</groupId>
-                <artifactId>manifold-ext</artifactId>
-                <version>${manifold.version}</version>
-            </dependency>
-
             <!-- SSH2客户端 -->
             <dependency>
                 <groupId>com.jcraft</groupId>
@@ -202,25 +175,6 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-email</artifactId>
                 <version>1.4</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>com.sun.mail</groupId>
-                        <artifactId>javax.mail</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <!-- 用于实现收发邮件功能 -->
-            <dependency>
-                <groupId>com.sun.mail</groupId>
-                <artifactId>javax.mail</artifactId>
-                <version>1.6.2</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.activation</groupId>
-                        <artifactId>activation</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
 
             <!-- modest 工具包 -->
@@ -234,13 +188,6 @@
             <dependency>
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-maven-plugin</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <!-- modest 场景启动器 -->
-            <dependency>
-                <groupId>cn.org.expect</groupId>
-                <artifactId>modest-spring-boot-starter</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -355,6 +302,13 @@
                 <artifactId>modest-engine</artifactId>
                 <version>${revision}</version>
             </dependency>
+
+            <!-- modest 场景启动器 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-spring-boot-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -439,7 +393,8 @@
                     <version>0.0.31</version>
                     <executions>
                         <execution>
-                            <phase>generate-sources</phase>
+                            <!--<phase>generate-sources</phase>-->
+                            <phase>none</phase>
                             <goals>
                                 <goal>apply</goal>
                             </goals>
@@ -480,7 +435,7 @@
                                 <failsOnError>false</failsOnError>
                                 <failOnViolation>true</failOnViolation>
                                 <sourceDirectories>${basedir}</sourceDirectories>
-                                <configLocation>maven-checkstyle-plugin/modest-checks.xml</configLocation>
+                                <configLocation>src/maven-checkstyle-plugin/modest-checks.xml</configLocation>
                                 <includes>**/*</includes>
                                 <excludes>**/.git/**/*,**/.idea/**/*,**/target/**/,**/.flattened-pom.xml,**/*.class,modest-engine/**,**/*.xml,mvnw*,**/*.txt,**/resources**,</excludes>
                             </configuration>
@@ -534,22 +489,12 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.10.0</version>
+                    <version>3.8.1</version>
                     <configuration>
                         <source>${maven.compiler.source}</source>
                         <target>${maven.compiler.target}</target>
                         <encoding>${project.build.sourceEncoding}</encoding>
-                        <compilerArgs>
-                            <arg>-Xplugin:Manifold</arg> <!-- Java编译器插件，用于扩展核心API -->
-                        </compilerArgs>
-                        <annotationProcessorPaths>
-                            <!-- Java编译器插件，用于扩展核心API -->
-                            <path>
-                                <groupId>systems.manifold</groupId>
-                                <artifactId>manifold-ext</artifactId>
-                                <version>${manifold.version}</version>
-                            </path>
-                        </annotationProcessorPaths>
+                        <!--<verbose>true</verbose>-->
                     </configuration>
                 </plugin>
 
@@ -634,43 +579,6 @@
                     </configuration>
                 </plugin>
 
-                <!-- 插件将构建时 Git 仓库信息写入到 properties 文件中，让别人知道是从哪个版本构建的（适合大型分布式系统）-->
-                <plugin>
-                    <groupId>io.github.git-commit-id</groupId>
-                    <artifactId>git-commit-id-maven-plugin</artifactId>
-                    <version>5.0.0</version>
-                    <!-- DO NOT upgrade to v5+, since don't support java 8 -->
-                    <!-- https://github.com/git-commit-id/git-commit-id-maven-plugin -->
-                    <executions>
-                        <execution>
-                            <id>get-the-git-infos</id>
-                            <goals>
-                                <goal>revision</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>validate-the-git-infos</id>
-                            <goals>
-                                <goal>validateRevision</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <!--                        <validationProperties>-->
-                        <!--                            &lt;!&ndash; verify that the current repository is not dirty &ndash;&gt;-->
-                        <!--                            <validationProperty>-->
-                        <!--                                <name>validating git dirty</name>-->
-                        <!--                                <value>${git.dirty}</value>-->
-                        <!--                                <shouldMatchTo>false</shouldMatchTo>-->
-                        <!--                            </validationProperty>-->
-                        <!--                        </validationProperties>-->
-                        <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                        <generateGitPropertiesFilename>
-                            ${project.build.outputDirectory}/META-INF/scm/${project.groupId}/${project.artifactId}/git.properties
-                        </generateGitPropertiesFilename>
-                    </configuration>
-                </plugin>
-
                 <!-- 打包插件 -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -695,12 +603,6 @@
         </pluginManagement>
 
         <plugins>
-            <!-- git插件：检查是否有未提交代码 -->
-            <plugin>
-                <groupId>io.github.git-commit-id</groupId>
-                <artifactId>git-commit-id-maven-plugin</artifactId>
-            </plugin>
-
             <!-- 统一编号 -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -713,15 +615,15 @@
                 <artifactId>maven-help-plugin</artifactId>
             </plugin>
 
-            <plugin>
-                <groupId>io.spring.javaformat</groupId>
-                <artifactId>spring-javaformat-maven-plugin</artifactId>
-            </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>io.spring.javaformat</groupId>-->
+            <!--                <artifactId>spring-javaformat-maven-plugin</artifactId>-->
+            <!--            </plugin>-->
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-checkstyle-plugin</artifactId>
-            </plugin>
+            <!--            <plugin>-->
+            <!--                <groupId>org.apache.maven.plugins</groupId>-->
+            <!--                <artifactId>maven-checkstyle-plugin</artifactId>-->
+            <!--            </plugin>-->
 
             <!-- 编译插件 -->
             <plugin>
@@ -786,45 +688,118 @@
     </build>
 
     <profiles>
-        <!-- 让 JDK版本与Springboot版本适配 -->
         <profile>
-            <id>modest-springboot-1</id>
+            <id>enable-jdk5</id>
             <activation>
-                <jdk>[1.,9.,10.,11.,12.,13.,14.,15.]</jdk>
+                <jdk>1.5</jdk>
             </activation>
             <properties>
-                <modest.springboot.version>1.5.10.RELEASE</modest.springboot.version>
+                <maven.compiler.source>5</maven.compiler.source>
+                <maven.compiler.target>5</maven.compiler.target>
             </properties>
         </profile>
-
         <profile>
-            <id>modest-springboot-2</id>
+            <id>enable-jdk8</id>
             <activation>
-                <jdk>[16.,17.,18.,19.]</jdk>
+                <jdk>[1.8,)</jdk>
             </activation>
             <properties>
-                <modest.springboot.version>2.5.0</modest.springboot.version>
+                <maven.compiler.source>8</maven.compiler.source>
+                <maven.compiler.target>8</maven.compiler.target>
+                <manifold.version>2024.1.32</manifold.version>
             </properties>
-        </profile>
+            <dependencies>
+                <!-- Java编译器插件，用于扩展核心API -->
+                <dependency>
+                    <groupId>systems.manifold</groupId>
+                    <artifactId>manifold-ext</artifactId>
+                    <version>${manifold.version}</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <!-- 插件将构建时 Git 仓库信息写入到 properties 文件中，让别人知道是从哪个版本构建的（适合大型分布式系统）-->
+                        <plugin>
+                            <groupId>io.github.git-commit-id</groupId>
+                            <artifactId>git-commit-id-maven-plugin</artifactId>
+                            <version>4.9.9</version>
+                            <!-- DO NOT upgrade to v5+, since don't support java 8 -->
+                            <!-- https://github.com/git-commit-id/git-commit-id-maven-plugin -->
+                            <executions>
+                                <execution>
+                                    <id>get-the-git-infos</id>
+                                    <goals>
+                                        <goal>revision</goal>
+                                    </goals>
+                                </execution>
+                                <execution>
+                                    <id>validate-the-git-infos</id>
+                                    <goals>
+                                        <goal>validateRevision</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                            <configuration>
+                                <!--                        <validationProperties>-->
+                                <!--                            &lt;!&ndash; verify that the current repository is not dirty &ndash;&gt;-->
+                                <!--                            <validationProperty>-->
+                                <!--                                <name>validating git dirty</name>-->
+                                <!--                                <value>${git.dirty}</value>-->
+                                <!--                                <shouldMatchTo>false</shouldMatchTo>-->
+                                <!--                            </validationProperty>-->
+                                <!--                        </validationProperties>-->
+                                <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                                <generateGitPropertiesFilename>${project.build.outputDirectory}/META-INF/scm/${project.groupId}/${project.artifactId}/git.properties</generateGitPropertiesFilename>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+                <plugins>
+                    <!-- Git插件：检查是否有未提交代码 -->
+                    <plugin>
+                        <groupId>io.github.git-commit-id</groupId>
+                        <artifactId>git-commit-id-maven-plugin</artifactId>
+                    </plugin>
 
-        <profile>
-            <id>modest-springboot-3</id>
-            <activation>
-                <jdk>20.</jdk>
-            </activation>
-            <properties>
-                <modest.springboot.version>2.5.0</modest.springboot.version>
-            </properties>
-        </profile>
+                    <!-- 代码编译插件 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <source>${maven.compiler.source}</source>
+                            <target>${maven.compiler.target}</target>
+                            <encoding>${project.build.sourceEncoding}</encoding>
+                            <!--<verbose>true</verbose>-->
+                            <compilerArgs>
+                                <arg>-Xplugin:Manifold</arg> <!-- Java编译器插件，用于扩展核心API -->
+                            </compilerArgs>
+                            <annotationProcessorPaths>
+                                <!-- Java编译器插件，用于扩展核心API -->
+                                <path>
+                                    <groupId>systems.manifold</groupId>
+                                    <artifactId>manifold-ext</artifactId>
+                                    <version>${manifold.version}</version>
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
+                    </plugin>
 
-        <profile>
-            <id>modest-springboot-4</id>
-            <activation>
-                <jdk>[21.,22.,]</jdk>
-            </activation>
-            <properties>
-                <modest.springboot.version>3.3.3</modest.springboot.version>
-            </properties>
+                    <!-- 插件用于生成API -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <archive>
+                                <manifestEntries>
+                                    <!--class files as source must be available for extension method classes-->
+                                    <Contains-Sources>java,class</Contains-Sources>
+                                </manifestEntries>
+                            </archive>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
