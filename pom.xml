@@ -28,6 +28,7 @@
     <modules>
         <module>modest-tool</module>
         <module>modest-maven-plugin</module>
+        <module>modest-api</module>
         <module>modest-core</module>
         <module>modest-engine</module>
         <module>modest-markdown</module>

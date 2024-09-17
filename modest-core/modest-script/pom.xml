@@ -23,6 +23,11 @@
         </dependency>
 
         <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-tool</artifactId>
         </dependency>
