@@ -14,7 +14,7 @@
     <properties>
         <modest.springboot.version>1.5.10.RELEASE</modest.springboot.version>
     </properties>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -130,10 +130,38 @@
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-engine</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-api</artifactId>
+            <version>1.0.0</version>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <!--<verbose>true</verbose>-->
+                    <compilerArgs>
+                        <arg>-Xplugin:Manifold</arg> <!-- Java编译器插件，用于扩展核心API -->
+                    </compilerArgs>
+                    <annotationProcessorPaths>
+                        <!-- Java编译器插件，用于扩展核心API -->
+                        <path>
+                            <groupId>systems.manifold</groupId>
+                            <artifactId>manifold-ext</artifactId>
+                            <version>2024.1.32</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-maven-plugin</artifactId>

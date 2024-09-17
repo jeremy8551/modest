@@ -73,7 +73,6 @@ public class CachedLineReaderTest {
             assertTrue("".equals(r.readLine()));
             assertTrue(r.getLineNumber() == 1);
             assertTrue(r.cacheLine(1) == 1);
-            System.out.println("this111");
 //			System.out.println(StringUtils.escapeLineSeparator(r.getLineSeparator()));
             assertEquals(StringUtils.escapeLineSeparator("\r"), StringUtils.escapeLineSeparator(r.getLineSeparator()));
 

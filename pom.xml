@@ -18,8 +18,8 @@
     <properties>
         <revision>1.0.0</revision> <!-- 统一的项目版本号 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> <!-- 源代码字符集 -->
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>5</maven.compiler.source>
+        <maven.compiler.target>5</maven.compiler.target>
         <maven.plugin.version>3.5.2</maven.plugin.version> <!-- Maven插件版本 -->
         <skipTests>false</skipTests> <!-- true表示不执行单元测试及代码验证等插件 -->
     </properties>
@@ -184,6 +184,13 @@
                 <version>${revision}</version>
             </dependency>
 
+            <!-- 核心API扩展 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
             <!-- modest 插件 -->
             <dependency>
                 <groupId>cn.org.expect</groupId>
@@ -314,9 +321,23 @@
 
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+            <version>1.10.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.10.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>5.10.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -698,6 +719,7 @@
                 <maven.compiler.target>5</maven.compiler.target>
             </properties>
         </profile>
+
         <profile>
             <id>enable-jdk8</id>
             <activation>
@@ -706,16 +728,10 @@
             <properties>
                 <maven.compiler.source>8</maven.compiler.source>
                 <maven.compiler.target>8</maven.compiler.target>
-                <manifold.version>2024.1.32</manifold.version>
             </properties>
-            <dependencies>
-                <!-- Java编译器插件，用于扩展核心API -->
-                <dependency>
-                    <groupId>systems.manifold</groupId>
-                    <artifactId>manifold-ext</artifactId>
-                    <version>${manifold.version}</version>
-                </dependency>
-            </dependencies>
+            <modules>
+                <module>modest-api</module>
+            </modules>
             <build>
                 <pluginManagement>
                     <plugins>
@@ -760,43 +776,6 @@
                     <plugin>
                         <groupId>io.github.git-commit-id</groupId>
                         <artifactId>git-commit-id-maven-plugin</artifactId>
-                    </plugin>
-
-                    <!-- 代码编译插件 -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-compiler-plugin</artifactId>
-                        <configuration>
-                            <source>${maven.compiler.source}</source>
-                            <target>${maven.compiler.target}</target>
-                            <encoding>${project.build.sourceEncoding}</encoding>
-                            <!--<verbose>true</verbose>-->
-                            <compilerArgs>
-                                <arg>-Xplugin:Manifold</arg> <!-- Java编译器插件，用于扩展核心API -->
-                            </compilerArgs>
-                            <annotationProcessorPaths>
-                                <!-- Java编译器插件，用于扩展核心API -->
-                                <path>
-                                    <groupId>systems.manifold</groupId>
-                                    <artifactId>manifold-ext</artifactId>
-                                    <version>${manifold.version}</version>
-                                </path>
-                            </annotationProcessorPaths>
-                        </configuration>
-                    </plugin>
-
-                    <!-- 插件用于生成API -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <configuration>
-                            <archive>
-                                <manifestEntries>
-                                    <!--class files as source must be available for extension method classes-->
-                                    <Contains-Sources>java,class</Contains-Sources>
-                                </manifestEntries>
-                            </archive>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>

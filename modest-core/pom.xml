@@ -40,7 +40,6 @@
                         <goals>
                             <goal>plugOut</goal>
                             <goal>copySource</goal>
-                            <goal>copyDependency</goal>
                         </goals>
                     </execution>
                 </executions>
@@ -61,9 +60,6 @@
                         <module>modest-compress</module>
                         <module>modest-script</module>
                     </copySource>
-                    <copyDependency>
-                        <module>modest-script</module>
-                    </copyDependency>
                     <pasteModule>
                         <module>modest-engine</module>
                     </pasteModule>
