@@ -30,9 +30,6 @@
     </dependencies>
 
     <build>
-        <pluginManagement>
-        </pluginManagement>
-
         <plugins>
             <!-- 代码编译插件 -->
             <plugin>

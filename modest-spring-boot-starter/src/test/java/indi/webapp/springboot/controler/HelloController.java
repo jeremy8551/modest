@@ -87,8 +87,6 @@ public class HelloController {
         String id2 = engine.toString();
         engine.eval("set test3=`help`");
 
-        Assert.assertEquals("3", "1,2,3".split(',')[2]);
-
         Assert.assertEquals(id0, id2); // 测试脚本引擎对象的生命周期是 request，也就是在一次 SpringBoot 请求中是同一个脚本引擎
         return FileUtils.replaceLineSeparator((String) engine.getContext().getAttribute("test3"), "<br>");
     }

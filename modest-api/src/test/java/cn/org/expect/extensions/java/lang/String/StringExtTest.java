@@ -1,6 +1,5 @@
 package cn.org.expect.extensions.java.lang.String;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 

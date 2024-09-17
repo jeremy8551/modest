@@ -30,138 +30,46 @@
                 <version>${modest.springboot.version}</version>
                 <scope>test</scope>
             </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-configuration-processor</artifactId>
+                <version>${modest.springboot.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
     <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>2.0.15</version>
-        </dependency>
-
-        <!-- SpringBoot WEB场景启动器 -->
+        <!-- SpringBoot-场景启动器 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
+            <optional>true</optional>
         </dependency>
 
-        <dependency>
-            <groupId>net.bytebuddy</groupId>
-            <artifactId>byte-buddy</artifactId>
-            <version>1.14.12</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest</artifactId>
-            <version>2.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.xml.bind</groupId>
-            <artifactId>jakarta.xml.bind-api</artifactId>
-            <version>4.0.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.minidev</groupId>
-            <artifactId>json-smart</artifactId>
-            <version>2.5.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>5.10.3</version>
-        </dependency>
-
+        <!-- SpringBoot-测试 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.bytebuddy</groupId>
-                    <artifactId>byte-buddy</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.hamcrest</groupId>
-                    <artifactId>hamcrest</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>jakarta.xml.bind</groupId>
-                    <artifactId>jakarta.xml.bind-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.minidev</groupId>
-                    <artifactId>json-smart</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.junit.jupiter</groupId>
-                    <artifactId>junit-jupiter-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
+        <!-- 生成 spring-configuration-metadata.json -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
-            <version>${modest.springboot.version}</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
 
+        <!-- 脚本引擎 -->
         <dependency>
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-engine</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-api</artifactId>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                    <!--<verbose>true</verbose>-->
-                    <compilerArgs>
-                        <arg>-Xplugin:Manifold</arg> <!-- Java编译器插件，用于扩展核心API -->
-                    </compilerArgs>
-                    <annotationProcessorPaths>
-                        <!-- Java编译器插件，用于扩展核心API -->
-                        <path>
-                            <groupId>systems.manifold</groupId>
-                            <artifactId>manifold-ext</artifactId>
-                            <version>2024.1.32</version>
-                        </path>
-                    </annotationProcessorPaths>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-maven-plugin</artifactId>
@@ -182,9 +90,9 @@
     <profiles>
         <!-- 让JDK版本与SpringBoot版本适配 -->
         <profile>
-            <id>enable-springboot-1.5</id>
+            <id>springboot-1.5.10</id>
             <activation>
-                <jdk>[1.,9.,10.,11.,12.,13.,14.,15.]</jdk>
+                <jdk>[1.8.0,15.999.999]</jdk>
             </activation>
             <properties>
                 <modest.springboot.version>1.5.10.RELEASE</modest.springboot.version>
@@ -192,9 +100,9 @@
         </profile>
 
         <profile>
-            <id>enable-springboot-2.5</id>
+            <id>springboot-2.5.0</id>
             <activation>
-                <jdk>[16.,17.,18.,19.]</jdk>
+                <jdk>[16.0.0,20.999.999]</jdk>
             </activation>
             <properties>
                 <modest.springboot.version>2.5.0</modest.springboot.version>
@@ -202,19 +110,9 @@
         </profile>
 
         <profile>
-            <id>enable-springboot-2.5-jdk20</id>
+            <id>springboot-3.3.3</id>
             <activation>
-                <jdk>20.</jdk>
-            </activation>
-            <properties>
-                <modest.springboot.version>2.5.0</modest.springboot.version>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>enable-springboot-3.3</id>
-            <activation>
-                <jdk>[21.,22.,]</jdk>
+                <jdk>[21.0.0,)</jdk>
             </activation>
             <properties>
                 <modest.springboot.version>3.3.3</modest.springboot.version>
