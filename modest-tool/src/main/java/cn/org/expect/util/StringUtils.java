@@ -2022,7 +2022,7 @@ public class StringUtils {
      * @param c   字符
      * @return -1表示字符参数 c 没有出现
      */
-    public static int indexOf(CharSequence str, char c) {
+    protected static int indexOf(CharSequence str, char c) {
         if (str == null) {
             return -1;
         }
@@ -3862,39 +3862,39 @@ public class StringUtils {
     /**
      * 将字符串从 charsetName1 编码转为 charsetName2 编码
      *
-     * @param cs           字符型变量
+     * @param str          字符型变量
      * @param charsetName1 字符集1
      * @param charsetName2 字符集2
      * @return 字符串
      */
-    public static String encodeCharset(CharSequence cs, String charsetName1, String charsetName2) {
+    public static String encodeCharset(CharSequence str, String charsetName1, String charsetName2) {
         if (StringUtils.isBlank(charsetName1)) {
             throw new IllegalArgumentException(charsetName1);
         }
         if (StringUtils.isBlank(charsetName2)) {
             throw new IllegalArgumentException(charsetName2);
         }
-        return cs == null ? null : StringUtils.toString(StringUtils.toBytes(cs.toString(), charsetName1), charsetName2);
+        return str == null ? null : StringUtils.toString(StringUtils.toBytes(str.toString(), charsetName1), charsetName2);
     }
 
     /**
      * 将字符串从 GBK 转为 UTF-8
      *
-     * @param cs 字符型变量
+     * @param str 字符型变量
      * @return 字符串
      */
-    public static String encodeGBKtoUTF8(CharSequence cs) {
-        return StringUtils.encodeCharset(cs, CharsetName.GBK, CharsetName.UTF_8);
+    public static String encodeGBKtoUTF8(CharSequence str) {
+        return StringUtils.encodeCharset(str, CharsetName.GBK, CharsetName.UTF_8);
     }
 
     /**
      * 将字符串从 UTF-8 转为 GBK
      *
-     * @param cs 字符型变量
+     * @param str 字符型变量
      * @return 字符串
      */
-    public static String encodeUTF8toGBK(CharSequence cs) {
-        return StringUtils.encodeCharset(cs, CharsetName.UTF_8, CharsetName.GBK);
+    public static String encodeUTF8toGBK(CharSequence str) {
+        return StringUtils.encodeCharset(str, CharsetName.UTF_8, CharsetName.GBK);
     }
 
     /**
@@ -4471,54 +4471,54 @@ public class StringUtils {
     /**
      * 尝试使用 utf-8，GBK，ISO8859-1 字符集解析显示字符序列集合参数 cs
      *
-     * @param chars 字符序列
+     * @param str 字符序列
      */
-    public static void testEncoding(CharSequence chars) {
-        if (chars == null) {
+    public static void testEncoding(CharSequence str) {
+        if (str == null) {
             System.out.println("null");
             return;
         }
 
-        String str = chars.toString();
+        String tostr = str.toString();
 
         try {
-            System.out.println(StringUtils.left("original value ", 20, ' ') + " = " + str);
+            System.out.println(StringUtils.left("original value ", 20, ' ') + " = " + tostr);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            System.out.println(StringUtils.left("GBK -> UTF8 ", 20, ' ') + " = " + StringUtils.encodeCharset(str, CharsetName.GBK, CharsetName.UTF_8));
+            System.out.println(StringUtils.left("GBK -> UTF8 ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.GBK, CharsetName.UTF_8));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            System.out.println(StringUtils.left("UTF8 -> GBK = ", 20, ' ') + " = " + StringUtils.encodeCharset(str, CharsetName.UTF_8, CharsetName.GBK));
+            System.out.println(StringUtils.left("UTF8 -> GBK = ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.UTF_8, CharsetName.GBK));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            System.out.println(StringUtils.left("ISO8859-1 -> GBK ", 20, ' ') + " = " + StringUtils.encodeCharset(str, CharsetName.ISO_8859_1, CharsetName.GBK));
+            System.out.println(StringUtils.left("ISO8859-1 -> GBK ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.ISO_8859_1, CharsetName.GBK));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            System.out.println(StringUtils.left("GBK -> ISO8859-1 ", 20, ' ') + " = " + StringUtils.encodeCharset(str, CharsetName.GBK, CharsetName.ISO_8859_1));
+            System.out.println(StringUtils.left("GBK -> ISO8859-1 ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.GBK, CharsetName.ISO_8859_1));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            System.out.println(StringUtils.left("ISO8859-1 -> UTF8 ", 20, ' ') + " = " + StringUtils.encodeCharset(str, CharsetName.ISO_8859_1, CharsetName.UTF_8));
+            System.out.println(StringUtils.left("ISO8859-1 -> UTF8 ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.ISO_8859_1, CharsetName.UTF_8));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            System.out.println(StringUtils.left("UTF8 -> ISO8859-1 ", 20, ' ') + " = " + StringUtils.encodeCharset(str, CharsetName.UTF_8, CharsetName.ISO_8859_1));
+            System.out.println(StringUtils.left("UTF8 -> ISO8859-1 ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.UTF_8, CharsetName.ISO_8859_1));
         } catch (Exception e) {
             e.printStackTrace();
         }
