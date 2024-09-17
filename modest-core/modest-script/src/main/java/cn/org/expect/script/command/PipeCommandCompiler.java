@@ -158,8 +158,8 @@ public class PipeCommandCompiler extends AbstractCommandCompiler implements Univ
     /**
      * 判断是否存在管道符
      *
-     * @param script
-     * @return
+     * @param script 脚本语句
+     * @return 返回true表示存在管道符，false表示脚本语句中没有管道符
      */
     private boolean containsPipe(String script) {
         for (int i = 0; i < script.length(); i++) {

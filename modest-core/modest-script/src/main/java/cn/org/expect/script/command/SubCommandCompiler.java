@@ -30,7 +30,7 @@ public class SubCommandCompiler extends AbstractCommandCompiler {
      * 将参数obj转为字符串并删除字符串左右端的空白字符（半角空格,全角空格,\r,\n,\t等）
      *
      * @param str 字符串
-     * @return
+     * @return 字符串
      */
     private String trim(String str) {
         int sp = 0, len = str.length(), ep = len - 1;
