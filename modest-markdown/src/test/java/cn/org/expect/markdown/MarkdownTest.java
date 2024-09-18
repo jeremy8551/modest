@@ -17,11 +17,8 @@ public class MarkdownTest {
         File userDir = Settings.getUserDir();
         File dir = FileUtils.findUpward(userDir, "learning-notes");
         if (dir != null) {
-            RenameImages renameImages = new RenameImages();
-            renameImages.execute(dir);
-
-            UnusedImages unusedImages = new UnusedImages();
-            unusedImages.execute(dir);
+            new RenameImages().execute(dir);
+            new UnusedImages().execute(dir);
         }
     }
 
