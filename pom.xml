@@ -32,6 +32,7 @@
         <module>modest-engine</module>
         <module>modest-markdown</module>
         <module>modest-spring-boot-starter</module>
+        <module>modest-ssm</module>
     </modules>
 
     <!-- Apache Licene 2.0 开源软件许可证 -->
