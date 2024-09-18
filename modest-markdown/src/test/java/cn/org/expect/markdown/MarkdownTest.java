@@ -5,18 +5,18 @@ import java.io.IOException;
 
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.Settings;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 
 public class MarkdownTest {
 
+    @DisplayName("测试：统一图片名，删除未用图片")
     @Test
     public void test0() throws IOException {
         File userDir = Settings.getUserDir();
-        File dir = new File(FileUtils.getParent(userDir.getAbsolutePath()), "learning-notes");
-        System.out.println(dir.getAbsolutePath() + " " + dir.exists());
-
-        if (dir.exists() && dir.isDirectory()) {
+        File dir = FileUtils.findUpward(userDir, "learning-notes");
+        if (dir != null) {
             RenameImages renameImages = new RenameImages();
             renameImages.execute(dir);
 
@@ -25,15 +25,18 @@ public class MarkdownTest {
         }
     }
 
-    @Ignore
-    public void test1() throws IOException {
+    @DisplayName("测试重命名markdown文档")
+    @Disabled
+    public void test() throws IOException {
         File userDir = Settings.getUserDir();
-        File dir = new File(FileUtils.getParent(userDir.getAbsolutePath()), "learning-notes");
-        System.out.println(dir.getAbsolutePath() + " " + dir.exists());
-
-        if (dir.exists() && dir.isDirectory()) {
+        File dir = FileUtils.findUpward(userDir, "learning-notes");
+        if (dir != null) {
             File markdown = new File(dir, "2.编程语言/9.Python.md");
-            new RenameMarkdown().rename(markdown.getAbsolutePath(), "20.Python.md");
+            String newFilename = "20.Python.md";
+
+            if (dir.exists() && dir.isDirectory() && markdown.exists()) {
+                new RenameMarkdown().rename(markdown.getAbsolutePath(), newFilename);
+            }
         }
     }
 }

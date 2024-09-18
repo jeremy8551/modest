@@ -40,6 +40,7 @@ public class StringExtTest {
 
     @Test
     public void trimBlank() {
+        Assertions.assertEquals("12", "   ,;  12,; ,;".trimBlank(',', ';'));
     }
 
     @Test

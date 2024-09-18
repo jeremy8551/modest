@@ -1725,6 +1725,43 @@ public final class FileUtils {
     }
 
     /**
+     * 在指定目录下搜索文件，如果搜索不到，则在上一次目录搜索文件，以此类推
+     *
+     * @param file 目录
+     * @param name 文件名
+     * @return 文件
+     */
+    public static File findUpward(File file, String name) {
+        if (file == null || !file.exists()) {
+            throw new IllegalArgumentException(String.valueOf(file));
+        }
+
+        // 如果是文件或其他类型文件
+        if (file.getName().equals(name)) {
+            return file;
+        }
+
+        // 如果是目录
+        if (file.isDirectory()) {
+            File[] files = file.listFiles();
+            if (files != null) {
+                for (File childFile : files) {
+                    if (childFile.getName().equals(name)) {
+                        return childFile;
+                    }
+                }
+            }
+        }
+
+        File parent = file.getParentFile();
+        if (parent != null) {
+            return findUpward(parent, name);
+        }
+
+        return null;
+    }
+
+    /**
      * 搜索文件
      *
      * @param file 文件或目录 <br>

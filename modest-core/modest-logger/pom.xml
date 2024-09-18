@@ -33,7 +33,6 @@
                 <artifactId>modest-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>install</id>
                         <goals>
                             <goal>pom</goal>
                         </goals>

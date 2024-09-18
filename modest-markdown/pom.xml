@@ -11,7 +11,6 @@
 
     <!-- 项目信息 -->
     <artifactId>modest-markdown</artifactId>
-    <packaging>jar</packaging>
     <description>markdown功能</description>
 
     <dependencies>
