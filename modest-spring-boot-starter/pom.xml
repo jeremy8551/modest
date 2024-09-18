@@ -17,6 +17,7 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- SpringBoot场景启动器 -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
@@ -31,6 +32,7 @@
                 <scope>test</scope>
             </dependency>
 
+            <!-- 生成 spring-configuration-metadata.json -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-configuration-processor</artifactId>
@@ -40,20 +42,17 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- SpringBoot-场景启动器 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- SpringBoot-测试 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
 
-        <!-- 生成 spring-configuration-metadata.json -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
