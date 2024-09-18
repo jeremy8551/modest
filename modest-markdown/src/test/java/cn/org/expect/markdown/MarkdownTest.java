@@ -5,9 +5,9 @@ import java.io.IOException;
 
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.Settings;
-import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 
 public class MarkdownTest {
 
