@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Scope;
  * @createtime 2023/10/3
  */
 @Configuration
-public class EasyContextConfiguration {
+public class ModestContextConfiguration {
 
     @Lazy
     @Bean

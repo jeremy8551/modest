@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
  * @createtime 2024/9/5 11:11
  */
 @Component
-@ConfigurationProperties("easyetl")
-public class EasyetlProperties {
+@ConfigurationProperties("modest")
+public class ModestProperties {
 
     /**
      * 日志属性

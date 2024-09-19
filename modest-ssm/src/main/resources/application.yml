@@ -230,7 +230,7 @@ decorator:
       # custom-appender-class: icu.etl.config.MybatisPlusStdLogger
 
 # 脚本引擎
-easyetl:
+modest:
   log:
     print-trace: false
     level: slf4j

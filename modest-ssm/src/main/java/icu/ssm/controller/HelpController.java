@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-import cn.org.expect.springboot.starter.EasyetlProperties;
+import cn.org.expect.springboot.starter.ModestProperties;
 import icu.ssm.dao.UserInfoMapper;
 import icu.ssm.entity.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class HelpController {
     private ScriptEngine engine;
 
     @Autowired
-    EasyetlProperties easyetlProperties;
+    ModestProperties modestProperties;
 
     @RequestMapping("/help")
     public String help() throws ScriptException {
@@ -58,7 +58,7 @@ public class HelpController {
         Assert.notNull(queryObj, "UserInfo not exists!");
         System.out.println("queryObj: " + queryObj);
 
-        Assert.isTrue(!easyetlProperties.getLog().isPrintTrace(), "easyetlProperties not correct!");
+        Assert.isTrue(!modestProperties.getLog().isPrintTrace(), "easyetlProperties not correct!");
         return "help";
     }
 
