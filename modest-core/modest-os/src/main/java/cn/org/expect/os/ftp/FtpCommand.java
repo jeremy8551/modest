@@ -16,8 +16,8 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.parser.FTPFileEntryParserFactory;
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.expression.GPatternExpression;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.EasyetlContextAware;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.os.OSFile;
@@ -35,7 +35,7 @@ import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;
 
 @EasyBean(name = "ftp", description = "FTP协议的实现类")
-public class FtpCommand implements OSFtpCommand, EasyetlContextAware {
+public class FtpCommand implements OSFtpCommand, EasyContextAware {
     private final static Log log = LogFactory.getLog(FtpCommand.class);
 
     /** ftp 客户端组件 */
@@ -51,7 +51,7 @@ public class FtpCommand implements OSFtpCommand, EasyetlContextAware {
     protected String remoteServerName;
 
     /** 容器上下文信息 */
-    protected EasyetlContext context;
+    protected EasyContext context;
 
     public FtpCommand() {
         this.client = new FTPClient();
@@ -59,7 +59,7 @@ public class FtpCommand implements OSFtpCommand, EasyetlContextAware {
         this.folderSeperator = '/';
     }
 
-    public void setContext(EasyetlContext context) {
+    public void setContext(EasyContext context) {
         this.context = context;
     }
 

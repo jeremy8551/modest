@@ -3,7 +3,7 @@ package cn.org.expect.zip;
 import java.io.File;
 import java.io.IOException;
 
-import cn.org.expect.ioc.DefaultEasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
@@ -18,7 +18,7 @@ public class TarTest {
     @Test
     public void test1() throws IOException {
         File file = Util.createfile("tar");
-        DefaultEasyetlContext context = new DefaultEasyetlContext("sout+:info");
+        DefaultEasyContext context = new DefaultEasyContext("sout+:info");
         Compress compress = context.getBean(Compress.class, file);
         Assert.assertEquals(TarCompress.class, compress.getClass());
     }

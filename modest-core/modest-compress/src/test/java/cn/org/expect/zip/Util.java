@@ -3,7 +3,7 @@ package cn.org.expect.zip;
 import java.io.File;
 import java.io.IOException;
 
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
@@ -40,7 +40,7 @@ public class Util {
      * @param delete       true表示文件全部压缩成功后自动删除 {@code fileOrDir}
      * @throws IOException 访问文件错误
      */
-    public static void compress(EasyetlContext context, File file, File compressFile, String charsetName, boolean delete) throws IOException {
+    public static void compress(EasyContext context, File file, File compressFile, String charsetName, boolean delete) throws IOException {
         Compress c = context.getBean(Compress.class, FileUtils.getFilenameSuffix(compressFile.getName()));
         try {
             c.setFile(compressFile);
@@ -64,7 +64,7 @@ public class Util {
      * @param delete       true表示全部文件解压成功后自动删除压缩文件参数file
      * @throws IOException 访问文件错误
      */
-    public static void uncompress(EasyetlContext context, File compressFile, File dir, String charsetName, boolean delete) throws IOException {
+    public static void uncompress(EasyContext context, File compressFile, File dir, String charsetName, boolean delete) throws IOException {
         if (StringUtils.isBlank(charsetName)) {
             charsetName = CharsetName.UTF_8;
         }

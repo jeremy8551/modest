@@ -5,7 +5,7 @@ import cn.org.expect.annotation.EasyBean;
 /**
  * IOC容器的上下文接口
  */
-public interface EasyetlContainerContext {
+public interface EasyContainerContext {
 
     /**
      * 容器名，必须唯一

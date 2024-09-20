@@ -62,8 +62,8 @@ import cn.org.expect.database.internal.StandardJdbcConverterMapper;
 import cn.org.expect.database.pool.PoolConnection;
 import cn.org.expect.io.BufferedLineReader;
 import cn.org.expect.io.ClobWriter;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.EasyetlContextAware;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.os.OS;
@@ -85,7 +85,7 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  */
 @EasyBean(name = "db2")
-public class DB2Dialect extends AbstractDialect implements DatabaseDialect, EasyetlContextAware {
+public class DB2Dialect extends AbstractDialect implements DatabaseDialect, EasyContextAware {
     private final static Log log = LogFactory.getLog(DB2Dialect.class);
 
     /** 进程编号名 */
@@ -101,7 +101,7 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
     protected StandardJdbcConverterMapper map;
 
     /** 容器上下文信息 */
-    protected EasyetlContext context;
+    protected EasyContext context;
 
     public DB2Dialect() {
         super();
@@ -455,7 +455,7 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
         this.keyword.add("YEARS");
     }
 
-    public void setContext(EasyetlContext context) {
+    public void setContext(EasyContext context) {
         this.context = context;
     }
 

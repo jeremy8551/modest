@@ -2,12 +2,10 @@ package cn.org.expect.ioc;
 
 import java.util.Comparator;
 
-import cn.org.expect.annotation.EasyBean;
-
 /**
- * {@linkplain EasyBean} 注解对应的接口
+ * {@linkplain cn.org.expect.annotation.EasyBean} 注解对应的接口
  */
-public interface EasyetlBean extends Comparator<EasyetlBean> {
+public interface EasyBean extends Comparator<EasyBean> {
 
     /**
      * 组件类
@@ -28,7 +26,7 @@ public interface EasyetlBean extends Comparator<EasyetlBean> {
     /**
      * 组件管理模式
      *
-     * @return 详见 {@linkplain EasyBean#singleton()}
+     * @return 详见 {@linkplain cn.org.expect.annotation.EasyBean#singleton()}
      */
     boolean singleton();
 
@@ -37,7 +35,7 @@ public interface EasyetlBean extends Comparator<EasyetlBean> {
      * <p>
      * 组件重名时，优先使用权重高的组件
      *
-     * @return 详见 {@linkplain EasyBean#priority()}
+     * @return 详见 {@linkplain cn.org.expect.annotation.EasyBean#priority()}
      */
     int getPriority();
 
@@ -77,7 +75,7 @@ public interface EasyetlBean extends Comparator<EasyetlBean> {
      * @param beanInfo 组件信息
      * @return 返回true表示相等
      */
-    boolean equals(EasyetlBean beanInfo);
+    boolean equals(EasyBean beanInfo);
 
     /**
      * 排序规则
@@ -86,6 +84,6 @@ public interface EasyetlBean extends Comparator<EasyetlBean> {
      * @param o2 组件
      * @return 0表示组件相同 大于0表示参数1要排在参数2的后面 小于0表示参数1要排在参数2的前面
      */
-    int compare(EasyetlBean o1, EasyetlBean o2);
+    int compare(EasyBean o1, EasyBean o2);
 
 }

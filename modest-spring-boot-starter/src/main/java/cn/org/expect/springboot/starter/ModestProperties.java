@@ -8,7 +8,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 /**
- * Easyetl属性
+ * SpringBoot 场景启动器的属性
  *
  * @author jeremy8551@qq.com
  * @createtime 2024/9/5 11:11
@@ -59,7 +59,7 @@ public class ModestProperties {
         /**
          * 针对不同的Java包设置不同的日志级别
          * <br>
-         * 注意: 只有 easyetl.log.level 属性为 sout 时才生效
+         * 注意: 只有 modest.log.level 属性为 sout 时才生效
          * <br>
          * <br>
          * 如: 只设置包 cn.org.expect.db 的日志级别

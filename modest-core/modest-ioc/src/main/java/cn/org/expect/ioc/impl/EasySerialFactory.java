@@ -10,7 +10,7 @@ import cn.org.expect.ProjectPom;
  * @author jeremy8551@qq.com
  * @createtime 2024/2/8 09:12
  */
-public class EasyetlSerialFactory {
+public class EasySerialFactory {
 
     /** 容器编号序号 */
     protected static final AtomicInteger number = new AtomicInteger(0);

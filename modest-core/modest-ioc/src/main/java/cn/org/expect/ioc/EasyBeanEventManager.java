@@ -3,7 +3,7 @@ package cn.org.expect.ioc;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.ioc.impl.EasyetlBeanEventImpl;
+import cn.org.expect.ioc.impl.EasyBeanEventImpl;
 
 /**
  * 组件的事件管理器
@@ -11,21 +11,21 @@ import cn.org.expect.ioc.impl.EasyetlBeanEventImpl;
  * @author jeremy8551@qq.com
  * @createtime 2023/10/26
  */
-public class EasyetlBeanEventManager {
+public class EasyBeanEventManager {
 
     /** 容器上下文信息 */
-    private EasyetlContext context;
+    private EasyContext context;
 
     /** 事件监听器集合 */
-    private List<EasyetlBeanEventListener> list;
+    private List<EasyBeanEventListener> list;
 
     /**
      * 初始化
      *
      * @param context 容器上下文信息
      */
-    public EasyetlBeanEventManager(EasyetlContext context) {
-        this.list = new ArrayList<EasyetlBeanEventListener>();
+    public EasyBeanEventManager(EasyContext context) {
+        this.list = new ArrayList<EasyBeanEventListener>();
         this.context = context;
     }
 
@@ -34,7 +34,7 @@ public class EasyetlBeanEventManager {
      *
      * @param listener 监听器
      */
-    public void addListener(EasyetlBeanEventListener listener) {
+    public void addListener(EasyBeanEventListener listener) {
         this.list.add(listener);
     }
 
@@ -43,9 +43,9 @@ public class EasyetlBeanEventManager {
      *
      * @param beanInfo 组件信息
      */
-    public void addBeanEvent(EasyetlBeanDefine beanInfo) {
-        for (EasyetlBeanEventListener listener : this.list) {
-            listener.addBean(new EasyetlBeanEventImpl(this.context, beanInfo));
+    public void addBeanEvent(EasyBeanDefine beanInfo) {
+        for (EasyBeanEventListener listener : this.list) {
+            listener.addBean(new EasyBeanEventImpl(this.context, beanInfo));
         }
     }
 
@@ -54,9 +54,9 @@ public class EasyetlBeanEventManager {
      *
      * @param beanInfo 组件信息
      */
-    public void removeBeanEvent(EasyetlBeanDefine beanInfo) {
-        for (EasyetlBeanEventListener listener : this.list) {
-            listener.removeBean(new EasyetlBeanEventImpl(this.context, beanInfo));
+    public void removeBeanEvent(EasyBeanDefine beanInfo) {
+        for (EasyBeanEventListener listener : this.list) {
+            listener.removeBean(new EasyBeanEventImpl(this.context, beanInfo));
         }
     }
 

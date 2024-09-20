@@ -6,17 +6,17 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.database.export.ExtractMessage;
 import cn.org.expect.database.export.ExtractWriter;
 import cn.org.expect.database.export.ExtracterContext;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.EasyetlContextAware;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.os.OSFtpCommand;
 import cn.org.expect.util.Ensure;
 
 @EasyBean(name = "ftp", description = "卸载数据到远程ftp服务器")
-public class FtpFileWriter extends SftpFileWriter implements ExtractWriter, EasyetlContextAware {
+public class FtpFileWriter extends SftpFileWriter implements ExtractWriter, EasyContextAware {
 
-    protected EasyetlContext context;
+    protected EasyContext context;
 
-    public void setContext(EasyetlContext context) {
+    public void setContext(EasyContext context) {
         this.context = context;
     }
 

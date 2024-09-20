@@ -9,7 +9,7 @@ import javax.script.Bindings;
 import javax.script.ScriptContext;
 
 import cn.org.expect.io.AliveReader;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.internal.ScriptCatalog;
 import cn.org.expect.script.internal.ScriptListener;
 import cn.org.expect.script.internal.ScriptProgram;
@@ -91,7 +91,7 @@ public class UniversalScriptContext implements ScriptContext {
     private UniversalScriptChecker checker;
 
     /** 容器上下文信息 */
-    private EasyetlContext ioc;
+    private EasyContext ioc;
 
     /**
      * 初始化
@@ -184,7 +184,7 @@ public class UniversalScriptContext implements ScriptContext {
      *
      * @return 容器上下文信息
      */
-    public EasyetlContext getContainer() {
+    public EasyContext getContainer() {
         return this.ioc;
     }
 

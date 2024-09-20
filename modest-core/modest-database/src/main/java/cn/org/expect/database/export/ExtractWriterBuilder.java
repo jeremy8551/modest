@@ -7,8 +7,8 @@ import cn.org.expect.database.export.inernal.HttpRequestWriter;
 import cn.org.expect.database.export.inernal.SftpFileWriter;
 import cn.org.expect.expression.BaseAnalysis;
 import cn.org.expect.expression.LoginExpression;
-import cn.org.expect.ioc.EasyetlBeanBuilder;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBeanBuilder;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.StringUtils;
 
@@ -19,9 +19,9 @@ import cn.org.expect.util.StringUtils;
  * @createtime 2021-02-18
  */
 @EasyBean
-public class ExtractWriterBuilder implements EasyetlBeanBuilder<ExtractWriter> {
+public class ExtractWriterBuilder implements EasyBeanBuilder<ExtractWriter> {
 
-    public ExtractWriter getBean(EasyetlContext context, Object... args) throws Exception {
+    public ExtractWriter getBean(EasyContext context, Object... args) throws Exception {
         ExtracterContext cxt = ArrayUtils.indexOf(args, ExtracterContext.class, 0);
         assert cxt != null;
         ExtractMessage message = ArrayUtils.indexOf(args, ExtractMessage.class, 0);

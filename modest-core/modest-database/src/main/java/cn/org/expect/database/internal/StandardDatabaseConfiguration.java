@@ -11,12 +11,12 @@ import cn.org.expect.collection.CaseSensitivMap;
 import cn.org.expect.database.DatabaseConfiguration;
 import cn.org.expect.database.DatabaseDialect;
 import cn.org.expect.database.DatabaseURL;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.EasyetlContextAware;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.os.OSAccount;
 import cn.org.expect.util.StringUtils;
 
-public class StandardDatabaseConfiguration implements DatabaseConfiguration, EasyetlContextAware {
+public class StandardDatabaseConfiguration implements DatabaseConfiguration, EasyContextAware {
 
     private String host;
     private String driverClassName;
@@ -29,7 +29,7 @@ public class StandardDatabaseConfiguration implements DatabaseConfiguration, Eas
     private OSAccount sshUser;
     private int sshPort;
 
-    protected EasyetlContext context;
+    protected EasyContext context;
 
     /**
      * 初始化
@@ -54,13 +54,13 @@ public class StandardDatabaseConfiguration implements DatabaseConfiguration, Eas
      * @param sshUserPw       SSH远程登录用户密码
      * @param sshPort         SSH协议端口（设置为 null 时表示使用默认 22 端口）
      */
-    public StandardDatabaseConfiguration(EasyetlContext context, String ipAddress, String driverClassName, String url, String username, String password, String adminUsername, String adminPassword, String sshUser, String sshUserPw, String sshPort) {
+    public StandardDatabaseConfiguration(EasyContext context, String ipAddress, String driverClassName, String url, String username, String password, String adminUsername, String adminPassword, String sshUser, String sshUserPw, String sshPort) {
         this();
         this.setContext(context);
         this.add(ipAddress, driverClassName, url, username, password, adminUsername, adminPassword, sshUser, sshUserPw, sshPort);
     }
 
-    public void setContext(EasyetlContext context) {
+    public void setContext(EasyContext context) {
         this.context = context;
     }
 

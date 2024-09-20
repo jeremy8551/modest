@@ -3,7 +3,7 @@ package cn.org.expect.ioc;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.ioc.impl.EasyetlContainerContextImpl;
+import cn.org.expect.ioc.impl.EasyContainerContextImpl;
 import cn.org.expect.util.StringUtils;
 
 /**
@@ -12,19 +12,19 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2023/10/26
  */
-public class EasyetlContainerContextManager {
+public class EasyContainerContextManager {
 
     /** 容器上下文的集合 */
-    private List<EasyetlContainerContext> list;
+    private List<EasyContainerContext> list;
 
     /**
      * 容器上下文信息管理器
      *
      * @param context 容器上下文信息
      */
-    public EasyetlContainerContextManager(EasyetlContext context) {
-        this.list = new ArrayList<EasyetlContainerContext>();
-        this.add(new EasyetlContainerContextImpl(context));
+    public EasyContainerContextManager(EasyContext context) {
+        this.list = new ArrayList<EasyContainerContext>();
+        this.add(new EasyContainerContextImpl(context));
     }
 
     /**
@@ -35,7 +35,7 @@ public class EasyetlContainerContextManager {
      */
     protected int indexOf(String name) {
         for (int i = 0; i < this.list.size(); i++) {
-            EasyetlContainerContext ioc = this.list.get(i);
+            EasyContainerContext ioc = this.list.get(i);
             if (ioc.getName().equalsIgnoreCase(name)) {
                 return i;
             }
@@ -49,7 +49,7 @@ public class EasyetlContainerContextManager {
      * @param ioc 容器
      * @return 被替换的容器
      */
-    public EasyetlContainerContext add(EasyetlContainerContext ioc) {
+    public EasyContainerContext add(EasyContainerContext ioc) {
         if (ioc == null || StringUtils.isBlank(ioc.getName())) {
             throw new IllegalArgumentException();
         }
@@ -59,7 +59,7 @@ public class EasyetlContainerContextManager {
             this.list.add(ioc);
             return null;
         } else {
-            EasyetlContainerContext old = this.list.get(index);
+            EasyContainerContext old = this.list.get(index);
             this.list.set(index, ioc);
             return old;
         }
@@ -71,7 +71,7 @@ public class EasyetlContainerContextManager {
      * @param name 容器名
      * @return 容器
      */
-    public EasyetlContainerContext remove(String name) {
+    public EasyContainerContext remove(String name) {
         int index = this.indexOf(name);
         if (index == -1) {
             return null;
@@ -91,7 +91,7 @@ public class EasyetlContainerContextManager {
     public <E> E getBean(Class<E> type, Object[] args) {
         E bean;
         for (int i = 0; i < this.list.size(); i++) {
-            EasyetlContainerContext ioc = this.list.get(i);
+            EasyContainerContext ioc = this.list.get(i);
             if ((bean = ioc.getBean(type, args)) != null) {
                 return bean;
             }

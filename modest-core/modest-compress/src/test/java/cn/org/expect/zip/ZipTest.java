@@ -3,7 +3,7 @@ package cn.org.expect.zip;
 import java.io.File;
 import java.io.IOException;
 
-import cn.org.expect.ioc.DefaultEasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
@@ -22,7 +22,7 @@ public class ZipTest {
     @Test
     public void test() throws IOException {
         File file = Util.createfile("zip");
-        DefaultEasyetlContext context = new DefaultEasyetlContext("sout+");
+        DefaultEasyContext context = new DefaultEasyContext("sout+");
         Compress compress = context.getBean(Compress.class, file);
         Assert.assertEquals(ZipCompress.class, compress.getClass());
     }
@@ -36,7 +36,7 @@ public class ZipTest {
     public void test1() throws IOException {
         String ext = "zip";
 
-        DefaultEasyetlContext context = new DefaultEasyetlContext("sout+");
+        DefaultEasyContext context = new DefaultEasyContext("sout+");
         File compressfile = Util.createfile(ext); // 压缩文件
 
         File f1 = new File(compressfile.getParentFile(), "t1.txt");
@@ -101,7 +101,7 @@ public class ZipTest {
     }
 
     private void testcompress(String ext) throws IOException {
-        DefaultEasyetlContext context = new DefaultEasyetlContext("sout+");
+        DefaultEasyContext context = new DefaultEasyContext("sout+");
 
         File compressfile = Util.createfile(ext); // 压缩文件
 
@@ -162,7 +162,7 @@ public class ZipTest {
      */
     @Test
     public void test3() throws IOException {
-        DefaultEasyetlContext context = new DefaultEasyetlContext();
+        DefaultEasyContext context = new DefaultEasyContext();
 
         File dir = FileUtils.createTempDirectory(null);
         File f0 = new File(dir, "t1.txt");
@@ -192,7 +192,7 @@ public class ZipTest {
      */
     @Test
     public void test4() throws IOException {
-        DefaultEasyetlContext context = new DefaultEasyetlContext("sout+");
+        DefaultEasyContext context = new DefaultEasyContext("sout+");
 
         File zipfile = FileUtils.createTempFile("com.zip");
         FileUtils.createFile(zipfile);
@@ -228,7 +228,7 @@ public class ZipTest {
         File f2 = FileUtils.createTempFile(null);
         FileUtils.createFile(f2);
 
-        DefaultEasyetlContext context = new DefaultEasyetlContext("sout+");
+        DefaultEasyContext context = new DefaultEasyContext("sout+");
         Compress c = context.getBean(Compress.class, FileUtils.getFilenameSuffix(file.getName()));
         c.setFile(file);
         c.archiveFile(f1, null);

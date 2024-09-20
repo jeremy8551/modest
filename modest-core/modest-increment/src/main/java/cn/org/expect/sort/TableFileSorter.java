@@ -25,7 +25,7 @@ import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileCounter;
 import cn.org.expect.io.TextTableFileReader;
 import cn.org.expect.io.TextTableLine;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
@@ -93,7 +93,7 @@ public class TableFileSorter implements Terminate {
      * @return 排序后的文件
      * @throws Exception 发生错误
      */
-    public synchronized File sort(EasyetlContext context, TextTableFile file, String... orders) throws Exception {
+    public synchronized File sort(EasyContext context, TextTableFile file, String... orders) throws Exception {
         Analysis analysis = new BaseAnalysis();
         OrderByExpression[] array = new OrderByExpression[orders.length];
         for (int i = 0; i < orders.length; i++) {

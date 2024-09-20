@@ -48,8 +48,8 @@ public class BeanRepeatDefineException extends RuntimeException {
         if (obj instanceof Class) {
             return ((Class<?>) obj).getName();
         }
-        if (obj instanceof EasyetlBeanDefine) {
-            return ((EasyetlBeanDefine) obj).getType().getName();
+        if (obj instanceof EasyBeanDefine) {
+            return ((EasyBeanDefine) obj).getType().getName();
         }
         
         return obj.getClass().getName();

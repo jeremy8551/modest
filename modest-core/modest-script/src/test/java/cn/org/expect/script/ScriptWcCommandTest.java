@@ -7,8 +7,8 @@ import java.util.Random;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileCounter;
 import cn.org.expect.io.TextTableFileWriter;
-import cn.org.expect.ioc.DefaultEasyetlContext;
-import cn.org.expect.ioc.EasyetlBean;
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.FileUtils;
@@ -27,7 +27,7 @@ public class ScriptWcCommandTest {
     @Test
     public void test1() throws IOException {
         TimeWatch watch = new TimeWatch();
-        DefaultEasyetlContext ioc = new DefaultEasyetlContext("debug:sout+", EasyetlBean.class.getPackage().getName() + ":info");
+        DefaultEasyContext ioc = new DefaultEasyContext("debug:sout+", EasyBean.class.getPackage().getName() + ":info");
         TextTableFile txt = ioc.getBean(TextTableFile.class, "txt");
 
         File parent = FileUtils.getTempDir("test", ScriptWcCommandTest.class.getSimpleName());

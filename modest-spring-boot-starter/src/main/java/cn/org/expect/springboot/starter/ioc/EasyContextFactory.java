@@ -8,8 +8,8 @@ import java.util.Set;
 
 import cn.org.expect.concurrent.ExecutorServiceFactory;
 import cn.org.expect.concurrent.ThreadSource;
-import cn.org.expect.ioc.DefaultEasyetlContext;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.scan.EasyScanPatternList;
 import cn.org.expect.springboot.starter.ProjectPom;
 import cn.org.expect.springboot.starter.SpringApplicationArgument;
@@ -30,8 +30,8 @@ import org.springframework.context.annotation.ComponentScan;
  * @author jeremy8551@qq.com
  * @createtime 2024/2/8 09:30
  */
-public class EasyetlContextFactory {
-    private final static Logger log = LoggerFactory.getLogger(EasyetlContextFactory.class);
+public class EasyContextFactory {
+    private final static Logger log = LoggerFactory.getLogger(EasyContextFactory.class);
 
     /**
      * 创建一个脚本引擎容器实例
@@ -40,7 +40,7 @@ public class EasyetlContextFactory {
      * @param springContext Spring容器上下文信息
      * @return 脚本引擎容器实例
      */
-    public static EasyetlContext create(SpringApplicationArgument argument, ApplicationContext springContext) {
+    public static EasyContext create(SpringApplicationArgument argument, ApplicationContext springContext) {
         long start = System.currentTimeMillis();
         String starterName = ProjectPom.getArtifactID(); // 场景启动器名
         log.info("{} starting ..", starterName);
@@ -58,16 +58,16 @@ public class EasyetlContextFactory {
         log.info("{} class scan pattern is {}", starterName, StringUtils.trim(Arrays.toString(array), '[', ']'));
 
         // 将Spring容器封装
-        SpringEasyetlContainerContext spring = new SpringEasyetlContainerContext(springContext, starterName);
-        EasyetlContext parent = spring.getParent();
+        SpringEasyContainerContext spring = new SpringEasyContainerContext(springContext, starterName);
+        EasyContext parent = spring.getParent();
         ExecutorServiceFactory pool = spring.getExecutorFactory(); // 在Spring容器中查找可用的线程池工厂
 
         // 初始化容器
-        DefaultEasyetlContext context = DefaultEasyetlContext.newInstance(classLoader, array);
+        DefaultEasyContext context = DefaultEasyContext.newInstance(classLoader, array);
         context.setParent(parent);
         context.getBean(ThreadSource.class).setExecutorsFactory(pool); // 添加 Spring 容器中的线程池
         context.addIoc(spring); // 添加 Spring 容器
-        context.addBean(new SpringEasyetlBeanDefine(springContext)); // 将 Spring 容器上下文信息作为单例注册到容器中
+        context.addBean(new SpringEasyBeanDefine(springContext)); // 将 Spring 容器上下文信息作为单例注册到容器中
         context.refresh();
 
         // 打印启动成功标志

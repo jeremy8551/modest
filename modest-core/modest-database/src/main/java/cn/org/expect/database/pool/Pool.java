@@ -14,7 +14,7 @@ import cn.org.expect.database.DatabaseException;
 import cn.org.expect.database.Jdbc;
 import cn.org.expect.database.internal.StandardDatabaseConfiguration;
 import cn.org.expect.io.OutputStreamLogger;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.os.OSAccount;
@@ -57,7 +57,7 @@ public class Pool implements Closeable {
     private int timeout;
 
     /** 容器上下文信息 */
-    protected EasyetlContext context;
+    protected EasyContext context;
 
     /**
      * 初始化
@@ -65,7 +65,7 @@ public class Pool implements Closeable {
      * @param context 容器上下文信息
      * @param config  JDBC配置
      */
-    public Pool(EasyetlContext context, Properties config) {
+    public Pool(EasyContext context, Properties config) {
         super();
 
         Ensure.notNull(context);
@@ -88,7 +88,7 @@ public class Pool implements Closeable {
      *
      * @return 上下文信息
      */
-    public EasyetlContext getContext() {
+    public EasyContext getContext() {
         return this.context;
     }
 

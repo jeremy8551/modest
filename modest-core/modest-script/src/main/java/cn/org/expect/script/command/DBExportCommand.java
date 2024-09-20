@@ -10,7 +10,7 @@ import cn.org.expect.database.export.ExtractUserListener;
 import cn.org.expect.database.export.ExtracterContext;
 import cn.org.expect.database.internal.StandardJdbcConverterMapper;
 import cn.org.expect.io.TextTableFile;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.UniversalCommandCompiler;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptCommand;
@@ -185,12 +185,12 @@ public class DBExportCommand extends AbstractTraceCommand implements UniversalSc
     private static class UserListenerList extends ArrayList<ExtractUserListener> {
         private final static long serialVersionUID = 1L;
 
-        public UserListenerList(EasyetlContext context, String listeners) {
+        public UserListenerList(EasyContext context, String listeners) {
             super();
             this.parse(context, listeners);
         }
 
-        public void parse(EasyetlContext context, String listeners) {
+        public void parse(EasyContext context, String listeners) {
             String[] array = StringUtils.split(StringUtils.trimBlank(listeners), ',');
             for (String className : array) {
                 if (StringUtils.isNotBlank(className)) {

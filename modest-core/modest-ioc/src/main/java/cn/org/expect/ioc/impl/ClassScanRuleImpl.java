@@ -1,7 +1,7 @@
 package cn.org.expect.ioc.impl;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.ioc.EasyetlBeanRegister;
+import cn.org.expect.ioc.EasyBeanRegister;
 import cn.org.expect.ioc.scan.ClassScanRule;
 
 /**
@@ -18,7 +18,7 @@ public class ClassScanRuleImpl implements ClassScanRule {
     public ClassScanRuleImpl() {
     }
 
-    public boolean process(Class<?> cls, EasyetlBeanRegister register) {
+    public boolean process(Class<?> cls, EasyBeanRegister register) {
         return cls != null && cls.isAnnotationPresent(EasyBean.class) && register.addBean(cls);
     }
 

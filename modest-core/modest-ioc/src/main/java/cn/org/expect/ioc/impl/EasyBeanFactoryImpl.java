@@ -6,9 +6,9 @@ import java.lang.reflect.Modifier;
 import java.util.List;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.ioc.EasyetlBeanFactory;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.EasyetlContextAware;
+import cn.org.expect.ioc.EasyBeanFactory;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.jdk.JavaDialect;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
@@ -26,13 +26,13 @@ import cn.org.expect.util.ResourcesUtils;
  * @author jeremy8551@qq.com
  * @createtime 2023/10/26
  */
-public class EasyetlBeanFactoryImpl implements EasyetlBeanFactory {
-    private final static Log log = LogFactory.getLog(EasyetlBeanFactoryImpl.class);
+public class EasyBeanFactoryImpl implements EasyBeanFactory {
+    private final static Log log = LogFactory.getLog(EasyBeanFactoryImpl.class);
 
     /** 容器上下文信息 */
-    private EasyetlContext context;
+    private EasyContext context;
 
-    public EasyetlBeanFactoryImpl(EasyetlContext context) {
+    public EasyBeanFactoryImpl(EasyContext context) {
         this.context = Ensure.notNull(context);
     }
 
@@ -41,12 +41,12 @@ public class EasyetlBeanFactoryImpl implements EasyetlBeanFactory {
             throw new UnsupportedOperationException(ResourcesUtils.getMessage("ioc.standard.output.msg004", type.getName()));
         }
 
-        EasyetlBeanArgument argument = new EasyetlBeanArgument("", args);
+        EasyBeanArgument argument = new EasyBeanArgument("", args);
         E obj = this.create(type, argument);
 
         // 自动注入容器上下文信息
-        if (obj instanceof EasyetlContextAware) {
-            ((EasyetlContextAware) obj).setContext(this.context);
+        if (obj instanceof EasyContextAware) {
+            ((EasyContextAware) obj).setContext(this.context);
         }
 
         // 反射注入
@@ -86,8 +86,8 @@ public class EasyetlBeanFactoryImpl implements EasyetlBeanFactory {
     }
 
     @SuppressWarnings("unchecked")
-    protected <E> E create(Class<?> type, EasyetlBeanArgument argument) {
-        EasyetlBeanConstructor constructors = new EasyetlBeanConstructor(type, argument);
+    protected <E> E create(Class<?> type, EasyBeanArgument argument) {
+        EasyBeanConstructor constructors = new EasyBeanConstructor(type, argument);
         StringBuilder buf = new StringBuilder();
 
         // 优先使用参数匹配的构造方法
@@ -99,7 +99,7 @@ public class EasyetlBeanFactoryImpl implements EasyetlBeanFactory {
             try {
                 return (E) constructors.getMatchConstructor().newInstance(argument.getArgs());
             } catch (Throwable e) {
-                String message = ResourcesUtils.getMessage("ioc.standard.output.msg002", type.getName(), constructors.getMatchConstructor().toGenericString(), EasyetlBeanArgument.toString(argument.getArgs()));
+                String message = ResourcesUtils.getMessage("ioc.standard.output.msg002", type.getName(), constructors.getMatchConstructor().toGenericString(), EasyBeanArgument.toString(argument.getArgs()));
                 buf.append(FileUtils.lineSeparator).append(message);
 
                 if (log.isDebugEnabled()) {
@@ -137,7 +137,7 @@ public class EasyetlBeanFactoryImpl implements EasyetlBeanFactory {
             try {
                 return (E) constructor.newInstance(parameters);
             } catch (Throwable e) {
-                String message = ResourcesUtils.getMessage("ioc.standard.output.msg002", type.getName(), constructor.toGenericString(), EasyetlBeanArgument.toString(parameters));
+                String message = ResourcesUtils.getMessage("ioc.standard.output.msg002", type.getName(), constructor.toGenericString(), EasyBeanArgument.toString(parameters));
                 buf.append(FileUtils.lineSeparator).append(message);
 
                 if (log.isDebugEnabled()) {
@@ -160,7 +160,7 @@ public class EasyetlBeanFactoryImpl implements EasyetlBeanFactory {
         Object[] array = new Object[types.length]; // 构造方法的参数值
         for (int i = 0; i < types.length; i++) {
             Class<?> cls = types[i];
-            if (ClassUtils.equals(EasyetlContext.class, cls)) { // 通过构造方法注入容器上下文信息
+            if (ClassUtils.equals(EasyContext.class, cls)) { // 通过构造方法注入容器上下文信息
                 array[i] = this.context;
                 continue;
             }

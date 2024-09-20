@@ -6,8 +6,8 @@ import java.util.Iterator;
 import java.util.Properties;
 import javax.script.SimpleBindings;
 
-import cn.org.expect.ioc.DefaultEasyetlContext;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.ObjectUtils;
@@ -19,7 +19,7 @@ import org.junit.runners.model.Statement;
 public class WithSSHRule implements TestRule {
 
     /** 容器上下文信息 */
-    protected DefaultEasyetlContext context;
+    protected DefaultEasyContext context;
 
     /** 脚本引擎的环境变量集合 */
     protected WithDBConfig environment;
@@ -40,7 +40,7 @@ public class WithSSHRule implements TestRule {
      *
      * @return 容器上下文信息
      */
-    public DefaultEasyetlContext getContext() {
+    public DefaultEasyContext getContext() {
         this.init();
         return context;
     }
@@ -57,7 +57,7 @@ public class WithSSHRule implements TestRule {
 
     protected void init() {
         if (context == null) {
-            context = new DefaultEasyetlContext("sout:info");
+            context = new DefaultEasyContext("sout:info");
 
             try {
                 environment = new WithDBConfig(context);
@@ -103,7 +103,7 @@ public class WithSSHRule implements TestRule {
 
     public static class WithDBConfig extends SimpleBindings {
 
-        public WithDBConfig(EasyetlContext context) throws IOException {
+        public WithDBConfig(EasyContext context) throws IOException {
             super();
 
             Properties p = this.load();

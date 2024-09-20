@@ -14,17 +14,17 @@ import cn.org.expect.util.Ensure;
  * @author jeremy8551@qq.com
  * @createtime 2023/10/25
  */
-public class EasyetlBeanTable {
+public class EasyBeanTable {
 
     /** 容器上下文信息 */
-    private EasyetlContext context;
+    private EasyContext context;
 
     /** 组件（接口或类）与实现类的映射关系 */
-    private LinkedHashMap<Class<?>, EasyetlBeanTableRow> rows;
+    private LinkedHashMap<Class<?>, EasyBeanTableRow> rows;
 
-    public EasyetlBeanTable(EasyetlContext context) {
+    public EasyBeanTable(EasyContext context) {
         this.context = Ensure.notNull(context);
-        this.rows = new LinkedHashMap<Class<?>, EasyetlBeanTableRow>(50);
+        this.rows = new LinkedHashMap<Class<?>, EasyBeanTableRow>(50);
     }
 
     /**
@@ -40,7 +40,7 @@ public class EasyetlBeanTable {
      * @param type 组件的类信息
      * @return 组件的所有实现类
      */
-    public EasyetlBeanTableRow remove(Class<?> type) {
+    public EasyBeanTableRow remove(Class<?> type) {
         return this.rows.remove(type);
     }
 
@@ -50,10 +50,10 @@ public class EasyetlBeanTable {
      * @param type 组件的类信息
      * @return 组件的所有实现类
      */
-    public EasyetlBeanTableRow get(Class<?> type) {
-        EasyetlBeanTableRow list = this.rows.get(type);
+    public EasyBeanTableRow get(Class<?> type) {
+        EasyBeanTableRow list = this.rows.get(type);
         if (list == null) {
-            list = new EasyetlBeanTableRow(type);
+            list = new EasyBeanTableRow(type);
             this.rows.put(type, list);
         }
         return list;
@@ -64,11 +64,11 @@ public class EasyetlBeanTable {
      *
      * @return 组件信息集合
      */
-    public List<EasyetlBeanDefine> getNolazyBeanInfoList() {
-        List<EasyetlBeanDefine> nolazys = new ArrayList<EasyetlBeanDefine>();
-        Collection<EasyetlBeanTableRow> values = this.rows.values();
-        for (EasyetlBeanTableRow list : values) {
-            for (EasyetlBeanDefine beanInfo : list) {
+    public List<EasyBeanDefine> getNolazyBeanInfoList() {
+        List<EasyBeanDefine> nolazys = new ArrayList<EasyBeanDefine>();
+        Collection<EasyBeanTableRow> values = this.rows.values();
+        for (EasyBeanTableRow list : values) {
+            for (EasyBeanDefine beanInfo : list) {
                 if (!beanInfo.isLazy()) {
                     nolazys.add(beanInfo);
                 }
@@ -91,14 +91,14 @@ public class EasyetlBeanTable {
      */
     public void refresh() {
         // 对同名的组件, 按优先级排序
-        Collection<EasyetlBeanTableRow> values = this.rows.values();
-        for (EasyetlBeanTableRow list : values) {
+        Collection<EasyBeanTableRow> values = this.rows.values();
+        for (EasyBeanTableRow list : values) {
             list.sortByDesc();
         }
 
         // 处理非延迟加载的组件
-        List<EasyetlBeanDefine> list = this.getNolazyBeanInfoList();
-        for (EasyetlBeanDefine beanInfo : list) {
+        List<EasyBeanDefine> list = this.getNolazyBeanInfoList();
+        for (EasyBeanDefine beanInfo : list) {
             if (beanInfo.getBean() == null) {
                 beanInfo.setBean(this.context.createBean(beanInfo.getType()));
             }

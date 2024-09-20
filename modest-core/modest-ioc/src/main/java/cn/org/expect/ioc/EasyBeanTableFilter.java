@@ -6,7 +6,7 @@ package cn.org.expect.ioc;
  * @author jeremy8551@qq.com
  * @createtime 2023/10/26
  */
-public interface EasyetlBeanTableFilter {
+public interface EasyBeanTableFilter {
 
     /**
      * 过滤条件
@@ -14,5 +14,5 @@ public interface EasyetlBeanTableFilter {
      * @param beanInfo 组件信息
      * @return 返回true表示满足查询条件，false表示不满足查询条件
      */
-    boolean accept(EasyetlBeanDefine beanInfo);
+    boolean accept(EasyBeanDefine beanInfo);
 }

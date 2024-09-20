@@ -1,9 +1,8 @@
 package cn.org.expect.io;
 
-import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.ioc.EasyetlBeanBuilder;
-import cn.org.expect.ioc.EasyetlBean;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBeanBuilder;
+import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Attribute;
 import cn.org.expect.util.CharsetName;
@@ -11,23 +10,23 @@ import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
 /**
- * 从容器上下文信息 {@linkplain EasyetlContext} 中返回一个 {@linkplain TextTableFile} 表格型文件对象 <br>
+ * 从容器上下文信息 {@linkplain EasyContext} 中返回一个 {@linkplain TextTableFile} 表格型文件对象 <br>
  * 第一参数必须是 {@linkplain TextTableFile} <br>
  * 第二个参数必须是文件类型 <br>
  * 第三个参数必须是 {@linkplain Attribute} 对象的引用，属性集合中可以设置 charset，codepage，chardel，rowdel，coldel，escape，column，colname
  *
  * @author jeremy8551@qq.com
  */
-@EasyBean
-public class TextTableFileBuilder implements EasyetlBeanBuilder<TextTableFile> {
+@cn.org.expect.annotation.EasyBean
+public class TextTableFileBuilder implements EasyBeanBuilder<TextTableFile> {
 
     @SuppressWarnings("unchecked")
-    public TextTableFile getBean(EasyetlContext context, Object... args) throws Exception {
+    public TextTableFile getBean(EasyContext context, Object... args) throws Exception {
         // 查询参数中一定要有文件类型
         String name = Ensure.notBlank(ArrayUtils.indexOf(args, String.class, 0));
 
         // 根据文件类型查询对应的组件
-        EasyetlBean beanInfo = Ensure.notNull(context.getBeanInfo(TextTableFile.class, name));
+        EasyBean beanInfo = Ensure.notNull(context.getBeanInfo(TextTableFile.class, name));
 
         // 创建文件，并设置属性
         TextTableFile file = context.createBean(beanInfo.getType());
@@ -40,7 +39,7 @@ public class TextTableFileBuilder implements EasyetlBeanBuilder<TextTableFile> {
         return file;
     }
 
-    public void setProperty(EasyetlContext context, TextTableFile file, Attribute<String> attribute) {
+    public void setProperty(EasyContext context, TextTableFile file, Attribute<String> attribute) {
         if (attribute.contains("charset") && attribute.contains("codepage")) {
             throw new IllegalArgumentException();
         } else if (attribute.contains("charset")) {

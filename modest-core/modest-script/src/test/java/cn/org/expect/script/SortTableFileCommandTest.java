@@ -10,8 +10,8 @@ import javax.script.ScriptException;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileReader;
 import cn.org.expect.io.TextTableLine;
-import cn.org.expect.ioc.DefaultEasyetlContext;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
@@ -28,7 +28,7 @@ public class SortTableFileCommandTest {
      */
     @Test
     public void test1() throws IOException, ScriptException {
-        EasyetlContext context = new DefaultEasyetlContext();
+        EasyContext context = new DefaultEasyContext();
         TextTableFile file = context.getBean(TextTableFile.class, "txt");
         file.setDelimiter(",");
         File txtfile = this.createfile(file);

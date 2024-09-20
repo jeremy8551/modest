@@ -18,7 +18,7 @@ import javax.sql.RowSetReader;
 
 import cn.org.expect.database.internal.StandardDatabaseProcedure;
 import cn.org.expect.database.internal.StandardRowSetInternal;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.os.OSConnectCommand;
@@ -56,14 +56,14 @@ public class JdbcDao implements OSConnectCommand {
     private Properties attributes;
 
     /** 容器上下文信息 */
-    private EasyetlContext context;
+    private EasyContext context;
 
     /**
      * 初始化
      *
      * @param context 容器上下文信息
      */
-    public JdbcDao(EasyetlContext context) {
+    public JdbcDao(EasyContext context) {
         this.context = Ensure.notNull(context);
         this.attributes = new Properties();
         this.isRtrim = true;
@@ -76,7 +76,7 @@ public class JdbcDao implements OSConnectCommand {
      * @param context 容器上下文信息
      * @param conn    数据库连接
      */
-    public JdbcDao(EasyetlContext context, Connection conn) {
+    public JdbcDao(EasyContext context, Connection conn) {
         this(context);
         this.setConnection(conn, true);
     }
@@ -88,7 +88,7 @@ public class JdbcDao implements OSConnectCommand {
      * @param conn      数据库连接
      * @param autoClose true 表示执行 {@link #close()} 方法时关闭数据库连接
      */
-    public JdbcDao(EasyetlContext context, Connection conn, boolean autoClose) {
+    public JdbcDao(EasyContext context, Connection conn, boolean autoClose) {
         this(context);
         this.setConnection(conn, autoClose);
     }

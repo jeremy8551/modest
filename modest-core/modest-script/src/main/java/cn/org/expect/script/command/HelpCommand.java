@@ -19,7 +19,6 @@ import javax.script.ScriptEngineFactory;
 import javax.script.ScriptEngineManager;
 
 import cn.org.expect.ProjectPom;
-import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.annotation.ScriptCommand;
 import cn.org.expect.annotation.ScriptFunction;
 import cn.org.expect.collection.CaseSensitivSet;
@@ -30,11 +29,11 @@ import cn.org.expect.database.export.ExtractWriter;
 import cn.org.expect.database.internal.AbstractDialect;
 import cn.org.expect.database.internal.DatabaseDialectBuilder;
 import cn.org.expect.io.TextTableFile;
-import cn.org.expect.ioc.EasyetlBean;
-import cn.org.expect.ioc.EasyetlBeanBuilder;
-import cn.org.expect.ioc.EasyetlBeanDefine;
-import cn.org.expect.ioc.EasyetlBeanTable;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanBuilder;
+import cn.org.expect.ioc.EasyBeanDefine;
+import cn.org.expect.ioc.EasyBeanTable;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.scan.ClassScanRule;
 import cn.org.expect.ioc.scan.ClassScanner;
 import cn.org.expect.jdk.JavaDialect;
@@ -123,24 +122,24 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
                 , UniversalScriptVariable.SESSION_VARNAME_SCRIPTFILE // 19
                 , UniversalScriptVariable.VARNAME_CATALOG // 20
                 , StringUtils.addLinePrefix(repository.toString(charsetName), "\t") // 21 方法
-                , EasyBean.class.getSimpleName() // 22
+                , cn.org.expect.annotation.EasyBean.class.getSimpleName() // 22
                 , TextTableFile.class.getSimpleName() // 23
                 , ExtractWriter.class.getSimpleName() // 24
                 , AbstractDialect.class.getName() // 25 基础数据库方言类
                 , DatabaseDialect.class.getName() // 26 数据库方言类
                 , this.supportedDatabase(context) // 27 所有数据库方言类
-                , EasyetlContext.class.getName()  // 28
-                , EasyBean.class.getName() // 29
+                , EasyContext.class.getName()  // 28
+                , cn.org.expect.annotation.EasyBean.class.getName() // 29
                 , DatabaseDialect.class.getSimpleName() // 30
                 , DatabaseDialectBuilder.class.getName() // 31
-                , EasyetlContext.class.getSimpleName() // 32
+                , EasyContext.class.getSimpleName() // 32
                 , DB2Dialect.class.getSimpleName() // 33
                 , Arrays.toString(context.getContainer().getScanRule()) // 34
                 , FileUtils.getTempDir(false).getAbsolutePath() // 35
-                , EasyetlBeanTable.class.getName() // 36
-                , EasyetlBeanBuilder.class.getName() // 37
-                , EasyetlBeanDefine.class.getName() // 38
-                , ClassUtils.toMethodName(EasyetlContext.class, "getBean", Class.class, Object[].class) // 39
+                , EasyBeanTable.class.getName() // 36
+                , EasyBeanBuilder.class.getName() // 37
+                , EasyBeanDefine.class.getName() // 38
+                , ClassUtils.toMethodName(EasyContext.class, "getBean", Class.class, Object[].class) // 39
                 , "" // 40
                 , "" // 41
                 , "" // 42
@@ -341,8 +340,8 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
             }
 
             // 读取大版本号
-            List<EasyetlBean> list = context.getContainer().getBeanInfoList(JavaDialect.class);
-            for (EasyetlBean anno : list) {
+            List<EasyBean> list = context.getContainer().getBeanInfoList(JavaDialect.class);
+            for (EasyBean anno : list) {
                 set.add(anno.getType().getSimpleName());
             }
 
@@ -356,7 +355,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
     }
 
     public String toAllImplements(UniversalScriptContext context) {
-        EasyetlContext ioc = context.getContainer();
+        EasyContext ioc = context.getContainer();
 
         List<Class<?>> types1 = ioc.getBeanInfoTypes();
         Collections.sort(types1, new Comparator<Class<?>>() {
@@ -380,7 +379,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
                 continue;
             }
 
-            List<EasyetlBean> list = ioc.getBeanInfoList(cls);
+            List<EasyBean> list = ioc.getBeanInfoList(cls);
             if (list.isEmpty()) {
                 continue;
             }
@@ -388,7 +387,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
             CharTable ct = new CharTable();
             ct.addTitle(colName1);
             ct.addTitle(colName2);
-            for (EasyetlBean beanInfo : list) {
+            for (EasyBean beanInfo : list) {
                 ct.addCell(beanInfo.getType().getName());
                 ct.addCell(beanInfo.getDescription());
             }
@@ -414,9 +413,9 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
         builders.remove(UniversalCommandCompiler.class);
         builders.remove(DatabaseDialect.class);
         for (Class<?> cls : builders) {
-            EasyetlBeanBuilder<?> beanBuilder = ioc.getBeanBuilder(cls);
+            EasyBeanBuilder<?> beanBuilder = ioc.getBeanBuilder(cls);
 
-            List<EasyetlBean> list = ioc.getBeanInfoList(cls);
+            List<EasyBean> list = ioc.getBeanInfoList(cls);
             if (list.isEmpty()) {
                 continue;
             }
@@ -425,7 +424,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
             ct.addTitle(colName1);
             ct.addTitle(colName2);
 
-            for (EasyetlBean beanInfo : list) {
+            for (EasyBean beanInfo : list) {
                 ct.addCell(beanInfo.getType().getName());
                 ct.addCell(beanInfo.getDescription());
             }
@@ -448,9 +447,9 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
      * @return 当前支持的数据库
      */
     public String supportedDatabase(UniversalScriptContext context) {
-        List<EasyetlBean> list = context.getContainer().getBeanInfoList(DatabaseDialect.class);
-        Collections.sort(list, new Comparator<EasyetlBean>() {
-            public int compare(EasyetlBean o1, EasyetlBean o2) {
+        List<EasyBean> list = context.getContainer().getBeanInfoList(DatabaseDialect.class);
+        Collections.sort(list, new Comparator<EasyBean>() {
+            public int compare(EasyBean o1, EasyBean o2) {
                 return o1.getName().compareTo(o2.getName());
             }
         });
@@ -461,7 +460,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
         table.addTitle(array[1], CharTable.ALIGN_LEFT);
         table.addTitle(array[2], CharTable.ALIGN_RIGHT);
 
-        for (EasyetlBean beanInfo : list) {
+        for (EasyBean beanInfo : list) {
             table.addCell(beanInfo.getName());
             table.addCell(StringUtils.defaultString(beanInfo.getDescription(), "") + "     ");
             table.addCell("          " + beanInfo.getType().getName());
@@ -470,9 +469,9 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
     }
 
     public String supportedVariableMethods(UniversalScriptContext context, VariableMethodRepository repository) {
-        List<EasyetlBean> list = context.getContainer().getBeanInfoList(DatabaseDialect.class);
-        Collections.sort(list, new Comparator<EasyetlBean>() {
-            public int compare(EasyetlBean o1, EasyetlBean o2) {
+        List<EasyBean> list = context.getContainer().getBeanInfoList(DatabaseDialect.class);
+        Collections.sort(list, new Comparator<EasyBean>() {
+            public int compare(EasyBean o1, EasyBean o2) {
                 return o1.getName().compareTo(o2.getName());
             }
         });
@@ -483,7 +482,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
         table.addTitle(array[1], CharTable.ALIGN_LEFT);
         table.addTitle(array[2], CharTable.ALIGN_RIGHT);
 
-        for (EasyetlBean beanInfo : list) {
+        for (EasyBean beanInfo : list) {
             table.addCell(beanInfo.getName());
             table.addCell(StringUtils.defaultString(beanInfo.getDescription(), "") + "     ");
             table.addCell("          " + beanInfo.getType().getName());

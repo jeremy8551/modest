@@ -20,8 +20,8 @@ import cn.org.expect.database.load.inernal.DataWriterFactory;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileReader;
 import cn.org.expect.io.TextTableLine;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.EasyetlContextAware;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.FileUtils;
@@ -35,13 +35,13 @@ import cn.org.expect.util.TimeWatch;
  * @author jeremy8551@qq.com
  */
 @EasyBean(name = "serial")
-public class SerialLoadFileEngine implements Loader, EasyetlContextAware {
+public class SerialLoadFileEngine implements Loader, EasyContextAware {
     private final static Log log = LogFactory.getLog(SerialLoadFileEngine.class);
 
     /** true表示终止任务 */
     private volatile boolean running;
 
-    protected EasyetlContext context;
+    protected EasyContext context;
 
     /**
      * 初始化
@@ -51,7 +51,7 @@ public class SerialLoadFileEngine implements Loader, EasyetlContextAware {
         this.running = true;
     }
 
-    public void setContext(EasyetlContext context) {
+    public void setContext(EasyContext context) {
         this.context = context;
     }
 

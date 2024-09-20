@@ -3,7 +3,7 @@ package cn.org.expect.ioc;
 /**
  * 组件的注册接口
  */
-public interface EasyetlBeanRegister {
+public interface EasyBeanRegister {
 
     /**
      * 注册组件
@@ -19,6 +19,6 @@ public interface EasyetlBeanRegister {
      * @param bean 组件信息
      * @return 返回true表示注册成功 false表示注册失败（未添加组件）
      */
-    boolean addBean(EasyetlBeanDefine bean);
+    boolean addBean(EasyBeanDefine bean);
 
 }

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import cn.org.expect.concurrent.AbstractJob;
 import cn.org.expect.expression.DataUnitExpression;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.Ensure;
@@ -30,12 +30,12 @@ public class ExportEngine extends AbstractJob {
     protected ExtractMessage message;
 
     /** 容器上下文信息 */
-    protected EasyetlContext ioc;
+    protected EasyContext ioc;
 
     /** 计时器 */
     private TimeWatch watch;
 
-    public ExportEngine(EasyetlContext context) {
+    public ExportEngine(EasyContext context) {
         super();
         this.ioc = Ensure.notNull(context);
         this.context = new ExtracterContext(this);

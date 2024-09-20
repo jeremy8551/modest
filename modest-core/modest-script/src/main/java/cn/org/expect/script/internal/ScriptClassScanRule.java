@@ -4,7 +4,7 @@ import java.lang.reflect.Modifier;
 
 import cn.org.expect.annotation.ScriptCommand;
 import cn.org.expect.annotation.ScriptFunction;
-import cn.org.expect.ioc.EasyetlBeanRegister;
+import cn.org.expect.ioc.EasyBeanRegister;
 import cn.org.expect.ioc.scan.ClassScanRule;
 import cn.org.expect.script.UniversalCommandCompiler;
 import cn.org.expect.script.UniversalScriptVariableMethod;
@@ -24,7 +24,7 @@ public class ScriptClassScanRule implements ClassScanRule {
     public ScriptClassScanRule() {
     }
 
-    public boolean process(Class<?> cls, EasyetlBeanRegister register) {
+    public boolean process(Class<?> cls, EasyBeanRegister register) {
         if (cls == null) {
             return false;
         }

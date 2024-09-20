@@ -8,8 +8,8 @@ import java.util.Random;
 
 import cn.org.expect.cn.ChineseRandom;
 import cn.org.expect.concurrent.ThreadSource;
-import cn.org.expect.ioc.DefaultEasyetlContext;
-import cn.org.expect.ioc.EasyetlBean;
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyBean;
 import cn.org.expect.printer.Progress;
 import cn.org.expect.printer.StandardPrinter;
 import cn.org.expect.util.Dates;
@@ -37,7 +37,7 @@ public class TextTableFileCounterTest {
 
     @Test
     public void testCalcTextFileLinesFile() throws Exception {
-        DefaultEasyetlContext context = new DefaultEasyetlContext();
+        DefaultEasyContext context = new DefaultEasyContext();
         ThreadSource threadSource = context.getBean(ThreadSource.class);
         File file = this.createfile();
 
@@ -71,7 +71,7 @@ public class TextTableFileCounterTest {
 
     @Test
     public void testCountTextFileLinesFile() throws Exception {
-        DefaultEasyetlContext context = new DefaultEasyetlContext();
+        DefaultEasyContext context = new DefaultEasyContext();
         ThreadSource threadSource = context.getBean(ThreadSource.class);
         File file = createfile();
 
@@ -108,7 +108,7 @@ public class TextTableFileCounterTest {
 
     @Test
     public void test() throws Exception {
-        DefaultEasyetlContext context = new DefaultEasyetlContext("debug:sout+", EasyetlBean.class.getPackage().getName() + ":info");
+        DefaultEasyContext context = new DefaultEasyContext("debug:sout+", EasyBean.class.getPackage().getName() + ":info");
         ThreadSource threadSource = context.getBean(ThreadSource.class);
         File file = new File(Settings.getUserHome(), "TEST_FILE_BIG.txt");
         String charsetName = StringUtils.CHARSET;

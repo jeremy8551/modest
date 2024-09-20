@@ -7,7 +7,7 @@ package cn.org.expect.ioc;
  * @author jeremy8551@qq.com
  * @createtime 2021-02-08
  */
-public interface EasyetlBeanBuilder<E> {
+public interface EasyBeanBuilder<E> {
 
     /**
      * 生成一个组件的实例对象
@@ -17,6 +17,6 @@ public interface EasyetlBeanBuilder<E> {
      * @return 实例对象
      * @throws Exception 生成实例对象发生错误
      */
-    E getBean(EasyetlContext context, Object... args) throws Exception;
+    E getBean(EasyContext context, Object... args) throws Exception;
 
 }

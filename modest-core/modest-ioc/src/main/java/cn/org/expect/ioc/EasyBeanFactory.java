@@ -3,7 +3,7 @@ package cn.org.expect.ioc;
 /**
  * 容器工厂接口
  */
-public interface EasyetlBeanFactory {
+public interface EasyBeanFactory {
 
     /**
      * 创建 {@code type} 的实例对象

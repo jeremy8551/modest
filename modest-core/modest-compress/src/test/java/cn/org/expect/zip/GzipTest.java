@@ -3,7 +3,7 @@ package cn.org.expect.zip;
 import java.io.File;
 import java.io.IOException;
 
-import cn.org.expect.ioc.DefaultEasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.util.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -13,7 +13,7 @@ public class GzipTest {
     @Test
     public void test() throws IOException {
         File file = Util.createfile("txt.tar.gz");
-        DefaultEasyetlContext context = new DefaultEasyetlContext("sout+:info");
+        DefaultEasyContext context = new DefaultEasyContext("sout+:info");
         Compress compress = context.getBean(Compress.class, file);
         Assert.assertEquals(GzipCompress.class, compress.getClass());
     }
@@ -25,7 +25,7 @@ public class GzipTest {
     public void test1() throws IOException {
         String ext = "gz";
 
-        DefaultEasyetlContext context = new DefaultEasyetlContext("sout+:info");
+        DefaultEasyContext context = new DefaultEasyContext("sout+:info");
         File compressfile = Util.createfile(ext); // 压缩文件
 
         File f1 = new File(compressfile.getParentFile(), "t1.txt");

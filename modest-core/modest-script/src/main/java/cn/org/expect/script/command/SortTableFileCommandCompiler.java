@@ -6,8 +6,8 @@ import java.util.List;
 import cn.org.expect.annotation.ScriptCommand;
 import cn.org.expect.expression.WordIterator;
 import cn.org.expect.io.TextTableFile;
-import cn.org.expect.ioc.EasyetlBean;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptParser;
@@ -63,7 +63,7 @@ public class SortTableFileCommandCompiler extends AbstractTraceCommandCompiler {
         it.assertNext("order");
         it.assertNext("by");
 
-        EasyetlContext ioc = context.getContainer();
+        EasyContext ioc = context.getContainer();
         String position = it.readOther();
         String[] array = StringUtils.split(StringUtils.trimBlank(position), analysis.getSegment()); // int(1) desc,2, 4,5
         OrderByExpression[] orders = new OrderByExpression[array.length];
@@ -74,12 +74,12 @@ public class SortTableFileCommandCompiler extends AbstractTraceCommandCompiler {
     }
 
     public void usage(UniversalScriptContext context, UniversalScriptStdout out) { // 查找接口对应的的实现类
-        List<EasyetlBean> list = context.getContainer().getBeanInfoList(TextTableFile.class);
+        List<EasyBean> list = context.getContainer().getBeanInfoList(TextTableFile.class);
         CharTable ct = new CharTable(context.getCharsetName());
         ct.addTitle("");
         ct.addTitle("");
         ct.addTitle("");
-        for (EasyetlBean beanInfo : list) {
+        for (EasyBean beanInfo : list) {
             ct.addCell(beanInfo.getName());
             ct.addCell(beanInfo.getDescription());
             ct.addCell(beanInfo.getType().getName());

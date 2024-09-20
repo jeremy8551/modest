@@ -6,13 +6,13 @@ import java.util.Set;
 
 import cn.org.expect.collection.CaseSensitivMap;
 import cn.org.expect.database.DatabaseDialect;
-import cn.org.expect.ioc.EasyetlBean;
-import cn.org.expect.ioc.EasyetlBeanDefine;
-import cn.org.expect.ioc.EasyetlBeanTableFilter;
-import cn.org.expect.ioc.EasyetlBeanTableRow;
-import cn.org.expect.ioc.EasyetlBeanInstance;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.impl.EasyetlBeanDefineImpl;
+import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanDefine;
+import cn.org.expect.ioc.EasyBeanTableFilter;
+import cn.org.expect.ioc.EasyBeanTableRow;
+import cn.org.expect.ioc.EasyBeanInstance;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.impl.EasyBeanDefineImpl;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.ResourcesUtils;
@@ -27,19 +27,19 @@ import cn.org.expect.util.StringUtils;
 public class DatabaseDialectManager {
     private final static Log log = LogFactory.getLog(DatabaseDialectManager.class);
 
-    private CaseSensitivMap<EasyetlBeanTableRow> map;
+    private CaseSensitivMap<EasyBeanTableRow> map;
 
-    public static class DialectInfo extends EasyetlBeanDefineImpl {
+    public static class DialectInfo extends EasyBeanDefineImpl {
         String major;
         String minor;
 
-        public DialectInfo(EasyetlBean beanInfo, String major, String minor) {
+        public DialectInfo(EasyBean beanInfo, String major, String minor) {
             super(beanInfo.getType());
             this.major = StringUtils.defaultString(major, "");
             this.minor = StringUtils.defaultString(minor, "");
         }
 
-        public int compare(EasyetlBean o1, EasyetlBean o2) {
+        public int compare(EasyBean o1, EasyBean o2) {
             return this.compareTo((DialectInfo) o1, (DialectInfo) o2);
         }
 
@@ -68,9 +68,9 @@ public class DatabaseDialectManager {
         }
     }
 
-    public DatabaseDialectManager(EasyetlContext context, List<EasyetlBean> list) {
-        this.map = new CaseSensitivMap<EasyetlBeanTableRow>();
-        for (EasyetlBean beanInfo : list) {
+    public DatabaseDialectManager(EasyContext context, List<EasyBean> list) {
+        this.map = new CaseSensitivMap<EasyBeanTableRow>();
+        for (EasyBean beanInfo : list) {
             this.add(context, beanInfo);
         }
     }
@@ -94,17 +94,17 @@ public class DatabaseDialectManager {
         throw new UnsupportedOperationException(ResourcesUtils.getMessage("database.standard.output.msg005", str));
     }
 
-    public synchronized void add(EasyetlContext context, EasyetlBean beanInfo) {
-        EasyetlBeanTableRow list = this.map.get(beanInfo.getName());
+    public synchronized void add(EasyContext context, EasyBean beanInfo) {
+        EasyBeanTableRow list = this.map.get(beanInfo.getName());
         if (list == null) {
-            list = new EasyetlBeanTableRow(DatabaseDialect.class);
+            list = new EasyBeanTableRow(DatabaseDialect.class);
             this.map.put(beanInfo.getName(), list);
         }
 
         // 创建一个数据库方言的实例
         DatabaseDialect dialect;
-        if (beanInfo instanceof EasyetlBeanInstance) {
-            EasyetlBeanInstance cell = (EasyetlBeanInstance) beanInfo;
+        if (beanInfo instanceof EasyBeanInstance) {
+            EasyBeanInstance cell = (EasyBeanInstance) beanInfo;
             dialect = (DatabaseDialect) ((cell.getBean() == null) ? context.createBean(beanInfo.getType()) : cell.getBean());
             cell.setBean(dialect);
         } else {
@@ -123,29 +123,29 @@ public class DatabaseDialectManager {
     }
 
     public Class<?> getDialectClass(String name, final String major, final String minor) {
-        EasyetlBeanTableRow list = this.map.get(name);
+        EasyBeanTableRow list = this.map.get(name);
         if (list == null) {
             throw new UnsupportedOperationException(ResourcesUtils.getMessage("database.standard.output.msg005", name));
         }
 
         // 如果查询条件包含版本号，则根据版本号进行过滤
         if (StringUtils.isNotBlank(major) || StringUtils.isNotBlank(minor)) {
-            EasyetlBeanTableRow row = list.indexOf(new EasyetlBeanTableFilter() {
-                public boolean accept(EasyetlBeanDefine beanInfo) {
+            EasyBeanTableRow row = list.indexOf(new EasyBeanTableFilter() {
+                public boolean accept(EasyBeanDefine beanInfo) {
                     DialectInfo dialectInfo = (DialectInfo) beanInfo;
                     return dialectInfo.major.equals(major) && dialectInfo.minor.equals(minor);
                 }
             });
 
-            EasyetlBeanDefine beanInfo = row.getBeanInfo();
+            EasyBeanDefine beanInfo = row.getBeanInfo();
             if (beanInfo != null) {
                 return beanInfo.getType();
             }
         }
 
         // 如果没有与数据库版本匹配的方言类，则取版本号为空的作为默认
-        EasyetlBeanDefine beanInfo = list.indexOf(new EasyetlBeanTableFilter() {
-            public boolean accept(EasyetlBeanDefine beanInfo) {
+        EasyBeanDefine beanInfo = list.indexOf(new EasyBeanTableFilter() {
+            public boolean accept(EasyBeanDefine beanInfo) {
                 DialectInfo dialectInfo = (DialectInfo) beanInfo;
                 return dialectInfo.major.equals("") && dialectInfo.minor.equals("");
             }

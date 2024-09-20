@@ -3,7 +3,7 @@ package cn.org.expect.ioc.scan;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.SPI;
 import cn.org.expect.util.StringUtils;
@@ -29,7 +29,7 @@ public class BeanClassScanner {
      * @param args    参数
      * @return 返回加载组件的个数
      */
-    public int load(EasyetlContext context, String[] args) {
+    public int load(EasyContext context, String[] args) {
         List<String> packageNames = ArrayUtils.asList(args);
         List<String> includePackageNames = new ArrayList<String>();
         List<String> excludePackageNames = new ArrayList<String>();

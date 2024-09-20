@@ -3,7 +3,7 @@ package cn.org.expect.script.method;
 import java.util.List;
 
 import cn.org.expect.annotation.ScriptFunction;
-import cn.org.expect.ioc.EasyetlBean;
+import cn.org.expect.ioc.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.script.UniversalScriptContext;
@@ -42,8 +42,8 @@ public class VariableMethodScanner {
         this.repository = repository;
 
         // 显示所有已加载的变量方法
-        List<EasyetlBean> beanInfoList = this.factory.getContext().getBeanInfoList(UniversalScriptVariableMethod.class);
-        for (EasyetlBean beanInfo : beanInfoList) {
+        List<EasyBean> beanInfoList = this.factory.getContext().getBeanInfoList(UniversalScriptVariableMethod.class);
+        for (EasyBean beanInfo : beanInfoList) {
             this.loadVariableMethod(beanInfo.getType());
         }
 

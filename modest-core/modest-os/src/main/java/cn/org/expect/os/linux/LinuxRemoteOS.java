@@ -15,8 +15,8 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.collection.CaseSensitivMap;
 import cn.org.expect.expression.DataUnitExpression;
 import cn.org.expect.io.BufferedLineReader;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.EasyetlContextAware;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.os.OS;
 import cn.org.expect.os.OSCommand;
 import cn.org.expect.os.OSCommandStdouts;
@@ -53,7 +53,7 @@ import cn.org.expect.util.StringUtils;
  * 远程 linux 操作系统的接口实现类
  */
 @EasyBean(name = "linux")
-public class LinuxRemoteOS implements OS, OSFileCommand, OSDateCommand, OSNetwork, EasyetlContextAware {
+public class LinuxRemoteOS implements OS, OSFileCommand, OSDateCommand, OSNetwork, EasyContextAware {
 
     protected OSSecureShellCommand cmd;
     protected OSFtpCommand sftp;
@@ -70,7 +70,7 @@ public class LinuxRemoteOS implements OS, OSFileCommand, OSDateCommand, OSNetwor
     protected List<OSUserGroup> groups = new ArrayList<OSUserGroup>();
     protected List<LinuxEtcService> services = new ArrayList<LinuxEtcService>();
 
-    protected EasyetlContext context;
+    protected EasyContext context;
 
     /**
      * 初始化
@@ -81,12 +81,12 @@ public class LinuxRemoteOS implements OS, OSFileCommand, OSDateCommand, OSNetwor
      * @param username 登录用户名
      * @param password 登录密码
      */
-    public LinuxRemoteOS(EasyetlContext context, String host, int port, String username, String password) {
+    public LinuxRemoteOS(EasyContext context, String host, int port, String username, String password) {
         this.context = context;
         Ensure.isTrue(this.connect(host, port, username, password), host, port, username, password);
     }
 
-    public void setContext(EasyetlContext context) {
+    public void setContext(EasyContext context) {
         this.context = context;
     }
 

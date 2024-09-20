@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>modest-ssm</artifactId>
-    <description>Spring、SpringBoot、Mybatis整合</description>
+    <description>SpringBoot、Mybatis整合</description>
 
     <properties>
     </properties>

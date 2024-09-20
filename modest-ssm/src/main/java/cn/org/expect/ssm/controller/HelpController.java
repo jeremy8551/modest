@@ -58,7 +58,7 @@ public class HelpController {
         Assert.notNull(queryObj, "UserInfo not exists!");
         System.out.println("queryObj: " + queryObj);
 
-        Assert.isTrue(!modestProperties.getLog().isPrintTrace(), "easyetlProperties not correct!");
+        Assert.isTrue(!modestProperties.getLog().isPrintTrace(), "ModestProperties not correct!");
         return "help";
     }
 

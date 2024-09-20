@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
 
-import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.annotation.ScriptCommand;
 import cn.org.expect.database.Jdbc;
 import cn.org.expect.database.JdbcObjectConverter;
@@ -21,7 +20,7 @@ import cn.org.expect.expression.DataUnitExpression;
 import cn.org.expect.expression.WordIterator;
 import cn.org.expect.io.TextTable;
 import cn.org.expect.io.TextTableFile;
-import cn.org.expect.ioc.EasyetlBean;
+import cn.org.expect.ioc.EasyBean;
 import cn.org.expect.script.UniversalCommandCompilerResult;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
@@ -302,12 +301,12 @@ public class DBLoadCommandCompiler extends AbstractTraceCommandCompiler {
 
     public void usage(UniversalScriptContext context, UniversalScriptStdout out) {
         // 查找接口对应的的实现类
-        List<EasyetlBean> list1 = context.getContainer().getBeanInfoList(TextTableFile.class);
+        List<EasyBean> list1 = context.getContainer().getBeanInfoList(TextTableFile.class);
         CharTable ct1 = new CharTable(context.getCharsetName());
         ct1.addTitle("");
         ct1.addTitle("");
         ct1.addTitle("");
-        for (EasyetlBean beanInfo : list1) {
+        for (EasyBean beanInfo : list1) {
             ct1.addCell(beanInfo.getName());
             ct1.addCell(beanInfo.getDescription());
             ct1.addCell(beanInfo.getType().getName());
@@ -315,7 +314,7 @@ public class DBLoadCommandCompiler extends AbstractTraceCommandCompiler {
 
         out.println(new ScriptUsage(this.getClass() //
                 , TextTable.class.getName() // 0
-                , EasyBean.class.getName() // 1
+                , cn.org.expect.annotation.EasyBean.class.getName() // 1
                 , ExtractUserListener.class.getName() // 2
                 , JdbcObjectConverter.class.getName() // 3
                 , ExtractWriter.class.getName() // 4

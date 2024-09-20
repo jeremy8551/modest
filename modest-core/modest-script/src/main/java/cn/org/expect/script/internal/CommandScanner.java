@@ -4,8 +4,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import cn.org.expect.annotation.ScriptCommand;
-import cn.org.expect.ioc.EasyetlBean;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.script.UniversalCommandCompiler;
@@ -50,9 +50,9 @@ public class CommandScanner {
         this.factory = context.getFactory();
 
         // 显示所有已加载的脚本引擎命令
-        EasyetlContext cxt = context.getContainer();
-        List<EasyetlBean> beanList = cxt.getBeanInfoList(UniversalCommandCompiler.class);
-        for (EasyetlBean beanInfo : beanList) {
+        EasyContext cxt = context.getContainer();
+        List<EasyBean> beanList = cxt.getBeanInfoList(UniversalCommandCompiler.class);
+        for (EasyBean beanInfo : beanList) {
             Class<? extends UniversalCommandCompiler> cls = beanInfo.getType();
             try {
                 this.loadScriptCommand(cls);

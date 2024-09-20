@@ -1,14 +1,14 @@
 package cn.org.expect.ioc.impl;
 
-import cn.org.expect.ioc.DefaultEasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class EasyetlBeanFactoryImplTest {
+public class EasyBeanFactoryImplTest {
 
     @Test
     public void test() {
-        DefaultEasyetlContext context = new DefaultEasyetlContext("sout:info");
+        DefaultEasyContext context = new DefaultEasyContext("sout:info");
         CeshiBean bean = context.createBean(CeshiBean.class);
         Assert.assertNotNull(bean.getContext());
         Assert.assertEquals(context, bean.getContext());

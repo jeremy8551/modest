@@ -1,8 +1,7 @@
 package cn.org.expect.ioc.impl;
 
-import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.ioc.EasyetlBean;
-import cn.org.expect.ioc.EasyetlBeanDefine;
+import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanDefine;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
@@ -13,7 +12,7 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2021-02-08
  */
-public class EasyetlBeanDefineImpl implements EasyetlBeanDefine {
+public class EasyBeanDefineImpl implements EasyBeanDefine {
 
     /** 组件类 */
     protected Class<?> type;
@@ -41,9 +40,9 @@ public class EasyetlBeanDefineImpl implements EasyetlBeanDefine {
      *
      * @param type 组件类信息
      */
-    public EasyetlBeanDefineImpl(Class<?> type) {
+    public EasyBeanDefineImpl(Class<?> type) {
         this.type = Ensure.notNull(type);
-        EasyBean annotation = type.getAnnotation(EasyBean.class); // 取得类上配置的注解
+        cn.org.expect.annotation.EasyBean annotation = type.getAnnotation(cn.org.expect.annotation.EasyBean.class); // 取得类上配置的注解
         if (annotation != null) {
             this.setName(StringUtils.trimBlank(annotation.name()));
             this.setSingleton(annotation.singleton());
@@ -138,7 +137,7 @@ public class EasyetlBeanDefineImpl implements EasyetlBeanDefine {
         return this.name.equalsIgnoreCase(name);
     }
 
-    public boolean equals(EasyetlBean beanInfo) {
+    public boolean equals(EasyBean beanInfo) {
         return this.equals(beanInfo.getType());
     }
 
@@ -151,7 +150,7 @@ public class EasyetlBeanDefineImpl implements EasyetlBeanDefine {
         this.instance = instance;
     }
 
-    public int compare(EasyetlBean o1, EasyetlBean o2) {
+    public int compare(EasyBean o1, EasyBean o2) {
         int v = o1.getName().compareTo(o2.getName());
         if (v != 0) {
             return v;

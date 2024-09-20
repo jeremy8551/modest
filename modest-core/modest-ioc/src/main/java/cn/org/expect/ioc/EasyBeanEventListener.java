@@ -6,20 +6,20 @@ package cn.org.expect.ioc;
  * @author jeremy8551@qq.com
  * @createtime 2021-04-15
  */
-public interface EasyetlBeanEventListener {
+public interface EasyBeanEventListener {
 
     /**
      * 添加组件实现类的监听接口
      *
      * @param event 事件
      */
-    void addBean(EasyetlBeanEvent event);
+    void addBean(EasyBeanEvent event);
 
     /**
      * 删除组件实现类的监听接口
      *
      * @param event 事件
      */
-    void removeBean(EasyetlBeanEvent event);
+    void removeBean(EasyBeanEvent event);
 
 }

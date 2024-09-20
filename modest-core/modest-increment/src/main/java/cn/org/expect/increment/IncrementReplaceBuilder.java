@@ -2,21 +2,20 @@ package cn.org.expect.increment;
 
 import java.util.Date;
 
-import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.database.DatabaseTableColumn;
 import cn.org.expect.database.DatabaseTableColumnList;
 import cn.org.expect.expression.Analysis;
-import cn.org.expect.ioc.EasyetlBeanBuilder;
-import cn.org.expect.ioc.EasyetlBean;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBeanBuilder;
+import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 
-@EasyBean
-public class IncrementReplaceBuilder implements EasyetlBeanBuilder<IncrementReplace> {
+@cn.org.expect.annotation.EasyBean
+public class IncrementReplaceBuilder implements EasyBeanBuilder<IncrementReplace> {
 
-    public IncrementReplace getBean(EasyetlContext context, Object... args) throws Exception {
+    public IncrementReplace getBean(EasyContext context, Object... args) throws Exception {
         Analysis analysis = ArrayUtils.indexOf(args, Analysis.class, 0);
         String str = ArrayUtils.indexOf(args, String.class, 0); // 1:date-
         DatabaseTableColumnList columns = ArrayUtils.indexOf(args, DatabaseTableColumnList.class, 0);
@@ -32,7 +31,7 @@ public class IncrementReplaceBuilder implements EasyetlBeanBuilder<IncrementRepl
             return new UUIDReplace(columns, field);
         } else { // 自定义
             String[] beans = StringUtils.split(value, '/');
-            EasyetlBean beanInfo = context.getBeanInfo(IncrementReplace.class, beans[0]);
+            EasyBean beanInfo = context.getBeanInfo(IncrementReplace.class, beans[0]);
             if (beanInfo == null) {
                 return new StandardReplace(columns, field, value);
             } else {

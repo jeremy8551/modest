@@ -18,7 +18,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import cn.org.expect.Modest;
-import cn.org.expect.ioc.EasyetlBeanRegister;
+import cn.org.expect.ioc.EasyBeanRegister;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.ClassUtils;
@@ -55,7 +55,7 @@ public class ClassScanner {
     private HashSet<File> jarfiles;
 
     /** 注册组件 */
-    private EasyetlBeanRegister register;
+    private EasyBeanRegister register;
 
     /**
      * 扫描所有类信息
@@ -108,7 +108,7 @@ public class ClassScanner {
      * @param register 组件注册接口
      * @return 返回已加载类信息的个数
      */
-    public synchronized int load(EasyetlBeanRegister register) {
+    public synchronized int load(EasyBeanRegister register) {
         this.register = Ensure.notNull(register);
         int count = 0;
         this.jarfiles.clear();

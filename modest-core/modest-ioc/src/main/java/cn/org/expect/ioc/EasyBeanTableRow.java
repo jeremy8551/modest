@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.CharTable;
@@ -18,8 +17,8 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2023/10/24
  */
-public class EasyetlBeanTableRow extends ArrayList<EasyetlBeanDefine> {
-    private final static Log log = LogFactory.getLog(EasyetlBeanTableRow.class);
+public class EasyBeanTableRow extends ArrayList<EasyBeanDefine> {
+    private final static Log log = LogFactory.getLog(EasyBeanTableRow.class);
 
     /**
      * 组件所属的类或接口
@@ -31,7 +30,7 @@ public class EasyetlBeanTableRow extends ArrayList<EasyetlBeanDefine> {
      *
      * @param type 集合中元素所属的组件类信息
      */
-    public EasyetlBeanTableRow(Class<?> type) {
+    public EasyBeanTableRow(Class<?> type) {
         super(10);
         this.type = type;
     }
@@ -42,7 +41,7 @@ public class EasyetlBeanTableRow extends ArrayList<EasyetlBeanDefine> {
      * @param beanInfo 组件信息
      * @return 返回true表示注册成功 false表示注册失败
      */
-    public boolean push(EasyetlBeanDefine beanInfo) {
+    public boolean push(EasyBeanDefine beanInfo) {
         if (log.isDebugEnabled()) {
             log.debug(ResourcesUtils.getMessage("ioc.standard.output.msg005", type.getName(), beanInfo.getType().getName()));
         }
@@ -55,7 +54,7 @@ public class EasyetlBeanTableRow extends ArrayList<EasyetlBeanDefine> {
      * @param beanInfo 组件信息
      * @return 返回true表示已添加
      */
-    public boolean contains(EasyetlBeanDefine beanInfo) {
+    public boolean contains(EasyBeanDefine beanInfo) {
         for (int i = 0, size = this.size(); i < size; i++) {
             if (this.get(i).equals(beanInfo)) {
                 return true;
@@ -71,7 +70,7 @@ public class EasyetlBeanTableRow extends ArrayList<EasyetlBeanDefine> {
      * @return 返回true表示包含
      */
     public boolean contains(Class<?> type) {
-        for (EasyetlBeanDefine beanInfo : this) {
+        for (EasyBeanDefine beanInfo : this) {
             if (beanInfo.equals(type)) {
                 return true;
             }
@@ -85,9 +84,9 @@ public class EasyetlBeanTableRow extends ArrayList<EasyetlBeanDefine> {
      * @param type 组件的类信息
      * @return 返回true表示移除成功 false表示不存在组件信息
      */
-    public List<EasyetlBeanDefine> remove(Class<?> type) {
-        List<EasyetlBeanDefine> list = new ArrayList<EasyetlBeanDefine>();
-        for (EasyetlBeanDefine beanInfo : this) {
+    public List<EasyBeanDefine> remove(Class<?> type) {
+        List<EasyBeanDefine> list = new ArrayList<EasyBeanDefine>();
+        for (EasyBeanDefine beanInfo : this) {
             if (beanInfo.equals(type)) {
                 list.add(beanInfo);
             }
@@ -96,19 +95,19 @@ public class EasyetlBeanTableRow extends ArrayList<EasyetlBeanDefine> {
     }
 
     /**
-     * 查询与参数 {@code name} 相等的组件名（{@linkplain EasyBean#name()}）的集合
+     * 查询与参数 {@code name} 相等的组件名（{@linkplain cn.org.expect.annotation.EasyBean#name()}）的集合
      *
      * @param name 组件名
      * @return 组件信息集合
      */
-    public EasyetlBeanTableRow indexOf(String name) {
+    public EasyBeanTableRow indexOf(String name) {
         if (StringUtils.isBlank(name)) {
             return this;
         }
 
-        EasyetlBeanTableRow list = new EasyetlBeanTableRow(this.type);
+        EasyBeanTableRow list = new EasyBeanTableRow(this.type);
         for (int i = 0, size = this.size(); i < size; i++) {
-            EasyetlBeanDefine beanInfo = this.get(i);
+            EasyBeanDefine beanInfo = this.get(i);
             if (beanInfo.equals(name)) {
                 list.add(beanInfo);
             }
@@ -122,10 +121,10 @@ public class EasyetlBeanTableRow extends ArrayList<EasyetlBeanDefine> {
      * @param filter 查询条件
      * @return 组件的实现类信息
      */
-    public EasyetlBeanTableRow indexOf(EasyetlBeanTableFilter filter) {
-        EasyetlBeanTableRow list = new EasyetlBeanTableRow(this.type);
+    public EasyBeanTableRow indexOf(EasyBeanTableFilter filter) {
+        EasyBeanTableRow list = new EasyBeanTableRow(this.type);
         for (int i = 0, size = this.size(); i < size; i++) {
-            EasyetlBeanDefine beanInfo = this.get(i);
+            EasyBeanDefine beanInfo = this.get(i);
             if (filter.accept(beanInfo)) {
                 list.add(beanInfo);
             }
@@ -141,13 +140,13 @@ public class EasyetlBeanTableRow extends ArrayList<EasyetlBeanDefine> {
      * @return 组件信息
      * @throws BeanRepeatDefineException 有重复组件会报错
      */
-    public EasyetlBeanDefine getBeanInfo() {
+    public EasyBeanDefine getBeanInfo() {
         int size = this.size();
         if (size == 0) {
             return null;
         }
 
-        EasyetlBeanDefine first = this.get(0); // 第一个元素
+        EasyBeanDefine first = this.get(0); // 第一个元素
         if (size == 1) {
             return first;
         }
@@ -164,7 +163,7 @@ public class EasyetlBeanTableRow extends ArrayList<EasyetlBeanDefine> {
      */
     public void sortByDesc() {
         if (this.size() > 0) {
-            Comparator<EasyetlBean> c = Collections.reverseOrder(this.get(0));
+            Comparator<EasyBean> c = Collections.reverseOrder(this.get(0));
             Collections.sort(this, c);
         }
     }
@@ -173,7 +172,7 @@ public class EasyetlBeanTableRow extends ArrayList<EasyetlBeanDefine> {
         return toString(this);
     }
 
-    public static String toString(List<? extends EasyetlBean> list) {
+    public static String toString(List<? extends EasyBean> list) {
         CharTable ct = new CharTable();
         ct.addTitle("Type");
         ct.addTitle("Name");
@@ -183,7 +182,7 @@ public class EasyetlBeanTableRow extends ArrayList<EasyetlBeanDefine> {
         ct.addTitle("Description");
         ct.addTitle("bean");
 
-        for (EasyetlBean beanInfo : list) {
+        for (EasyBean beanInfo : list) {
             ct.addCell(beanInfo.getType().getName());
             ct.addCell(beanInfo.getName());
             ct.addCell(beanInfo.getPriority());
@@ -191,8 +190,8 @@ public class EasyetlBeanTableRow extends ArrayList<EasyetlBeanDefine> {
             ct.addCell(beanInfo.isLazy());
             ct.addCell(beanInfo.getDescription());
 
-            if (beanInfo instanceof EasyetlBeanInstance) {
-                ct.addCell(((EasyetlBeanInstance) beanInfo).getBean());
+            if (beanInfo instanceof EasyBeanInstance) {
+                ct.addCell(((EasyBeanInstance) beanInfo).getBean());
             }
         }
 

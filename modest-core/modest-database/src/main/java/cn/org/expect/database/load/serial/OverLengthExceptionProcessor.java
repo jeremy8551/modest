@@ -20,7 +20,7 @@ import cn.org.expect.expression.DataUnitExpression;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileReader;
 import cn.org.expect.io.TextTableLine;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.Ensure;
@@ -52,7 +52,7 @@ public class OverLengthExceptionProcessor {
      * @return 返回已修改字段个数
      * @throws Exception 发生错误
      */
-    public int execute(EasyetlContext context, JdbcDao dao, TextTableFile file, LoadTable target) throws Exception {
+    public int execute(EasyContext context, JdbcDao dao, TextTableFile file, LoadTable target) throws Exception {
         // 扫描数据文件中的长度字段
         ExpandLengthJobReader in = new ExpandLengthJobReader(file, target, DataUnitExpression.parse("100M").longValue());
         context.getBean(ThreadSource.class).getJobService(this.concurrent).execute(new EasyJobReaderImpl(in));

@@ -1,14 +1,14 @@
 package cn.org.expect.test.loader;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.ioc.EasyetlBeanBuilder;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBeanBuilder;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.test.bean.TestLoader;
 
 @EasyBean
-public class TestLoaderBuilder implements EasyetlBeanBuilder<TestLoader> {
+public class TestLoaderBuilder implements EasyBeanBuilder<TestLoader> {
 
-    public TestLoader getBean(EasyetlContext context, Object... args) throws Exception {
+    public TestLoader getBean(EasyContext context, Object... args) throws Exception {
         return null;
     }
 }

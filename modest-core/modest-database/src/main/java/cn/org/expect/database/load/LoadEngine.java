@@ -2,8 +2,8 @@ package cn.org.expect.database.load;
 
 import cn.org.expect.concurrent.AbstractJob;
 import cn.org.expect.database.load.inernal.LoadEngineContextImpl;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.EasyetlContextAware;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContextAware;
 
 /**
  * 数据装载引擎
@@ -11,7 +11,7 @@ import cn.org.expect.ioc.EasyetlContextAware;
  * @author jeremy8551@qq.com
  * @createtime 2021-03-03
  */
-public class LoadEngine extends AbstractJob implements EasyetlContextAware {
+public class LoadEngine extends AbstractJob implements EasyContextAware {
 
     /** 数据装载引擎的上下文信息 */
     protected LoadEngineContext context;
@@ -20,7 +20,7 @@ public class LoadEngine extends AbstractJob implements EasyetlContextAware {
     protected Loader loader;
 
     /** 容器上下文信息 */
-    protected EasyetlContext ioc;
+    protected EasyContext ioc;
 
     /**
      * 初始化
@@ -30,7 +30,7 @@ public class LoadEngine extends AbstractJob implements EasyetlContextAware {
         this.context = new LoadEngineContextImpl();
     }
 
-    public void setContext(EasyetlContext ioc) {
+    public void setContext(EasyContext ioc) {
         this.ioc = ioc;
     }
 

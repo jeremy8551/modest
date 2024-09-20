@@ -1,6 +1,6 @@
 package cn.org.expect.ioc.scan;
 
-import cn.org.expect.ioc.EasyetlBeanRegister;
+import cn.org.expect.ioc.EasyBeanRegister;
 
 /**
  * 类扫描器的处理规则
@@ -16,6 +16,6 @@ public interface ClassScanRule {
      * @param register 组件实现类的添加接口
      * @return 返回true表示类信息 {@code cls} 被使用, false表示未使用类
      */
-    boolean process(Class<?> cls, EasyetlBeanRegister register);
+    boolean process(Class<?> cls, EasyBeanRegister register);
 
 }

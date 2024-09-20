@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.EasyetlContextAware;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
@@ -22,7 +22,7 @@ import cn.org.expect.util.StringUtils;
  * @createtime 2017-02-22
  */
 @EasyBean(name = "txt", description = "文本文件, 逗号分隔，无转义字符，无字符串限定符")
-public class CommonTextTableFile implements TextTableFile, EasyetlContextAware {
+public class CommonTextTableFile implements TextTableFile, EasyContextAware {
 
     /** 表格数据文件 */
     protected File file;
@@ -52,7 +52,7 @@ public class CommonTextTableFile implements TextTableFile, EasyetlContextAware {
     protected List<String> columnNames;
 
     /** 容器上下文信息 */
-    protected EasyetlContext context;
+    protected EasyContext context;
 
     /**
      * 初始化
@@ -69,7 +69,7 @@ public class CommonTextTableFile implements TextTableFile, EasyetlContextAware {
         this.columnNames = new ArrayList<String>();
     }
 
-    public void setContext(EasyetlContext context) {
+    public void setContext(EasyContext context) {
         this.context = context;
     }
 
@@ -200,8 +200,8 @@ public class CommonTextTableFile implements TextTableFile, EasyetlContextAware {
      * @param file 表格文件
      */
     public void clone(TextTableFile file) {
-        if (file instanceof EasyetlContextAware) {
-            ((EasyetlContextAware) file).setContext(this.context);
+        if (file instanceof EasyContextAware) {
+            ((EasyContextAware) file).setContext(this.context);
         }
 
         file.setAbsolutePath(this.getAbsolutePath());

@@ -5,8 +5,8 @@ import java.io.IOException;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
-import cn.org.expect.ioc.DefaultEasyetlContext;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogLevel;
@@ -55,7 +55,7 @@ public class ScriptEngineTest {
         logContext.removeAppender(ConsoleAppender.class);
         new FileAppender(logfile.getAbsolutePath(), Settings.getFileEncoding(), null, true).setup(logContext);
 
-        EasyetlContext context = new DefaultEasyetlContext();
+        EasyContext context = new DefaultEasyContext();
         UniversalScriptEngineFactory factory = new UniversalScriptEngineFactory(context);
         UniversalScriptEngine engine = factory.getScriptEngine();
         try {
@@ -71,7 +71,7 @@ public class ScriptEngineTest {
 
     @Test
     public void test3() {
-        EasyetlContext context = new DefaultEasyetlContext("info:sout");
+        EasyContext context = new DefaultEasyContext("info:sout");
         UniversalScriptEngineFactory factory = new UniversalScriptEngineFactory(context);
         UniversalScriptEngine engine;
         try {
@@ -85,7 +85,7 @@ public class ScriptEngineTest {
 
     @Test
     public void test4() {
-        EasyetlContext context = new DefaultEasyetlContext("info:sout");
+        EasyContext context = new DefaultEasyContext("info:sout");
         UniversalScriptEngineFactory factory = new UniversalScriptEngineFactory(context);
         UniversalScriptEngine engine;
         try {

@@ -5,9 +5,9 @@ import java.util.Comparator;
 import java.util.concurrent.ExecutorService;
 
 import cn.org.expect.concurrent.ExecutorServiceFactory;
-import cn.org.expect.ioc.EasyetlContainerContext;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.impl.EasyetlBeanArgument;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContainerContext;
+import cn.org.expect.ioc.impl.EasyBeanArgument;
 import cn.org.expect.springboot.starter.concurrent.ExecutorServiceFactoryImpl;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Ensure;
@@ -24,8 +24,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
  * @author jeremy8551@qq.com
  * @createtime 2023/10/26
  */
-public class SpringEasyetlContainerContext implements EasyetlContainerContext {
-    private final static Logger log = LoggerFactory.getLogger(SpringEasyetlContainerContext.class);
+public class SpringEasyContainerContext implements EasyContainerContext {
+    private final static Logger log = LoggerFactory.getLogger(SpringEasyContainerContext.class);
 
     /** Spring容器上下文信息 */
     private ApplicationContext springContext;
@@ -39,7 +39,7 @@ public class SpringEasyetlContainerContext implements EasyetlContainerContext {
      * @param context     Spring容器上下文信息
      * @param starterName 场景启动器名
      */
-    public SpringEasyetlContainerContext(ApplicationContext context, String starterName) {
+    public SpringEasyContainerContext(ApplicationContext context, String starterName) {
         this.springContext = Ensure.notNull(context);
         this.starterName = Ensure.notBlank(starterName);
     }
@@ -55,7 +55,7 @@ public class SpringEasyetlContainerContext implements EasyetlContainerContext {
         }
 
         if (args[0] instanceof String) {
-            EasyetlBeanArgument argument = new EasyetlBeanArgument(args);
+            EasyBeanArgument argument = new EasyBeanArgument(args);
             E bean = null;
 
             // 组件名和匹配类查询
@@ -157,10 +157,10 @@ public class SpringEasyetlContainerContext implements EasyetlContainerContext {
      *
      * @return 容器
      */
-    public EasyetlContext getParent() {
+    public EasyContext getParent() {
         ApplicationContext parent = this.springContext;
         while ((parent = parent.getParent()) != null) {
-            String[] names = parent.getBeanNamesForType(EasyetlContext.class);
+            String[] names = parent.getBeanNamesForType(EasyContext.class);
             if (names == null || names.length == 0) {
                 continue;
             }
@@ -170,7 +170,7 @@ public class SpringEasyetlContainerContext implements EasyetlContainerContext {
 
             log.info("{} discover {}[id={}] already contains {} ..", this.starterName, parent.getClass().getName(), parent.getId(), contextName);
             try {
-                EasyetlContext context = (EasyetlContext) parent.getBean(contextName);
+                EasyContext context = (EasyContext) parent.getBean(contextName);
                 if (context != null) {
                     return context;
                 }

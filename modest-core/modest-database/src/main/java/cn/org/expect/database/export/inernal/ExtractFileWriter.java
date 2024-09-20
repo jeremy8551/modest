@@ -11,14 +11,14 @@ import cn.org.expect.database.export.ExtracterContext;
 import cn.org.expect.io.TableLine;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileWriter;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.EasyetlContextAware;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 
 @EasyBean(name = "local", description = "卸载数据到本地文件")
-public class ExtractFileWriter implements ExtractWriter, EasyetlContextAware {
+public class ExtractFileWriter implements ExtractWriter, EasyContextAware {
 
     /** 文件路径 */
     private String filepath;
@@ -54,9 +54,9 @@ public class ExtractFileWriter implements ExtractWriter, EasyetlContextAware {
     private ExtractMessage message;
 
     /** 容器上下文信息 */
-    protected EasyetlContext ioc;
+    protected EasyContext ioc;
 
-    public void setContext(EasyetlContext context) {
+    public void setContext(EasyContext context) {
         this.ioc = context;
     }
 

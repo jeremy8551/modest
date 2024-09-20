@@ -11,13 +11,13 @@ import java.util.List;
  * @author jeremy8551@qq.com
  * @createtime 2023/10/26
  */
-public class EasyetlBeanConstructor {
+public class EasyBeanConstructor {
 
     /** 所有构造方法 */
     private List<Constructor<?>> list;
 
     /** 外部传入的构造方法的参数 */
-    private EasyetlBeanArgument argument;
+    private EasyBeanArgument argument;
 
     /** 有参构造方法 */
     private Constructor<?> argsConstrucetor;
@@ -31,7 +31,7 @@ public class EasyetlBeanConstructor {
      * @param type     类信息
      * @param argument 外部传入的构造方法参数
      */
-    public EasyetlBeanConstructor(Class<?> type, EasyetlBeanArgument argument) {
+    public EasyBeanConstructor(Class<?> type, EasyBeanArgument argument) {
         Constructor<?>[] array = type.getConstructors();
         this.list = new ArrayList<Constructor<?>>(array.length);
         this.argument = argument;

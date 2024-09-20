@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.concurrent.ThreadSource;
-import cn.org.expect.ioc.DefaultEasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
@@ -167,7 +167,7 @@ public class CsvFileTest {
 
     @Test
     public void test3() throws Exception {
-        DefaultEasyetlContext context = new DefaultEasyetlContext();
+        DefaultEasyContext context = new DefaultEasyContext();
         String charsetName = "UTF-8";
         File file = this.createfile();
 

@@ -15,17 +15,17 @@ import cn.org.expect.util.ResourcesUtils;
  * @author jeremy8551@qq.com
  * @createtime 2023/10/26
  */
-public class EasyetlBeanBuilderManager {
-    private final static Log log = LogFactory.getLog(EasyetlBeanBuilderManager.class);
+public class EasyBeanBuilderManager {
+    private final static Log log = LogFactory.getLog(EasyBeanBuilderManager.class);
 
     /** 容器上下文信息 */
-    private EasyetlContext context;
+    private EasyContext context;
 
     /** 组件接口与组件工厂类映射关系 */
-    private HashMap<Class<?>, EasyetlBeanBuilder<?>> map;
+    private HashMap<Class<?>, EasyBeanBuilder<?>> map;
 
-    public EasyetlBeanBuilderManager(EasyetlContext context) {
-        this.map = new HashMap<Class<?>, EasyetlBeanBuilder<?>>();
+    public EasyBeanBuilderManager(EasyContext context) {
+        this.map = new HashMap<Class<?>, EasyBeanBuilder<?>>();
         this.context = Ensure.notNull(context);
     }
 
@@ -36,13 +36,13 @@ public class EasyetlBeanBuilderManager {
      * @param eventManager 事件管理器
      * @return 返回true表示注册成功，false表示注册失败
      */
-    public boolean add(Class<?> type, EasyetlBeanEventManager eventManager) {
+    public boolean add(Class<?> type, EasyBeanEventManager eventManager) {
         // 如果没有实现 EasyBeanBuilder 接口
-        if (!EasyetlBeanBuilder.class.isAssignableFrom(type)) {
+        if (!EasyBeanBuilder.class.isAssignableFrom(type)) {
             return false;
         }
 
-        String[] generics = ClassUtils.getInterfaceGenerics(type, EasyetlBeanBuilder.class);
+        String[] generics = ClassUtils.getInterfaceGenerics(type, EasyBeanBuilder.class);
         if (generics.length == 1) {
             String className = generics[0]; // BeanBuilder 类的范型
             Class<Object> genCls = ClassUtils.forName(className, true, this.context.getClassLoader());
@@ -53,11 +53,11 @@ public class EasyetlBeanBuilderManager {
                 return false;
             }
 
-            EasyetlBeanBuilder<?> builder = this.context.createBean(type);
+            EasyBeanBuilder<?> builder = this.context.createBean(type);
             if (this.add(genCls, builder)) {
                 // 如果组件工厂实现了监听接口
-                if (builder instanceof EasyetlBeanEventListener) {
-                    eventManager.addListener((EasyetlBeanEventListener) builder);
+                if (builder instanceof EasyBeanEventListener) {
+                    eventManager.addListener((EasyBeanEventListener) builder);
                 }
                 return true;
             }
@@ -72,8 +72,8 @@ public class EasyetlBeanBuilderManager {
      * @param builder 组件工厂类
      * @return 返回true表示注册成功，false表示注册失败
      */
-    public boolean add(Class<?> type, EasyetlBeanBuilder<?> builder) {
-        EasyetlBeanBuilder<?> factory = this.map.get(type);
+    public boolean add(Class<?> type, EasyBeanBuilder<?> builder) {
+        EasyBeanBuilder<?> factory = this.map.get(type);
         if (factory != null) {
             if (log.isWarnEnabled()) {
                 log.warn(ResourcesUtils.getMessage("class.standard.output.msg026", type.getName(), builder.getClass().getName(), factory.getClass().getName()));
@@ -94,7 +94,7 @@ public class EasyetlBeanBuilderManager {
      * @param type 组件的类信息
      * @return 组件工厂
      */
-    public EasyetlBeanBuilder<?> get(Class<?> type) {
+    public EasyBeanBuilder<?> get(Class<?> type) {
         return this.map.get(type);
     }
 
@@ -104,7 +104,7 @@ public class EasyetlBeanBuilderManager {
      * @param type 组件的类信息
      * @return 组件工厂
      */
-    public EasyetlBeanBuilder<?> remove(Class<?> type) {
+    public EasyBeanBuilder<?> remove(Class<?> type) {
         return this.map.remove(type);
     }
 

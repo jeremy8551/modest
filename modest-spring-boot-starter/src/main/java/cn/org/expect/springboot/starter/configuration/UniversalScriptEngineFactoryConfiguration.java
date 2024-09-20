@@ -1,6 +1,6 @@
 package cn.org.expect.springboot.starter.configuration;
 
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.UniversalScriptEngineFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,7 +20,7 @@ public class UniversalScriptEngineFactoryConfiguration {
     @Lazy
     @Bean
     @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-    public UniversalScriptEngineFactory getScriptEngineFactory(EasyetlContext context) {
+    public UniversalScriptEngineFactory getScriptEngineFactory(EasyContext context) {
         return new UniversalScriptEngineFactory(context);
     }
 

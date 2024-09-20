@@ -3,7 +3,7 @@ package cn.org.expect.ioc;
 /**
  * 组件实例接口
  */
-public interface EasyetlBeanInstance {
+public interface EasyBeanInstance {
 
     /**
      * 返回实例对象

@@ -3,7 +3,7 @@ package cn.org.expect.os;
 import java.util.Iterator;
 import javax.script.SimpleBindings;
 
-import cn.org.expect.ioc.DefaultEasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.util.Settings;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -16,7 +16,7 @@ public class OSTest {
 
     @Test
     public void test() {
-        DefaultEasyetlContext context = rule.getContext();
+        DefaultEasyContext context = rule.getContext();
         SimpleBindings env = rule.getEnvironment();
         String host = (String) env.get("ssh.host");
         int port = Integer.parseInt((String) env.get("ssh.port"));

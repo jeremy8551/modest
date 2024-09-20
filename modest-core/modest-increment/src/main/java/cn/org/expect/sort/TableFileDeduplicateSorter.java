@@ -27,7 +27,7 @@ import cn.org.expect.io.TextTableFileCounter;
 import cn.org.expect.io.TextTableFileReader;
 import cn.org.expect.io.TextTableFileWriter;
 import cn.org.expect.io.TextTableLine;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.Ensure;
@@ -115,7 +115,7 @@ public class TableFileDeduplicateSorter implements Terminate {
      * @return 排序后的文件
      * @throws Exception 发生错误
      */
-    public synchronized File execute(EasyetlContext context, TextTableFile file, String... orders) throws Exception {
+    public synchronized File execute(EasyContext context, TextTableFile file, String... orders) throws Exception {
         Analysis analysis = new BaseAnalysis();
         OrderByExpression[] array = new OrderByExpression[orders.length];
         for (int i = 0; i < orders.length; i++) {

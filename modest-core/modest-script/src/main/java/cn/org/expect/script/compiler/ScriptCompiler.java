@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.PriorityQueue;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.UniversalCommandCompiler;
 import cn.org.expect.script.UniversalCommandRepository;
 import cn.org.expect.script.UniversalScriptAnalysis;
@@ -48,7 +48,7 @@ public class ScriptCompiler implements UniversalScriptCompiler {
     protected long startLineNumber;
 
     /** 容器上下文信息 */
-    protected EasyetlContext context;
+    protected EasyContext context;
 
     /** 读取命令的时间戳 */
     protected long readMillis;
@@ -56,7 +56,7 @@ public class ScriptCompiler implements UniversalScriptCompiler {
     /**
      * 初始化
      */
-    public ScriptCompiler(EasyetlContext context) {
+    public ScriptCompiler(EasyContext context) {
         this.context = context;
         this.cache = new PriorityQueue<UniversalScriptCommand>(10, new Comparator<UniversalScriptCommand>() {
             public int compare(UniversalScriptCommand o1, UniversalScriptCommand o2) {

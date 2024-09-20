@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.mail.EmailAttachment;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
@@ -23,20 +23,20 @@ public class MailFile {
 
     private String name;
 
-    public MailFile(EasyetlContext context, String disposition, File file, String name, String description) throws IOException {
+    public MailFile(EasyContext context, String disposition, File file, String name, String description) throws IOException {
         this(context, file);
         this.disposition = disposition;
         this.name = name;
         this.description = description;
     }
 
-    public MailFile(EasyetlContext context, File file, String name, String description) throws IOException {
+    public MailFile(EasyContext context, File file, String name, String description) throws IOException {
         this(context, file);
         this.name = name;
         this.description = description;
     }
 
-    public MailFile(EasyetlContext context, File file) throws IOException {
+    public MailFile(EasyContext context, File file) throws IOException {
         Ensure.notNull(file);
         if (file.exists() && file.isDirectory()) {
             File parent = FileUtils.getTempDir("mail", "file");
@@ -61,7 +61,7 @@ public class MailFile {
      * @param delete       true表示文件全部压缩成功后自动删除 {@code fileOrDir}
      * @throws IOException 压缩文件错误
      */
-    public void compress(EasyetlContext context, File file, File compressFile, String charsetName, boolean delete) throws IOException {
+    public void compress(EasyContext context, File file, File compressFile, String charsetName, boolean delete) throws IOException {
         Compress c = context.getBean(Compress.class, FileUtils.getFilenameSuffix(compressFile.getName()));
         try {
             c.setFile(compressFile);

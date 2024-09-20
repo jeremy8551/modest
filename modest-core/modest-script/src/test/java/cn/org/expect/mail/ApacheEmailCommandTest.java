@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import javax.script.SimpleBindings;
 
-import cn.org.expect.ioc.DefaultEasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.script.WithDBRule;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Dates;
@@ -24,7 +24,7 @@ public class ApacheEmailCommandTest {
 
     @Test
     public void test1() throws IOException {
-        DefaultEasyetlContext context = rule.getContext();
+        DefaultEasyContext context = rule.getContext();
         SimpleBindings environment = rule.getEnvironment();
 
         ApacheEmailCommand cmd = new ApacheEmailCommand();
@@ -55,7 +55,7 @@ public class ApacheEmailCommandTest {
 
     @Test
     public void test3() throws IOException {
-        DefaultEasyetlContext context = rule.getContext();
+        DefaultEasyContext context = rule.getContext();
         SimpleBindings environment = rule.getEnvironment();
 
         ApacheEmailCommand cmd = new ApacheEmailCommand();

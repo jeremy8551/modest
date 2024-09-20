@@ -2,10 +2,9 @@ package cn.org.expect.zip;
 
 import java.io.File;
 
-import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.ioc.EasyetlBeanBuilder;
-import cn.org.expect.ioc.EasyetlBean;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBeanBuilder;
+import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
@@ -17,10 +16,10 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2021-02-09
  */
-@EasyBean
-public class CompressBuilder implements EasyetlBeanBuilder<Compress> {
+@cn.org.expect.annotation.EasyBean
+public class CompressBuilder implements EasyBeanBuilder<Compress> {
 
-    public Compress getBean(EasyetlContext context, Object... args) throws Exception {
+    public Compress getBean(EasyContext context, Object... args) throws Exception {
         String suffix = null;
 
         File file = ArrayUtils.indexOf(args, File.class, 0);
@@ -37,7 +36,7 @@ public class CompressBuilder implements EasyetlBeanBuilder<Compress> {
             suffix = "zip";
         }
 
-        EasyetlBean beanInfo = Ensure.notNull(context.getBeanInfo(Compress.class, suffix));
+        EasyBean beanInfo = Ensure.notNull(context.getBeanInfo(Compress.class, suffix));
         return context.createBean(beanInfo.getType());
     }
 

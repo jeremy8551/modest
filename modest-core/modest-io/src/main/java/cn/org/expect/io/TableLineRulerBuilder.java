@@ -3,15 +3,15 @@ package cn.org.expect.io;
 import java.util.List;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.ioc.EasyetlBeanBuilder;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBeanBuilder;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.StringUtils;
 
 @EasyBean
-public class TableLineRulerBuilder implements EasyetlBeanBuilder<TableLineRuler> {
+public class TableLineRulerBuilder implements EasyBeanBuilder<TableLineRuler> {
 
-    public TableLineRuler getBean(EasyetlContext context, Object... args) {
+    public TableLineRuler getBean(EasyContext context, Object... args) {
         TextTable file = ArrayUtils.indexOf(args, TextTable.class, 0);
         if (file != null) {
             String coldel = file.getDelimiter();

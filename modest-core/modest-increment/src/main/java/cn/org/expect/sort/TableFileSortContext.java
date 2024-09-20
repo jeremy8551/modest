@@ -5,7 +5,7 @@ import java.io.File;
 import cn.org.expect.collection.CaseSensitivMap;
 import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.io.TextTableFile;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.IO;
 
@@ -85,7 +85,7 @@ public class TableFileSortContext {
      * @param context 容器
      * @param tempDir 排序存储临时文件的目录, 可以为null
      */
-    public TableFileSortContext(EasyetlContext context, File tempDir) {
+    public TableFileSortContext(EasyContext context, File tempDir) {
         this();
         this.threadSource = Ensure.notNull(context.getBean(ThreadSource.class));
         this.tempDir = tempDir;

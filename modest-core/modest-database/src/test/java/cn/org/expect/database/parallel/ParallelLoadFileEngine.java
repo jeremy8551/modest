@@ -15,18 +15,18 @@ import cn.org.expect.database.load.LoadTable;
 import cn.org.expect.database.load.Loader;
 import cn.org.expect.database.load.inernal.DataWriterFactory;
 import cn.org.expect.io.TextTableFile;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.EasyetlContextAware;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.util.StringUtils;
 
 @EasyBean(name = "replace")
-public class ParallelLoadFileEngine implements Loader, EasyetlContextAware {
+public class ParallelLoadFileEngine implements Loader, EasyContextAware {
 
     /** 上下文信息 */
     private LoadEngineContext context;
 
     /** 容器上下文信息 */
-    protected EasyetlContext ioc;
+    protected EasyContext ioc;
 
     /**
      * 初始化
@@ -35,7 +35,7 @@ public class ParallelLoadFileEngine implements Loader, EasyetlContextAware {
         super();
     }
 
-    public void setContext(EasyetlContext context) {
+    public void setContext(EasyContext context) {
         this.ioc = context;
     }
 

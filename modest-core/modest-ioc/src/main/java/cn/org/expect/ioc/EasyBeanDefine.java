@@ -5,5 +5,5 @@ package cn.org.expect.ioc;
  *
  * @author jeremy8551@qq.com
  */
-public interface EasyetlBeanDefine extends EasyetlBean, EasyetlBeanInstance {
+public interface EasyBeanDefine extends EasyBean, EasyBeanInstance {
 }

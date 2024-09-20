@@ -1,6 +1,6 @@
 package cn.org.expect.springboot.starter.ioc;
 
-import cn.org.expect.ioc.impl.EasyetlBeanDefineImpl;
+import cn.org.expect.ioc.impl.EasyBeanDefineImpl;
 import org.springframework.context.ApplicationContext;
 
 /**
@@ -9,14 +9,14 @@ import org.springframework.context.ApplicationContext;
  * @author jeremy8551@qq.com
  * @createtime 2023/10/26
  */
-public class SpringEasyetlBeanDefine extends EasyetlBeanDefineImpl {
+public class SpringEasyBeanDefine extends EasyBeanDefineImpl {
 
     /**
-     * 将 Spring 容器上下文信息转为 Easyetl 中可识别的组件信息
+     * 将 Spring 容器上下文信息转为 EasyBean 中可识别的组件信息
      *
      * @param springContext Spring 容器上下文信息
      */
-    public SpringEasyetlBeanDefine(ApplicationContext springContext) {
+    public SpringEasyBeanDefine(ApplicationContext springContext) {
         super(springContext.getClass());
         this.singleton = true;
         this.setBean(springContext);

@@ -12,11 +12,11 @@ public class ClassScannerTest {
 
     @Test
     public void test() {
-        DefaultEasyetlContext context = new DefaultEasyetlContext("sout:debug,!org.apache,!cn.org.expect.test.impl.sec1,");
-        List<EasyetlBean> list = context.getBeanInfoList(TestLoader.class);
+        DefaultEasyContext context = new DefaultEasyContext("sout:debug,!org.apache,!cn.org.expect.test.impl.sec1,");
+        List<EasyBean> list = context.getBeanInfoList(TestLoader.class);
         boolean exists = false;
         boolean exists1 = false;
-        for (EasyetlBean anno : list) {
+        for (EasyBean anno : list) {
             if (anno.getType().equals(TestLoader1.class)) {
                 exists = true;
             }
@@ -32,7 +32,7 @@ public class ClassScannerTest {
         exists = false;
         exists1 = false;
         list = context.getBeanInfoList(TestLoader.class);
-        for (EasyetlBean anno : list) {
+        for (EasyBean anno : list) {
             if (anno.getType().equals(TestLoader1.class)) {
                 exists = true;
             }

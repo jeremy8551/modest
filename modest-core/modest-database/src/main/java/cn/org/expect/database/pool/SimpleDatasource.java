@@ -9,7 +9,7 @@ import javax.sql.DataSource;
 
 import cn.org.expect.database.logger.DataSourceLogger;
 import cn.org.expect.database.logger.DataSourceLoggerProxy;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 
 /**
  * 即时使用的数据库连接池
@@ -48,12 +48,12 @@ public class SimpleDatasource implements DataSource, java.io.Closeable {
      * @param context 容器上下文信息
      * @param p       配置信息
      */
-    public SimpleDatasource(EasyetlContext context, Properties p) {
+    public SimpleDatasource(EasyContext context, Properties p) {
         super();
         this.pool = new Pool(context, p);
     }
 
-    public EasyetlContext getContext() {
+    public EasyContext getContext() {
         return this.pool.getContext();
     }
 

@@ -3,9 +3,9 @@ package cn.org.expect.os;
 import java.io.IOException;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.ioc.EasyetlBeanBuilder;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.EasyetlContextAware;
+import cn.org.expect.ioc.EasyBeanBuilder;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.os.linux.LinuxLocalOS;
 import cn.org.expect.os.linux.LinuxRemoteOS;
 import cn.org.expect.os.macos.MacOS;
@@ -16,7 +16,7 @@ import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 
 @EasyBean
-public class OSBuilder implements EasyetlBeanBuilder<OS> {
+public class OSBuilder implements EasyBeanBuilder<OS> {
 
     /**
      * 返回操作系统接口
@@ -34,7 +34,7 @@ public class OSBuilder implements EasyetlBeanBuilder<OS> {
      *                参数为空时，返回本地操作系统的接口
      * @return 实例对象
      */
-    public OS getBean(EasyetlContext context, Object... args) throws Exception {
+    public OS getBean(EasyContext context, Object... args) throws Exception {
         String host = null, username = null, password = null; // 服务器host 用户名 密码
         int port = -1; // 访问端口号
 
@@ -95,8 +95,8 @@ public class OSBuilder implements EasyetlBeanBuilder<OS> {
         }
 
         OS os = this.build(context, host, port, username, password);
-        if (os instanceof EasyetlContextAware) {
-            ((EasyetlContextAware) os).setContext(context);
+        if (os instanceof EasyContextAware) {
+            ((EasyContextAware) os).setContext(context);
         }
         return os;
     }
@@ -112,7 +112,7 @@ public class OSBuilder implements EasyetlBeanBuilder<OS> {
      * @return 实例对象
      * @throws IOException 文件错误
      */
-    private OS build(EasyetlContext context, String host, int port, String username, String password) throws IOException {
+    private OS build(EasyContext context, String host, int port, String username, String password) throws IOException {
         if ((StringUtils.isBlank(host) || NetUtils.isLocalHost(host)) && (username == null || Settings.getUserName().equalsIgnoreCase(username))) {
             if (OSUtils.isLinux()) {
                 return new LinuxLocalOS();

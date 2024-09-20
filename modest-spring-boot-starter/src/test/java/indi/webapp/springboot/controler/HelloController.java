@@ -4,8 +4,8 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import cn.org.expect.io.TextTableFile;
-import cn.org.expect.ioc.EasyetlBeanDefine;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBeanDefine;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.UniversalScriptEngine;
 import cn.org.expect.util.FileUtils;
 import indi.jeremy.bean.Bean1;
@@ -39,7 +39,7 @@ public class HelloController {
     private ApplicationContext spring;
 
     @Autowired
-    private EasyetlContext context;
+    private EasyContext context;
 
     @RequestMapping("/help")
     @ResponseBody
@@ -77,7 +77,7 @@ public class HelloController {
         Assert.assertEquals(DatFile.class, fexfile.getClass());
 
         // 测试不应该扫描的类包
-        EasyetlBeanDefine logbeaninfo = context.getBeanInfo(TextTableFile.class, "log");
+        EasyBeanDefine logbeaninfo = context.getBeanInfo(TextTableFile.class, "log");
         if (logbeaninfo != null) {
             System.out.println(logbeaninfo.getType().getName());
         }

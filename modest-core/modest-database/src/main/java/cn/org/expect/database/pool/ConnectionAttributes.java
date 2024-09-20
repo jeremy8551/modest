@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import cn.org.expect.database.DatabaseDialect;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -41,14 +41,14 @@ public class ConnectionAttributes implements Cloneable {
     private boolean hasClientInfo;
     private boolean hasTypeMap;
 
-    private EasyetlContext context;
+    private EasyContext context;
 
     private ConnectionAttributes() {
         this.types = new HashMap<String, Class<?>>();
         this.clientInfo = new Properties();
     }
 
-    public ConnectionAttributes(EasyetlContext context, Connection conn) {
+    public ConnectionAttributes(EasyContext context, Connection conn) {
         this();
         this.context = Ensure.notNull(context);
 

@@ -4,7 +4,7 @@ import java.io.IOException;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-import cn.org.expect.ioc.DefaultEasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -19,7 +19,7 @@ public class ScriptEngineDBExportCmdTest {
     @Test
     public void test() throws ScriptException, IOException {
         // System.setProperty("cn.org.expect.dblog", "true");
-        DefaultEasyetlContext context = rule.getContext();
+        DefaultEasyContext context = rule.getContext();
         UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(context);
         ScriptEngine engine = manager.getScriptEngine();
         engine.setBindings(rule.getEnvironment(), UniversalScriptContext.ENVIRONMENT_SCOPE);

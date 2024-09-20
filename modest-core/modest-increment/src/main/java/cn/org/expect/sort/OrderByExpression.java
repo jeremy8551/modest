@@ -5,7 +5,7 @@ import java.util.List;
 
 import cn.org.expect.expression.Analysis;
 import cn.org.expect.expression.FunctionExpression;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringComparator;
 import cn.org.expect.util.StringUtils;
@@ -19,7 +19,7 @@ import cn.org.expect.util.StringUtils;
 public class OrderByExpression {
 
     /** 容器上下文信息 */
-    private EasyetlContext context;
+    private EasyContext context;
 
     /** 表达式 */
     private String expression;
@@ -45,7 +45,7 @@ public class OrderByExpression {
      *                   number(2) desc 表示第二个字段按数值倒序排序 <br>
      */
     @SuppressWarnings("unchecked")
-    public OrderByExpression(EasyetlContext context, Analysis analysis, String expression) {
+    public OrderByExpression(EasyContext context, Analysis analysis, String expression) {
         this.context = Ensure.notNull(context);
         expression = StringUtils.trimBlank(expression);
         List<String> list = Ensure.notNull(analysis).split(expression);

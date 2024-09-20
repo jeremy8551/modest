@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.Set;
 import javax.script.ScriptEngineFactory;
 
-import cn.org.expect.ioc.DefaultEasyetlContext;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.CharTable;
 import cn.org.expect.util.Dates;
@@ -28,7 +28,7 @@ public class UniversalScriptEngineFactory implements ScriptEngineFactory {
     protected volatile UniversalScriptConfiguration config;
 
     /** 容器的上下文信息 */
-    protected volatile EasyetlContext context;
+    protected volatile EasyContext context;
 
     /** 脚本引擎序号 */
     private static volatile int serialNumber = 0;
@@ -38,7 +38,7 @@ public class UniversalScriptEngineFactory implements ScriptEngineFactory {
      * 因为脚本引擎使用 SPI 机制读取并创建脚本引擎工厂实例，所以本方法中只做简单操作。
      */
     public UniversalScriptEngineFactory() {
-        EasyetlContext context = DefaultEasyetlContext.getInstance();
+        EasyContext context = DefaultEasyContext.getInstance();
         if (context != null) {
             this.setContext(context);
         }
@@ -49,7 +49,7 @@ public class UniversalScriptEngineFactory implements ScriptEngineFactory {
      *
      * @param context 容器上下文信息
      */
-    public UniversalScriptEngineFactory(EasyetlContext context) {
+    public UniversalScriptEngineFactory(EasyContext context) {
         this.setContext(context);
     }
 
@@ -67,7 +67,7 @@ public class UniversalScriptEngineFactory implements ScriptEngineFactory {
      *
      * @param context 容器上下文信息
      */
-    public void setContext(EasyetlContext context) {
+    public void setContext(EasyContext context) {
         this.context = Ensure.notNull(context);
     }
 
@@ -76,11 +76,11 @@ public class UniversalScriptEngineFactory implements ScriptEngineFactory {
      *
      * @return 容器上下文信息
      */
-    public EasyetlContext getContext() {
+    public EasyContext getContext() {
         if (this.context == null) {
             synchronized (this) {
                 if (this.context == null) {
-                    this.context = new DefaultEasyetlContext();
+                    this.context = new DefaultEasyContext();
                 }
             }
         }

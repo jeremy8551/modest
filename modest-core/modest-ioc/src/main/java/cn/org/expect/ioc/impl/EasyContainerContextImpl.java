@@ -1,37 +1,37 @@
 package cn.org.expect.ioc.impl;
 
-import cn.org.expect.ioc.EasyetlBeanBuilder;
-import cn.org.expect.ioc.EasyetlBeanDefine;
-import cn.org.expect.ioc.EasyetlContainerContext;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBeanBuilder;
+import cn.org.expect.ioc.EasyBeanDefine;
+import cn.org.expect.ioc.EasyContainerContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.ResourcesUtils;
 
 /**
  * 接口实现类
  */
-public class EasyetlContainerContextImpl implements EasyetlContainerContext {
+public class EasyContainerContextImpl implements EasyContainerContext {
 
     /** 上下文信息 */
-    private EasyetlContext context;
+    private EasyContext context;
 
     /**
      * 初始化
      *
      * @param context 容器上下文信息
      */
-    public EasyetlContainerContextImpl(EasyetlContext context) {
+    public EasyContainerContextImpl(EasyContext context) {
         this.context = Ensure.notNull(context);
     }
 
     public String getName() {
-        return EasyetlContainerContext.class.getSimpleName();
+        return EasyContainerContext.class.getSimpleName();
     }
 
     @SuppressWarnings("unchecked")
     public <E> E getBean(Class<E> type, Object... args) {
         // 优先使用接口工厂生成实例对象
-        EasyetlBeanBuilder<?> factory = this.context.getBeanBuilder(type);
+        EasyBeanBuilder<?> factory = this.context.getBeanBuilder(type);
         if (factory != null) {
             try {
                 return (E) factory.getBean(this.context, args);
@@ -41,8 +41,8 @@ public class EasyetlContainerContextImpl implements EasyetlContainerContext {
         }
 
         // 按组件类与组件名查询
-        EasyetlBeanArgument argument = new EasyetlBeanArgument(args);
-        EasyetlBeanDefine beanInfo = this.context.getBeanInfo(type, argument.getName());
+        EasyBeanArgument argument = new EasyBeanArgument(args);
+        EasyBeanDefine beanInfo = this.context.getBeanInfo(type, argument.getName());
         if (beanInfo == null) {
             // 尝试创建类的实例对象
             try {

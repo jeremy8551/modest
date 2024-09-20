@@ -13,13 +13,13 @@ import cn.org.expect.database.export.ExtracterContext;
 import cn.org.expect.io.TableLine;
 import cn.org.expect.io.TableWriter;
 import cn.org.expect.io.TextTable;
-import cn.org.expect.ioc.EasyetlContext;
-import cn.org.expect.ioc.EasyetlContextAware;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.os.OSFtpCommand;
 import cn.org.expect.util.Ensure;
 
 @EasyBean(name = "sftp", description = "卸载数据到远程sftp服务器")
-public class SftpFileWriter implements ExtractWriter, EasyetlContextAware {
+public class SftpFileWriter implements ExtractWriter, EasyContextAware {
 
     protected String target;
 
@@ -34,9 +34,9 @@ public class SftpFileWriter implements ExtractWriter, EasyetlContextAware {
 
     protected ExtractMessage message;
 
-    protected EasyetlContext context;
+    protected EasyContext context;
 
-    public void setContext(EasyetlContext context) {
+    public void setContext(EasyContext context) {
         this.context = context;
     }
 

@@ -8,7 +8,7 @@ import java.util.List;
 import cn.org.expect.annotation.ScriptCommand;
 import cn.org.expect.expression.LoginExpression;
 import cn.org.expect.expression.WordIterator;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.mail.MailFile;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
@@ -62,7 +62,7 @@ public class EmailSendCommandCompiler extends AbstractTraceCommandCompiler {
         String sender = attrs.getAttribute("sender"); // 发送地址
         String charsetName = attrs.getAttribute("charset"); // 邮件服务器字符集
         String content = FileUtils.readline(new File(filepath), charsetName, 0); // 正文
-        EasyetlContext ioc = context.getContainer();
+        EasyContext ioc = context.getContainer();
 
         // 附件
         String[] attaches = StringUtils.split(attrs.getAttribute("attach"), ',');

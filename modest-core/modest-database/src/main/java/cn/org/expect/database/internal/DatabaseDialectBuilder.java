@@ -7,14 +7,13 @@ import java.util.Arrays;
 import java.util.List;
 import javax.sql.DataSource;
 
-import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.database.DatabaseDialect;
-import cn.org.expect.ioc.EasyetlBeanEventListener;
-import cn.org.expect.ioc.EasyetlBeanBuilder;
-import cn.org.expect.ioc.EasyetlBeanEvent;
-import cn.org.expect.ioc.EasyetlBean;
-import cn.org.expect.ioc.EasyetlBeanDefine;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBeanEventListener;
+import cn.org.expect.ioc.EasyBeanBuilder;
+import cn.org.expect.ioc.EasyBeanEvent;
+import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanDefine;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.ArrayUtils;
@@ -27,8 +26,8 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2012-03-06
  */
-@EasyBean
-public class DatabaseDialectBuilder implements EasyetlBeanBuilder<DatabaseDialect>, EasyetlBeanEventListener {
+@cn.org.expect.annotation.EasyBean
+public class DatabaseDialectBuilder implements EasyBeanBuilder<DatabaseDialect>, EasyBeanEventListener {
     private final static Log log = LogFactory.getLog(DatabaseDialectBuilder.class);
 
     /** 数据库方言管理类 */
@@ -37,12 +36,12 @@ public class DatabaseDialectBuilder implements EasyetlBeanBuilder<DatabaseDialec
     /**
      * 初始化
      */
-    public DatabaseDialectBuilder(EasyetlContext context) {
-        List<EasyetlBean> list = context.getBeanInfoList(DatabaseDialect.class);
+    public DatabaseDialectBuilder(EasyContext context) {
+        List<EasyBean> list = context.getBeanInfoList(DatabaseDialect.class);
         this.manager = new DatabaseDialectManager(context, list);
     }
 
-    public DatabaseDialect getBean(EasyetlContext context, Object... args) throws Exception {
+    public DatabaseDialect getBean(EasyContext context, Object... args) throws Exception {
         String[] array = this.getDatabaseInfo(args);
         String name = array[0];
         String major = array[1];
@@ -117,14 +116,14 @@ public class DatabaseDialectBuilder implements EasyetlBeanBuilder<DatabaseDialec
         }
     }
 
-    public void addBean(EasyetlBeanEvent event) {
-        EasyetlBeanDefine beanInfo = event.getBeanInfo();
+    public void addBean(EasyBeanEvent event) {
+        EasyBeanDefine beanInfo = event.getBeanInfo();
         if (DatabaseDialect.class.isAssignableFrom(beanInfo.getType())) {
             this.manager.add(event.getContext(), beanInfo);
         }
     }
 
-    public void removeBean(EasyetlBeanEvent event) {
+    public void removeBean(EasyBeanEvent event) {
     }
 
 }

@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Properties;
 import javax.script.SimpleBindings;
 
-import cn.org.expect.ioc.DefaultEasyetlContext;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.ObjectUtils;
@@ -21,7 +21,7 @@ import org.junit.runners.model.Statement;
 public class WithDBRule implements TestRule {
 
     /** 容器上下文信息 */
-    private DefaultEasyetlContext context;
+    private DefaultEasyContext context;
 
     /** 脚本引擎的环境变量集合 */
     private WithDBConfig environment;
@@ -42,7 +42,7 @@ public class WithDBRule implements TestRule {
      *
      * @return 容器上下文信息
      */
-    public DefaultEasyetlContext getContext() {
+    public DefaultEasyContext getContext() {
         init();
         return context;
     }
@@ -71,7 +71,7 @@ public class WithDBRule implements TestRule {
 
     private void init() {
         if (context == null) {
-            context = new DefaultEasyetlContext("sout:info");
+            context = new DefaultEasyContext("sout:info");
 
             try {
                 environment = new WithDBConfig(context);
@@ -123,7 +123,7 @@ public class WithDBRule implements TestRule {
 
     public static class WithDBConfig extends SimpleBindings {
 
-        public WithDBConfig(EasyetlContext context) throws IOException {
+        public WithDBConfig(EasyContext context) throws IOException {
             super();
 
             Properties p = this.load();

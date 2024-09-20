@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import cn.org.expect.ioc.DefaultEasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,7 +26,7 @@ public class QueryManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        DefaultEasyetlContext context = rule.getContext();
+        DefaultEasyContext context = rule.getContext();
         this.connection = rule.getConnection();
         try {
             DatabaseDialect dialect = context.getBean(DatabaseDialect.class, this.connection);

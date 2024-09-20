@@ -12,7 +12,7 @@ import cn.org.expect.io.CommonTextTableFileReaderListener;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileReader;
 import cn.org.expect.io.TextTableLine;
-import cn.org.expect.ioc.DefaultEasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
@@ -187,7 +187,7 @@ public class TextTableFileTest {
 
     @Test
     public void testSort() throws IOException {
-        DefaultEasyetlContext context = new DefaultEasyetlContext();
+        DefaultEasyContext context = new DefaultEasyContext();
         CommonTextTableFile file = new CommonTextTableFile();
         file.setDelimiter(",");
         file.setCharsetName(StringUtils.CHARSET);
@@ -274,7 +274,7 @@ public class TextTableFileTest {
      */
     @Test
     public void test1() throws Exception {
-        DefaultEasyetlContext context = new DefaultEasyetlContext();
+        DefaultEasyContext context = new DefaultEasyContext();
         CommonTextTableFile file = new CommonTextTableFile();
         file.setDelimiter(",");
         file.setCharsetName(StringUtils.CHARSET);

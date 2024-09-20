@@ -6,14 +6,14 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.ioc.EasyetlBeanEventListener;
-import cn.org.expect.ioc.EasyetlBeanBuilder;
-import cn.org.expect.ioc.EasyetlBeanEvent;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBeanEventListener;
+import cn.org.expect.ioc.EasyBeanBuilder;
+import cn.org.expect.ioc.EasyBeanEvent;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.StringUtils;
 
 @EasyBean
-public class CodepageBuilder implements Codepage, EasyetlBeanBuilder<Codepage>, EasyetlBeanEventListener {
+public class CodepageBuilder implements Codepage, EasyBeanBuilder<Codepage>, EasyBeanEventListener {
 
     /** codepage 与 charset 的映射关系 */
     private Map<String, String> map;
@@ -26,11 +26,11 @@ public class CodepageBuilder implements Codepage, EasyetlBeanBuilder<Codepage>, 
         this.addAll();
     }
 
-    public Codepage getBean(EasyetlContext context, Object... args) throws Exception {
+    public Codepage getBean(EasyContext context, Object... args) throws Exception {
         return this;
     }
 
-    public void addBean(EasyetlBeanEvent event) {
+    public void addBean(EasyBeanEvent event) {
         Class<?> type = event.getBeanInfo().getType();
         if (Codepage.class.isAssignableFrom(type)) {
             Codepage obj = event.getContext().createBean(type);
@@ -38,7 +38,7 @@ public class CodepageBuilder implements Codepage, EasyetlBeanBuilder<Codepage>, 
         }
     }
 
-    public void removeBean(EasyetlBeanEvent event) {
+    public void removeBean(EasyBeanEvent event) {
     }
 
     public String get(String key) {

@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 import cn.org.expect.database.internal.StandardDatabaseIndex;
 import cn.org.expect.database.internal.StandardDatabaseProcedureParameter;
 import cn.org.expect.database.pool.SimpleDatasource;
-import cn.org.expect.ioc.DefaultEasyetlContext;
+import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
@@ -600,7 +600,7 @@ public class JdbcDaoTest {
 
     @Test
     public void testExecuteCreateTableConnectionDatabaseDialectDatabaseTableInfoBoolean() {
-        DefaultEasyetlContext context = rule.getContext();
+        DefaultEasyContext context = rule.getContext();
         JdbcDao dao = new JdbcDao(context, this.connection);
         try {
             Connection conn = dao.getConnection();
@@ -626,7 +626,7 @@ public class JdbcDaoTest {
 
     @Test
     public void testExecuteCreateTableConnectionDatabaseDialectDatabaseTableInfoBooleanBooleanBoolean() {
-        DefaultEasyetlContext context = rule.getContext();
+        DefaultEasyContext context = rule.getContext();
         JdbcDao dao = new JdbcDao(context, this.connection);
         try {
             Connection conn = dao.getConnection();

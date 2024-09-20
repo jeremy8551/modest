@@ -15,7 +15,7 @@ import cn.org.expect.database.export.ExtractReader;
 import cn.org.expect.database.export.ExtracterContext;
 import cn.org.expect.database.export.converter.AbstractConverter;
 import cn.org.expect.io.TextTable;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.printer.Progress;
@@ -59,7 +59,7 @@ public class DatabaseReader implements ExtractReader {
     private String[] values;
 
     /** 容器上下文信息 */
-    protected EasyetlContext ioc;
+    protected EasyContext ioc;
 
     /**
      * 初始化
@@ -68,7 +68,7 @@ public class DatabaseReader implements ExtractReader {
      * @param context 卸载程序上下文信息
      * @throws Exception 打开任务输入流错误
      */
-    public DatabaseReader(EasyetlContext ioc, ExtracterContext context) throws Exception {
+    public DatabaseReader(EasyContext ioc, ExtracterContext context) throws Exception {
         this.open(ioc, context);
     }
 
@@ -79,7 +79,7 @@ public class DatabaseReader implements ExtractReader {
      * @param context 卸载程序上下文信息
      * @throws Exception 打开任务输入流错误
      */
-    private void open(EasyetlContext ioc, ExtracterContext context) throws Exception {
+    private void open(EasyContext ioc, ExtracterContext context) throws Exception {
         this.ioc = ioc;
         this.dao = new JdbcDao(this.ioc);
         this.close();

@@ -7,7 +7,7 @@ import java.sql.Connection;
 import javax.sql.DataSource;
 
 import cn.org.expect.database.pool.SimpleDatasource;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Ensure;
 
@@ -17,7 +17,7 @@ public class DataSourceLogger implements InvocationHandler {
     private DataSource dataSource;
 
     /** 容器上下文信息 */
-    private EasyetlContext context;
+    private EasyContext context;
 
     /**
      * 初始化
@@ -25,7 +25,7 @@ public class DataSourceLogger implements InvocationHandler {
      * @param context    容器上下文信息
      * @param dataSource 数据源
      */
-    public DataSourceLogger(EasyetlContext context, SimpleDatasource dataSource) {
+    public DataSourceLogger(EasyContext context, SimpleDatasource dataSource) {
         this.context = Ensure.notNull(context);
         this.dataSource = Ensure.notNull(dataSource);
     }

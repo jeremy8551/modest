@@ -12,8 +12,8 @@ import cn.org.expect.increment.IncrementPositionImpl;
 import cn.org.expect.io.BufferedLineWriter;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileWriter;
-import cn.org.expect.ioc.DefaultEasyetlContext;
-import cn.org.expect.ioc.EasyetlBean;
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.printer.StandardFilePrinter;
@@ -136,7 +136,7 @@ public class IncrementTest {
 
     @Test
     public void test() throws Exception {
-        DefaultEasyetlContext ioc = new DefaultEasyetlContext("debug:sout+", EasyetlBean.class.getPackage().getName() + ":info");
+        DefaultEasyContext ioc = new DefaultEasyContext("debug:sout+", EasyBean.class.getPackage().getName() + ":info");
         Log log = LogFactory.getLog(IncrementTest.class);
 
         File[] files = this.getTempFiles(100000);

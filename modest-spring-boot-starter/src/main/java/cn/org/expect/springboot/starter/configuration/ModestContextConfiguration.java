@@ -1,8 +1,8 @@
 package cn.org.expect.springboot.starter.configuration;
 
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.springboot.starter.SpringApplicationArgument;
-import cn.org.expect.springboot.starter.ioc.EasyetlContextFactory;
+import cn.org.expect.springboot.starter.ioc.EasyContextFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,8 +23,8 @@ public class ModestContextConfiguration {
     @Lazy
     @Bean
     @Scope("singleton")
-    public synchronized EasyetlContext getEasyContext(ApplicationContext springContext, SpringApplicationArgument argument) {
-        return EasyetlContextFactory.create(argument, springContext);
+    public synchronized EasyContext getEasyContext(ApplicationContext springContext, SpringApplicationArgument argument) {
+        return EasyContextFactory.create(argument, springContext);
     }
 }
 

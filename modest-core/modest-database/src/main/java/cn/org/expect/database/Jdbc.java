@@ -31,7 +31,7 @@ import cn.org.expect.database.logger.DataSourceLogger;
 import cn.org.expect.database.logger.DataSourceLoggerProxy;
 import cn.org.expect.database.pool.PoolConnection;
 import cn.org.expect.database.pool.SimpleDatasource;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -106,7 +106,7 @@ public class Jdbc {
      * @param dataSource 数据库连接池
      * @return 数据库连接池
      */
-    public static DataSource getDataSourceLogger(EasyetlContext context, SimpleDatasource dataSource) {
+    public static DataSource getDataSourceLogger(EasyContext context, SimpleDatasource dataSource) {
         if (dataSource != null && Boolean.parseBoolean(StringUtils.trimBlank(System.getProperty(PROPERTY_DBLOG))) && !(dataSource instanceof DataSourceLoggerProxy)) {
             return new DataSourceLogger(context, dataSource).getProxy();
         } else {

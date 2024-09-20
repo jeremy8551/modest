@@ -13,7 +13,7 @@ import cn.org.expect.database.DatabaseConfigurationContainer;
 import cn.org.expect.database.DatabaseDialect;
 import cn.org.expect.database.DatabaseURL;
 import cn.org.expect.database.Jdbc;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.os.OSAccount;
 import cn.org.expect.os.OSConnectCommand;
 import cn.org.expect.os.OSShellCommand;
@@ -29,9 +29,9 @@ public class StandardDatabaseConfigurationContainer implements DatabaseConfigura
 
     private CaseSensitivMap<DatabaseConfiguration> map;
 
-    private EasyetlContext context;
+    private EasyContext context;
 
-    public StandardDatabaseConfigurationContainer(EasyetlContext context) {
+    public StandardDatabaseConfigurationContainer(EasyContext context) {
         this.map = new CaseSensitivMap<DatabaseConfiguration>();
         this.context = Ensure.notNull(context);
     }

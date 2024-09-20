@@ -1,11 +1,10 @@
 package cn.org.expect.database.export.inernal;
 
-import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.database.export.ExtractReader;
 import cn.org.expect.database.export.ExtracterContext;
-import cn.org.expect.ioc.EasyetlBeanBuilder;
-import cn.org.expect.ioc.EasyetlBean;
-import cn.org.expect.ioc.EasyetlContext;
+import cn.org.expect.ioc.EasyBeanBuilder;
+import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.StringUtils;
@@ -16,10 +15,10 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2021-02-18
  */
-@EasyBean
-public class ReaderBuilder implements EasyetlBeanBuilder<ExtractReader> {
+@cn.org.expect.annotation.EasyBean
+public class ReaderBuilder implements EasyBeanBuilder<ExtractReader> {
 
-    public ExtractReader getBean(EasyetlContext context, Object... args) throws Exception {
+    public ExtractReader getBean(EasyContext context, Object... args) throws Exception {
         ExtracterContext cxt = ArrayUtils.indexOf(args, ExtracterContext.class, 0);
         String source = cxt.getSource();
         if (StringUtils.startsWith(source, "select", 0, true, true)) {
@@ -34,7 +33,7 @@ public class ReaderBuilder implements EasyetlBeanBuilder<ExtractReader> {
         // 解析 http://xxx/xxx/xxx 格式
         String[] split = StringUtils.split(source, "://");
         if (split.length > 0) {
-            EasyetlBean beanInfo = context.getBeanInfo(ExtractReader.class, split[0]);
+            EasyBean beanInfo = context.getBeanInfo(ExtractReader.class, split[0]);
             if (beanInfo != null) {
                 return (ExtractReader) context.createBean(beanInfo.getType());
             }

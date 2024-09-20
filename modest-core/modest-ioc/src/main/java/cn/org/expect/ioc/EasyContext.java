@@ -5,7 +5,7 @@ package cn.org.expect.ioc;
  *
  * @author jeremy8551@qq.com
  */
-public interface EasyetlContext extends EasyetlContainerContext, EasyetlBeanRegister, EasyBeanInfoContext, EasyetlBeanBuilderContext, EasyetlBeanFactory {
+public interface EasyContext extends EasyContainerContext, EasyBeanRegister, EasyBeanInfoContext, EasyBeanBuilderContext, EasyBeanFactory {
 
     /**
      * 设置容器启动参数
@@ -26,14 +26,14 @@ public interface EasyetlContext extends EasyetlContainerContext, EasyetlBeanRegi
      *
      * @return 上级容器对象
      */
-    EasyetlContext getParent();
+    EasyContext getParent();
 
     /**
      * 设置上级容器
      *
      * @param parent 上级容器
      */
-    void setParent(EasyetlContext parent);
+    void setParent(EasyContext parent);
 
     /**
      * 设置类加载器
@@ -55,7 +55,7 @@ public interface EasyetlContext extends EasyetlContainerContext, EasyetlBeanRegi
      * @param ioc 容器实例
      * @return 如果容器重名，则会替换掉重名容器，并返回替换掉的容器
      */
-    EasyetlContainerContext addIoc(EasyetlContainerContext ioc);
+    EasyContainerContext addIoc(EasyContainerContext ioc);
 
     /**
      * 删除容器实例对象
@@ -63,7 +63,7 @@ public interface EasyetlContext extends EasyetlContainerContext, EasyetlBeanRegi
      * @param name 容器名
      * @return 被删除的容器
      */
-    EasyetlContainerContext removeIoc(String name);
+    EasyContainerContext removeIoc(String name);
 
     /**
      * 刷新组件信息

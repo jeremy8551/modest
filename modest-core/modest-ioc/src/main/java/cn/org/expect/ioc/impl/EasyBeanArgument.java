@@ -9,7 +9,7 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2023/10/26
  */
-public class EasyetlBeanArgument {
+public class EasyBeanArgument {
 
     /** 组件名 */
     private String name;
@@ -23,7 +23,7 @@ public class EasyetlBeanArgument {
      * @param name 组件名
      * @param args 参数数组
      */
-    public EasyetlBeanArgument(String name, Object[] args) {
+    public EasyBeanArgument(String name, Object[] args) {
         this.name = name;
         this.args = args;
     }
@@ -33,7 +33,7 @@ public class EasyetlBeanArgument {
      *
      * @param args 参数数组
      */
-    public EasyetlBeanArgument(Object[] args) {
+    public EasyBeanArgument(Object[] args) {
         if (args.length == 0) {
             this.args = args;
             return;

@@ -38,7 +38,7 @@ public interface EasyBeanInfoContext {
      * @param name 组件名
      * @return 组件类信息
      */
-    EasyetlBeanDefine getBeanInfo(Class<?> type, String name);
+    EasyBeanDefine getBeanInfo(Class<?> type, String name);
 
     /**
      * 查找类或接口对应的（所有）组件信息
@@ -46,7 +46,7 @@ public interface EasyBeanInfoContext {
      * @param type 类或接口
      * @return 组件对应的所有实现类
      */
-    List<EasyetlBean> getBeanInfoList(Class<?> type);
+    List<EasyBean> getBeanInfoList(Class<?> type);
 
     /**
      * 查找类信息对应的实现类集合
@@ -55,7 +55,7 @@ public interface EasyBeanInfoContext {
      * @param name 组件名
      * @return 组件对应的所有实现类
      */
-    List<EasyetlBean> getBeanInfoList(Class<?> type, String name);
+    List<EasyBean> getBeanInfoList(Class<?> type, String name);
 
     /**
      * 判断组件 {@code type} 的实现类 {@code impl} 是否已注册
@@ -73,7 +73,7 @@ public interface EasyBeanInfoContext {
      * @param cls  需要删除的实现类
      * @return 返回true表示删除成功 false表示实现类不存在
      */
-    List<EasyetlBeanDefine> removeBeanInfo(Class<?> type, Class<?> cls);
+    List<EasyBeanDefine> removeBeanInfo(Class<?> type, Class<?> cls);
 
     /**
      * 删除接口信息对应的实现类集合
@@ -81,7 +81,7 @@ public interface EasyBeanInfoContext {
      * @param type 组件类信息
      * @return 组件的实现类集合
      */
-    List<EasyetlBean> removeBeanInfoList(Class<?> type);
+    List<EasyBean> removeBeanInfoList(Class<?> type);
 
     /**
      * 删除所有已注册的组件信息
