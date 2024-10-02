@@ -49,7 +49,8 @@ build/
 .run/
 
 # 过滤代码
-modest-engine/src/**
+modest-engine/src/main/java/**
+modest-engine/src/main/resources/**
 
 # 过滤JDK方言的实现类
 modest-core/modest-jdk/src/main/java/cn/org/expect/jdk/JDK*.java
