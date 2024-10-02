@@ -11,7 +11,7 @@ import cn.org.expect.database.DatabaseDialect;
 import cn.org.expect.ioc.EasyBeanEventListener;
 import cn.org.expect.ioc.EasyBeanBuilder;
 import cn.org.expect.ioc.EasyBeanEvent;
-import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyBeanDefine;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
@@ -37,7 +37,7 @@ public class DatabaseDialectBuilder implements EasyBeanBuilder<DatabaseDialect>,
      * 初始化
      */
     public DatabaseDialectBuilder(EasyContext context) {
-        List<EasyBean> list = context.getBeanInfoList(DatabaseDialect.class);
+        List<EasyBeanInfo> list = context.getBeanInfoList(DatabaseDialect.class);
         this.manager = new DatabaseDialectManager(context, list);
     }
 

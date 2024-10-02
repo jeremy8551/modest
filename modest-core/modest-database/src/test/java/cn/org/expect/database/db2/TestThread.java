@@ -21,12 +21,10 @@ public class TestThread extends Thread {
         this.attrs = this.dialect.getAttributes(this.conn);
     }
 
-    @Override
     public void start() {
         super.start();
     }
 
-    @Override
     public void run() {
         Dates.sleep(2 * 1000);
 

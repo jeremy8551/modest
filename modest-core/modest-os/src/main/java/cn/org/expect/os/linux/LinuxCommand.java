@@ -316,8 +316,8 @@ public class LinuxCommand implements OSCommand {
      */
     private String toShellCommand(String command) {
         StringBuilder buf = new StringBuilder(command.length() + 50);
-        if (this.config.contains(OSShellCommand.profiles)) {
-            buf.append(this.config.getProperty(OSShellCommand.profiles));
+        if (this.config.contains(OSShellCommand.PROFILES)) {
+            buf.append(this.config.getProperty(OSShellCommand.PROFILES));
         }
 
         String str = StringUtils.trimBlank(command);
@@ -369,7 +369,7 @@ public class LinuxCommand implements OSCommand {
         if (log.isDebugEnabled()) {
             log.debug("source profiles command is " + buf);
         }
-        this.config.setProperty(OSShellCommand.profiles, buf.toString());
+        this.config.setProperty(OSShellCommand.PROFILES, buf.toString());
 
         String lang = StringUtils.removeBlank(StringUtils.join(map.get("echo lang"), ""));
         String[] array = StringUtils.split(lang, '.');

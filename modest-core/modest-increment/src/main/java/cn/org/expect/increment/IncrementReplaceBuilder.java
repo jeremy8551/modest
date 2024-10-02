@@ -2,17 +2,18 @@ package cn.org.expect.increment;
 
 import java.util.Date;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.database.DatabaseTableColumn;
 import cn.org.expect.database.DatabaseTableColumnList;
 import cn.org.expect.expression.Analysis;
 import cn.org.expect.ioc.EasyBeanBuilder;
-import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 
-@cn.org.expect.annotation.EasyBean
+@EasyBean
 public class IncrementReplaceBuilder implements EasyBeanBuilder<IncrementReplace> {
 
     public IncrementReplace getBean(EasyContext context, Object... args) throws Exception {
@@ -31,7 +32,7 @@ public class IncrementReplaceBuilder implements EasyBeanBuilder<IncrementReplace
             return new UUIDReplace(columns, field);
         } else { // 自定义
             String[] beans = StringUtils.split(value, '/');
-            EasyBean beanInfo = context.getBeanInfo(IncrementReplace.class, beans[0]);
+            EasyBeanInfo beanInfo = context.getBeanInfo(IncrementReplace.class, beans[0]);
             if (beanInfo == null) {
                 return new StandardReplace(columns, field, value);
             } else {

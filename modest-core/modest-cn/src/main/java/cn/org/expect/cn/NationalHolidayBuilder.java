@@ -8,7 +8,7 @@ import cn.org.expect.collection.CaseSensitivMap;
 import cn.org.expect.ioc.EasyBeanEventListener;
 import cn.org.expect.ioc.EasyBeanBuilder;
 import cn.org.expect.ioc.EasyBeanEvent;
-import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyBeanDefine;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
@@ -41,8 +41,8 @@ public class NationalHolidayBuilder implements EasyBeanBuilder<NationalHoliday>,
     }
 
     public void addAll(EasyContext context) {
-        List<EasyBean> list = context.getBeanInfoList(NationalHoliday.class);
-        for (EasyBean beanInfo : list) {
+        List<EasyBeanInfo> list = context.getBeanInfoList(NationalHoliday.class);
+        for (EasyBeanInfo beanInfo : list) {
             this.add(context, beanInfo);
         }
     }
@@ -53,7 +53,7 @@ public class NationalHolidayBuilder implements EasyBeanBuilder<NationalHoliday>,
      * @param context  容器上下文信息
      * @param beanInfo 组件信息
      */
-    protected synchronized void add(EasyContext context, EasyBean beanInfo) {
+    protected synchronized void add(EasyContext context, EasyBeanInfo beanInfo) {
         if (NationalHoliday.class.isAssignableFrom(beanInfo.getType())) {
             String key = beanInfo.getName(); // zh, zh_CN, ch_CN_POSIX
 

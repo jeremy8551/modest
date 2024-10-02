@@ -2,46 +2,32 @@ package cn.org.expect.database.db2;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import javax.sql.DataSource;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.database.DatabaseDialect;
-import cn.org.expect.database.Jdbc;
-import cn.org.expect.database.WithDBRule;
-import cn.org.expect.database.pool.SimpleDatasource;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.TimeWatch;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import static org.junit.Assert.fail;
-
+@RunWith(DB2Runner.class)
 public class DB2TerminateConnectionTest {
 
-    @Rule
-    public WithDBRule rule = new WithDBRule();
+    /** 容器上下文信息 */
+    @EasyBean
+    public EasyContext context;
 
     /** 数据库连接 */
-    private DataSource dataSource;
-
-    @Before
-    public void setUp() {
-        this.dataSource = new SimpleDatasource(rule.getContext(), rule.getProperties());
-    }
-
-    @After
-    public void setDown() {
-        Jdbc.closeDataSource(this.dataSource);
-    }
+    @EasyBean
+    public Connection connection;
 
     @Test
     public void test() throws SQLException {
-        Connection conn = this.dataSource.getConnection();
         try {
-            DatabaseDialect dialect = rule.getContext().getBean(DatabaseDialect.class, conn);
+            DatabaseDialect dialect = this.context.getBean(DatabaseDialect.class, connection);
 
-            TestThread thread = new TestThread(dialect, conn);
+            TestThread thread = new TestThread(dialect, connection);
             thread.start();
 
             TimeWatch watch = new TimeWatch();
@@ -51,25 +37,25 @@ public class DB2TerminateConnectionTest {
             Assert.assertFalse(thread.isError());
 
             try {
-                conn.commit();
-                fail();
+                connection.commit();
+                Assert.fail();
             } catch (Throwable e) {
                 Assert.assertTrue(true);
             }
         } catch (Exception e) {
             try {
-                conn.rollback();
-                fail();
+                connection.rollback();
+                Assert.fail();
             } catch (Throwable e1) {
                 Assert.assertTrue(true);
             }
         } finally {
             try {
-                conn.close();
+                connection.close();
                 Assert.fail();
             } catch (Throwable e2) {
                 Assert.assertTrue(true);
-                System.out.println("数据库连接中断测试成功!");
+                System.out.println("DB2数据库连接中断测试成功!");
             }
         }
     }

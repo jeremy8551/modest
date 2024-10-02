@@ -19,12 +19,10 @@ import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.JdbcQueryStatement;
 import cn.org.expect.database.SQL;
 import cn.org.expect.database.db2.expconv.ByteArrayConverter;
-import cn.org.expect.database.db2.expconv.RealConverter;
 import cn.org.expect.database.db2.expconv.StringConverter;
 import cn.org.expect.database.export.converter.AbstractConverter;
-import cn.org.expect.database.export.converter.BlobConverter;
-import cn.org.expect.database.export.converter.ClobConverter;
 import cn.org.expect.database.export.converter.DateConverter;
+import cn.org.expect.database.export.converter.FloatConverter;
 import cn.org.expect.database.export.converter.IntegerConverter;
 import cn.org.expect.database.export.converter.LongConverter;
 import cn.org.expect.database.internal.AbstractDialect;
@@ -32,10 +30,6 @@ import cn.org.expect.database.internal.StandardDatabaseDDL;
 import cn.org.expect.database.internal.StandardDatabaseProcedure;
 import cn.org.expect.database.internal.StandardDatabaseURL;
 import cn.org.expect.database.internal.StandardJdbcConverterMapper;
-import cn.org.expect.database.load.converter.BigDecimalConverter;
-import cn.org.expect.database.load.converter.DoubleConverter;
-import cn.org.expect.database.load.converter.TimeConverter;
-import cn.org.expect.database.load.converter.TimestampConverter;
 import cn.org.expect.io.ClobWriter;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
@@ -45,7 +39,7 @@ import cn.org.expect.util.StringUtils;
 public class H2Dialect extends AbstractDialect {
 
     public String getKeepAliveSQL() {
-        return "SELECT 1";
+        return "select 1 from DUAL";
     }
 
     public boolean supportSchema() {
@@ -60,10 +54,16 @@ public class H2Dialect extends AbstractDialect {
         return connection.getCatalog();
     }
 
+    /**
+     * h2数据库URL格式：http://www.h2database.com/html/features.html#database_url
+     *
+     * @param url JDBC的URL信息
+     * @return 数据库URL信息
+     */
     public List<DatabaseURL> parseJdbcUrl(String url) {
         StandardDatabaseURL obj = new StandardDatabaseURL(url);
 
-        String str = url.toLowerCase();
+        String str = url;
         int indexOf = str.indexOf(';');
         if (indexOf != -1) {
             String properties = str.substring(indexOf);
@@ -84,16 +84,16 @@ public class H2Dialect extends AbstractDialect {
         obj.setDatabaseType("h2");
 
         // 嵌入模式
-        if (array[2].equals("file")) {
-            String name = FileUtils.getFilename(str);
-            obj.setDatabaseName(name.toUpperCase());
+        if (array[2].equalsIgnoreCase("file")) {
+            String name = FileUtils.getFilename(array[3]);
+            obj.setDatabaseName(name);
             obj.setHostname("127.0.0.1");
             obj.setPort("9092");
         }
 
         // 服务模式
-        else if (array[2].equals("tcp")) {
-            String name = FileUtils.getFilename(str).toUpperCase();
+        else if (array[2].equalsIgnoreCase("tcp")) {
+            String name = FileUtils.getFilename(str);
             if (name.indexOf(':') == -1) {
                 obj.setDatabaseName(name);
             } else {
@@ -102,7 +102,7 @@ public class H2Dialect extends AbstractDialect {
             }
 
             String[] split = StringUtils.split(str, "//");
-            Ensure.isTrue(split.length != 2, url);
+            Ensure.isTrue(split.length == 2, str);
             String part = StringUtils.split(split[1], '/')[0];
             String[] hostPort = StringUtils.split(part, ':');
             Ensure.isTrue(hostPort.length <= 2, url);
@@ -116,8 +116,8 @@ public class H2Dialect extends AbstractDialect {
         }
 
         // 内存模式
-        else if (array[2].equals("mem")) {
-            obj.setDatabaseName(array[3].toUpperCase());
+        else if (array[2].equalsIgnoreCase("mem")) {
+            obj.setDatabaseName(array[3]);
             obj.setHostname("127.0.0.1");
             obj.setPort("9092");
         }
@@ -138,9 +138,8 @@ public class H2Dialect extends AbstractDialect {
 
     public DatabaseDDL toDDL(Connection connection, DatabaseProcedure procedure) throws SQLException {
         StandardDatabaseDDL ddl = new StandardDatabaseDDL();
-        JdbcQueryStatement dao = null;
+        JdbcQueryStatement dao = new JdbcQueryStatement(connection, "select ROUTINE_DEFINITION from INFORMATION_SCHEMA.ROUTINES where ROUTINE_NAME=? and ROUTINE_SCHEMA=? ");
         try { // 从数据库系统表中查询储存过程的源代码信息
-            dao = new JdbcQueryStatement(connection, "select ROUTINE_DEFINITION from INFORMATION_SCHEMA.ROUTINES where ROUTINE_NAME=? and ROUTINE_SCHEMA=? and ROUTINE_TYPE = 'PROCEDURE' ");
             dao.setParameter(procedure.getName());
             dao.setParameter(procedure.getSchema());
 
@@ -171,9 +170,9 @@ public class H2Dialect extends AbstractDialect {
             }
         }
 
-//        DatabaseTypeSet map = Jdbc.getTypeInfo(connection);
         List<DatabaseProcedure> list = new ArrayList<DatabaseProcedure>();
-        JdbcQueryStatement dao = new JdbcQueryStatement(connection, "select * from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' " + where);
+        String sql = "select * from INFORMATION_SCHEMA.ROUTINES where 1=1 " + where;
+        JdbcQueryStatement dao = new JdbcQueryStatement(connection, sql);
         ResultSet resultSet = dao.query();
         while (resultSet.next()) {
             StandardDatabaseProcedure obj = new StandardDatabaseProcedure();
@@ -200,26 +199,25 @@ public class H2Dialect extends AbstractDialect {
     public JdbcConverterMapper getObjectConverters() {
         if (this.exp == null) {
             this.exp = new StandardJdbcConverterMapper();
-            this.exp.add("CHAR", StringConverter.class);
-            this.exp.add("VARCHAR", StringConverter.class);
-            this.exp.add("LONG VARCHAR", StringConverter.class);
-            this.exp.add("GRAPHIC", StringConverter.class);
-            this.exp.add("VARGRAPHIC", StringConverter.class);
-            this.exp.add("LONG VARGRAPHIC", StringConverter.class);
-            this.exp.add("VARCHAR FOR BIT DATA", ByteArrayConverter.class);
-            this.exp.add("LONG VARCHAR FOR BIT DATA", ByteArrayConverter.class);
-            this.exp.add("SMALLINT", IntegerConverter.class);
+            this.exp.add("TINYINT", IntegerConverter.class);
             this.exp.add("BIGINT", LongConverter.class);
+            this.exp.add("BINARY VARYING", ByteArrayConverter.class);
+            this.exp.add("BINARY", ByteArrayConverter.class);
+            this.exp.add("UUID", StringConverter.class);
+            this.exp.add("CHARACTER", StringConverter.class);
+            this.exp.add("DECIMAL", cn.org.expect.database.export.converter.BigDecimalConverter.class);
+            this.exp.add("NUMERIC", cn.org.expect.database.export.converter.BigDecimalConverter.class);
+            this.exp.add("DECFLOAT", FloatConverter.class);
             this.exp.add("INTEGER", IntegerConverter.class);
-            this.exp.add("REAL", RealConverter.class);
-            this.exp.add("DOUBLE", cn.org.expect.database.db2.expconv.DoubleConverter.class);
+            this.exp.add("SMALLINT", IntegerConverter.class);
+            this.exp.add("REAL", FloatConverter.class);
+            this.exp.add("DOUBLE PRECISION", cn.org.expect.database.export.converter.DoubleConverter.class);
+            this.exp.add("BOOLEAN", cn.org.expect.database.export.converter.BooleanConverter.class);
             this.exp.add("DATE", DateConverter.class, AbstractConverter.PARAM_DATEFORMAT, "yyyyMMdd");
-            this.exp.add("TIME", cn.org.expect.database.db2.expconv.TimeConverter.class, AbstractConverter.PARAM_TIMEFORMAT, "hh.mm.ss");
-            this.exp.add("TIMESTAMP", cn.org.expect.database.db2.expconv.TimestampConverter.class, AbstractConverter.PARAM_TIMESTAMPFORMAT, "yyyy-MM-dd-HH.mm.ss.SSSSSS");
-            this.exp.add("DECIMAL", cn.org.expect.database.db2.expconv.BigDecimalConverter.class);
-            this.exp.add("BLOB", BlobConverter.class);
-            this.exp.add("CLOB", ClobConverter.class);
-            this.exp.add("DBCLOB", ClobConverter.class);
+            this.exp.add("TIME", cn.org.expect.database.export.converter.TimeConverter.class, AbstractConverter.PARAM_TIMEFORMAT, "hh.mm.ss");
+            this.exp.add("TIMESTAMP", cn.org.expect.database.export.converter.TimestampConverter.class, AbstractConverter.PARAM_TIMESTAMPFORMAT, "yyyy-MM-dd-HH.mm.ss.SSSSSS");
+            this.exp.add("BINARY LARGE OBJECT", ByteArrayConverter.class);
+            this.exp.add("CHARACTER LARGE OBJECT", StringConverter.class);
         }
         return this.exp;
     }
@@ -227,26 +225,25 @@ public class H2Dialect extends AbstractDialect {
     public JdbcConverterMapper getStringConverters() {
         if (this.map == null) {
             this.map = new StandardJdbcConverterMapper();
-            this.map.add("CHAR", cn.org.expect.database.db2.recconv.StringConverter.class);
-            this.map.add("VARCHAR", cn.org.expect.database.db2.recconv.StringConverter.class);
-            this.map.add("LONG VARCHAR", cn.org.expect.database.db2.recconv.StringConverter.class);
-            this.map.add("GRAPHIC", cn.org.expect.database.db2.recconv.StringConverter.class);
-            this.map.add("VARGRAPHIC", cn.org.expect.database.db2.recconv.StringConverter.class);
-            this.map.add("LONG VARGRAPHIC", cn.org.expect.database.db2.recconv.StringConverter.class);
-            this.map.add("VARCHAR FOR BIT DATA", cn.org.expect.database.load.converter.BlobConverter.class);
-            this.map.add("LONG VARCHAR FOR BIT DATA", cn.org.expect.database.load.converter.BlobConverter.class);
-            this.map.add("SMALLINT", cn.org.expect.database.load.converter.IntegerConverter.class);
+            this.map.add("TINYINT", cn.org.expect.database.load.converter.IntegerConverter.class);
             this.map.add("BIGINT", cn.org.expect.database.load.converter.LongConverter.class);
+            this.map.add("BINARY VARYING", cn.org.expect.database.load.converter.BlobConverter.class);
+            this.map.add("BINARY", cn.org.expect.database.load.converter.BlobConverter.class);
+            this.map.add("UUID", cn.org.expect.database.load.converter.StringConverter.class);
+            this.map.add("CHARACTER", cn.org.expect.database.load.converter.StringConverter.class);
+            this.map.add("DECIMAL", cn.org.expect.database.load.converter.BigDecimalConverter.class);
+            this.map.add("NUMERIC", cn.org.expect.database.load.converter.BigDecimalConverter.class);
+            this.map.add("DECFLOAT", cn.org.expect.database.load.converter.FloatConverter.class);
             this.map.add("INTEGER", cn.org.expect.database.load.converter.IntegerConverter.class);
-            this.map.add("REAL", DoubleConverter.class);
-            this.map.add("DOUBLE", DoubleConverter.class);
+            this.map.add("SMALLINT", cn.org.expect.database.load.converter.IntegerConverter.class);
+            this.map.add("REAL", cn.org.expect.database.load.converter.FloatConverter.class);
+            this.map.add("DOUBLE PRECISION", cn.org.expect.database.load.converter.DoubleConverter.class);
+            this.map.add("BOOLEAN", cn.org.expect.database.load.converter.BooleanConverter.class);
             this.map.add("DATE", cn.org.expect.database.load.converter.DateConverter.class, AbstractConverter.PARAM_DATEFORMAT, "yyyyMMdd");
-            this.map.add("TIME", TimeConverter.class, AbstractConverter.PARAM_TIMEFORMAT, "hh.mm.ss");
-            this.map.add("TIMESTAMP", TimestampConverter.class, AbstractConverter.PARAM_TIMESTAMPFORMAT, "yyyy-MM-dd-HH.mm.ss.SSSSSS");
-            this.map.add("DECIMAL", BigDecimalConverter.class);
-            this.map.add("BLOB", cn.org.expect.database.load.converter.BlobConverter.class);
-            this.map.add("CLOB", cn.org.expect.database.db2.recconv.StringConverter.class);
-            this.map.add("DBCLOB", cn.org.expect.database.db2.recconv.StringConverter.class);
+            this.map.add("TIME", cn.org.expect.database.load.converter.TimeConverter.class, AbstractConverter.PARAM_TIMEFORMAT, "hh.mm.ss");
+            this.map.add("TIMESTAMP", cn.org.expect.database.load.converter.TimestampConverter.class, AbstractConverter.PARAM_TIMESTAMPFORMAT, "yyyy-MM-dd-HH.mm.ss.SSSSSS");
+            this.map.add("BINARY LARGE OBJECT", cn.org.expect.database.load.converter.BlobConverter.class);
+            this.map.add("CHARACTER LARGE OBJECT", cn.org.expect.database.load.converter.ClobConverter.class);
         }
         return this.map;
     }

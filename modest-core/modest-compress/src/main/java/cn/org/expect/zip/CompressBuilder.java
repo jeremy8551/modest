@@ -2,8 +2,9 @@ package cn.org.expect.zip;
 
 import java.io.File;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyBeanBuilder;
-import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Ensure;
@@ -16,7 +17,7 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2021-02-09
  */
-@cn.org.expect.annotation.EasyBean
+@EasyBean
 public class CompressBuilder implements EasyBeanBuilder<Compress> {
 
     public Compress getBean(EasyContext context, Object... args) throws Exception {
@@ -36,7 +37,7 @@ public class CompressBuilder implements EasyBeanBuilder<Compress> {
             suffix = "zip";
         }
 
-        EasyBean beanInfo = Ensure.notNull(context.getBeanInfo(Compress.class, suffix));
+        EasyBeanInfo beanInfo = Ensure.notNull(context.getBeanInfo(Compress.class, suffix));
         return context.createBean(beanInfo.getType());
     }
 

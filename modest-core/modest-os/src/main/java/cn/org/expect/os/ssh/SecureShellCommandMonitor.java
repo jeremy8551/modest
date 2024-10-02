@@ -60,10 +60,10 @@ public class SecureShellCommandMonitor extends TimerTask {
      */
     public synchronized boolean startMonitor(SecureShellCommand client) {
         this.terminal = client;
-        this.host = client.getProperty(OSConnectCommand.host);
-        this.port = Integer.parseInt(client.getProperty(OSConnectCommand.port));
-        this.username = client.getProperty(OSConnectCommand.username);
-        this.password = client.getProperty(OSConnectCommand.password);
+        this.host = client.getProperty(OSConnectCommand.HOST);
+        this.port = Integer.parseInt(client.getProperty(OSConnectCommand.PORT));
+        this.username = client.getProperty(OSConnectCommand.USERNAME);
+        this.password = client.getProperty(OSConnectCommand.PASSWORD);
         return true;
     }
 

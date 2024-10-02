@@ -70,7 +70,7 @@ public class Pool implements Closeable {
 
         Ensure.notNull(context);
         Ensure.notNull(config);
-        String url = Ensure.notBlank(config.getProperty(Jdbc.url));
+        String url = Ensure.notBlank(config.getProperty(Jdbc.URL));
 
         this.close = true;
         this.context = context;

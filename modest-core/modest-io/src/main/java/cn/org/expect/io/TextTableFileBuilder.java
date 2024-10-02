@@ -1,7 +1,8 @@
 package cn.org.expect.io;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyBeanBuilder;
-import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Attribute;
@@ -17,7 +18,7 @@ import cn.org.expect.util.StringUtils;
  *
  * @author jeremy8551@qq.com
  */
-@cn.org.expect.annotation.EasyBean
+@EasyBean
 public class TextTableFileBuilder implements EasyBeanBuilder<TextTableFile> {
 
     @SuppressWarnings("unchecked")
@@ -26,7 +27,7 @@ public class TextTableFileBuilder implements EasyBeanBuilder<TextTableFile> {
         String name = Ensure.notBlank(ArrayUtils.indexOf(args, String.class, 0));
 
         // 根据文件类型查询对应的组件
-        EasyBean beanInfo = Ensure.notNull(context.getBeanInfo(TextTableFile.class, name));
+        EasyBeanInfo beanInfo = Ensure.notNull(context.getBeanInfo(TextTableFile.class, name));
 
         // 创建文件，并设置属性
         TextTableFile file = context.createBean(beanInfo.getType());

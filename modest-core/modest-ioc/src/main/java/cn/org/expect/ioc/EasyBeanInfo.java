@@ -5,7 +5,7 @@ import java.util.Comparator;
 /**
  * {@linkplain cn.org.expect.annotation.EasyBean} 注解对应的接口
  */
-public interface EasyBean extends Comparator<EasyBean> {
+public interface EasyBeanInfo extends Comparator<EasyBeanInfo> {
 
     /**
      * 组件类
@@ -75,7 +75,7 @@ public interface EasyBean extends Comparator<EasyBean> {
      * @param beanInfo 组件信息
      * @return 返回true表示相等
      */
-    boolean equals(EasyBean beanInfo);
+    boolean equals(EasyBeanInfo beanInfo);
 
     /**
      * 排序规则
@@ -84,6 +84,6 @@ public interface EasyBean extends Comparator<EasyBean> {
      * @param o2 组件
      * @return 0表示组件相同 大于0表示参数1要排在参数2的后面 小于0表示参数1要排在参数2的前面
      */
-    int compare(EasyBean o1, EasyBean o2);
+    int compare(EasyBeanInfo o1, EasyBeanInfo o2);
 
 }

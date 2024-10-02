@@ -163,7 +163,7 @@ public class EasyBeanTableRow extends ArrayList<EasyBeanDefine> {
      */
     public void sortByDesc() {
         if (this.size() > 0) {
-            Comparator<EasyBean> c = Collections.reverseOrder(this.get(0));
+            Comparator<EasyBeanInfo> c = Collections.reverseOrder(this.get(0));
             Collections.sort(this, c);
         }
     }
@@ -172,7 +172,7 @@ public class EasyBeanTableRow extends ArrayList<EasyBeanDefine> {
         return toString(this);
     }
 
-    public static String toString(List<? extends EasyBean> list) {
+    public static String toString(List<? extends EasyBeanInfo> list) {
         CharTable ct = new CharTable();
         ct.addTitle("Type");
         ct.addTitle("Name");
@@ -182,7 +182,7 @@ public class EasyBeanTableRow extends ArrayList<EasyBeanDefine> {
         ct.addTitle("Description");
         ct.addTitle("bean");
 
-        for (EasyBean beanInfo : list) {
+        for (EasyBeanInfo beanInfo : list) {
             ct.addCell(beanInfo.getType().getName());
             ct.addCell(beanInfo.getName());
             ct.addCell(beanInfo.getPriority());

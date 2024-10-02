@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import cn.org.expect.annotation.ScriptCommand;
-import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -51,8 +51,8 @@ public class CommandScanner {
 
         // 显示所有已加载的脚本引擎命令
         EasyContext cxt = context.getContainer();
-        List<EasyBean> beanList = cxt.getBeanInfoList(UniversalCommandCompiler.class);
-        for (EasyBean beanInfo : beanList) {
+        List<EasyBeanInfo> beanList = cxt.getBeanInfoList(UniversalCommandCompiler.class);
+        for (EasyBeanInfo beanInfo : beanList) {
             Class<? extends UniversalCommandCompiler> cls = beanInfo.getType();
             try {
                 this.loadScriptCommand(cls);

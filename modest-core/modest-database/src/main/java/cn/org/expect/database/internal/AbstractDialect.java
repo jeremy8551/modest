@@ -242,10 +242,9 @@ public abstract class AbstractDialect implements DatabaseDialect {
     public String getSchema(Connection conn) throws SQLException {
         try {
             return (String) ClassUtils.executeMethod(conn, "getSchema", new Object[0]);
-//			return conn.getSchema();
         } catch (Exception e) {
-            Property p = CollectionUtils.firstElement(Jdbc.getSchemas(conn));
-            return p == null ? null : p.getKey();
+            Property property = CollectionUtils.firstElement(Jdbc.getSchemas(conn));
+            return property == null ? null : property.getKey();
         }
     }
 

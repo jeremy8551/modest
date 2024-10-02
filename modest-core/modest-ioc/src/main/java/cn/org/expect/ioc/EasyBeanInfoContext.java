@@ -46,7 +46,7 @@ public interface EasyBeanInfoContext {
      * @param type 类或接口
      * @return 组件对应的所有实现类
      */
-    List<EasyBean> getBeanInfoList(Class<?> type);
+    List<EasyBeanInfo> getBeanInfoList(Class<?> type);
 
     /**
      * 查找类信息对应的实现类集合
@@ -55,7 +55,7 @@ public interface EasyBeanInfoContext {
      * @param name 组件名
      * @return 组件对应的所有实现类
      */
-    List<EasyBean> getBeanInfoList(Class<?> type, String name);
+    List<EasyBeanInfo> getBeanInfoList(Class<?> type, String name);
 
     /**
      * 判断组件 {@code type} 的实现类 {@code impl} 是否已注册
@@ -81,7 +81,7 @@ public interface EasyBeanInfoContext {
      * @param type 组件类信息
      * @return 组件的实现类集合
      */
-    List<EasyBean> removeBeanInfoList(Class<?> type);
+    List<EasyBeanInfo> removeBeanInfoList(Class<?> type);
 
     /**
      * 删除所有已注册的组件信息

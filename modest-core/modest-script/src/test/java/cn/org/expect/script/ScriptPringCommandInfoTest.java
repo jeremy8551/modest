@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import cn.org.expect.ioc.DefaultEasyContext;
-import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.ClassUtils;
@@ -29,32 +29,32 @@ public class ScriptPringCommandInfoTest {
         }
 
         log.info("");
-        List<EasyBean> commands = context.getBeanInfoList(UniversalCommandCompiler.class);
-        Collections.sort(commands, new Comparator<EasyBean>() {
-            public int compare(EasyBean o1, EasyBean o2) {
+        List<EasyBeanInfo> commands = context.getBeanInfoList(UniversalCommandCompiler.class);
+        Collections.sort(commands, new Comparator<EasyBeanInfo>() {
+            public int compare(EasyBeanInfo o1, EasyBeanInfo o2) {
                 return o1.getType().getName().compareTo(o2.getType().getName());
             }
         });
 
         StringBuilder buf = new StringBuilder();
         log.info("");
-        for (EasyBean cls : commands) {
+        for (EasyBeanInfo cls : commands) {
             log.info(cls.getType().getName());
             buf.append("\t\t").append(cls.getType().getName()).append(FileUtils.lineSeparator);
         }
         log.info("共找到 " + commands.size() + " 个脚本命令类!");
 
         log.info("");
-        List<EasyBean> methods = context.getBeanInfoList(UniversalScriptVariableMethod.class);
-        Collections.sort(methods, new Comparator<EasyBean>() {
-            public int compare(EasyBean o1, EasyBean o2) {
+        List<EasyBeanInfo> methods = context.getBeanInfoList(UniversalScriptVariableMethod.class);
+        Collections.sort(methods, new Comparator<EasyBeanInfo>() {
+            public int compare(EasyBeanInfo o1, EasyBeanInfo o2) {
                 return o1.getType().getName().compareTo(o2.getType().getName());
             }
         });
 
         log.info("");
         buf.setLength(0);
-        for (EasyBean beanInfo : methods) {
+        for (EasyBeanInfo beanInfo : methods) {
             log.info(beanInfo.getType().getName());
             buf.append("\t\t").append("this.loadVariableMethod(" + beanInfo.getType().getName() + ".class);").append(FileUtils.lineSeparator);
         }

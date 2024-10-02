@@ -37,16 +37,16 @@ public class StandardDatabaseConfigurationContainer implements DatabaseConfigura
     }
 
     public DatabaseConfiguration add(Properties p) {
-        String host = p.getProperty(OSConnectCommand.host);
-        String driverClassName = p.getProperty(Jdbc.driverClassName);
-        String url = p.getProperty(Jdbc.url);
-        String username = p.getProperty(OSConnectCommand.username);
-        String password = p.getProperty(OSConnectCommand.password);
-        String adminUsername = p.getProperty(Jdbc.admin);
-        String adminPassword = p.getProperty(Jdbc.adminPw);
-        String sshUser = p.getProperty(OSShellCommand.sshUser);
-        String sshUserPw = p.getProperty(OSShellCommand.sshUserPw);
-        String sshPort = p.getProperty(OSShellCommand.sshPort);
+        String host = p.getProperty(OSConnectCommand.HOST);
+        String driverClassName = p.getProperty(Jdbc.DRIVER_CLASS_NAME);
+        String url = p.getProperty(Jdbc.URL);
+        String username = p.getProperty(OSConnectCommand.USERNAME); // 数据库用户
+        String password = p.getProperty(OSConnectCommand.PASSWORD);
+        String adminUsername = p.getProperty(Jdbc.ADMIN_USERNAME); // 数据库管理员账号
+        String adminPassword = p.getProperty(Jdbc.ADMIN_PASSWORD); // 数据库管理员密码
+        String sshUser = p.getProperty(OSShellCommand.SSH_USERNAME); // 数据库所在服务器的ssh用户
+        String sshUserPw = p.getProperty(OSShellCommand.SSH_PASSWORD);
+        String sshPort = p.getProperty(OSShellCommand.SSH_PORT); // 数据库所在服务器的ssh端口
 
         StandardDatabaseConfiguration config = new StandardDatabaseConfiguration(this.context, host, driverClassName, url, username, password, adminUsername, adminPassword, sshUser, sshUserPw, sshPort);
         this.add(config);

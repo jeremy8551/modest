@@ -11,7 +11,7 @@ import cn.org.expect.database.export.ExtractWriter;
 import cn.org.expect.expression.WordIterator;
 import cn.org.expect.io.TextTable;
 import cn.org.expect.io.TextTableFile;
-import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.script.UniversalCommandCompilerResult;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
@@ -75,24 +75,24 @@ public class DBExportCommandCompiler extends AbstractTraceCommandCompiler {
 
     public void usage(UniversalScriptContext context, UniversalScriptStdout out) {
         // 查找接口对应的的实现类
-        List<EasyBean> list1 = context.getContainer().getBeanInfoList(TextTableFile.class);
+        List<EasyBeanInfo> list1 = context.getContainer().getBeanInfoList(TextTableFile.class);
         CharTable ct1 = new CharTable(context.getCharsetName());
         ct1.addTitle("");
         ct1.addTitle("");
         ct1.addTitle("");
-        for (EasyBean beanInfo : list1) {
+        for (EasyBeanInfo beanInfo : list1) {
             ct1.addCell(beanInfo.getName());
             ct1.addCell(beanInfo.getDescription());
             ct1.addCell(beanInfo.getType().getName());
         }
 
         // 查找接口对应的的实现类
-        List<EasyBean> list2 = context.getContainer().getBeanInfoList(ExtractWriter.class);
+        List<EasyBeanInfo> list2 = context.getContainer().getBeanInfoList(ExtractWriter.class);
         CharTable ct2 = new CharTable(context.getCharsetName());
         ct2.addTitle("");
         ct2.addTitle("");
         ct2.addTitle("");
-        for (EasyBean beanInfo : list2) {
+        for (EasyBeanInfo beanInfo : list2) {
             ct2.addCell(beanInfo.getName());
             ct2.addCell(beanInfo.getDescription());
             ct2.addCell(beanInfo.getType().getName());

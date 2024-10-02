@@ -51,34 +51,34 @@ public class DeclareCatalogCommandCompiler extends AbstractGlobalCommandCompiler
         it.assertNext("use");
 
         Properties config = new Properties();
-        String[] keys = {DeclareCatalogCommandCompiler.file, Jdbc.driverClassName, Jdbc.url, OSConnectCommand.username, OSConnectCommand.password, Jdbc.admin, Jdbc.adminPw, OSShellCommand.sshPort};
+        String[] keys = {DeclareCatalogCommandCompiler.file, Jdbc.DRIVER_CLASS_NAME, Jdbc.URL, OSConnectCommand.USERNAME, OSConnectCommand.PASSWORD, Jdbc.ADMIN_USERNAME, Jdbc.ADMIN_PASSWORD, OSShellCommand.SSH_PORT};
         String part = it.readOther();
         List<String> list = analysis.split(part);
         for (int i = 0; i < list.size(); i++) {
             String key = list.get(i);
 
-            if (key.equalsIgnoreCase(OSConnectCommand.host)) {
-                key = OSConnectCommand.host;
+            if (key.equalsIgnoreCase(OSConnectCommand.HOST)) {
+                key = OSConnectCommand.HOST;
             } else if (key.equalsIgnoreCase(Jdbc.driver)) {
-                key = Jdbc.driverClassName;
-            } else if (key.equalsIgnoreCase(Jdbc.url)) {
-                key = Jdbc.url;
-            } else if (key.equalsIgnoreCase(OSConnectCommand.username)) {
-                key = OSConnectCommand.username;
-            } else if (key.equalsIgnoreCase(OSConnectCommand.password)) {
-                key = OSConnectCommand.password;
-            } else if (key.equalsIgnoreCase(Jdbc.admin)) {
-                key = Jdbc.admin;
-            } else if (key.equalsIgnoreCase(Jdbc.adminPw)) {
-                key = Jdbc.adminPw;
+                key = Jdbc.DRIVER_CLASS_NAME;
+            } else if (key.equalsIgnoreCase(Jdbc.URL)) {
+                key = Jdbc.URL;
+            } else if (key.equalsIgnoreCase(OSConnectCommand.USERNAME)) {
+                key = OSConnectCommand.USERNAME;
+            } else if (key.equalsIgnoreCase(OSConnectCommand.PASSWORD)) {
+                key = OSConnectCommand.PASSWORD;
+            } else if (key.equalsIgnoreCase(Jdbc.ADMIN_USERNAME)) {
+                key = Jdbc.ADMIN_USERNAME;
+            } else if (key.equalsIgnoreCase(Jdbc.ADMIN_PASSWORD)) {
+                key = Jdbc.ADMIN_PASSWORD;
             } else if (key.equalsIgnoreCase(DeclareCatalogCommandCompiler.file)) {
                 key = DeclareCatalogCommandCompiler.file;
-            } else if (key.equalsIgnoreCase(OSShellCommand.sshUser)) {
-                key = OSShellCommand.sshUser;
-            } else if (key.equalsIgnoreCase(OSShellCommand.sshUserPw)) {
-                key = OSShellCommand.sshUserPw;
-            } else if (key.equalsIgnoreCase(OSShellCommand.sshPort)) {
-                key = OSShellCommand.sshPort;
+            } else if (key.equalsIgnoreCase(OSShellCommand.SSH_USERNAME)) {
+                key = OSShellCommand.SSH_USERNAME;
+            } else if (key.equalsIgnoreCase(OSShellCommand.SSH_PASSWORD)) {
+                key = OSShellCommand.SSH_PASSWORD;
+            } else if (key.equalsIgnoreCase(OSShellCommand.SSH_PORT)) {
+                key = OSShellCommand.SSH_PORT;
             } else {
                 throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr131", command, key, StringUtils.join(keys, ", ")));
             }

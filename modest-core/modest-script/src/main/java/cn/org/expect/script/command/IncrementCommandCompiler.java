@@ -8,7 +8,7 @@ import cn.org.expect.annotation.ScriptCommand;
 import cn.org.expect.expression.WordIterator;
 import cn.org.expect.io.TableColumnComparator;
 import cn.org.expect.io.TextTableFile;
-import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.script.UniversalCommandCompilerResult;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
@@ -57,12 +57,12 @@ public class IncrementCommandCompiler extends AbstractTraceCommandCompiler {
     }
 
     public void usage(UniversalScriptContext context, UniversalScriptStdout out) { // 查找接口对应的的实现类
-        List<EasyBean> list = context.getContainer().getBeanInfoList(TextTableFile.class);
+        List<EasyBeanInfo> list = context.getContainer().getBeanInfoList(TextTableFile.class);
         CharTable table = new CharTable(context.getCharsetName());
         table.addTitle("");
         table.addTitle("");
         table.addTitle("");
-        for (EasyBean beanInfo : list) {
+        for (EasyBeanInfo beanInfo : list) {
             table.addCell(beanInfo.getName());
             table.addCell(beanInfo.getDescription());
             table.addCell(beanInfo.getType().getName());

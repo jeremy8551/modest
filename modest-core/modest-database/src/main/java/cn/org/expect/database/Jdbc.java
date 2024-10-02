@@ -54,11 +54,11 @@ public class Jdbc {
     private final static Log log = LogFactory.getLog(Jdbc.class);
 
     public final static String driver = "driver";
-    public final static String driverClassName = "driverClassName";
-    public final static String url = "url";
-    public final static String schema = "schema";
-    public final static String admin = "admin";
-    public final static String adminPw = "adminPw";
+    public final static String DRIVER_CLASS_NAME = "driverClassName";
+    public final static String URL = "url";
+    public final static String SCHEMA = "schema";
+    public final static String ADMIN_USERNAME = "admin.username";
+    public final static String ADMIN_PASSWORD = "admin.password";
 
     /** 是否打印内部使用的数据库连接池详细操作日志, true-表示使用数据库连接池代理打印详细信息 */
     public final static String PROPERTY_DBLOG = Modest.class.getPackage().getName() + ".dblog";

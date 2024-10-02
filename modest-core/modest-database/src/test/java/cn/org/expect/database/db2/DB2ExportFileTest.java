@@ -7,50 +7,48 @@ import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-
 public class DB2ExportFileTest {
 
     @Test
     public void testReplaceDB2FieldValue() {
-        assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
-        assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("1,2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
-        assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("11,2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
-        assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("111,2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
-        assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
-        assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
-        assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
-        assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
-        assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,", 7, "\"ceshi\""));
-        assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,7", 7, "\"ceshi\""));
-        assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,77", 7, "\"ceshi\""));
-        assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,777", 7, "\"ceshi\""));
-        assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,\"3,\"\"abc\"", 7, "\"ceshi\""));
-        assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,\"3,\"\"abc\"", 7, "\"ceshi\""));
-        assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,\"3,\"\"abc\"", 7, "\"ceshi\""));
-        assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,\"3,\"\"abc\"", 7, "\"ceshi\""));
-        assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",,3,4,5,6,", 2, "\"ceshi\""));
-        assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,7", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",2,3,4,5,6,7", 2, "\"ceshi\""));
-        assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,77", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",22,3,4,5,6,77", 2, "\"ceshi\""));
-        assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,777", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",222,3,4,5,6,777", 2, "\"ceshi\""));
-        assertEquals(",,3,4,5,\"ceshi\",", DB2ExportFile.replaceDB2FieldValue(",,3,4,5,\"3,\"\"abc\",", 6, "\"ceshi\""));
-        assertEquals(",2,3,4,5,\"ceshi\",7", DB2ExportFile.replaceDB2FieldValue(",2,3,4,5,\"3,\"\"abc\",7", 6, "\"ceshi\""));
-        assertEquals(",22,3,4,5,\"ceshi\",77", DB2ExportFile.replaceDB2FieldValue(",22,3,4,5,\"3,\"\"abc\",77", 6, "\"ceshi\""));
-        assertEquals(",222,3,4,5,\"ceshi\",777", DB2ExportFile.replaceDB2FieldValue(",222,3,4,5,\"3,\"\"abc\",777", 6, "\"ceshi\""));
-        assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",,3,4,5,6,", 2, "\"ceshi\""));
-        assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,7", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",2,3,4,5,6,7", 2, "\"ceshi\""));
-        assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,77", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",22,3,4,5,6,77", 2, "\"ceshi\""));
-        assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,777", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",222,3,4,5,6,777", 2, "\"ceshi\""));
-        assertEquals(",,,\"ceshi\",,,", DB2ExportFile.replaceDB2FieldValue(",,,,,,", 4, "\"ceshi\""));
+        Assert.assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
+        Assert.assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("1,2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
+        Assert.assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("11,2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
+        Assert.assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("111,2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
+        Assert.assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
+        Assert.assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
+        Assert.assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
+        Assert.assertEquals("\"ceshi\",2,\"3,\"\"abc\",4,5,6", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",2,\"3,\"\"abc\",4,5,6", 1, "\"ceshi\""));
+        Assert.assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,", 7, "\"ceshi\""));
+        Assert.assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,7", 7, "\"ceshi\""));
+        Assert.assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,77", 7, "\"ceshi\""));
+        Assert.assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,777", 7, "\"ceshi\""));
+        Assert.assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,\"3,\"\"abc\"", 7, "\"ceshi\""));
+        Assert.assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,\"3,\"\"abc\"", 7, "\"ceshi\""));
+        Assert.assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,\"3,\"\"abc\"", 7, "\"ceshi\""));
+        Assert.assertEquals(",2,\"3,\"\"abc\",4,5,6,\"ceshi\"", DB2ExportFile.replaceDB2FieldValue(",2,\"3,\"\"abc\",4,5,6,\"3,\"\"abc\"", 7, "\"ceshi\""));
+        Assert.assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",,3,4,5,6,", 2, "\"ceshi\""));
+        Assert.assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,7", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",2,3,4,5,6,7", 2, "\"ceshi\""));
+        Assert.assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,77", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",22,3,4,5,6,77", 2, "\"ceshi\""));
+        Assert.assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,777", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",222,3,4,5,6,777", 2, "\"ceshi\""));
+        Assert.assertEquals(",,3,4,5,\"ceshi\",", DB2ExportFile.replaceDB2FieldValue(",,3,4,5,\"3,\"\"abc\",", 6, "\"ceshi\""));
+        Assert.assertEquals(",2,3,4,5,\"ceshi\",7", DB2ExportFile.replaceDB2FieldValue(",2,3,4,5,\"3,\"\"abc\",7", 6, "\"ceshi\""));
+        Assert.assertEquals(",22,3,4,5,\"ceshi\",77", DB2ExportFile.replaceDB2FieldValue(",22,3,4,5,\"3,\"\"abc\",77", 6, "\"ceshi\""));
+        Assert.assertEquals(",222,3,4,5,\"ceshi\",777", DB2ExportFile.replaceDB2FieldValue(",222,3,4,5,\"3,\"\"abc\",777", 6, "\"ceshi\""));
+        Assert.assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",,3,4,5,6,", 2, "\"ceshi\""));
+        Assert.assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,7", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",2,3,4,5,6,7", 2, "\"ceshi\""));
+        Assert.assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,77", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",22,3,4,5,6,77", 2, "\"ceshi\""));
+        Assert.assertEquals("\"3,\"\"abc\",\"ceshi\",3,4,5,6,777", DB2ExportFile.replaceDB2FieldValue("\"3,\"\"abc\",222,3,4,5,6,777", 2, "\"ceshi\""));
+        Assert.assertEquals(",,,\"ceshi\",,,", DB2ExportFile.replaceDB2FieldValue(",,,,,,", 4, "\"ceshi\""));
 
         String src = "\"C\",\"TEST0001208098080\",\"重庆市綦江区全兴建筑工程有限公司\",\"\",\"测试地址信息\",\"CHN\",\"500110\",\"1997-12-12\",\"2060-12-31\",\"承包:土木工程建筑,房屋防水治理工程,商品房销售,建筑材料,五金,交电,化工,百货.生产销售预制构件\",\"CNY\",\"5038\",\"1\",\"10\",\"e4700\",\"15\",\"9999-99-99\",\"9999-99-99\",\"0019 \",\"5501020000333512 \",\" \",\" \",\" \",\" \",\" \",\" \",\" \",\" \",\"\",\" \",0,\" \"";
         String[] array = null;
         array = DB2ExportFile.splitDB2ExportFileLine(src, false);
-        assertEquals("String[C, TEST0001208098080, 重庆市綦江区全兴建筑工程有限公司, , 测试地址信息, CHN, 500110, 1997-12-12, 2060-12-31, 承包:土木工程建筑,房屋防水治理工程,商品房销售,建筑材料,五金,交电,化工,百货.生产销售预制构件, CNY, 5038, 1, 10, e4700, 15, 9999-99-99, 9999-99-99, 0019 , 5501020000333512 ,  ,  ,  ,  ,  ,  ,  ,  , ,  , 0,  ]", StringUtils.toString(array));
+        Assert.assertEquals("String[C, TEST0001208098080, 重庆市綦江区全兴建筑工程有限公司, , 测试地址信息, CHN, 500110, 1997-12-12, 2060-12-31, 承包:土木工程建筑,房屋防水治理工程,商品房销售,建筑材料,五金,交电,化工,百货.生产销售预制构件, CNY, 5038, 1, 10, e4700, 15, 9999-99-99, 9999-99-99, 0019 , 5501020000333512 ,  ,  ,  ,  ,  ,  ,  ,  , ,  , 0,  ]", StringUtils.toString(array));
 
         String des = DB2ExportFile.replaceDB2FieldValue(src, 21, "\"1\"");
         array = DB2ExportFile.splitDB2ExportFileLine(des, false);
-        assertEquals("String[C, TEST0001208098080, 重庆市綦江区全兴建筑工程有限公司, , 测试地址信息, CHN, 500110, 1997-12-12, 2060-12-31, 承包:土木工程建筑,房屋防水治理工程,商品房销售,建筑材料,五金,交电,化工,百货.生产销售预制构件, CNY, 5038, 1, 10, e4700, 15, 9999-99-99, 9999-99-99, 0019 , 5501020000333512 , 1,  ,  ,  ,  ,  ,  ,  , ,  , 0,  ]", StringUtils.toString(array));
+        Assert.assertEquals("String[C, TEST0001208098080, 重庆市綦江区全兴建筑工程有限公司, , 测试地址信息, CHN, 500110, 1997-12-12, 2060-12-31, 承包:土木工程建筑,房屋防水治理工程,商品房销售,建筑材料,五金,交电,化工,百货.生产销售预制构件, CNY, 5038, 1, 10, e4700, 15, 9999-99-99, 9999-99-99, 0019 , 5501020000333512 , 1,  ,  ,  ,  ,  ,  ,  , ,  , 0,  ]", StringUtils.toString(array));
     }
 
     @Test
@@ -58,11 +56,10 @@ public class DB2ExportFileTest {
         String str = "\"C\",\"TEST0001208098080\",\"重庆市綦江区全兴建筑工程有限公司\",\"\",\"测试地址信息\",\"CHN\",\"500110\",\"1997-12-12\",\"2060-12-31\",\"承包:土木工程建筑,房屋防水治理工程,商品房销售,建筑材料,五金,交电,化工,百货.生产销售预制构件\",\"CNY\",\"5038\",\"1\",\"10\",\"e4700\",\"15\",\"9999-99-99\",\"9999-99-99\",\"0019 \",\"5501020000333512 \",\" \",\" \",\" \",\" \",\" \",\" \",\" \",\" \",\"\",\" \",0,\" \"";
         String[] array = DB2ExportFile.splitDB2ExportFileLine(str, false); // 解析DB2 文本文件中每行数据
 
-        Assert.assertTrue(true //
-                && array[0].equals("C") //
+        Assert.assertTrue(array[0].equals("C") //
                 && array[1].equals("TEST0001208098080") //
                 && array[2].equals("重庆市綦江区全兴建筑工程有限公司") //
-                && array[3].equals("") //
+                && array[3].isEmpty() //
                 && array[4].equals("测试地址信息") //
                 && array[5].equals("CHN") //
                 && array[6].equals("500110") //
@@ -87,7 +84,7 @@ public class DB2ExportFileTest {
                 && array[25].equals(" ") //
                 && array[26].equals(" ") //
                 && array[27].equals(" ") //
-                && array[28].equals("") //
+                && array[28].isEmpty() //
                 && array[29].equals(" ") //
                 && array[30].equals("0") //
                 && array[31].equals(" ") //
@@ -96,18 +93,11 @@ public class DB2ExportFileTest {
 
     @Test
     public void testSplitDB2ExportFileLineKeepQuote() {
-        //
-
         String str = "\"C\",\"TEST0001208098080\",\"测试角色\",\"\",\"测试地址信息\",\"CHN\",\"500110\",\"1997-12-12\",\"2060-12-31\",\"承包:土木工程建筑,房屋防水治理工程,商品房销售,建筑材料,五金,交电,化工,百货.生产销售预制构件\",\"CNY\",\"5038\",\"1\",\"10\",\"e4700\",\"15\",\"9999-99-99\",\"9999-99-99\",\"0019 \",\"5501020000333512 \",\" \",\" \",\" \",\" \",\" \",\" \",\" \",\" \",\"\",\" \",0,\" \"";
         String[] array = null;
         array = DB2ExportFile.splitDB2ExportFileLine(str, true);
-//		for (int i = 0; i < array.length; i++) {
-//			String s = array[i];
-//			System.out.println(" && array[" + i + "].equals(\"" + ST.replaceAll(s, "\"", "\\\"") + "\") // ");
-//		}
 
-        Assert.assertTrue(true //
-                && array[0].equals("\"C\"") //
+        Assert.assertTrue(array[0].equals("\"C\"") //
                 && array[1].equals("\"TEST0001208098080\"") //
                 && array[2].equals("\"测试角色\"") //
                 && array[3].equals("\"\"") //
@@ -148,11 +138,10 @@ public class DB2ExportFileTest {
         String str = "\"C\",\"TEST0001208098080\",\"测试角色\",\"\",\"测试地址信息\",\"CHN\",\"500110\",\"1997-12-12\",\"2060-12-31\",\"承包:土木工程建筑,房屋防水治理工程,商品房销售,建筑材料,五金,交电,化工,百货.生产销售预制构件\",\"CNY\",\"5038\",\"1\",\"10\",\"e4700\",\"15\",\"9999-99-99\",\"9999-99-99\",\"0019 \",\"5501020000333512 \",\" \",\" \",\" \",\" \",\" \",\" \",\" \",\" \",\"\",\" \",0,\" \"";
         DB2ExportFile.splitDB2ExportFileLine(str, false, list);
 
-        Assert.assertTrue(true //
-                && list.get(0).equals("C") //
+        Assert.assertTrue(list.get(0).equals("C") //
                 && list.get(1).equals("TEST0001208098080") //
                 && list.get(2).equals("测试角色") //
-                && list.get(3).equals("") //
+                && list.get(3).isEmpty() //
                 && list.get(4).equals("测试地址信息") //
                 && list.get(5).equals("CHN") //
                 && list.get(6).equals("500110") //
@@ -177,7 +166,7 @@ public class DB2ExportFileTest {
                 && list.get(25).equals(" ") //
                 && list.get(26).equals(" ") //
                 && list.get(27).equals(" ") //
-                && list.get(28).equals("") //
+                && list.get(28).isEmpty() //
                 && list.get(29).equals(" ") //
                 && list.get(30).equals("0") //
                 && list.get(31).equals(" ") //

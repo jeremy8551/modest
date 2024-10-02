@@ -9,10 +9,10 @@ package cn.org.expect.os;
  */
 public interface OSConnectCommand {
 
-    String host = "host";
-    String port = "port";
-    String username = "username";
-    String password = "password";
+    String HOST = "host";
+    String PORT = "port";
+    String USERNAME = "username";
+    String PASSWORD = "password";
 
     /**
      * 执行登录认证

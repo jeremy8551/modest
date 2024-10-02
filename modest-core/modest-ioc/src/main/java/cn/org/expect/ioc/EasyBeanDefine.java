@@ -5,5 +5,5 @@ package cn.org.expect.ioc;
  *
  * @author jeremy8551@qq.com
  */
-public interface EasyBeanDefine extends EasyBean, EasyBeanInstance {
+public interface EasyBeanDefine extends EasyBeanInfo, EasyBeanInstance {
 }

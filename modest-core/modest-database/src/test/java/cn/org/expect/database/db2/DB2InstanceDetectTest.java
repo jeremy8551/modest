@@ -1,10 +1,12 @@
-package cn.org.expect.database;
+package cn.org.expect.database.db2;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
-import cn.org.expect.database.db2.DB2Instance;
+import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.database.annotation.DatabaseRunner;
+import cn.org.expect.database.annotation.RunIf;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.os.OS;
 import cn.org.expect.os.OSCpu;
 import cn.org.expect.os.OSDisk;
@@ -16,35 +18,38 @@ import cn.org.expect.os.OSProcess;
 import cn.org.expect.os.OSUser;
 import cn.org.expect.os.OSUserGroup;
 import cn.org.expect.util.Dates;
+import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.TimeWatch;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
- * 测试远程连接Linux与DB2和WAS探测
+ * 测试远程连接Linux与DB2和WAS探测 TODO
  */
-@Ignore
+@RunWith(DatabaseRunner.class)
+@RunIf(values = {"db2.host", "db2.ssh.port", "db2.ssh.username", "db2.ssh.password"})
 public class DB2InstanceDetectTest {
 
-    @Rule
-    public WithDBRule rule = new WithDBRule();
+    @EasyBean(name = "${db2.host}")
+    String host;
+
+    @EasyBean(name = "${db2.ssh.port}")
+    String port;
+
+    @EasyBean(name = "${db2.ssh.username}")
+    String username;
+
+    @EasyBean(name = "${db2.ssh.password}")
+    String password;
+
+    /** 容器上下文信息 */
+    @EasyBean
+    public EasyContext context;
 
     @Test
     public void test() throws IOException {
-        Properties config = rule.getProperties();
-        String host = config.getProperty("ssh.host");
-        int port = Integer.parseInt(config.getProperty("ssh.port"));
-        String username = config.getProperty("ssh.username");
-        String password = config.getProperty("ssh.password");
-
-//        host = "10.1.10.10";
-//        port = 22;
-//        username = "etl@was@10.1.16.54";
-//        password = "xxx";
-
         TimeWatch watch = new TimeWatch();
-        OS os = rule.getContext().getBean(OS.class, host, port, username, password);
+        OS os = this.context.getBean(OS.class, this.host, StringUtils.parseInt(this.port, 22), this.username, this.password);
         try {
             System.out.println();
             System.out.println();

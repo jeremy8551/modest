@@ -1,6 +1,6 @@
 package cn.org.expect.ioc.impl;
 
-import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyBeanDefine;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Ensure;
@@ -137,7 +137,7 @@ public class EasyBeanDefineImpl implements EasyBeanDefine {
         return this.name.equalsIgnoreCase(name);
     }
 
-    public boolean equals(EasyBean beanInfo) {
+    public boolean equals(EasyBeanInfo beanInfo) {
         return this.equals(beanInfo.getType());
     }
 
@@ -150,7 +150,7 @@ public class EasyBeanDefineImpl implements EasyBeanDefine {
         this.instance = instance;
     }
 
-    public int compare(EasyBean o1, EasyBean o2) {
+    public int compare(EasyBeanInfo o1, EasyBeanInfo o2) {
         int v = o1.getName().compareTo(o2.getName());
         if (v != 0) {
             return v;

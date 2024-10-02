@@ -96,7 +96,7 @@ public class StandardDatabaseConfiguration implements DatabaseConfiguration, Eas
         if (StringUtils.isBlank(ipAddress)) { // 截取 URL 中的主机ip或主机名作为默认值
             DatabaseDialect dialect = this.context.getBean(DatabaseDialect.class, url);
             List<DatabaseURL> urls = dialect.parseJdbcUrl(url);
-            if (urls.size() > 0) {
+            if (!urls.isEmpty()) {
                 this.host = urls.get(0).getHostname();
             }
         } else {

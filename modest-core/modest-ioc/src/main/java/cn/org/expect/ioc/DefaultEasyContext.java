@@ -240,8 +240,8 @@ public class DefaultEasyContext implements EasyContext {
         return add;
     }
 
-    public synchronized List<EasyBean> removeBeanInfoList(Class<?> type) {
-        return new ArrayList<EasyBean>(this.table.remove(type));
+    public synchronized List<EasyBeanInfo> removeBeanInfoList(Class<?> type) {
+        return new ArrayList<EasyBeanInfo>(this.table.remove(type));
     }
 
     public boolean containsBeanInfo(Class<?> type, Class<?> cls) {
@@ -256,13 +256,13 @@ public class DefaultEasyContext implements EasyContext {
         return list;
     }
 
-    public List<EasyBean> getBeanInfoList(Class<?> type) {
-        return new ArrayList<EasyBean>(this.table.get(type));
+    public List<EasyBeanInfo> getBeanInfoList(Class<?> type) {
+        return new ArrayList<EasyBeanInfo>(this.table.get(type));
     }
 
-    public List<EasyBean> getBeanInfoList(Class<?> type, String name) {
+    public List<EasyBeanInfo> getBeanInfoList(Class<?> type, String name) {
         Ensure.notNull(type);
-        return new ArrayList<EasyBean>(this.table.get(type).indexOf(name));
+        return new ArrayList<EasyBeanInfo>(this.table.get(type).indexOf(name));
     }
 
     public List<Class<?>> getBeanInfoTypes() {

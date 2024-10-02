@@ -117,8 +117,11 @@ public class ConnectionAttributes implements Cloneable {
         }
 
         try {
-            this.clientInfo.putAll(JavaDialectFactory.get().getClientInfo(conn));
-            this.hasClientInfo = true;
+            Properties info = JavaDialectFactory.get().getClientInfo(conn);
+            if (info != null) {
+                this.clientInfo.putAll(info);
+                this.hasClientInfo = true;
+            }
         } catch (Throwable e) {
             if (log.isWarnEnabled()) {
                 log.warn(e.getLocalizedMessage(), e);
@@ -126,8 +129,11 @@ public class ConnectionAttributes implements Cloneable {
         }
 
         try {
-            this.types.putAll(conn.getTypeMap());
-            this.hasTypeMap = true;
+            Map<String, Class<?>> map = conn.getTypeMap();
+            if (map != null) {
+                this.types.putAll(map);
+                this.hasTypeMap = true;
+            }
         } catch (Throwable e) {
             if (log.isWarnEnabled()) {
                 log.warn(e.getLocalizedMessage(), e);

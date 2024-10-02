@@ -6,7 +6,7 @@ import java.util.List;
 import cn.org.expect.annotation.ScriptCommand;
 import cn.org.expect.expression.WordIterator;
 import cn.org.expect.io.TextTableFile;
-import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
@@ -74,12 +74,12 @@ public class SortTableFileCommandCompiler extends AbstractTraceCommandCompiler {
     }
 
     public void usage(UniversalScriptContext context, UniversalScriptStdout out) { // 查找接口对应的的实现类
-        List<EasyBean> list = context.getContainer().getBeanInfoList(TextTableFile.class);
+        List<EasyBeanInfo> list = context.getContainer().getBeanInfoList(TextTableFile.class);
         CharTable ct = new CharTable(context.getCharsetName());
         ct.addTitle("");
         ct.addTitle("");
         ct.addTitle("");
-        for (EasyBean beanInfo : list) {
+        for (EasyBeanInfo beanInfo : list) {
             ct.addCell(beanInfo.getName());
             ct.addCell(beanInfo.getDescription());
             ct.addCell(beanInfo.getType().getName());

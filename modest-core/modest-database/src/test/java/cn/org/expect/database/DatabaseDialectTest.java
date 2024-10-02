@@ -1,130 +1,197 @@
 package cn.org.expect.database;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
 import java.util.List;
 
-import cn.org.expect.database.db2.DB2Dialect;
-import cn.org.expect.database.mysql.MysqlDialect;
-import cn.org.expect.database.oracle.OracleDialect;
+import cn.org.expect.Modest;
+import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.database.annotation.DatabaseRunner;
+import cn.org.expect.database.internal.AbstractDialect;
+import cn.org.expect.database.internal.StandardDatabaseDialect;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.StringUtils;
+import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
+@RunWith(DatabaseRunner.class)
 public class DatabaseDialectTest {
 
+    /** 容器上下文信息 */
+    @EasyBean
+    public EasyContext context;
+
+    /** 数据库连接 */
+    @EasyBean
+    public Connection connection;
+
     @Test
-    public void test() {
-        DatabaseDialect d = new DB2Dialect();
-        List<DatabaseURL> list = d.parseJdbcUrl("jdbc:db2://130.1.10.103:50001/TESTDB:currentSchema=HYCS;");
-        assertEquals(1, list.size());
-        DatabaseURL u = list.get(0);
-        assertEquals(u.getHostname(), "130.1.10.103");
-        assertEquals(u.getDatabaseName(), "TESTDB");
-        assertEquals(u.getType(), "db2");
-        assertEquals(u.getPort(), "50001");
-        assertEquals(u.getSchema(), "HYCS");
+    public void test0() {
+        String catalog = null;
+        String schema = null;
+        JdbcDao dao = new JdbcDao(this.context, this.connection);
+        try {
+            String packageName = Modest.class.getPackage().getName();
+            String tableName = packageName.replace('.', '_') + "_TEST_TEMP".toUpperCase();
+            tableName = tableName.toUpperCase();
+            System.out.println("tableName: " + tableName);
+            String fullName = dao.getDialect().toTableName(catalog, schema, tableName);
+            DatabaseTable table = dao.getTable(catalog, schema, tableName);
+            if (table != null) {
+                dao.dropTable(table);
+                dao.commit();
+            }
 
-        List<DatabaseURL> l = d.parseJdbcUrl("jdbc:db2:TESTDB");
-        assertEquals(1, l.size());
-        System.out.println(StringUtils.toString(l.get(0).toProperties()));
+            String sql = "";
+            sql += "create table " + tableName + " (                               \n";
+            sql += "    SERIALNO  VARCHAR(32) not null, --  xxx                        \n";
+            sql += "    OBJECTNO  VARCHAR(40), --  xxx                                \n";
+            sql += "    DOCUMENTTYPE  VARCHAR(30), --  xxx                            \n";
+            sql += "    PAYDATE  VARCHAR(10), --  xx                                 \n";
+            sql += "    ACTUALPAYDATE  VARCHAR(10), --  xx                         \n";
+            sql += "    CURRENCY  VARCHAR(3), --  xx                                   \n";
+            sql += "    PAYAMT  NUMERIC(20, 2), --  xx                               \n";
+            sql += "    ACTUALPAYAMT  NUMERIC(20, 2), --  xx                         \n";
+            sql += "    DEDUCTACCNO1  VARCHAR(40), --  xx                            \n";
+            sql += "    DEDUCTACCNO2  VARCHAR(40), --  xx                            \n";
+            sql += "    DEDUCTACCNO  VARCHAR(40), --  x                             \n";
+            sql += "    BILLSTATUS  VARCHAR(10), --  x                                \n";
+            sql += "    RETURNCHANNEL  VARCHAR(20), --  xx                           \n";
+            sql += "    OBJECTTYPE  VARCHAR(10), --  xx                              \n";
+            sql += "    PAYCORPUSAMT  NUMERIC(20, 2), --  xx                         \n";
+            sql += "    ACTUALPAYCORPUSAMT  NUMERIC(20, 2), --  xx                   \n";
+            sql += "    PAYINTEAMT  NUMERIC(20, 2), --  xx                           \n";
+            sql += "    ACTUALPAYINTEAMT  NUMERIC(20, 2), --  xx                     \n";
+            sql += "    PAYFINEAMT  NUMERIC(20, 2), --  xx                           \n";
+            sql += "    ACTUALFINEAMT  NUMERIC(20, 2), --  xx                        \n";
+            sql += "    PAYCOMPDINTEAMT  NUMERIC(20, 2), --  xx                      \n";
+            sql += "    ACTUALCOMPDINTEAMT  NUMERIC(20, 2), --  xxx                   \n";
+            sql += "    PAYFEEAMT  NUMERIC(20, 2), --  xxx                            \n";
+            sql += "    ACTUALFEEAMT  NUMERIC(20, 2), --  xxx                         \n";
+            sql += "    ORGID  VARCHAR(20), --  xxx                                     \n";
+            sql += "    TBREPAYSERIALNO  VARCHAR(32), --  xxx                \n";
+            sql += "    TBLOANSERIALNO  VARCHAR(32), --  xxx                 \n";
+            sql += "    FEETYPE  VARCHAR(20), --  中文测试表                                 \n";
+            sql += "    CHECKFLAG  VARCHAR(1), --  中文测试表                                \n";
+            sql += "    CHECKACCOUNTNO  VARCHAR(32), --  中文测试表                        \n";
+            sql += "    CHECKACCOUNTTYPE  VARCHAR(2), --  中文测试表                       \n";
+            sql += "    DEDUCTACCNONAME  VARCHAR(80), --  中文测试表                        \n";
+            sql += "    PREPAYCORPUS  NUMERIC(20, 2), --  中文测试表                     \n";
+            sql += "    ACTUALPREPAYCORPUS  NUMERIC(20, 2), --  中文测试表               \n";
+            sql += "    PREPAYINTEREST  NUMERIC(20, 2), --  中文测试表                   \n";
+            sql += "    ACTUALPREPAYINTEREST  NUMERIC(20, 2), --  中文测试表             \n";
+            sql += "    PAYMENTORDER  NUMERIC(20, 2),                                  \n";
+            sql += "    EXPIATIONSUM  NUMERIC(20, 2),                                  \n";
+            sql += "    IFSEND  VARCHAR(2),                                            \n";
+            sql += "    CUSTOMERID  VARCHAR(32), --  中文测试表                              \n";
+            sql += "    CUSTOMERNAME  VARCHAR(80), --  中文测试表                            \n";
+            sql += "    BUSINESSTYPE  VARCHAR(18), --  中文测试表                            \n";
+            sql += "    PUTOUTDATE  VARCHAR(10), --  中文测试表                               \n";
+            sql += "    MATURITYDATE  VARCHAR(10), --  中文测试表                             \n";
+            sql += "    CERTID  VARCHAR(40), --  中文测试表                                  \n";
+            sql += "    INTEBASEADD  NUMERIC(24, 6), --  中文测试表                        \n";
+            sql += "    OLDINTEBASE  NUMERIC(24, 6), --  中文测试表                         \n";
+            sql += "    PAYBANKAMT  NUMERIC(20, 2),                                    \n";
+            sql += "    PAYCOMPANYAMT  NUMERIC(20, 2),                                 \n";
+            sql += "    ACTUALPAYAMTTYPE  VARCHAR(30), --  中文测试表                    \n";
+            sql += "    BILLKIND  VARCHAR(30),                                         \n";
+            sql += "    ADVANCEPAYMETHOD  VARCHAR(32), --  中文测试表                      \n";
+            sql += "    SYSTOLIC  VARCHAR(10), --  中文测试表                                \n";
+            sql += "    PROFITAMT  NUMERIC(26, 6), --  中文测试表                          \n";
+            sql += "    TRANSCODE  CHAR(4), --  中文测试表                                    \n";
+            sql += "    RECORDUSERID  VARCHAR(20), --  中文测试表                             \n";
+            sql += "    REPAYMENTTYPE  VARCHAR(8), --  中文测试表                            \n";
+            sql += "    REPAYMENTAMT  NUMERIC(22, 2),                                   \n";
+            sql += " primary key(SERIALNO) \n";
+            sql += ")                             \n";
 
-        d = new MysqlDialect();
-        List<DatabaseURL> list0 = d.parseJdbcUrl("jdbc:mysql://127.0.0.1:3306/test?user=root&password=&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false");
-        assertEquals(1, list0.size());
-        u = list0.get(0);
-        assertEquals(u.getHostname(), "127.0.0.1");
-        assertEquals(u.getDatabaseName(), "test");
-        assertEquals(u.getType(), "mysql");
-        assertEquals(u.getPort(), "3306");
+            dao.execute(sql);
+            dao.commit();
 
-        List<DatabaseURL> list1 = d.parseJdbcUrl("jdbc:mysql://127.0.0.1/test?user=root&password=&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false");
-        assertEquals(1, list1.size());
-        u = list1.get(0);
-        assertEquals(u.getHostname(), "127.0.0.1");
-        assertEquals(u.getDatabaseName(), "test");
-        assertEquals(u.getType(), "mysql");
-        assertEquals(u.getPort(), "3306");
-        System.out.println(StringUtils.toString(u.toProperties()));
+            dao.execute("create index " + tableName + "IDX on " + fullName + "(SERIALNO)");
+            dao.commit();
 
-        List<DatabaseURL> list2 = d.parseJdbcUrl("jdbc:mysql://127.0.0.2,127.0.0.1/test?user=root&password=&useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&failOverReadOnly=false");
-        assertEquals(list2.size(), 2);
-        u = list2.get(0);
-        assertEquals(u.getHostname(), "127.0.0.2");
-        assertEquals(u.getDatabaseName(), "test");
-        assertEquals(u.getType(), "mysql");
-        assertEquals(u.getPort(), "3306");
-        System.out.println(StringUtils.toString(u.toProperties()));
+            dao.execute("create index " + tableName + "IDX1 on " + fullName + "(OBJECTNO,TRANSCODE)");
+            dao.commit();
 
-        u = list2.get(1);
-        assertEquals(u.getHostname(), "127.0.0.1");
-        assertEquals(u.getDatabaseName(), "test");
-        assertEquals(u.getType(), "mysql");
-        assertEquals(u.getPort(), "3306");
-        System.out.println(StringUtils.toString(list2.get(1).toProperties()));
+            dao.execute("create index " + tableName + "IDX2 on " + fullName + "(OBJECTNO,PAYFEEAMT)");
+            dao.commit();
 
-        d = new OracleDialect();
-        List<DatabaseURL> list3 = d.parseJdbcUrl("jdbc:oracle:thin:@130.1.10.104:1521:sid");
-        assertEquals(list3.size(), 1);
-        u = list3.get(0);
-        assertEquals(u.getHostname(), "130.1.10.104");
-        assertEquals(u.getDatabaseName(), "sid");
-        assertEquals(u.getType(), "oracle");
-        assertEquals(u.getPort(), "1521");
-        assertEquals(u.getSID(), "sid");
-        assertEquals(u.getDriverType(), "thin");
-        System.out.println(StringUtils.toString(u.toProperties()));
+            table = dao.getTable(catalog, schema, tableName);
+            List<DatabaseIndex> indexs = table.getIndexs();
+            List<DatabaseIndex> pks = table.getPrimaryIndexs();
 
-        List<DatabaseURL> list4 = d.parseJdbcUrl("jdbc:oracle:thin:user/pass@130.1.10.104:1521:sid");
-        assertEquals(list4.size(), 1);
-        u = list4.get(0);
-        assertEquals(u.getHostname(), "130.1.10.104");
-        assertEquals(u.getDatabaseName(), "sid");
-        assertEquals(u.getType(), "oracle");
-        assertEquals(u.getPort(), "1521");
-        assertEquals(u.getSID(), "sid");
-        assertEquals(u.getDriverType(), "thin");
-        assertEquals(u.getUsername(), "user");
-        assertEquals(u.getPassword(), "pass");
-        System.out.println(StringUtils.toString(u.toProperties()));
+            Assert.assertEquals(indexs.size(), 2);
+            Assert.assertEquals(pks.size(), 1);
 
-        List<DatabaseURL> list5 = d.parseJdbcUrl("jdbc:oracle:thin:@130.1.10.104:1521/sid");
-        assertEquals(list5.size(), 1);
-        u = list5.get(0);
-        assertEquals(u.getHostname(), "130.1.10.104");
-        assertEquals(u.getDatabaseName(), "sid");
-        assertEquals(u.getType(), "oracle");
-        assertEquals(u.getPort(), "1521");
-        assertEquals(u.getSID(), "sid");
-        assertEquals(u.getDriverType(), "thin");
-        assertNull(u.getUsername());
-        assertNull(u.getPassword());
-        System.out.println(StringUtils.toString(u.toProperties()));
+            DatabaseTableColumn col = table.getColumns().getColumn("PAYAMT");
+            if (col == null) {
+                throw new NullPointerException();
+            }
 
-        List<DatabaseURL> list6 = d.parseJdbcUrl("jdbc:oracle:thin:user/pass@130.1.10.104:1521/sid");
-        assertEquals(list6.size(), 1);
-        u = list6.get(0);
-        assertEquals(u.getHostname(), "130.1.10.104");
-        assertEquals(u.getDatabaseName(), "sid");
-        assertEquals(u.getType(), "oracle");
-        assertEquals(u.getPort(), "1521");
-        assertEquals(u.getSID(), "sid");
-        assertEquals(u.getDriverType(), "thin");
-        assertEquals(u.getUsername(), "user");
-        assertEquals(u.getPassword(), "pass");
-        System.out.println(StringUtils.toString(u.toProperties()));
+            Assert.assertEquals(col.getName(), "PAYAMT");
+            Assert.assertEquals(col.getPosition(), 7);
 
-        List<DatabaseURL> list7 = d.parseJdbcUrl("jdbc:oracle:thin:@(description=(address_list= (address=(host=rac1) (protocol=tcp1)(port=1521))(address=(host=rac2)(protocol=tcp2) (port=1522)) (load_balance=yes)(failover=yes))(connect_data=(SERVER=DEDICATED)(service_name= oratest)))");
-        assertEquals(list7.size(), 2);
-        u = list7.get(0);
-        System.out.println(StringUtils.toString(list7.get(0).toProperties()));
-        System.out.println(StringUtils.toString(list7.get(1).toProperties()));
-        assertEquals(u.getHostname(), "rac1");
-        assertNull(u.getDatabaseName());
-        assertEquals(u.getType(), "oracle");
-        assertEquals(u.getPort(), "1521");
-        assertNull(u.getSID());
-        assertEquals(u.getDriverType(), "thin");
-        assertEquals(u.getAttribute("protocol"), "tcp1");
+            col = table.getColumns().getColumn(7);
+            if (col == null) {
+                throw new NullPointerException();
+            }
+
+            DatabaseTableDDL ddl = dao.toDDL(table);
+            System.out.println(ddl.getTable());
+
+            for (String str : ddl.getPrimaryKey()) {
+                System.out.println(str);
+            }
+
+            for (String str : ddl.getIndex()) {
+                System.out.println(str);
+            }
+
+            for (String str : ddl.getComment()) {
+                System.out.println(str);
+            }
+
+            dao.commit();
+        } catch (Throwable e) {
+            dao.rollback();
+            e.printStackTrace();
+            Assert.fail();
+        } finally {
+            dao.close();
+        }
+    }
+
+    @Test
+    public void test1() throws SQLException {
+        try {
+            DatabaseMetaData metaData = this.connection.getMetaData();
+            System.out.println(ClassUtils.toString(metaData, true, true, "get", "to"));
+            System.out.println(StringUtils.toString(Jdbc.getSchemas(this.connection)));
+            System.out.println();
+            System.out.println();
+
+            System.out.println("getCatalogs:");
+            Jdbc.toString(this.connection.getMetaData().getCatalogs());
+            System.out.println();
+            System.out.println();
+
+            System.out.println("getTableTypes:");
+            Jdbc.toString(this.connection.getMetaData().getTableTypes());
+        } catch (Exception e) {
+            this.connection.rollback();
+            e.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void test2() throws SQLException {
+        AbstractDialect dialect = new StandardDatabaseDialect();
+        Connection conn = this.connection;
+        System.out.println(dialect.getSchema(conn));
     }
 }

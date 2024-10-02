@@ -512,7 +512,7 @@ echo jdbc properties file $temp/jdbcConfig.properties
 export set jdbcfilepath='$temp/jdbcConfig.properties'
 
 echo 测试 declare jdbc 命令 ..
-declare global test0001 catalog configuration use host ${databaseHost} driver $dbdirverclass url "${dburl}" username ${dbusername} password $dbpassword sshuser ${databaseSSHUser} sshuserpw ${databaseSSHUserPw} ssh 22
+declare global test0001 catalog configuration use host ${databaseHost} driver $dbdirverclass url "${dburl}" username ${dbusername} password $dbpassword ssh.username ${databaseSSHUser} ssh.password ${databaseSSHUserPw} ssh.port 22
 db connect to test0001
 
 echo 测试导出数据文件功能

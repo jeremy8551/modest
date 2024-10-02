@@ -7,7 +7,7 @@ set delfilepath="${HOME}/bhc_finish.del"
 rm ${delfilepath}
 cp classpath:/bhc_finish.del ${HOME}
 
-declare global test0001 catalog configuration use host ${databaseHost} driver $databaseDriverName url "${databaseUrl}" username ${username} password $password sshuser ${databaseSSHUser} sshuserpw ${databaseSSHUserPw} ssh 22
+declare global test0001 catalog configuration use host ${databaseHost} driver $databaseDriverName url "${databaseUrl}" username ${username} password $password ssh.username ${databaseSSHUser} ssh.password ${databaseSSHUserPw} ssh.port 22
 db connect to test0001
 
 -- 测试数据装载功能

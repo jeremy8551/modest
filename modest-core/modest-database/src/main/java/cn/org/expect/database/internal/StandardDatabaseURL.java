@@ -132,13 +132,13 @@ public class StandardDatabaseURL implements DatabaseURL {
         Properties p = new Properties();
         p.putAll(this.attributes);
         if (StringUtils.isNotBlank(this.schema)) {
-            p.put(Jdbc.schema, this.schema);
+            p.put(Jdbc.SCHEMA, this.schema);
         }
         if (StringUtils.isNotBlank(this.hostname)) {
-            p.put(OSConnectCommand.host, this.hostname);
+            p.put(OSConnectCommand.HOST, this.hostname);
         }
         if (StringUtils.isNotBlank(this.port)) {
-            p.put(OSConnectCommand.port, this.port);
+            p.put(OSConnectCommand.PORT, this.port);
         }
         if (StringUtils.isNotBlank(this.sid)) {
             p.put("sid", this.sid);

@@ -274,9 +274,9 @@ public class OracleDialect extends AbstractDialect {
                     String key = StringUtils.objToStr(it.next());
                     String value = StringUtils.objToStr(p.get(key));
 
-                    if (OSConnectCommand.host.equalsIgnoreCase(key)) {
+                    if (OSConnectCommand.HOST.equalsIgnoreCase(key)) {
                         copy.setHostname(value);
-                    } else if (OSConnectCommand.port.equalsIgnoreCase(key)) {
+                    } else if (OSConnectCommand.PORT.equalsIgnoreCase(key)) {
                         copy.setPort(value);
                     } else {
                         copy.setAttribute(key, value);

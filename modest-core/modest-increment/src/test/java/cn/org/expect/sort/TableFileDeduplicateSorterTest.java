@@ -7,7 +7,7 @@ import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileWriter;
 import cn.org.expect.ioc.DefaultEasyContext;
-import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.FileUtils;
@@ -44,7 +44,7 @@ public class TableFileDeduplicateSorterTest {
 
     @Test
     public void test() throws Exception {
-        DefaultEasyContext ioc = new DefaultEasyContext("debug:sout+", EasyBean.class.getPackage().getName() + ":info");
+        DefaultEasyContext ioc = new DefaultEasyContext("debug:sout+", EasyBeanInfo.class.getPackage().getName() + ":info");
         Log log = LogFactory.getLog(TableFileDeduplicateSorterTest.class);
 
         TextTableFile file = ioc.getBean(TextTableFile.class, "txt");

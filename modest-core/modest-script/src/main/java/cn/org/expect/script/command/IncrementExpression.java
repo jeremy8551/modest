@@ -173,10 +173,10 @@ public class IncrementExpression implements Attribute<String> {
             try {
                 if (this.attributes.containsKey("catalog")) { // 使用指定数据库连接
                     Properties p = context.getCatalog(this.attributes.get("catalog"));
-                    String driver = p.getProperty(Jdbc.driverClassName);
-                    String url = p.getProperty(Jdbc.url);
-                    String username = p.getProperty(OSConnectCommand.username);
-                    String password = p.getProperty(OSConnectCommand.password);
+                    String driver = p.getProperty(Jdbc.DRIVER_CLASS_NAME);
+                    String url = p.getProperty(Jdbc.URL);
+                    String username = p.getProperty(OSConnectCommand.USERNAME);
+                    String password = p.getProperty(OSConnectCommand.PASSWORD);
 
                     if (StringUtils.isBlank(driver)) {
                         Connection conn = Jdbc.getConnection(url, username, password);

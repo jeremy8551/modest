@@ -191,10 +191,10 @@ public class SecureShellCommand implements OSSecureShellCommand {
             }
 
             this.config.clear();
-            this.config.put(OSConnectCommand.host, host);
-            this.config.put(OSConnectCommand.port, String.valueOf(port));
-            this.config.put(OSConnectCommand.username, username);
-            this.config.put(OSConnectCommand.password, password);
+            this.config.put(OSConnectCommand.HOST, host);
+            this.config.put(OSConnectCommand.PORT, String.valueOf(port));
+            this.config.put(OSConnectCommand.USERNAME, username);
+            this.config.put(OSConnectCommand.PASSWORD, password);
             this.terminate = false;
             this.connectInfo = username + "@" + host + ":" + port;
             this.init();
@@ -227,10 +227,10 @@ public class SecureShellCommand implements OSSecureShellCommand {
      */
     public void ensureConnected() throws OSCommandException {
         if (this.alive && !this.isConnected()) {
-            String host = this.config.getProperty(OSConnectCommand.host);
-            String port = this.config.getProperty(OSConnectCommand.port);
-            String username = this.config.getProperty(OSConnectCommand.username);
-            String password = this.config.getProperty(OSConnectCommand.password);
+            String host = this.config.getProperty(OSConnectCommand.HOST);
+            String port = this.config.getProperty(OSConnectCommand.PORT);
+            String username = this.config.getProperty(OSConnectCommand.USERNAME);
+            String password = this.config.getProperty(OSConnectCommand.PASSWORD);
 
             if (log.isDebugEnabled()) {
                 log.debug(ResourcesUtils.getMessage("ssh2.jsch.standard.output.msg017", host + ":" + port));
@@ -580,8 +580,8 @@ public class SecureShellCommand implements OSSecureShellCommand {
      */
     public String toShellCommand(String command) {
         StringBuilder buf = new StringBuilder(command.length() + 50);
-        if (this.config.contains(OSShellCommand.profiles)) {
-            buf.append(this.config.getProperty(OSShellCommand.profiles));
+        if (this.config.contains(OSShellCommand.PROFILES)) {
+            buf.append(this.config.getProperty(OSShellCommand.PROFILES));
         }
 
         String str = StringUtils.trimBlank(command);
@@ -689,7 +689,7 @@ public class SecureShellCommand implements OSSecureShellCommand {
                 this.envfiles.add(profilepath);
             }
         }
-        this.config.setProperty(OSShellCommand.profiles, buf.toString());
+        this.config.setProperty(OSShellCommand.PROFILES, buf.toString());
 
         if (log.isDebugEnabled()) {
             log.debug("SSH Command profiles: " + buf);
@@ -729,10 +729,10 @@ public class SecureShellCommand implements OSSecureShellCommand {
     }
 
     public int localPortForward(int localPort, String remoteHost, int remotePort) {
-        String host = this.config.getProperty(OSConnectCommand.host);
-        String port = this.config.getProperty(OSConnectCommand.port);
-        String username = this.config.getProperty(OSConnectCommand.username);
-        String password = this.config.getProperty(OSConnectCommand.password);
+        String host = this.config.getProperty(OSConnectCommand.HOST);
+        String port = this.config.getProperty(OSConnectCommand.PORT);
+        String username = this.config.getProperty(OSConnectCommand.USERNAME);
+        String password = this.config.getProperty(OSConnectCommand.PASSWORD);
 
         SecureShellForwardCommand server = new SecureShellForwardCommand();
         server.setCharsetName(this.getCharsetName());

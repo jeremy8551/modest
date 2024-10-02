@@ -116,8 +116,8 @@ public class ScriptDataSource {
             throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr008", this.map.keySet(), name));
         }
 
-        if (!catalog.containsKey(Jdbc.url)) {
-            throw new UniversalScriptException(ResourcesUtils.getMessage("database.standard.output.msg025", Jdbc.driverClassName, Jdbc.url, OSConnectCommand.username, OSConnectCommand.password, StringUtils.toString(catalog)));
+        if (!catalog.containsKey(Jdbc.URL)) {
+            throw new UniversalScriptException(ResourcesUtils.getMessage("database.standard.output.msg025", Jdbc.DRIVER_CLASS_NAME, Jdbc.URL, OSConnectCommand.USERNAME, OSConnectCommand.PASSWORD, StringUtils.toString(catalog)));
         }
 
         SimpleDatasource dataSource = new SimpleDatasource(this.context.getContainer(), catalog); // 创建一个数据库连接池

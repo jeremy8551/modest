@@ -5,37 +5,30 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.collection.CaseSensitivSet;
+import cn.org.expect.database.annotation.DatabaseRunner;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.Assert;
 import org.junit.FixMethodOrder;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
-import static org.junit.Assert.assertTrue;
-
 @FixMethodOrder(MethodSorters.JVM)
+@RunWith(DatabaseRunner.class)
 public class JdbcUtilsTest {
 
-    @Rule
-    public WithDBRule rule = new WithDBRule();
+    /** 容器上下文信息 */
+    @EasyBean
+    public EasyContext context;
 
     /** 数据库连接 */
-    private Connection connection;
-
-    @Before
-    public void setUp() {
-        this.connection = rule.getConnection();
-    }
-
-    @After
-    public void setDown() {
-        IO.closeQuiet(this.connection);
-    }
+    @EasyBean
+    public Connection connection;
 
     @Test
     public void testGetTypeInfo() {
@@ -120,7 +113,7 @@ public class JdbcUtilsTest {
     @Test
     public void test8() throws SQLException {
         String tablename = "";
-        JdbcDao dao = new JdbcDao(rule.getContext(), this.connection);
+        JdbcDao dao = new JdbcDao(this.context, this.connection);
         try {
             tablename = "test".toUpperCase() + Dates.format17();
             dao.execute("create table " + tablename + "(f1 char(100) not null, f2 char(10), primary key(f1) ) ");
@@ -141,8 +134,8 @@ public class JdbcUtilsTest {
 //			assertTrue(clone.getIndexs().size());
 //			assertTrue(clone.getPrimaryIndexs().size());
 
-            assertTrue(clone.getIndexs().contains(primaryIndexs.get(0), false, false) || clone.getPrimaryIndexs().contains(primaryIndexs.get(0), false, false));
-            assertTrue(primaryIndexs.get(0).equals(clone.getPrimaryIndexs().get(0), true, true));
+            Assert.assertTrue(clone.getIndexs().contains(primaryIndexs.get(0), false, false) || clone.getPrimaryIndexs().contains(primaryIndexs.get(0), false, false));
+            Assert.assertTrue(primaryIndexs.get(0).equals(clone.getPrimaryIndexs().get(0), true, true));
 
             dao.rollback();
         } finally {
@@ -156,11 +149,11 @@ public class JdbcUtilsTest {
     }
 
     @Test
-    public void test9() throws SQLException {
+    public void test9() {
         String tablename = "";
-        JdbcDao dao = new JdbcDao(rule.getContext(), this.connection);
+        JdbcDao dao = new JdbcDao(this.context, this.connection);
         try {
-            assertTrue(dao.testConnection());
+            Assert.assertTrue(dao.testConnection());
 
             tablename = "test".toUpperCase() + Dates.format17();
             dao.execute("create table " + tablename + "(f1 char(100) not null, f2 char(10), primary key(f1) ) ");
@@ -179,10 +172,10 @@ public class JdbcUtilsTest {
     @Test
     public void test10() throws Exception {
         String tablename = "";
-        JdbcDao dao = new JdbcDao(rule.getContext(), this.connection);
+        JdbcDao dao = new JdbcDao(this.context, this.connection);
         try {
             System.out.println("testing");
-            assertTrue(dao.testConnection());
+            Assert.assertTrue(dao.testConnection());
             System.out.println("finsih test ");
 
             tablename = "test" + Dates.format17();
@@ -200,7 +193,6 @@ public class JdbcUtilsTest {
             }
 
             qryLastCreditLine.close();
-
             dao.commit();
         } finally {
             try {

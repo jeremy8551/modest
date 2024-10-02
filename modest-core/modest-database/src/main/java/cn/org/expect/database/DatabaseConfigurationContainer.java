@@ -18,14 +18,14 @@ public interface DatabaseConfigurationContainer {
     /**
      * 注册数据库 JDBC 连接信息 <br>
      * 属性中必须包括: <br>
-     * {@linkplain Jdbc#driverClassName} <br>
-     * {@linkplain Jdbc#url} <br>
-     * {@linkplain OSConnectCommand#username} <br>
-     * {@linkplain OSConnectCommand#password} <br>
+     * {@linkplain Jdbc#DRIVER_CLASS_NAME} <br>
+     * {@linkplain Jdbc#URL} <br>
+     * {@linkplain OSConnectCommand#USERNAME} <br>
+     * {@linkplain OSConnectCommand#PASSWORD} <br>
      * <br>
      * 可选: <br>
-     * {@linkplain Jdbc#admin} <br>
-     * {@linkplain Jdbc#adminPw} <br>
+     * {@linkplain Jdbc#ADMIN_USERNAME} <br>
+     * {@linkplain Jdbc#ADMIN_PASSWORD} <br>
      *
      * @param config JDBC 配置信息
      * @return 转换后的 JDBC 配置信息

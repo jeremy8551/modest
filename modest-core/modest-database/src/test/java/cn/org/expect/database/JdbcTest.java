@@ -9,51 +9,47 @@ import cn.org.expect.database.oracle.OracleDialect;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
+import org.junit.Assert;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 public class JdbcTest {
 
     @Test
     public void testremoveSchema() {
-        assertEquals(Jdbc.removeSchema(""), "");
-        assertEquals(Jdbc.removeSchema("table"), "table");
-        assertEquals(Jdbc.removeSchema(".table"), "table");
-        assertEquals(Jdbc.removeSchema("1.table"), "table");
-        assertEquals(Jdbc.removeSchema("schema.table"), "table");
-        assertEquals(Jdbc.removeSchema("schema.sdsf.table"), "table");
+        Assert.assertEquals(Jdbc.removeSchema(""), "");
+        Assert.assertEquals(Jdbc.removeSchema("table"), "table");
+        Assert.assertEquals(Jdbc.removeSchema(".table"), "table");
+        Assert.assertEquals(Jdbc.removeSchema("1.table"), "table");
+        Assert.assertEquals(Jdbc.removeSchema("schema.table"), "table");
+        Assert.assertEquals(Jdbc.removeSchema("schema.sdsf.table"), "table");
     }
 
     @Test
     public void testgetSchema() {
-        assertEquals(Jdbc.getSchema(""), null);
-        assertEquals(Jdbc.getSchema("table"), null);
-        assertEquals(Jdbc.getSchema(".table"), null);
-        assertEquals(Jdbc.getSchema("1.table"), "1");
-        assertEquals(Jdbc.getSchema("schema.table"), "schema");
-        assertEquals(Jdbc.getSchema("schema.sdsf.table"), "schema");
+        Assert.assertNull(Jdbc.getSchema(""));
+        Assert.assertNull(Jdbc.getSchema("table"));
+        Assert.assertNull(Jdbc.getSchema(".table"));
+        Assert.assertEquals(Jdbc.getSchema("1.table"), "1");
+        Assert.assertEquals(Jdbc.getSchema("schema.table"), "schema");
+        Assert.assertEquals(Jdbc.getSchema("schema.sdsf.table"), "schema");
     }
 
     @Test
     public void testQuote() {
-        assertTrue(StringUtils.quote(null) == null);
-        assertTrue(StringUtils.quote("").equals("''"));
-        assertTrue(StringUtils.quote(" ").equals("' '"));
+        Assert.assertNull(StringUtils.quote(null));
+        Assert.assertEquals("''", StringUtils.quote(""));
+        Assert.assertEquals("' '", StringUtils.quote(" "));
     }
-
-
 
     @Test
     public void test3() {
-//		assertTrue("abcABC一二三四壹 ".toUpperCase(Locale.CHINESE));
-        assertTrue(StringUtils.toCase("abcABC", false, null).equals("ABCABC"));
-        assertTrue(StringUtils.toString(StringUtils.toCase(ArrayUtils.asList("a", "b", "c"), false, null)).equals("ArrayList[A, B, C]"));
-        assertTrue(StringUtils.toString(StringUtils.toCase(new String[]{"a", "b", "cd"}, false, null)).equals("String[A, B, CD]"));
-        assertTrue(StringUtils.toString(new Integer[]{0, 1, 2}).equals("Integer[0, 1, 2]"));
-        assertTrue(StringUtils.toString(new int[]{1, 2, 3}).equals("int[1, 2, 3]"));
-        assertTrue(StringUtils.toString(StringUtils.toCase(new char[]{'a', 'b', 'c', '1'}, false, null)).equals("char[A, B, C, 1]"));
+//		Assert.assertTrue("abcABC一二三四壹 ".toUpperCase(Locale.CHINESE));
+        Assert.assertEquals("ABCABC", StringUtils.toCase("abcABC", false, null));
+        Assert.assertEquals("ArrayList[A, B, C]", StringUtils.toString(StringUtils.toCase(ArrayUtils.asList("a", "b", "c"), false, null)));
+        Assert.assertEquals("String[A, B, CD]", StringUtils.toString(StringUtils.toCase(new String[]{"a", "b", "cd"}, false, null)));
+        Assert.assertEquals("Integer[0, 1, 2]", StringUtils.toString(new Integer[]{0, 1, 2}));
+        Assert.assertEquals("int[1, 2, 3]", StringUtils.toString(new int[]{1, 2, 3}));
+        Assert.assertEquals("char[A, B, C, 1]", StringUtils.toString(StringUtils.toCase(new char[]{'a', 'b', 'c', '1'}, false, null)));
     }
 
     @Test
@@ -66,18 +62,18 @@ public class JdbcTest {
         System.out.println(str1);
         System.out.println(str + "000" + time);
         String result = str + "000" + time;
-        assertTrue(str1.equals(result.replace(':', '.')));
+        Assert.assertEquals(str1, result.replace(':', '.'));
     }
 
     @Test
     public void test6() {
         String[][] array1 = OracleDialect.resolveDatabaseProcedureParam("procedure name(v1 number(12, 2), dt in varchar2char(100), r  out  int, t char, d in decimal(10,2) )");
-        assertTrue(StringUtils.toString(array1[0]).equals("String[V1, IN, NUMBER(12, 2)]"));
-        assertTrue(StringUtils.toString(array1[1]).equals("String[DT, IN, VARCHAR2CHAR(100)]"));
-        assertTrue(StringUtils.toString(array1[4]).equals("String[D, IN, DECIMAL(10,2)]"));
+        Assert.assertEquals("String[V1, IN, NUMBER(12, 2)]", StringUtils.toString(array1[0]));
+        Assert.assertEquals("String[DT, IN, VARCHAR2CHAR(100)]", StringUtils.toString(array1[1]));
+        Assert.assertEquals("String[D, IN, DECIMAL(10,2)]", StringUtils.toString(array1[4]));
 
         String[] array2 = StandardDatabaseProcedure.resolveDatabaseProcedureDDLName("CREATE OR REPLACE PROCEDURE \"LHBB\".\"CUSTAUM_APPEND\" (dt in varchar2)--yyyymmdd \n as");
-        assertTrue(StringUtils.toString(array2).equals("String[\"LHBB\", \"CUSTAUM_APPEND\"]"));
+        Assert.assertEquals("String[\"LHBB\", \"CUSTAUM_APPEND\"]", StringUtils.toString(array2));
     }
 
 }

@@ -6,7 +6,7 @@ import java.util.Set;
 
 import cn.org.expect.collection.CaseSensitivMap;
 import cn.org.expect.database.DatabaseDialect;
-import cn.org.expect.ioc.EasyBean;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyBeanDefine;
 import cn.org.expect.ioc.EasyBeanTableFilter;
 import cn.org.expect.ioc.EasyBeanTableRow;
@@ -33,13 +33,13 @@ public class DatabaseDialectManager {
         String major;
         String minor;
 
-        public DialectInfo(EasyBean beanInfo, String major, String minor) {
+        public DialectInfo(EasyBeanInfo beanInfo, String major, String minor) {
             super(beanInfo.getType());
             this.major = StringUtils.defaultString(major, "");
             this.minor = StringUtils.defaultString(minor, "");
         }
 
-        public int compare(EasyBean o1, EasyBean o2) {
+        public int compare(EasyBeanInfo o1, EasyBeanInfo o2) {
             return this.compareTo((DialectInfo) o1, (DialectInfo) o2);
         }
 
@@ -68,9 +68,9 @@ public class DatabaseDialectManager {
         }
     }
 
-    public DatabaseDialectManager(EasyContext context, List<EasyBean> list) {
+    public DatabaseDialectManager(EasyContext context, List<EasyBeanInfo> list) {
         this.map = new CaseSensitivMap<EasyBeanTableRow>();
-        for (EasyBean beanInfo : list) {
+        for (EasyBeanInfo beanInfo : list) {
             this.add(context, beanInfo);
         }
     }
@@ -94,7 +94,7 @@ public class DatabaseDialectManager {
         throw new UnsupportedOperationException(ResourcesUtils.getMessage("database.standard.output.msg005", str));
     }
 
-    public synchronized void add(EasyContext context, EasyBean beanInfo) {
+    public synchronized void add(EasyContext context, EasyBeanInfo beanInfo) {
         EasyBeanTableRow list = this.map.get(beanInfo.getName());
         if (list == null) {
             list = new EasyBeanTableRow(DatabaseDialect.class);
