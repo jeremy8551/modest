@@ -19,7 +19,7 @@ import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.util.StringUtils;
 
-@EasyBean(name = "replace")
+@EasyBean(value = "replace")
 public class ParallelLoadFileEngine implements Loader, EasyContextAware {
 
     /** 上下文信息 */

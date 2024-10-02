@@ -95,7 +95,7 @@ public class EasyBeanTableRow extends ArrayList<EasyBeanDefine> {
     }
 
     /**
-     * 查询与参数 {@code name} 相等的组件名（{@linkplain cn.org.expect.annotation.EasyBean#name()}）的集合
+     * 查询与参数 {@code name} 相等的组件名（{@linkplain cn.org.expect.annotation.EasyBean#value()}）的集合
      *
      * @param name 组件名
      * @return 组件信息集合

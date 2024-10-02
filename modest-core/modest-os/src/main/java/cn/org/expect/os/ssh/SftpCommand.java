@@ -42,7 +42,7 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2018-08-10
  */
-@EasyBean(name = "sftp", description = "jsch-0.1.51")
+@EasyBean(value = "sftp", description = "jsch-0.1.51")
 public class SftpCommand implements OSFtpCommand {
     private final static Log log = LogFactory.getLog(SftpCommand.class);
 

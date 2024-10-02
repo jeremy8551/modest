@@ -11,7 +11,7 @@ import cn.org.expect.util.StringUtils;
  *
  * @author jeremy8551@qq.com
  */
-@EasyBean(name = "default", description = "")
+@EasyBean(value = "default", description = "")
 public class ScriptChecker implements UniversalScriptChecker {
 
     /** 数据库的关键字 */

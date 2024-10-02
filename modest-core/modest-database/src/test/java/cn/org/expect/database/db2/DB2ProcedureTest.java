@@ -9,6 +9,8 @@ import cn.org.expect.database.DatabaseDDL;
 import cn.org.expect.database.DatabaseProcedure;
 import cn.org.expect.database.DatabaseProcedureParameter;
 import cn.org.expect.database.JdbcDao;
+import cn.org.expect.database.annotation.ModestRunner;
+import cn.org.expect.database.annotation.RunIf;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
@@ -20,7 +22,8 @@ import org.junit.runner.RunWith;
 /**
  * 测试 DB2 数据库存储过程 TODO
  */
-@RunWith(DB2Runner.class)
+@RunWith(ModestRunner.class)
+@RunIf(values = {"db2.url", "db2.username", "db2.password"})
 public class DB2ProcedureTest {
 
     /** 容器上下文信息 */

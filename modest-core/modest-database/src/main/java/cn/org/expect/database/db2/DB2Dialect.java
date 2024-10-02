@@ -84,7 +84,7 @@ import cn.org.expect.util.StringUtils;
  *
  * @author jeremy8551@qq.com
  */
-@EasyBean(name = "db2")
+@EasyBean(value = "db2")
 public class DB2Dialect extends AbstractDialect implements DatabaseDialect, EasyContextAware {
     private final static Log log = LogFactory.getLog(DB2Dialect.class);
 

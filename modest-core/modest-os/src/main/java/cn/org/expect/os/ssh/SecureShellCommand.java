@@ -37,7 +37,7 @@ import cn.org.expect.util.TimeWatch;
 /**
  * SSH 协议的终端实现类
  */
-@EasyBean(name = "linux", description = "jsch")
+@EasyBean(value = "linux", description = "jsch")
 public class SecureShellCommand implements OSSecureShellCommand {
     private final static Log log = LogFactory.getLog(SecureShellCommand.class);
 

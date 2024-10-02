@@ -20,7 +20,7 @@ public interface EasyContainerContext {
      * @param <E>  类或接口
      * @param type 查询条件，类或接口
      * @param args 查询参数
-     *             第一个参数，对应组件上的注解属性 {@link EasyBean#name()}
+     *             第一个参数，对应组件上的注解属性 {@link EasyBean#value()}
      * @return 组件
      */
     <E> E getBean(Class<E> type, Object... args);

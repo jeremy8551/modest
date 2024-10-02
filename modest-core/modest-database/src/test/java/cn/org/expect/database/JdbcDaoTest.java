@@ -1,20 +1,20 @@
 package cn.org.expect.database;
 
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
+import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.database.annotation.DatabaseRunner;
+import cn.org.expect.database.annotation.ModestRunner;
 import cn.org.expect.database.internal.StandardDatabaseIndex;
-import cn.org.expect.database.pool.SimpleDatasource;
 import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.os.OSConnectCommand;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * 测试 JdbcDao
  */
-@RunWith(DatabaseRunner.class)
+@RunWith(ModestRunner.class)
 public class JdbcDaoTest {
 
     public final static String TABLE_NAME = "test_table_name_temp".toUpperCase();
@@ -670,22 +670,12 @@ public class JdbcDaoTest {
 
     @Test
     public void testQueryCountByJdbcDataSourceString() throws SQLException {
-        String url = this.connection.getMetaData().getURL();
-        String userName = this.connection.getMetaData().getUserName();
-
-        Properties config = new Properties();
-        config.setProperty(Jdbc.URL, url);
-        config.setProperty(OSConnectCommand.USERNAME, userName);
-        config.setProperty(OSConnectCommand.PASSWORD, DatabaseRunner.JDBC_PASSWORD);
-
-        DataSource dataSource = new SimpleDatasource(this.context, config);
+        DataSourceWrapper dataSource = new DataSourceWrapper(this.connection);
         try {
             assertEquals(2, JdbcDao.queryCount(dataSource, "select count(*) from " + TABLE_NAME).intValue());
         } catch (Exception e) {
             e.printStackTrace();
             Assert.fail();
-        } finally {
-            Jdbc.closeDataSource(dataSource);
         }
     }
 
@@ -703,6 +693,61 @@ public class JdbcDaoTest {
             Assert.fail();
         } finally {
             dao.close();
+        }
+    }
+
+    private static class DataSourceWrapper implements DataSource {
+
+        private Connection conn;
+
+        public DataSourceWrapper(Connection conn) {
+            super();
+            this.conn = conn;
+        }
+
+        @Override
+        public Connection getConnection() {
+            return this.conn;
+        }
+
+        @Override
+        public Connection getConnection(String username, String password) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public PrintWriter getLogWriter() throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setLogWriter(PrintWriter out) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setLoginTimeout(int seconds) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getLoginTimeout() throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public <T> T unwrap(Class<T> iface) throws SQLException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isWrapperFor(Class<?> iface) throws SQLException {
+            throw new UnsupportedOperationException();
         }
     }
 }

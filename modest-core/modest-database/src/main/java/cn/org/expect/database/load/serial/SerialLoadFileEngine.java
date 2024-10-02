@@ -34,7 +34,7 @@ import cn.org.expect.util.TimeWatch;
  *
  * @author jeremy8551@qq.com
  */
-@EasyBean(name = "serial")
+@EasyBean(value = "serial")
 public class SerialLoadFileEngine implements Loader, EasyContextAware {
     private final static Log log = LogFactory.getLog(SerialLoadFileEngine.class);
 

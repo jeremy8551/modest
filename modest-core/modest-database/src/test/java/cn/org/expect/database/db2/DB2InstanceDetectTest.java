@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.database.annotation.DatabaseRunner;
+import cn.org.expect.database.annotation.ModestRunner;
 import cn.org.expect.database.annotation.RunIf;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.os.OS;
@@ -26,20 +26,20 @@ import org.junit.runner.RunWith;
 /**
  * 测试远程连接Linux与DB2和WAS探测 TODO
  */
-@RunWith(DatabaseRunner.class)
+@RunWith(ModestRunner.class)
 @RunIf(values = {"db2.host", "db2.ssh.port", "db2.ssh.username", "db2.ssh.password"})
 public class DB2InstanceDetectTest {
 
-    @EasyBean(name = "${db2.host}")
+    @EasyBean(value = "${db2.host}")
     String host;
 
-    @EasyBean(name = "${db2.ssh.port}")
+    @EasyBean(value = "${db2.ssh.port}")
     String port;
 
-    @EasyBean(name = "${db2.ssh.username}")
+    @EasyBean(value = "${db2.ssh.username}")
     String username;
 
-    @EasyBean(name = "${db2.ssh.password}")
+    @EasyBean(value = "${db2.ssh.password}")
     String password;
 
     /** 容器上下文信息 */

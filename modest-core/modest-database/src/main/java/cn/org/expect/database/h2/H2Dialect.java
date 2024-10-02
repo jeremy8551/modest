@@ -35,7 +35,7 @@ import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 
-@EasyBean(name = "h2")
+@EasyBean(value = "h2")
 public class H2Dialect extends AbstractDialect {
 
     public String getKeepAliveSQL() {

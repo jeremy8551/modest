@@ -20,7 +20,7 @@ import cn.org.expect.database.internal.StandardDatabaseURL;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
-@EasyBean(name = "mysql")
+@EasyBean(value = "mysql")
 public class MysqlDialect extends AbstractDialect {
 
     /**

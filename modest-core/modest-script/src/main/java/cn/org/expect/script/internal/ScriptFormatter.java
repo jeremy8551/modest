@@ -31,7 +31,7 @@ import cn.org.expect.util.StringUtils;
  *
  * @author jeremy8551@qq.com
  */
-@EasyBean(name = "default")
+@EasyBean(value = "default")
 public class ScriptFormatter extends UniversalScriptFormatter {
     private final static Log log = LogFactory.getLog(ScriptFormatter.class);
 

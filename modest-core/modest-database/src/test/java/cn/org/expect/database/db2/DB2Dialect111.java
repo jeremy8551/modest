@@ -8,7 +8,7 @@ import cn.org.expect.database.DatabaseDialect;
  *
  * @author jeremy8551@qq.com
  */
-@EasyBean(name = "db2")
+@EasyBean(value = "db2")
 public class DB2Dialect111 extends DB2Dialect implements DatabaseDialect {
 
     public String getDatabaseMajorVersion() {

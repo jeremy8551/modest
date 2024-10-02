@@ -17,7 +17,7 @@ import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 
-@EasyBean(name = "local", description = "卸载数据到本地文件")
+@EasyBean(value = "local", description = "卸载数据到本地文件")
 public class ExtractFileWriter implements ExtractWriter, EasyContextAware {
 
     /** 文件路径 */

@@ -18,7 +18,7 @@ import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.os.OSFtpCommand;
 import cn.org.expect.util.Ensure;
 
-@EasyBean(name = "sftp", description = "卸载数据到远程sftp服务器")
+@EasyBean(value = "sftp", description = "卸载数据到远程sftp服务器")
 public class SftpFileWriter implements ExtractWriter, EasyContextAware {
 
     protected String target;

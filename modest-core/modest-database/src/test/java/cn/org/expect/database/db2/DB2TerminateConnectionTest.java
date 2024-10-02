@@ -5,13 +5,16 @@ import java.sql.SQLException;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.database.DatabaseDialect;
+import cn.org.expect.database.annotation.ModestRunner;
+import cn.org.expect.database.annotation.RunIf;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.TimeWatch;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(DB2Runner.class)
+@RunWith(ModestRunner.class)
+@RunIf(values = {"db2.url", "db2.username", "db2.password"})
 public class DB2TerminateConnectionTest {
 
     /** 容器上下文信息 */

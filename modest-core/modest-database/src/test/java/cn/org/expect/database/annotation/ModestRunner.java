@@ -2,7 +2,6 @@ package cn.org.expect.database.annotation;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
-import java.sql.Connection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -10,11 +9,14 @@ import java.util.Properties;
 
 import cn.org.expect.Modest;
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.database.Jdbc;
 import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyBeanBuilder;
+import cn.org.expect.ioc.EasyBeanDefine;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.jdk.JavaDialect;
 import cn.org.expect.jdk.JavaDialectFactory;
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.IO;
@@ -26,11 +28,8 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
 
-public class DatabaseRunner extends BlockJUnit4ClassRunner {
-
-    public static String JDBC_URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1";
-    public static String JDBC_USER = "user";
-    public static String JDBC_PASSWORD = "user";
+public class ModestRunner extends BlockJUnit4ClassRunner {
+    protected final static Log log = LogFactory.getLog(ModestRunner.class);
 
     /** 容器上下文信息 */
     public volatile EasyContext context;
@@ -41,18 +40,18 @@ public class DatabaseRunner extends BlockJUnit4ClassRunner {
     /** 缓存 */
     protected volatile Map<String, Boolean> cache;
 
-    public DatabaseRunner(Class<?> testClass) throws InitializationError {
+    public ModestRunner(Class<?> testClass) throws InitializationError {
         super(testClass);
     }
 
-    protected DatabaseRunner(TestClass testClass) throws InitializationError {
+    protected ModestRunner(TestClass testClass) throws InitializationError {
         super(testClass);
     }
 
     @Override
     public void run(RunNotifier notifier) {
         String line = StringUtils.left("", 100, '-');
-        System.out.println(line + "\n> 单元测试类: " + this.getTestClass().getName() + "\n" + line);
+        log.info(line + "\n> 单元测试类: " + this.getTestClass().getName() + "\n" + line);
         super.run(notifier);
     }
 
@@ -94,7 +93,7 @@ public class DatabaseRunner extends BlockJUnit4ClassRunner {
             }
 
             if (fail) {
-                System.out.println(StringUtils.replaceLast(str.toString(), ", ", ""));
+                log.info(StringUtils.replaceLast(str.toString(), ", ", ""));
                 this.cache.put(key, Boolean.TRUE);
                 return true;
             }
@@ -128,36 +127,40 @@ public class DatabaseRunner extends BlockJUnit4ClassRunner {
             if (field.isAnnotationPresent(EasyBean.class)) {
                 EasyBean annotation = field.getAnnotation(EasyBean.class);
                 if (field.getType().getName().equals(String.class.getName())) {
-                    String name = StringUtils.trimBlank(annotation.name());
+                    String name = StringUtils.trimBlank(annotation.value());
                     if (name.startsWith("$")) {
                         String part = name.substring(1);
                         if (part.length() > 2 && part.charAt(0) == '{' && part.charAt(part.length() - 1) == '}') {
                             String property = part.substring(1, part.length() - 1);
                             String value = this.getProperties().getProperty(property);
-                            System.out.println("向 " + test.getClass().getSimpleName() + " 注入属性: " + property + "=" + value);
+                            log.debug("向 " + test.getClass().getSimpleName() + " 注入属性: " + property + "=" + value);
                             javaDialect.setField(test, field, value);
                         }
                     }
                     continue;
                 }
 
-                if (field.getType().getName().equals(Connection.class.getName())) {
-                    Connection conn = createConnection();
-                    javaDialect.setField(test, field, conn);
-                    continue;
+                EasyBeanDefine beanInfo = this.getContext().getBeanInfo(field.getType(), annotation.value());
+                if (beanInfo != null) {
+                    Object bean = beanInfo.getBean();
+                    if (bean != null) {
+                        log.debug("向 " + test.getClass().getSimpleName() + " 注入Bean: " + field.getName() + " = " + bean.getClass().getName());
+                        javaDialect.setField(test, field, bean);
+                        continue;
+                    }
                 }
 
-                if (field.getType().isAssignableFrom(EasyContext.class)) {
-                    javaDialect.setField(test, field, this.getContext());
-                    continue;
+                EasyBeanBuilder<?> beanBuilder = this.getContext().getBeanBuilder(field.getType());
+                if (beanBuilder != null) {
+                    Object bean = beanBuilder.getBean(this.getContext(), annotation.value(), this.getProperties(), test.getClass());
+                    if (bean != null) {
+                        log.debug("向 " + test.getClass().getSimpleName() + " 注入Bean: " + field.getName() + " = " + bean.getClass().getName());
+                        javaDialect.setField(test, field, bean);
+                        continue;
+                    }
                 }
 
-//                EasyBeanDefine beanInfo = this.getContext().getBeanInfo(Connection.class, annotation.name());
-//                if (beanInfo != null) {
-//                    Object bean = beanInfo.getBean();
-//                    javaDialect.setField(test, field, bean);
-//                }
-
+                log.warn("向 " + test.getClass().getSimpleName() + " 注入Bean: " + field.getName() + " 失败！");
             }
         }
 
@@ -168,15 +171,11 @@ public class DatabaseRunner extends BlockJUnit4ClassRunner {
         if (this.context == null) {
             synchronized (this) {
                 if (this.context == null) {
-                    this.context = new DefaultEasyContext("sout:info");
+                    this.context = new DefaultEasyContext("sout+:info");
                 }
             }
         }
         return this.context;
-    }
-
-    protected Connection createConnection() {
-        return Jdbc.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
     }
 
     protected Properties load() {

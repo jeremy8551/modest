@@ -23,7 +23,7 @@ import cn.org.expect.util.StringUtils;
  *
  * @author jeremy8551@qq.com
  */
-@EasyBean(name = "default", description = "即时编译器")
+@EasyBean(value = "default", description = "即时编译器")
 public class ScriptCompiler implements UniversalScriptCompiler {
 
     /** 脚本命令编译器集合 */

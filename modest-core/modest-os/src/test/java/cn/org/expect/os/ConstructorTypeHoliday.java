@@ -8,7 +8,7 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.cn.NationalHoliday;
 import cn.org.expect.util.Dates;
 
-@EasyBean(name = "zh_cn")
+@EasyBean(value = "zh_cn")
 public class ConstructorTypeHoliday implements NationalHoliday {
 
     Set<Date> set1 = new HashSet<Date>();

@@ -50,7 +50,7 @@ import cn.org.expect.util.StringUtils;
 /**
  * Linux 本地操作系统的接口实现类
  */
-@EasyBean(name = "linux")
+@EasyBean(value = "linux")
 public class LinuxLocalOS implements OS, OSDateCommand, OSNetwork {
 
     /** unix 系统保留的文件名 */

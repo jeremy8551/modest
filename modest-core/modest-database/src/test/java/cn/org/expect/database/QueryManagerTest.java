@@ -7,14 +7,14 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.database.annotation.DatabaseRunner;
+import cn.org.expect.database.annotation.ModestRunner;
 import cn.org.expect.ioc.EasyContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(DatabaseRunner.class)
+@RunWith(ModestRunner.class)
 public class QueryManagerTest {
 
     public final static String TABLE_NAME = "test_table_name_temp".toUpperCase();

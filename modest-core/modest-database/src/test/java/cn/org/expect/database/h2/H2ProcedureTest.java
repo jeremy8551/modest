@@ -5,7 +5,7 @@ import java.sql.Connection;
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.database.DatabaseDDL;
 import cn.org.expect.database.DatabaseProcedure;
-import cn.org.expect.database.annotation.DatabaseRunner;
+import cn.org.expect.database.annotation.ModestRunner;
 import cn.org.expect.database.JdbcDao;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.FileUtils;
@@ -15,7 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(DatabaseRunner.class)
+@RunWith(ModestRunner.class)
 public class H2ProcedureTest {
 
     /** 容器上下文信息 */

@@ -8,7 +8,7 @@ public class CeshiBean {
     @EasyBean
     private EasyContext context;
 
-    @EasyBean(name = "test2")
+    @EasyBean(value = "test2")
     private Ceshi ceshi;
 
     public CeshiBean() {

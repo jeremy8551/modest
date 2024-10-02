@@ -27,7 +27,7 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
  * @author jeremy8551@qq.com
  * @createtime 2014-07-23 16:16:03
  */
-@EasyBean(name = "zip")
+@EasyBean(value = "zip")
 public class ZipCompress implements Compress {
     private final static Log log = LogFactory.getLog(ZipCompress.class);
 

@@ -7,7 +7,7 @@ import java.util.Set;
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.util.Dates;
 
-@EasyBean(name = "zh_cn", description = "从2013年开始至今的中国法定节假日")
+@EasyBean(value = "zh_cn", description = "从2013年开始至今的中国法定节假日")
 public class NationalChinaHoliday implements NationalHoliday {
 
     /** 休息日 */

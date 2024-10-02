@@ -7,7 +7,7 @@ import java.util.List;
 
 import cn.org.expect.Modest;
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.database.annotation.DatabaseRunner;
+import cn.org.expect.database.annotation.ModestRunner;
 import cn.org.expect.database.internal.AbstractDialect;
 import cn.org.expect.database.internal.StandardDatabaseDialect;
 import cn.org.expect.ioc.EasyContext;
@@ -17,7 +17,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@RunWith(DatabaseRunner.class)
+@RunWith(ModestRunner.class)
 public class DatabaseDialectTest {
 
     /** 容器上下文信息 */

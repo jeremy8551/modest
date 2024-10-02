@@ -40,7 +40,7 @@ import cn.org.expect.util.StringUtils;
  *
  * @author jeremy8551@qq.com
  */
-@EasyBean(name = "oracle")
+@EasyBean(value = "oracle")
 public class OracleDialect extends AbstractDialect {
 
     public OracleDialect() {

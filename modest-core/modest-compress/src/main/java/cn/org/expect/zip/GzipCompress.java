@@ -24,7 +24,7 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2017-11-30
  */
-@EasyBean(name = "gz")
+@EasyBean(value = "gz")
 public class GzipCompress implements Compress {
     private final static Log log = LogFactory.getLog(GzipCompress.class);
 

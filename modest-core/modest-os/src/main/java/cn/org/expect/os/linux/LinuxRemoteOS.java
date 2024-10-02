@@ -52,7 +52,7 @@ import cn.org.expect.util.StringUtils;
 /**
  * 远程 linux 操作系统的接口实现类
  */
-@EasyBean(name = "linux")
+@EasyBean(value = "linux")
 public class LinuxRemoteOS implements OS, OSFileCommand, OSDateCommand, OSNetwork, EasyContextAware {
 
     protected OSSecureShellCommand cmd;

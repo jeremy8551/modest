@@ -15,7 +15,7 @@ import cn.org.expect.io.TextTable;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.ServletUtils;
 
-@EasyBean(name = "http", description = "卸载数据到用户浏览器")
+@EasyBean(value = "http", description = "卸载数据到用户浏览器")
 public class HttpRequestWriter implements ExtractWriter {
 
     /** HTTP 响应信息输出接口 */

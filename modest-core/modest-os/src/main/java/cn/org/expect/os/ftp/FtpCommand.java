@@ -34,7 +34,7 @@ import cn.org.expect.util.NetUtils;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;
 
-@EasyBean(name = "ftp", description = "FTP协议的实现类")
+@EasyBean(value = "ftp", description = "FTP协议的实现类")
 public class FtpCommand implements OSFtpCommand, EasyContextAware {
     private final static Log log = LogFactory.getLog(FtpCommand.class);
 

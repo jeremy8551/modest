@@ -19,6 +19,13 @@ import java.lang.annotation.Target;
 public @interface EasyBean {
 
     /**
+     * 组件名称
+     *
+     * @return 种类信息
+     */
+    String value() default "";
+
+    /**
      * 组件管理模式
      *
      * @return true表示组件是单例模式, false表示是原型模式（每次生成的组件都是新创建的）
@@ -31,13 +38,6 @@ public @interface EasyBean {
      * @return true表示单例组件使用延迟加载模式
      */
     boolean lazy() default true;
-
-    /**
-     * 组件名称
-     *
-     * @return 种类信息
-     */
-    String name() default "";
 
     /**
      * 排序编号

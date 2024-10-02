@@ -22,7 +22,7 @@ import cn.org.expect.util.StringUtils;
  *
  * @author jeremy8551@qq.com
  */
-@EasyBean(name = "csv", description = "CSV格式文件")
+@EasyBean(value = "csv", description = "CSV格式文件")
 public class CsvFile extends CommonTextTableFile implements TextTableFile {
 
     public CsvFile() {

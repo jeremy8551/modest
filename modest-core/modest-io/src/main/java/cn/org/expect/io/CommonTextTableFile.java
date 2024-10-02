@@ -21,7 +21,7 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2017-02-22
  */
-@EasyBean(name = "txt", description = "文本文件, 逗号分隔，无转义字符，无字符串限定符")
+@EasyBean(value = "txt", description = "文本文件, 逗号分隔，无转义字符，无字符串限定符")
 public class CommonTextTableFile implements TextTableFile, EasyContextAware {
 
     /** 表格数据文件 */

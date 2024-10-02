@@ -44,7 +44,7 @@ public class EasyBeanDefineImpl implements EasyBeanDefine {
         this.type = Ensure.notNull(type);
         cn.org.expect.annotation.EasyBean annotation = type.getAnnotation(cn.org.expect.annotation.EasyBean.class); // 取得类上配置的注解
         if (annotation != null) {
-            this.setName(StringUtils.trimBlank(annotation.name()));
+            this.setName(StringUtils.trimBlank(annotation.value()));
             this.setSingleton(annotation.singleton());
             this.setPriority(annotation.priority());
             this.setLazy(annotation.lazy());

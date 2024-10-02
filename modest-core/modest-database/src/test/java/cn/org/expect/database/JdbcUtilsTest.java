@@ -7,7 +7,7 @@ import java.util.List;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.collection.CaseSensitivSet;
-import cn.org.expect.database.annotation.DatabaseRunner;
+import cn.org.expect.database.annotation.ModestRunner;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.IO;
@@ -19,7 +19,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.JVM)
-@RunWith(DatabaseRunner.class)
+@RunWith(ModestRunner.class)
 public class JdbcUtilsTest {
 
     /** 容器上下文信息 */

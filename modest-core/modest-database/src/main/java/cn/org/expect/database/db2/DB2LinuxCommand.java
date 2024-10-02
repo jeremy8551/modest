@@ -2,7 +2,7 @@ package cn.org.expect.database.db2;
 
 import cn.org.expect.annotation.EasyBean;
 
-@EasyBean(name = "db2")
+@EasyBean(value = "db2")
 public class DB2LinuxCommand implements DB2Command {
 
     public String getTableCommand(String databaseName, String schema, String tableName, String username, String password) {

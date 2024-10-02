@@ -34,7 +34,7 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2022-01-13
  */
-@EasyBean(name = "telnet", description = "apache-net")
+@EasyBean(value = "telnet", description = "apache-net")
 public class TelnetCommand implements Runnable, TelnetNotificationHandler, OSShellCommand {
     private final static Log log = LogFactory.getLog(TelnetCommand.class);
 

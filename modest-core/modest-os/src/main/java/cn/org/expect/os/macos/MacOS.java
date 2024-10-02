@@ -31,7 +31,7 @@ import cn.org.expect.util.StringUtils;
 /**
  * Apple Mac OS 操作系统的接口实现类
  */
-@EasyBean(name = "macos")
+@EasyBean(value = "macos")
 public class MacOS extends LinuxLocalOS {
     private final static Log log = LogFactory.getLog(MacOS.class);
 

@@ -73,7 +73,7 @@ public class EasyBeanFactoryImpl implements EasyBeanFactory {
                 JavaDialect dialect = JavaDialectFactory.get();
                 Object value = dialect.getField(obj, field);
                 if (value == null) { // 如果属性值为null，则在容器中查找对应的对象
-                    String name = ObjectUtils.coalesce(annotation.name(), "");
+                    String name = ObjectUtils.coalesce(annotation.value(), "");
                     Object bean = this.context.getBean(field.getType(), name);
                     if (bean == null) {
                         throw new UnsupportedOperationException(ResourcesUtils.getMessage("ioc.standard.output.msg008", field.getType(), field.getName(), obj));

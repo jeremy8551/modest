@@ -15,7 +15,7 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 
-@EasyBean(name = "rar")
+@EasyBean(value = "rar")
 public class RarCompress implements Compress {
     private final static Log log = LogFactory.getLog(RarCompress.class);
 
