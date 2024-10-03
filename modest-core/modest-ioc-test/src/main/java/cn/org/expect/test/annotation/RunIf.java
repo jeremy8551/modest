@@ -1,4 +1,4 @@
-package cn.org.expect.database.annotation;
+package cn.org.expect.test.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -16,7 +16,7 @@ public @interface RunIf {
     /**
      * 存在哪些属性值才能运行测试案例
      *
-     * @return
+     * @return 属性数组
      */
     String[] values();
 }

@@ -12,9 +12,9 @@ import java.util.logging.Logger;
 import javax.sql.DataSource;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.database.annotation.ModestRunner;
 import cn.org.expect.database.internal.StandardDatabaseIndex;
 import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.test.ModestRunner;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;

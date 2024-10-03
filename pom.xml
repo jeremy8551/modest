@@ -90,6 +90,30 @@
     <!-- 依赖管理 -->
     <dependencyManagement>
         <dependencies>
+            <!-- JUnit Platform 定义了测试引擎的 API，是 JVM 上用于启动测试框架的基础服务，支持通过 IDE、构建工具、命令行等方式运行单元测试 -->
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>1.10.0</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- 用于编写和扩展测试代码，提供了 TestEngine 在平台上运行基于 Jupiter 的测试的功能 -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>5.10.0</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- 用于兼容 JUnit 3 和 JUnit 4 的测试代码，使旧代码能够继续运行 -->
+            <dependency>
+                <groupId>org.junit.vintage</groupId>
+                <artifactId>junit-vintage-engine</artifactId>
+                <version>5.10.0</version>
+                <scope>test</scope>
+            </dependency>
+
             <!-- Maven 核心库（apache-maven 默认会提供）-->
             <dependency>
                 <groupId>org.apache.maven</groupId>
@@ -240,6 +264,13 @@
                 <version>${revision}</version>
             </dependency>
 
+            <!-- modest 容器测试 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-ioc-test</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
             <!-- modest 表达式模块 -->
             <dependency>
                 <groupId>cn.org.expect</groupId>
@@ -338,24 +369,18 @@
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
-            <version>1.10.0</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- 用于编写和扩展测试代码，提供了 TestEngine 在平台上运行基于 Jupiter 的测试的功能 -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
-            <version>5.10.0</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- 用于兼容 JUnit 3 和 JUnit 4 的测试代码，使旧代码能够继续运行 -->
         <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>5.10.0</version>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 

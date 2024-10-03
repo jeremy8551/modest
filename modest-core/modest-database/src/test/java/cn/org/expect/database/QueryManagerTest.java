@@ -7,8 +7,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.database.annotation.ModestRunner;
 import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.test.ModestRunner;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

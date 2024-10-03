@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.database.annotation.ModestRunner;
-import cn.org.expect.database.annotation.RunIf;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.os.OS;
 import cn.org.expect.os.OSCpu;
@@ -17,6 +15,8 @@ import cn.org.expect.os.OSNetworkCard;
 import cn.org.expect.os.OSProcess;
 import cn.org.expect.os.OSUser;
 import cn.org.expect.os.OSUserGroup;
+import cn.org.expect.test.ModestRunner;
+import cn.org.expect.test.annotation.RunIf;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.TimeWatch;

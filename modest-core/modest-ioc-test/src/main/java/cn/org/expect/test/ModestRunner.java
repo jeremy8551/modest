@@ -1,7 +1,8 @@
-package cn.org.expect.database.annotation;
+package cn.org.expect.test;
 
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import cn.org.expect.jdk.JavaDialect;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.test.annotation.RunIf;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.IO;
@@ -32,7 +34,13 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
     protected final static Log log = LogFactory.getLog(ModestRunner.class);
 
     /** 容器上下文信息 */
-    public volatile EasyContext context;
+    public static String YAML_FILE_NAME = "testconfig";
+
+    /** 容器上下文信息 */
+    public final static String ACTIVE_PROFILE = Modest.class.getPackage().getName() + ".test.mode";
+
+    /** 容器上下文信息 */
+    protected volatile EasyContext context;
 
     /** 脚本引擎的环境变量集合 */
     protected volatile Properties properties;
@@ -61,11 +69,11 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
     }
 
     protected boolean ignored(FrameworkMethod child) {
-        Class<?> cls = child.getDeclaringClass();
         if (this.cache == null) {
             this.cache = new Hashtable<String, Boolean>();
         }
 
+        Class<?> cls = child.getDeclaringClass();
         String key = cls.getName() + "." + child.getName();
         Boolean value = this.cache.get(key);
         if (value != null) {
@@ -103,44 +111,29 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
         return false;
     }
 
-    private Properties getProperties() {
-        if (this.properties == null) {
-            synchronized (this) {
-                if (this.properties == null) {
-                    this.properties = this.load();
-                }
-            }
-        }
-        return this.properties;
-    }
-
-    protected String[] enableProperties() {
-        return new String[0];
+    @Override
+    protected void runChild(FrameworkMethod method, RunNotifier notifier) {
+        log.info("> 执行测试方法: {}", method.getName());
+        super.runChild(method, notifier);
     }
 
     @Override
     protected Object createTest() throws Exception {
-        JavaDialect javaDialect = JavaDialectFactory.get();
         Object test = super.createTest();
+        JavaDialect javaDialect = JavaDialectFactory.get();
         Field[] fields = test.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (field.isAnnotationPresent(EasyBean.class)) {
                 EasyBean annotation = field.getAnnotation(EasyBean.class);
-                if (field.getType().getName().equals(String.class.getName())) {
-                    String name = StringUtils.trimBlank(annotation.value());
-                    if (name.startsWith("$")) {
-                        String part = name.substring(1);
-                        if (part.length() > 2 && part.charAt(0) == '{' && part.charAt(part.length() - 1) == '}') {
-                            String property = part.substring(1, part.length() - 1);
-                            String value = this.getProperties().getProperty(property);
-                            log.debug("向 " + test.getClass().getSimpleName() + " 注入属性: " + property + "=" + value);
-                            javaDialect.setField(test, field, value);
-                        }
-                    }
-                    continue;
+                List<String> fieldNames = StringUtils.splitVariable(annotation.value(), new ArrayList<String>());
+                for (String name : fieldNames) {
+                    String value = this.getProperties().getProperty(name);
+                    log.debug("向 " + test.getClass().getSimpleName() + " 注入属性: " + name + "=" + value);
+                    javaDialect.setField(test, field, value);
                 }
 
-                EasyBeanDefine beanInfo = this.getContext().getBeanInfo(field.getType(), annotation.value());
+                EasyContext context = this.getContext();
+                EasyBeanDefine beanInfo = context.getBeanInfo(field.getType(), annotation.value());
                 if (beanInfo != null) {
                     Object bean = beanInfo.getBean();
                     if (bean != null) {
@@ -150,9 +143,9 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
                     }
                 }
 
-                EasyBeanBuilder<?> beanBuilder = this.getContext().getBeanBuilder(field.getType());
+                EasyBeanBuilder<?> beanBuilder = context.getBeanBuilder(field.getType());
                 if (beanBuilder != null) {
-                    Object bean = beanBuilder.getBean(this.getContext(), annotation.value(), this.getProperties(), test.getClass());
+                    Object bean = beanBuilder.getBean(context, annotation.value(), this.getProperties(), test.getClass());
                     if (bean != null) {
                         log.debug("向 " + test.getClass().getSimpleName() + " 注入Bean: " + field.getName() + " = " + bean.getClass().getName());
                         javaDialect.setField(test, field, bean);
@@ -167,6 +160,11 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
         return test;
     }
 
+    /**
+     * 返回容器上下文信息
+     *
+     * @return 容器实例
+     */
     protected EasyContext getContext() {
         if (this.context == null) {
             synchronized (this) {
@@ -178,14 +176,42 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
         return this.context;
     }
 
-    protected Properties load() {
+    /**
+     * 补充属性
+     *
+     * @return 属性数组
+     */
+    protected String[] enableProperties() {
+        return new String[0];
+    }
+
+    /**
+     * 返回配置属性
+     *
+     * @return 属性集合
+     */
+    protected Properties getProperties() {
+        if (this.properties == null) {
+            synchronized (this) {
+                if (this.properties == null) {
+                    this.properties = this.loadProperties();
+                }
+            }
+        }
+        return this.properties;
+    }
+
+    /**
+     * 加载配置文件中的属性
+     *
+     * @return 属性集合
+     */
+    protected Properties loadProperties() {
         try {
             Properties config = new Properties();
-            config.load(ClassUtils.getResourceAsStream("/testconfig.properties"));
-
-            String envmode = Modest.class.getPackage().getName() + ".test.mode";
-            String mode = ObjectUtils.coalesce(System.getProperty(envmode), "home");
-            InputStream in = ClassUtils.getResourceAsStream("/testconfig-" + mode + ".properties");
+            config.load(ClassUtils.getResourceAsStream("/" + YAML_FILE_NAME + ".properties"));
+            String active = ObjectUtils.coalesce(System.getProperty(ACTIVE_PROFILE), "home");
+            InputStream in = ClassUtils.getResourceAsStream("/" + YAML_FILE_NAME + "-" + active + ".properties");
             if (in != null) {
                 config.load(in);
                 IO.closeQuietly(in);

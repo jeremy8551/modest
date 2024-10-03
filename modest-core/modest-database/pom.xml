@@ -54,6 +54,11 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
+            <artifactId>modest-ioc-test</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
             <artifactId>modest-logger</artifactId>
         </dependency>
 

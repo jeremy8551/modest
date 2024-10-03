@@ -7,10 +7,10 @@ import java.util.List;
 
 import cn.org.expect.Modest;
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.database.annotation.ModestRunner;
 import cn.org.expect.database.internal.AbstractDialect;
 import cn.org.expect.database.internal.StandardDatabaseDialect;
 import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.test.ModestRunner;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
