@@ -17,13 +17,11 @@ import org.junit.runner.RunWith;
 @RunIf(values = {"db2.url", "db2.username", "db2.password"})
 public class DB2TerminateConnectionTest {
 
-    /** 容器上下文信息 */
     @EasyBean
-    public EasyContext context;
+    private EasyContext context;
 
-    /** 数据库连接 */
     @EasyBean
-    public Connection connection;
+    private Connection connection;
 
     @Test
     public void test() throws SQLException {

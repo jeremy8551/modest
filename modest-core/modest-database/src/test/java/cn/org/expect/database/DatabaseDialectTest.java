@@ -7,7 +7,6 @@ import java.util.List;
 
 import cn.org.expect.Modest;
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.database.internal.AbstractDialect;
 import cn.org.expect.database.internal.StandardDatabaseDialect;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.test.ModestRunner;
@@ -20,13 +19,11 @@ import org.junit.runner.RunWith;
 @RunWith(ModestRunner.class)
 public class DatabaseDialectTest {
 
-    /** 容器上下文信息 */
     @EasyBean
-    public EasyContext context;
+    private EasyContext context;
 
-    /** 数据库连接 */
     @EasyBean
-    public Connection connection;
+    private Connection connection;
 
     @Test
     public void test0() {
@@ -190,8 +187,7 @@ public class DatabaseDialectTest {
 
     @Test
     public void test2() throws SQLException {
-        AbstractDialect dialect = new StandardDatabaseDialect();
-        Connection conn = this.connection;
-        System.out.println(dialect.getSchema(conn));
+        StandardDatabaseDialect dialect = new StandardDatabaseDialect();
+        System.out.println(dialect.getSchema(this.connection));
     }
 }

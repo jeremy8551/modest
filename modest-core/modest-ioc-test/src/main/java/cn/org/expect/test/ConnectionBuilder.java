@@ -1,6 +1,7 @@
-package cn.org.expect.database;
+package cn.org.expect.test;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.util.Properties;
 
 import cn.org.expect.annotation.EasyBean;
@@ -21,15 +22,19 @@ public class ConnectionBuilder implements EasyBeanBuilder<Connection> {
         String name = ArrayUtils.indexOf(args, String.class, 0); // EasyBean的名字
         Class<?> cls = ArrayUtils.indexOf(args, Class.class, 0); // 单元测试类
 
+        String url = JDBC_URL;
+        String username = JDBC_USER;
+        String password = JDBC_PASSWORD;
+
+        // 如果组件名是 db2 或 测试类名以 DB2 开头
         if ("db2".equalsIgnoreCase(name) || (cls != null && StringUtils.startsWithIgnoreCase(cls.getSimpleName(), "db2"))) {
             Properties config = ArrayUtils.indexOf(args, Properties.class, 0);
             Ensure.notNull(config);
-            String url = config.getProperty("db2.url");
-            String username = config.getProperty("db2.username");
-            String password = config.getProperty("db2.password");
-            return Jdbc.getConnection(url, username, password);
+            url = config.getProperty("db2.url");
+            username = config.getProperty("db2.username");
+            password = config.getProperty("db2.password");
         }
 
-        return Jdbc.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+        return DriverManager.getConnection(url, username, password);
     }
 }

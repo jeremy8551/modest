@@ -18,13 +18,11 @@ import org.junit.runner.RunWith;
 @RunWith(ModestRunner.class)
 public class H2ProcedureTest {
 
-    /** 容器上下文信息 */
     @EasyBean
-    public EasyContext context;
+    private EasyContext context;
 
-    /** 数据库连接 */
     @EasyBean
-    public Connection connection;
+    private Connection connection;
 
     @Before
     public void setUp2() {

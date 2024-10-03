@@ -30,21 +30,20 @@ import org.junit.runner.RunWith;
 @RunIf(values = {"db2.host", "db2.ssh.port", "db2.ssh.username", "db2.ssh.password"})
 public class DB2InstanceDetectTest {
 
-    @EasyBean(value = "${db2.host}")
-    String host;
+    @EasyBean("${db2.host}")
+    private String host;
 
-    @EasyBean(value = "${db2.ssh.port}")
-    String port;
+    @EasyBean("${db2.ssh.port}")
+    private String port;
 
-    @EasyBean(value = "${db2.ssh.username}")
-    String username;
+    @EasyBean("${db2.ssh.username}")
+    private String username;
 
-    @EasyBean(value = "${db2.ssh.password}")
-    String password;
+    @EasyBean("${db2.ssh.password}")
+    private String password;
 
-    /** 容器上下文信息 */
     @EasyBean
-    public EasyContext context;
+    private EasyContext context;
 
     @Test
     public void test() throws IOException {

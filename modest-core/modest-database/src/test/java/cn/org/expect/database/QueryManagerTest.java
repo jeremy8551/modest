@@ -19,11 +19,9 @@ public class QueryManagerTest {
 
     public final static String TABLE_NAME = "test_table_name_temp".toUpperCase();
 
-    /** 容器上下文信息 */
     @EasyBean
     public EasyContext context;
 
-    /** 数据库连接 */
     @EasyBean
     public Connection connection;
 

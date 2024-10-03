@@ -34,7 +34,7 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
     protected final static Log log = LogFactory.getLog(ModestRunner.class);
 
     /** 容器上下文信息 */
-    public static String YAML_FILE_NAME = "testconfig";
+    public static String YAML_FILE_NAME = "modest";
 
     /** 容器上下文信息 */
     public final static String ACTIVE_PROFILE = Modest.class.getPackage().getName() + ".test.mode";
