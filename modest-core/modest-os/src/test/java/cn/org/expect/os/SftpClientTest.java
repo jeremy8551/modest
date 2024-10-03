@@ -1,56 +1,54 @@
 package cn.org.expect.os;
 
-import javax.script.SimpleBindings;
+import java.io.IOException;
 
-import com.jcraft.jsch.JSchException;
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.os.ssh.SecureShellCommand;
 import cn.org.expect.os.ssh.SftpCommand;
+import cn.org.expect.test.ModestRunner;
+import cn.org.expect.test.annotation.RunIf;
 import cn.org.expect.util.StringUtils;
+import com.jcraft.jsch.JSchException;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(ModestRunner.class)
+@RunIf(values = {"ssh.host", "ssh.port", "ssh.username", "ssh.password", "ssh.homedir"})
 public class SftpClientTest {
 
-    @Rule
-    public WithSSHRule rule = new WithSSHRule();
+    @EasyBean("${ssh.host}")
+    private String host;
+
+    @EasyBean("${ssh.port}")
+    private int port;
+
+    @EasyBean("${ssh.username}")
+    private String username;
+
+    @EasyBean("${ssh.password}")
+    private String password;
+
+    @EasyBean("${ssh.homedir}")
+    private String homedir;
 
     @Test
-    public void test1() throws JSchException {
-        SimpleBindings env = rule.getEnvironment();
-        String sshhost = (String) env.get("ssh.host");
-        int sshport = Integer.parseInt((String) env.get("ssh.port"));
-        String sshusername = (String) env.get("ssh.username");
-        String sshpassword = (String) env.get("ssh.password");
-        String homedir = (String) env.get("ssh.homedir");
-
+    public void test1() throws JSchException, IOException {
         SftpCommand ftp = new SftpCommand();
         try {
-            Assert.assertTrue(ftp.connect(sshhost, sshport, sshusername, sshpassword));
-            if (StringUtils.isNotBlank(homedir)) {
-                Assert.assertTrue(ftp.cd(homedir));
-            }
+            Assert.assertTrue(ftp.connect(host, port, username, password));
+            Assert.assertTrue(ftp.cd(homedir));
             FtpClientCase.run(ftp);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail();
         } finally {
             ftp.close();
         }
     }
 
     @Test
-    public void test2() throws JSchException {
-        SimpleBindings env = rule.getEnvironment();
-        String sshhost = (String) env.get("ssh.host");
-        int sshport = Integer.parseInt((String) env.get("ssh.port"));
-        String sshusername = (String) env.get("ssh.username");
-        String sshpassword = (String) env.get("ssh.password");
-        String homedir = (String) env.get("ssh.homedir");
-
+    public void test2() throws JSchException, IOException {
         SecureShellCommand ssh = new SecureShellCommand();
         try {
-            Assert.assertTrue(ssh.connect(sshhost, sshport, sshusername, sshpassword));
+            Assert.assertTrue(ssh.connect(host, port, username, password));
             ssh.execute("pwd");
             String sout = ssh.getStdout();
             System.out.println("before dir: " + sout);
@@ -58,18 +56,13 @@ public class SftpClientTest {
 
             // 运行文件测试案例
             OSFileCommand filecmd = ssh.getFileCommand();
-            if (StringUtils.isNotBlank(homedir)) {
-                Assert.assertTrue(filecmd.cd(homedir));
-            }
+            Assert.assertTrue(filecmd.cd(homedir));
             FtpClientCase.run(filecmd);
 
             ssh.execute("pwd");
             String stdout = ssh.getStdout();
             Assert.assertTrue(StringUtils.isNotBlank(stdout));
             System.out.println("after dir: " + sout);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail();
         } finally {
             ssh.close();
         }

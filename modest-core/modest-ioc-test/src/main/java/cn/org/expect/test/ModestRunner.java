@@ -18,6 +18,7 @@ import cn.org.expect.jdk.JavaDialect;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.log.cxt.LogConfigAnalysis;
 import cn.org.expect.test.annotation.RunIf;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.ClassUtils;
@@ -31,7 +32,7 @@ import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.TestClass;
 
 public class ModestRunner extends BlockJUnit4ClassRunner {
-    protected final static Log log = LogFactory.getLog(ModestRunner.class);
+    protected static Log log;
 
     /** 容器上下文信息 */
     public static String YAML_FILE_NAME = "modest";
@@ -58,6 +59,9 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
 
     @Override
     public void run(RunNotifier notifier) {
+        LogConfigAnalysis.parse(null, "sout+");
+        log = LogFactory.getLog(ModestRunner.class);
+
         String line = StringUtils.left("", 100, '-');
         log.info(line + "\n> 单元测试类: " + this.getTestClass().getName() + "\n" + line);
         super.run(notifier);
@@ -94,7 +98,7 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
 
             boolean fail = false;
             for (String name : propertyNames) {
-                if (!this.getProperties().contains(name)) {
+                if (!this.getProperties().containsKey(name)) {
                     str.append(name).append(", ");
                     fail = true;
                 }
@@ -120,44 +124,67 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
     @Override
     protected Object createTest() throws Exception {
         Object test = super.createTest();
-        JavaDialect javaDialect = JavaDialectFactory.get();
         Field[] fields = test.getClass().getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(EasyBean.class)) {
-                EasyBean annotation = field.getAnnotation(EasyBean.class);
-                List<String> fieldNames = StringUtils.splitVariable(annotation.value(), new ArrayList<String>());
-                for (String name : fieldNames) {
-                    String value = this.getProperties().getProperty(name);
-                    log.debug("向 " + test.getClass().getSimpleName() + " 注入属性: " + name + "=" + value);
-                    javaDialect.setField(test, field, value);
-                }
+            if (field.isAnnotationPresent(EasyBean.class)) { // 属性上配置了注解
+                this.autowired(test, field);
+            }
+        }
+        return test;
+    }
 
-                EasyContext context = this.getContext();
-                EasyBeanDefine beanInfo = context.getBeanInfo(field.getType(), annotation.value());
-                if (beanInfo != null) {
-                    Object bean = beanInfo.getBean();
-                    if (bean != null) {
-                        log.debug("向 " + test.getClass().getSimpleName() + " 注入Bean: " + field.getName() + " = " + bean.getClass().getName());
-                        javaDialect.setField(test, field, bean);
-                        continue;
-                    }
-                }
+    /**
+     * 向测试类的实例对象中注入Bean
+     *
+     * @param test  测试类的实例对象
+     * @param field 注入bean的属性
+     * @throws Exception 发生错误
+     */
+    protected void autowired(Object test, Field field) throws Exception {
+        JavaDialect javaDialect = JavaDialectFactory.get();
+        EasyBean annotation = field.getAnnotation(EasyBean.class);
 
-                EasyBeanBuilder<?> beanBuilder = context.getBeanBuilder(field.getType());
-                if (beanBuilder != null) {
-                    Object bean = beanBuilder.getBean(context, annotation.value(), this.getProperties(), test.getClass());
-                    if (bean != null) {
-                        log.debug("向 " + test.getClass().getSimpleName() + " 注入Bean: " + field.getName() + " = " + bean.getClass().getName());
-                        javaDialect.setField(test, field, bean);
-                        continue;
-                    }
-                }
+        // 注入配置文件中的属性
+        List<String> fieldNames = StringUtils.splitVariable(annotation.value(), new ArrayList<String>());
+        for (String name : fieldNames) {
+            Class<?> type = field.getType();
+            String value = this.getProperties().getProperty(name);
+            log.info("向 " + test.getClass().getSimpleName() + " 注入属性(" + type.getSimpleName() + ") " + name + "=" + value);
 
-                log.warn("向 " + test.getClass().getSimpleName() + " 注入Bean: " + field.getName() + " 失败！");
+            if ("int".equalsIgnoreCase(type.getSimpleName())) {
+                javaDialect.setField(test, field, Integer.parseInt(value));
+            } else {
+                javaDialect.setField(test, field, value);
+            }
+        }
+        if (!fieldNames.isEmpty()) {
+            return;
+        }
+
+        // 注入Bean
+        EasyContext context = this.getContext();
+        EasyBeanDefine beanInfo = context.getBeanInfo(field.getType(), annotation.value());
+        if (beanInfo != null) {
+            Object bean = beanInfo.getBean();
+            if (bean != null) {
+                log.debug("向 " + test.getClass().getSimpleName() + " 注入Bean: " + field.getName() + " = " + bean.getClass().getName());
+                javaDialect.setField(test, field, bean);
+                return;
             }
         }
 
-        return test;
+        // 使用Bean工厂创建对象，并注入
+        EasyBeanBuilder<?> beanBuilder = context.getBeanBuilder(field.getType());
+        if (beanBuilder != null) {
+            Object bean = beanBuilder.getBean(context, annotation.value(), this.getProperties(), test.getClass());
+            if (bean != null) {
+                log.debug("向 " + test.getClass().getSimpleName() + " 注入Bean: " + field.getName() + " = " + bean.getClass().getName());
+                javaDialect.setField(test, field, bean);
+                return;
+            }
+        }
+
+        log.warn("向 " + test.getClass().getSimpleName() + " 注入Bean: " + field.getName() + " 失败！");
     }
 
     /**
@@ -169,7 +196,7 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
         if (this.context == null) {
             synchronized (this) {
                 if (this.context == null) {
-                    this.context = new DefaultEasyContext("sout+:info");
+                    this.context = new DefaultEasyContext("sout+");
                 }
             }
         }
@@ -195,6 +222,7 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
             synchronized (this) {
                 if (this.properties == null) {
                     this.properties = this.loadProperties();
+//                    System.out.println(StringUtils.toString(this.properties));
                 }
             }
         }

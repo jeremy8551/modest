@@ -54,6 +54,11 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
+            <artifactId>modest-ioc-test</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
             <artifactId>modest-cn</artifactId>
         </dependency>
 
@@ -92,6 +97,5 @@
             <version>2.12.1</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 </project>

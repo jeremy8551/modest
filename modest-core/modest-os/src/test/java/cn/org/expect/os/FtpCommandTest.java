@@ -1,40 +1,46 @@
 package cn.org.expect.os;
 
-import javax.script.SimpleBindings;
+import java.io.IOException;
 
+import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.os.ftp.FtpCommand;
-import cn.org.expect.util.StringUtils;
+import cn.org.expect.test.ModestRunner;
+import cn.org.expect.test.annotation.RunIf;
 import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-@Ignore
+@RunWith(ModestRunner.class)
+@RunIf(values = {"ftp.host", "ftp.port", "ftp.username", "ftp.password", "ftp.homedir"})
 public class FtpCommandTest {
 
-    @Rule
-    public WithFtpRule rule = new WithFtpRule();
+    @EasyBean("${ftp.host}")
+    private String host;
+
+    @EasyBean("${ftp.port}")
+    private int port;
+
+    @EasyBean("${ftp.username}")
+    private String username;
+
+    @EasyBean("${ftp.password}")
+    private String password;
+
+    @EasyBean("${ftp.homedir}")
+    private String homedir;
+
+    @EasyBean
+    private EasyContext context;
 
     @Test
-    public void test() {
-        SimpleBindings env = rule.getEnvironment();
-        String ftphost = (String) env.get("ftp.host");
-        int ftpport = Integer.parseInt((String) env.get("ftp.port"));
-        String ftpusername = (String) env.get("ftp.username");
-        String ftppassword = (String) env.get("ftp.password");
-        String ftphomedir = (String) env.get("ftp.homedir");
-
+    public void test() throws IOException {
         FtpCommand ftp = new FtpCommand();
         try {
-            ftp.setContext(rule.getContext());
-            Assert.assertTrue(ftp.connect(ftphost, ftpport, ftpusername, ftppassword));
-            if (StringUtils.isNotBlank(ftphomedir)) {
-                Assert.assertTrue(ftp.cd(ftphomedir));
-            }
+            ftp.setContext(this.context);
+            Assert.assertTrue(ftp.connect(host, port, username, password));
+            Assert.assertTrue(ftp.cd(homedir));
             FtpClientCase.run(ftp);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail();
         } finally {
             ftp.close();
         }

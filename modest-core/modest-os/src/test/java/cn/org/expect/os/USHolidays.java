@@ -8,7 +8,7 @@ import java.util.Set;
 
 import cn.org.expect.cn.NationalHoliday;
 
-//@annotation.cn.org.expect.EasyBean(name = "zh_cn")
+// 不要配置 EasyBean 注解
 public class USHolidays implements NationalHoliday {
 
     private Set<Date> rest = new HashSet<Date>();
@@ -48,5 +48,4 @@ public class USHolidays implements NationalHoliday {
     public boolean isWorkDay(Date date) {
         return false;
     }
-
 }

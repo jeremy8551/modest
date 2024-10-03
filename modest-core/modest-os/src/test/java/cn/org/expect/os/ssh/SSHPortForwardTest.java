@@ -2,58 +2,86 @@ package cn.org.expect.os.ssh;
 
 import java.util.List;
 
+import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.os.OSFile;
 import cn.org.expect.os.OSFtpCommand;
 import cn.org.expect.os.OSSecureShellCommand;
-import cn.org.expect.os.WithSSHRule;
+import cn.org.expect.test.ModestRunner;
+import cn.org.expect.test.annotation.RunIf;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
- * 端口转发测试
+ * 端口转发测试，本地连接到一个转发服务器，通过转发服务器连接一个sftp服务器
  */
-@Ignore
+@RunWith(ModestRunner.class)
+@RunIf(values = {"forward.host", "forward.port", "forward.username", "forward.password", "forward.remote.host", "forward.remote.port", "forward.remote.username", "forward.remote.password"})
 public class SSHPortForwardTest {
 
-    public WithSSHRule rule = new WithSSHRule();
+    /**
+     * 转发服务器 host
+     */
+    @EasyBean("${forward.host}")
+    private String host;
 
-    // 本地服务器host与端口
-    public String localHost = "127.0.0.1";
-    public int localPort = 990;// 本地端口
+    @EasyBean("${forward.port}")
+    private int port;
 
-    // 目标服务器host与端口
-    public String remoteHost = "9.124.47.29";
-    public int remotePort = 990;
+    @EasyBean("${forward.username}")
+    private String username;
+
+    @EasyBean("${forward.password}")
+    private String password;
+
+    /**
+     * 目标服务器 host、端口、用户、密码
+     */
+    @EasyBean("${forward.remote.host}")
+    private String remoteHost;
+
+    @EasyBean("${forward.remote.port}")
+    private int remotePort;
+
+    @EasyBean("${forward.remote.username}")
+    private String remoteUsername;
+
+    @EasyBean("${forward.remote.password}")
+    private String remotePassword;
+
+    @EasyBean
+    private EasyContext context;
+
+    /** 本地服务器host与端口 */
+    private String localHost = "127.0.0.1";
+
+    /** 本地端口 */
+    private int localPort = 0;
 
     @Test
     public void test() throws Exception {
-        OSSecureShellCommand ssh = rule.getContext().getBean(OSSecureShellCommand.class);
+        OSSecureShellCommand ssh = this.context.getBean(OSSecureShellCommand.class);
         try {
-            Assert.assertTrue(ssh.connect("130.1.16.54", 22, "root", "passw0rd"));
-            localPort = ssh.localPortForward(0, remoteHost, remotePort);
-            localPort = ssh.localPortForward(0, remoteHost, remotePort);
-            this.testSSH();
+            Assert.assertTrue(ssh.connect(this.host, this.port, this.username, this.password));
+            this.localPort = ssh.localPortForward(0, this.remoteHost, this.remotePort);
+            this.sftp();
         } finally {
             ssh.close();
         }
     }
 
-    public void testSSH() throws Exception {
-        OSFtpCommand sftp = rule.getContext().getBean(OSFtpCommand.class, "sftp");
+    public void sftp() throws Exception {
+        OSFtpCommand sftp = this.context.getBean(OSFtpCommand.class, "sftp");
         try {
-            Assert.assertTrue(sftp.connect(localHost, localPort, "H_TEST_1", "7vs54b%)e1vw5l"));
+            Assert.assertTrue(sftp.connect(this.localHost, this.localPort, this.remoteUsername, this.remotePassword));
             System.out.println("pwd " + sftp.pwd());
             List<OSFile> list = sftp.ls("/");
             for (OSFile file : list) {
                 System.out.println(file.getLongname());
             }
-            System.out.println("exists /creditdatafile/data " + sftp.exists("/creditdatafile/data"));
-            System.out.println("exists /creditdatafile/log/file " + sftp.exists("/creditdatafile/log/file"));
-            System.out.println("exists /creditdatafile/data/history " + sftp.exists("/creditdatafile/data/history"));
         } finally {
             sftp.close();
         }
     }
-
 }

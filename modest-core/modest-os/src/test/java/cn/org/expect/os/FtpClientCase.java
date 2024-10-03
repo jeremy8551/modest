@@ -10,8 +10,6 @@ import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
 
-import static org.junit.Assert.assertEquals;
-
 public class FtpClientCase {
 
     /**
@@ -54,7 +52,7 @@ public class FtpClientCase {
         Assert.assertTrue(ftp.isDirectory(testDir0 + "/" + tempDir.getName()));
 
         List<OSFile> ls = ftp.ls(testDir0);
-        assertEquals(2, ls.size());
+        Assert.assertEquals(2, ls.size());
 
         File tempDir1 = FileUtils.allocate(dir, "f" + Dates.format08(new Date()));
         FileUtils.createDirectory(tempDir1);

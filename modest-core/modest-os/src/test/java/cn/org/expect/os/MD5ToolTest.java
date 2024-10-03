@@ -2,54 +2,63 @@ package cn.org.expect.os;
 
 import java.io.File;
 import java.io.IOException;
-import javax.script.SimpleBindings;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.crypto.MD5Encrypt;
 import cn.org.expect.io.BufferedLineWriter;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.test.ModestRunner;
+import cn.org.expect.test.annotation.RunIf;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.Numbers;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(ModestRunner.class)
+@RunIf(values = {"ssh.host", "ssh.port", "ssh.username", "ssh.password", "ssh.homedir"})
 public class MD5ToolTest {
 
-    @Rule
-    public WithSSHRule rule = new WithSSHRule();
+    @EasyBean("${ssh.host}")
+    private String host;
+
+    @EasyBean("${ssh.port}")
+    private int port;
+
+    @EasyBean("${ssh.username}")
+    private String username;
+
+    @EasyBean("${ssh.password}")
+    private String password;
+
+    @EasyBean("${ssh.homedir}")
+    private String homedir;
+
+    @EasyBean
+    private EasyContext context;
 
     /**
      * 测试字符串的md5
      */
     @Test
     public void test() {
-        SimpleBindings env = rule.getEnvironment();
-        String sshhost = (String) env.get("ssh.host");
-        int sshport = Integer.parseInt((String) env.get("ssh.port"));
-        String sshusername = (String) env.get("ssh.username");
-        String sshpassword = (String) env.get("ssh.password");
+        String str = "测试字符串阿斯蒂芬阿斯兰的军开发lkjsadlfsadlfj就";
+        String md5 = MD5Encrypt.encrypt(str);
+        System.out.println("MD5Encrypt.encrypt value is " + md5);
 
+        OSSecureShellCommand shell = this.context.getBean(OSSecureShellCommand.class);
         try {
-            String str = "测试字符串阿斯蒂芬阿斯兰的军开发lkjsadlfsadlfj就";
-            String md5 = MD5Encrypt.encrypt(str);
-            System.out.println("MD5Encrypt.encrypt value is " + md5);
+            shell.connect(host, port, username, password);
+            shell.execute("echo -n " + str + " | md5sum "); // 判断md5值与linux上是否一致
 
-            OSSecureShellCommand shell = rule.getContext().getBean(OSSecureShellCommand.class);
-            try {
-                shell.connect(sshhost, sshport, sshusername, sshpassword);
-                shell.execute("echo -n " + str + " | md5sum "); // 判断md5值与linux上是否一致
-
-                String stdout = shell.getStdout();
-                System.out.println("ssh2 stdout: " + stdout);
-                String linuxMD5 = StringUtils.splitByBlank(StringUtils.trimBlank(stdout))[0];
-                Assert.assertEquals(linuxMD5.toLowerCase(), md5.toLowerCase());
-            } finally {
-                shell.close();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            Assert.fail();
+            String stdout = shell.getStdout();
+            System.out.println("ssh2 stdout: " + stdout);
+            String linuxMD5 = StringUtils.splitByBlank(StringUtils.trimBlank(stdout))[0];
+            Assert.assertEquals(linuxMD5.toLowerCase(), md5.toLowerCase());
+        } finally {
+            shell.close();
         }
     }
 
@@ -62,22 +71,15 @@ public class MD5ToolTest {
         String md5 = MD5Encrypt.encrypt(file, null);
         System.out.println("md5: " + md5);
 
-        SimpleBindings env = rule.getEnvironment();
-        String host = (String) env.get("ssh.host");
-        int port = Integer.parseInt((String) env.get("ssh.port"));
-        String username = (String) env.get("ssh.username");
-        String password = (String) env.get("ssh.password");
-        String homedir = (String) env.get("ssh.homedir");
-
-        OSSecureShellCommand shell = rule.getContext().getBean(OSSecureShellCommand.class);
+        OSSecureShellCommand shell = this.context.getBean(OSSecureShellCommand.class);
         try {
-            Assert.assertTrue(shell.connect(host, port, username, password));
+            Assert.assertTrue(shell.connect(this.host, this.port, this.username, this.password));
 
             OSFileCommand filecmd = shell.getFileCommand();
             System.out.println(filecmd.pwd());
-            filecmd.cd(homedir);
-            filecmd.rm(homedir + "/" + file.getName());
-            filecmd.upload(file, homedir);
+            filecmd.cd(this.homedir);
+            filecmd.rm(this.homedir + "/" + file.getName());
+            filecmd.upload(file, this.homedir);
 
             shell.execute("md5sum `pwd`/" + file.getName()); // 判断md5值与linux上是否一致
             String md5value = shell.getStdout();

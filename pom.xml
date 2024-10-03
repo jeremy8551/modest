@@ -269,6 +269,7 @@
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-ioc-test</artifactId>
                 <version>${revision}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- modest 表达式模块 -->

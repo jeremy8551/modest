@@ -28,9 +28,6 @@ public class ScriptEngineBySQLTest {
         } catch (ScriptException se) {
             Assert.assertEquals("1000", engine.getContext().getAttribute("testvalue000"));
             Assert.assertEquals("333", StringUtils.splitByBlank(se.getMessage())[1]);
-        } catch (Throwable e) {
-            e.printStackTrace();
-            Assert.fail();
         } finally {
             engine.eval("exit 0");
         }

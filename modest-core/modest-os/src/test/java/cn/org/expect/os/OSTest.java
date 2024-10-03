@@ -1,27 +1,40 @@
 package cn.org.expect.os;
 
 import java.util.Iterator;
-import javax.script.SimpleBindings;
 
-import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.test.ModestRunner;
+import cn.org.expect.test.annotation.RunIf;
 import cn.org.expect.util.Settings;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(ModestRunner.class)
+@RunIf(values = {"ssh.host", "ssh.port", "ssh.username", "ssh.password", "ssh.homedir"})
 public class OSTest {
 
-    @Rule
-    public WithSSHRule rule = new WithSSHRule();
+    @EasyBean("${ssh.host}")
+    private String host;
+
+    @EasyBean("${ssh.port}")
+    private int port;
+
+    @EasyBean("${ssh.username}")
+    private String username;
+
+    @EasyBean("${ssh.password}")
+    private String password;
+
+    @EasyBean("${ssh.homedir}")
+    private String homedir;
+
+    @EasyBean
+    private EasyContext context;
 
     @Test
     public void test() {
-        DefaultEasyContext context = rule.getContext();
-        SimpleBindings env = rule.getEnvironment();
-        String host = (String) env.get("ssh.host");
-        int port = Integer.parseInt((String) env.get("ssh.port"));
-        String username = (String) env.get("ssh.username");
-        String password = (String) env.get("ssh.password");
         System.out.println(username + "@" + host + ":" + port + "?password=" + password);
 
         OS os = context.getBean(OS.class, host, port, username, password);
@@ -53,5 +66,4 @@ public class OSTest {
             os.close();
         }
     }
-
 }
