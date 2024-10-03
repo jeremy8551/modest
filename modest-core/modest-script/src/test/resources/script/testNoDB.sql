@@ -6,9 +6,9 @@ echo $host $admin $adminPw $jdbcfilepath
 cd $curr_dir_path
 
 # 复制文件
-set delfilepath="${HOME}/bhc_finish.del"
+set delfilepath="$temp/bhc_finish.del"
 rm ${delfilepath}
-cp classpath:/bhc_finish.del ${HOME}
+cp classpath:/bhc_finish.del ${temp}
 
 set test1=1
 if ${test1} in (1, 2, 3,5) then

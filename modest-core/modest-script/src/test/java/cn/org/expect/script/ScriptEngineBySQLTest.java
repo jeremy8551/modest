@@ -1,28 +1,32 @@
 package cn.org.expect.script;
 
 import java.io.IOException;
+import java.util.Properties;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.test.ModestRunner;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 @Ignore
+@RunWith(ModestRunner.class)
 public class ScriptEngineBySQLTest {
 
-    @Rule
-    public WithDBRule rule = new WithDBRule();
+    @EasyBean
+    private Properties properties;
 
     @Test
     public void test() throws IOException, ScriptException {
         ScriptEngineManager manager = new ScriptEngineManager();
         ScriptEngine engine = manager.getEngineByExtension("etl");
         try {
-            engine.setBindings(rule.getEnvironment(), UniversalScriptContext.ENVIRONMENT_SCOPE);
+            engine.setBindings(ScriptUtils.to(this.properties), UniversalScriptContext.ENVIRONMENT_SCOPE);
             engine.eval(". classpath:/script/test.sql");
             Assert.fail();
         } catch (ScriptException se) {

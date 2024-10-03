@@ -96,6 +96,11 @@
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-crypto</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-ioc-test</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
