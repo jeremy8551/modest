@@ -32,15 +32,16 @@ public class NoPatternLayoutTest {
         Assert.assertNotNull(appender);
 
         String pattern = appender.getPattern();
-        new FileAppender(file.getAbsolutePath(), LogTest.charsetName, pattern, true).setup(context);
+        Appender fileAppender = new FileAppender(file.getAbsolutePath(), LogTest.CHARSET_NAME, pattern, false).setup(context);
 
         Log log = LogFactory.getLog(context, NoPatternLayoutTest.class);
         log.info("test", new NullPointerException());
+        fileAppender.close();
 
-        String content = FileUtils.readline(file, LogTest.charsetName, 0);
+        String content = FileUtils.readline(file, LogTest.CHARSET_NAME, 0);
         ArrayList<CharSequence> list = new ArrayList<CharSequence>();
         StringUtils.splitLines(content, list);
-        Assert.assertTrue(content, list.size() >= 2);
+        Assert.assertTrue("日志内容[" + content + "]", list.size() >= 2);
         Assert.assertEquals("test", list.get(0));
         Assert.assertEquals("java.lang.NullPointerException", list.get(1).toString().trim());
     }
@@ -56,13 +57,13 @@ public class NoPatternLayoutTest {
         Assert.assertNotNull(appender);
 
         String pattern = appender.getPattern();
-        Appender appender1 = new FileAppender(new ExecutorImpl(), file.getAbsolutePath(), LogTest.charsetName, pattern, 5000, true).setup(context);
+        Appender appender1 = new FileAppender(new ExecutorImpl(), file.getAbsolutePath(), LogTest.CHARSET_NAME, pattern, 5000, true).setup(context);
 
         Log log = LogFactory.getLog(context, NoPatternLayoutTest.class);
         log.info("test", new NullPointerException());
         appender1.close();
 
-        String content = FileUtils.readline(file, LogTest.charsetName, 0);
+        String content = FileUtils.readline(file, LogTest.CHARSET_NAME, 0);
         ArrayList<CharSequence> list = new ArrayList<CharSequence>();
         StringUtils.splitLines(content, list);
         Assert.assertTrue(content, list.size() >= 2);

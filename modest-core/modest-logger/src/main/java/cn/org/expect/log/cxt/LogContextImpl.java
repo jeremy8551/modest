@@ -7,15 +7,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import cn.org.expect.log.Appender;
-import cn.org.expect.log.PatternConsoleAppender;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogBuilder;
 import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogLevel;
 import cn.org.expect.log.LogLevelAware;
+import cn.org.expect.log.PatternConsoleAppender;
 import cn.org.expect.log.PatternLogBuilder;
-import cn.org.expect.log.console.ConsoleLogBuilder;
 import cn.org.expect.log.slf4j.Slf4jLogBuilder;
 import cn.org.expect.util.CharTable;
 import cn.org.expect.util.Dates;
@@ -37,13 +36,13 @@ public class LogContextImpl implements LogContext {
     private LogBuilder builder;
 
     /** 已注册的日志接口 */
-    private LogPool alives;
+    private final LogPool alives;
 
     /** 日志级别 */
-    private LogLevelManager levelManager;
+    private final LogLevelManager levelManager;
 
     /** 日志记录器 */
-    private List<Appender> appenders;
+    private final List<Appender> appenders;
 
     /**
      * 日志模块的上下文信息
@@ -60,12 +59,11 @@ public class LogContextImpl implements LogContext {
      * 初始化日志系统
      */
     public void init() {
+        // 安装控制台日志记录器
+        new PatternConsoleAppender(LogFactory.getPattern(null, true)).setup(this);
+
         // 强制使用默认的日志系统输出日志
         if (PatternLogBuilder.support()) {
-            // 安装控制台日志记录器
-            PatternConsoleAppender appender = new PatternConsoleAppender(LogFactory.getPattern(null, true));
-            appender.pattern(LogFactory.getPattern(null, false));
-            appender.setup(this);
             this.builder = new PatternLogBuilder();
             return;
         }
@@ -77,7 +75,7 @@ public class LogContextImpl implements LogContext {
         }
 
         // 默认的日志输出接口
-        this.builder = new ConsoleLogBuilder();
+        this.builder = new PatternLogBuilder();
     }
 
     public synchronized void updateLevel(String name, LogLevel level) {

@@ -9,7 +9,6 @@ import cn.org.expect.log.LogLevel;
 import cn.org.expect.log.PatternConsoleAppender;
 import cn.org.expect.log.PatternLogBuilder;
 import cn.org.expect.log.apd.file.FileAppender;
-import cn.org.expect.log.console.ConsoleLogBuilder;
 import cn.org.expect.log.slf4j.Slf4jLogBuilder;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.Settings;
@@ -203,7 +202,8 @@ public class LogConfigAnalysis {
         int size = "sout".length();
         if (StringUtils.startsWith(expression, "sout", 0, true, false)) { // 使用控制台输出
             if (expression.length() == size) {
-                this.context.setBuilder(new ConsoleLogBuilder());
+                new PatternConsoleAppender("").setup(this.context);
+                this.context.setBuilder(new PatternLogBuilder());
                 return true;
             } else {
                 String pattern = "";

@@ -20,7 +20,7 @@ public class FileAppenderTest {
         context.setBuilder(new PatternLogBuilder());
 
         String pattern = "%d|%p|%level|%processId|%t|%l|%c|%C.%M(%F:%L)|mills=%r|%X{test}|%m%ex%n";
-        FileAppender appender = new FileAppender(null, LogTest.charsetName, pattern, true);
+        FileAppender appender = new FileAppender(null, LogTest.CHARSET_NAME, pattern, true);
         Assert.assertNotNull(appender.setup(context));
 
         LogFactory.getLog(context, LogTest.class).trace("test level is {}", "trace");

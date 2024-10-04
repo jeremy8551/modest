@@ -7,8 +7,10 @@ import java.io.OutputStreamWriter;
 import java.util.concurrent.BlockingQueue;
 
 import cn.org.expect.ProjectPom;
+import cn.org.expect.log.LogLevel;
 import cn.org.expect.log.apd.Layout;
 import cn.org.expect.log.apd.LogEvent;
+import cn.org.expect.log.apd.LogEventImpl;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
@@ -23,6 +25,9 @@ import cn.org.expect.util.StringUtils;
  * @createtime 2023/11/23
  */
 public class FileAppenderWriter {
+
+    /** 常量是一个用于终止线程的信号 */
+    public final static LogEventShutdown SHUTDOWN = new LogEventShutdown();
 
     /** 缓冲区 */
     private BlockingQueue<LogEvent> blockingQueue;
@@ -81,6 +86,13 @@ public class FileAppenderWriter {
     }
 
     /**
+     * 接触 BlockingQueue（阻塞队列）对线程的阻塞
+     */
+    public void unlock() {
+        this.add(SHUTDOWN);
+    }
+
+    /**
      * 记录日志
      *
      * @param event 日志事件
@@ -103,6 +115,10 @@ public class FileAppenderWriter {
     public void write() throws IOException {
         try {
             LogEvent event = this.blockingQueue.take();
+            if (event == SHUTDOWN) { // 终止阻塞
+                return;
+            }
+
             this.out.write(this.layout.format(event));
             this.out.flush();
             this.iotimes = 0;
@@ -170,4 +186,9 @@ public class FileAppenderWriter {
         return logfile;
     }
 
+    static class LogEventShutdown extends LogEventImpl {
+        public LogEventShutdown() {
+            super("", null, "", null, true, LogLevel.INFO, "", null, null);
+        }
+    }
 }

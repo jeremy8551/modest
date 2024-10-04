@@ -9,7 +9,10 @@ import java.util.concurrent.Executor;
  * @createtime 2023/12/1
  */
 public class ExecutorImpl implements Executor {
+
     protected Thread thread;
+
+    protected static volatile int NUMBER = 0;
 
     public ExecutorImpl() {
         this(null);
@@ -22,6 +25,7 @@ public class ExecutorImpl implements Executor {
     public void execute(Runnable command) {
         if (this.thread == null) {
             this.thread = new Thread(command);
+            this.thread.setName(ExecutorImpl.class.getSimpleName() + "-thread-" + NUMBER++);
         }
         this.thread.start();
     }

@@ -18,7 +18,7 @@ import org.junit.Test;
 
 public class LogTest {
 
-    public static String charsetName = "utf-8";
+    public static String CHARSET_NAME = "utf-8";
 
     /**
      * 新建日志文件
@@ -48,7 +48,7 @@ public class LogTest {
         LogContext context = new LogContextImpl();
         context.setBuilder(new PatternLogBuilder());
         context.findAppender(PatternConsoleAppender.class).pattern(pattern);
-        Assert.assertNotNull(new FileAppender(logfile.getAbsolutePath(), LogTest.charsetName, pattern, true).setup(context));
+        Assert.assertNotNull(new FileAppender(logfile.getAbsolutePath(), LogTest.CHARSET_NAME, pattern, true).setup(context));
 
         String str = "\r";
         str += "1\n";
@@ -61,7 +61,7 @@ public class LogTest {
         Log log = LogFactory.getLog(context, LogTest.class);
         log.info(str);
 
-        String content = FileUtils.readline(logfile, charsetName, 0);
+        String content = FileUtils.readline(logfile, CHARSET_NAME, 0);
         List<CharSequence> list = new ArrayList<CharSequence>();
         StringUtils.splitLines(content, list);
         Assert.assertEquals(6, list.size());
@@ -80,7 +80,7 @@ public class LogTest {
         context.updateLevel("", LogLevel.TRACE);
         context.setBuilder(new PatternLogBuilder());
         context.findAppender(PatternConsoleAppender.class).pattern(pattern);
-        Assert.assertNotNull(new FileAppender(logfile.getAbsolutePath(), LogTest.charsetName, pattern, true).setup(context));
+        Assert.assertNotNull(new FileAppender(logfile.getAbsolutePath(), LogTest.CHARSET_NAME, pattern, true).setup(context));
 
         String mdcvalue = "testvalue";
         MDC.put("test", mdcvalue);
@@ -92,7 +92,7 @@ public class LogTest {
         log.fatal("test level is {}", "fatal");
         MDC.clear();
 
-        String content = FileUtils.readline(logfile, charsetName, 0);
+        String content = FileUtils.readline(logfile, CHARSET_NAME, 0);
         List<CharSequence> list = new ArrayList<CharSequence>();
         StringUtils.splitLines(content, list);
 
@@ -146,7 +146,7 @@ public class LogTest {
         context.updateLevel("*", LogLevel.OFF);
 
         String pattern = "%d|%p|%level|%processId|%t|%l|%c|%C.%M(%F:%L)|mills=%r|%X{test}|%m%ex%n";
-        Assert.assertNotNull(new FileAppender(logfile.getAbsolutePath(), LogTest.charsetName, pattern, false).setup(context));
+        Assert.assertNotNull(new FileAppender(logfile.getAbsolutePath(), LogTest.CHARSET_NAME, pattern, false).setup(context));
 
         Log log = LogFactory.getLog(context, LogTest.class);
         log.trace("test level is {}", "trace");
@@ -156,7 +156,7 @@ public class LogTest {
         log.fatal("test level is {}", "fatal");
         context.findAppender(FileAppender.class).close();
         context.findAppender(PatternConsoleAppender.class).close();
-        Assert.assertEquals("", FileUtils.readline(logfile, charsetName, 0));
+        Assert.assertEquals("", FileUtils.readline(logfile, CHARSET_NAME, 0));
     }
 
     // 测试抛出异常
@@ -171,7 +171,7 @@ public class LogTest {
 
         context.setBuilder(new PatternLogBuilder());
         context.findAppender(PatternConsoleAppender.class).pattern(pattern);
-        FileAppender fileAppender = new FileAppender(logfile.getAbsolutePath(), LogTest.charsetName, pattern, true).charsetName(charsetName);
+        FileAppender fileAppender = new FileAppender(logfile.getAbsolutePath(), LogTest.CHARSET_NAME, pattern, true).charsetName(CHARSET_NAME);
         fileAppender.setup(context);
 
         // 删除记录器
@@ -196,7 +196,7 @@ public class LogTest {
 
         LogFactory.getLog(context, LogTest.class).error(str, new NullPointerException());
 
-        String content = FileUtils.readline(logfile, charsetName, 0);
+        String content = FileUtils.readline(logfile, CHARSET_NAME, 0);
         List<CharSequence> list = new ArrayList<CharSequence>();
         StringUtils.splitLines(content, list);
         Assert.assertTrue(list.size() >= 8);
@@ -211,10 +211,10 @@ public class LogTest {
         LogContext context = new LogContextImpl();
         context.setBuilder(new PatternLogBuilder());
         context.findAppender(PatternConsoleAppender.class).pattern(pattern);
-        Assert.assertNotNull(new FileAppender(logfile.getAbsolutePath(), LogTest.charsetName, pattern, true).setup(context));
+        Assert.assertNotNull(new FileAppender(logfile.getAbsolutePath(), LogTest.CHARSET_NAME, pattern, true).setup(context));
 
         LogFactory.getLog(context, LogTest.class).error(null);
-        String content = FileUtils.readline(logfile, charsetName, 0);
+        String content = FileUtils.readline(logfile, CHARSET_NAME, 0);
         Assert.assertEquals("-------|" + System.getProperty("line.separator"), content);
     }
 

@@ -17,7 +17,7 @@ import cn.org.expect.util.JUL;
  * @author jeremy8551@qq.com
  * @createtime 2023/11/23
  */
-public class FileAppender extends PatternConsoleAppender implements Appender {
+public class FileAppender extends PatternConsoleAppender {
 
     /** 日志文件 */
     private String file;
@@ -86,7 +86,7 @@ public class FileAppender extends PatternConsoleAppender implements Appender {
         return this.out.getFile();
     }
 
-    public PatternConsoleAppender pattern(String pattern) {
+    public FileAppender pattern(String pattern) {
         super.pattern(pattern);
         return this;
     }

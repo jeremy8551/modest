@@ -10,7 +10,7 @@ import cn.org.expect.log.PatternConsoleAppender;
  * @author jeremy8551@qq.com
  * @createtime 2023/11/26
  */
-public class LogAppender extends PatternConsoleAppender implements Appender {
+public class LogAppender extends PatternConsoleAppender {
 
     /** 日志内容 */
     private String value;

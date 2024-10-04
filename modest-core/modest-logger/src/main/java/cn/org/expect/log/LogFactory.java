@@ -34,7 +34,7 @@ public class LogFactory {
     private static volatile LogContext CONTEXT;
 
     /** 锁 */
-    private final static Object lock = new Object();
+    private final static Object LOCK = new Object();
 
     /**
      * 返回日志模块上下文信息
@@ -43,7 +43,7 @@ public class LogFactory {
      */
     public static LogContext getContext() {
         if (CONTEXT == null) {
-            synchronized (lock) {
+            synchronized (LOCK) {
                 if (CONTEXT == null) {
                     CONTEXT = new LogContextImpl();
                 }

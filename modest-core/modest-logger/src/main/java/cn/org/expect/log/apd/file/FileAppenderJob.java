@@ -64,6 +64,7 @@ public class FileAppenderJob implements Runnable {
      * 终止运行
      */
     public void terminate() {
+        this.out.unlock();
         this.notTerminate = false;
     }
 
