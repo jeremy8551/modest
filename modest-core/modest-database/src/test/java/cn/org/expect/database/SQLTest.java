@@ -94,14 +94,14 @@ public class SQLTest {
         sql += "select a.name, b.id ,c id_type from table as a, table as b, table as c ";
         sql += " where a.name = b.name ";
         sql += " and a.id = c.id  ";
-        sql += " with ur";
+        sql += " ";
 
         String[] array = SQL.split(sql, ',');
         Assert.assertEquals("select a.name", array[0]);
         Assert.assertEquals(" b.id ", array[1]);
         Assert.assertEquals("c id_type from table as a", array[2]);
         Assert.assertEquals(" table as b", array[3]);
-        Assert.assertEquals(" table as c  where a.name = b.name  and a.id = c.id   with ur", array[4]);
+        Assert.assertEquals(" table as c  where a.name = b.name  and a.id = c.id   ", array[4]);
     }
 
     @Test
@@ -110,7 +110,7 @@ public class SQLTest {
         sql += "select a.name, b.id ,c id_type from table as a, table as b, table as c ";
         sql += " where a.name = b.name ";
         sql += " and a.id = c.id  ";
-        sql += " with ur";
+        sql += " ";
 
         List<String> list = new ArrayList<String>();
         SQL.split(sql, ',', list);
@@ -118,7 +118,7 @@ public class SQLTest {
         Assert.assertEquals(" b.id ", list.get(1));
         Assert.assertEquals("c id_type from table as a", list.get(2));
         Assert.assertEquals(" table as b", list.get(3));
-        Assert.assertEquals(" table as c  where a.name = b.name  and a.id = c.id   with ur", list.get(4));
+        Assert.assertEquals(" table as c  where a.name = b.name  and a.id = c.id   ", list.get(4));
     }
 
     @Test

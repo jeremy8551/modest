@@ -6,6 +6,7 @@ import java.util.List;
 import cn.org.expect.database.DatabaseIndex;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.util.CollectionUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.ResourcesUtils;
 
@@ -272,8 +273,43 @@ public class StandardDatabaseIndex implements DatabaseIndex {
         return false;
     }
 
+    public boolean equalsColumnName(DatabaseIndex destIndex, boolean ignoreIndexName, boolean ignoreIndexSort) {
+        if (destIndex == null) {
+            return false;
+        }
+
+        List<String> destNames = destIndex.getColumnNames();
+        List<String> columnNames = this.getColumnNames();
+        if (columnNames.size() != destNames.size()) {
+            return false;
+        }
+
+        if (ignoreIndexSort) {
+            for (String name : columnNames) {
+                if (ignoreIndexName) {
+                    if (!CollectionUtils.containsIgnoreCase(destNames, name, false)) {
+                        return false;
+                    }
+                } else {
+                    if (!destNames.contains(name)) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        } else {
+            for (int i = 0; i < columnNames.size(); i++) {
+                String name = columnNames.get(i);
+                String dest = destNames.get(i);
+                if (!name.equals(dest)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
     public String toString() {
         return this.fullName;
     }
-
 }

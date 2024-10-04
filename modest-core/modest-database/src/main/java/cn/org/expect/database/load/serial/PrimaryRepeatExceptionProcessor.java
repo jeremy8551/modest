@@ -136,7 +136,7 @@ public class PrimaryRepeatExceptionProcessor {
         table.getIndexs().clear();
 
         // 建表
-        dao.createTable(dao.toDDL(table));
+        dao.execute(dao.toDDL(table));
         return table;
     }
 
@@ -189,5 +189,4 @@ public class PrimaryRepeatExceptionProcessor {
     public TextTableFileReader getReader() {
         return in;
     }
-
 }

@@ -33,8 +33,8 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2021-06-17
  */
-public class LoadTable {
-    private final static Log log = LogFactory.getLog(LoadTable.class);
+public class DestTable {
+    private final static Log log = LogFactory.getLog(DestTable.class);
 
     /** 数据库操作接口 */
     private JdbcDao dao;
@@ -72,7 +72,7 @@ public class LoadTable {
      * @param dao   数据库操作接口
      * @param table 数据库表信息
      */
-    public LoadTable(JdbcDao dao, DatabaseTable table) {
+    public DestTable(JdbcDao dao, DatabaseTable table) {
         this.dao = Ensure.notNull(dao);
         this.table = Ensure.notNull(table);
     }
@@ -268,22 +268,9 @@ public class LoadTable {
                 }
 
                 DatabaseTableDDL ddl = this.getTableDDL();
-
-                // 先删除数据库表
-                String sql1 = dao.dropTable(this.table);
-                if (log.isDebugEnabled()) {
-                    log.debug(sql1);
-                }
-
-                // 执行数据库建表语句
-                List<String> list = dao.createTable(ddl);
-                for (String sql2 : list) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(sql2);
-                    }
-                }
+                dao.dropTable(this.table); // 先删除数据库表
+                dao.execute(ddl); // 执行数据库建表语句
                 dao.commit();
-
                 return this.toJavaClassName(dao, columns);
             } else {
                 throw new DatabaseException(tableName, e);

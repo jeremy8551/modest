@@ -13,10 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import cn.org.expect.database.load.converter.BigDecimalConverter;
-import cn.org.expect.database.load.converter.DoubleConverter;
-import cn.org.expect.database.load.converter.TimeConverter;
-import cn.org.expect.database.load.converter.TimestampConverter;
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.database.DatabaseConfiguration;
 import cn.org.expect.database.DatabaseConfigurationContainer;
@@ -59,6 +55,10 @@ import cn.org.expect.database.internal.StandardDatabaseTable;
 import cn.org.expect.database.internal.StandardDatabaseTableDDL;
 import cn.org.expect.database.internal.StandardDatabaseURL;
 import cn.org.expect.database.internal.StandardJdbcConverterMapper;
+import cn.org.expect.database.load.converter.BigDecimalConverter;
+import cn.org.expect.database.load.converter.DoubleConverter;
+import cn.org.expect.database.load.converter.TimeConverter;
+import cn.org.expect.database.load.converter.TimestampConverter;
 import cn.org.expect.database.pool.PoolConnection;
 import cn.org.expect.io.BufferedLineReader;
 import cn.org.expect.io.ClobWriter;
@@ -71,7 +71,6 @@ import cn.org.expect.os.OSAccount;
 import cn.org.expect.os.OSCommand;
 import cn.org.expect.os.OSCommandException;
 import cn.org.expect.util.ClassUtils;
-import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
@@ -457,26 +456,6 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
 
     public void setContext(EasyContext context) {
         this.context = context;
-    }
-
-    public String dropPrimaryKey(Connection connection, DatabaseIndex index) {
-        Ensure.notNull(index);
-        String sql = "alter table " + index.getTableFullName() + " drop primary key "; // + index.getFullName();
-        int count = 0;
-        while (true) {
-            if (++count > 10) {
-                break;
-            }
-
-            try {
-                JdbcDao.execute(connection, sql);
-                break;
-            } catch (Throwable e) {
-                Dates.sleep(2000);
-                continue;
-            }
-        }
-        return sql;
     }
 
     public DatabaseTableDDL toDDL(Connection connection, DatabaseTable table) throws SQLException {

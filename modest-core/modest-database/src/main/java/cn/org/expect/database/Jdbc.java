@@ -38,6 +38,7 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.CharTable;
 import cn.org.expect.util.ClassUtils;
+import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.Property;
@@ -1220,12 +1221,12 @@ public class Jdbc {
             schema = StringUtils.trimBlank(schema).toUpperCase();
         }
 
-        tableName = StringUtils.trimBlank(tableName).toUpperCase();
+        tableName = StringUtils.trimBlank(tableName).toUpperCase() + Dates.format17();
         List<DatabaseTable> tables = dialect.getTable(conn, catalog, schema, tableName);
         if (tables.isEmpty()) {
             return tableName;
         } else {
-            return getTableNameNoRepeat(conn, dialect, catalog, schema, tableName + "_TMP");
+            return getTableNameNoRepeat(conn, dialect, catalog, schema, tableName);
         }
     }
 

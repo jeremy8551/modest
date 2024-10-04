@@ -5,7 +5,7 @@ import java.util.Vector;
 
 import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.load.LoadEngineContext;
-import cn.org.expect.database.load.LoadTable;
+import cn.org.expect.database.load.DestTable;
 
 public class DataWriterFactory {
 
@@ -19,7 +19,7 @@ public class DataWriterFactory {
     private LoadEngineContext context;
 
     /** 目标表信息 */
-    private LoadTable target;
+    private DestTable target;
 
     /**
      * 初始化
@@ -28,7 +28,7 @@ public class DataWriterFactory {
      * @param context 装载引擎上下文信息
      * @param target  数据库表
      */
-    public DataWriterFactory(JdbcDao dao, LoadEngineContext context, LoadTable target) {
+    public DataWriterFactory(JdbcDao dao, LoadEngineContext context, DestTable target) {
         super();
         this.list = new Vector<DataWriter>();
         this.context = context;

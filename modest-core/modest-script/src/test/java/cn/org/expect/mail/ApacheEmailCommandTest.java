@@ -3,34 +3,36 @@ package cn.org.expect.mail;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import javax.script.SimpleBindings;
+import java.util.Properties;
 
-import cn.org.expect.ioc.DefaultEasyContext;
-import cn.org.expect.script.WithDBRule;
+import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.test.ModestRunner;
+import cn.org.expect.test.annotation.RunIf;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
-@Ignore
+@RunWith(ModestRunner.class)
+@RunIf(values = {"mail.host", "mail.username", "mail.password", "mail.charset"})
 public class ApacheEmailCommandTest {
 
-    @Rule
-    public WithDBRule rule = new WithDBRule();
+    @EasyBean
+    private EasyContext context;
+
+    @EasyBean
+    private Properties properties;
 
     @Test
     public void test1() throws IOException {
-        DefaultEasyContext context = rule.getContext();
-        SimpleBindings environment = rule.getEnvironment();
-
         ApacheEmailCommand cmd = new ApacheEmailCommand();
-        cmd.setHost((String) environment.get("mail.host"));
-        cmd.setUser((String) environment.get("mail.username"), (String) environment.get("mail.password"));
-        cmd.setCharsetName((String) environment.get("mail.charset"));
+        cmd.setHost(properties.getProperty("mail.host"));
+        cmd.setUser(properties.getProperty("mail.username"), properties.getProperty("mail.password"));
+        cmd.setCharsetName(properties.getProperty("mail.charset"));
 
         StringBuilder msg = new StringBuilder();
         msg.append("测试单统计信息如下：").append("\r\n\t");
@@ -55,13 +57,10 @@ public class ApacheEmailCommandTest {
 
     @Test
     public void test3() throws IOException {
-        DefaultEasyContext context = rule.getContext();
-        SimpleBindings environment = rule.getEnvironment();
-
         ApacheEmailCommand cmd = new ApacheEmailCommand();
-        cmd.setHost((String) environment.get("mail.host"));
-        cmd.setUser((String) environment.get("mail.username"), (String) environment.get("mail.password"));
-        cmd.setCharsetName((String) environment.get("mail.charset"));
+        cmd.setHost(properties.getProperty("mail.host"));
+        cmd.setUser(properties.getProperty("mail.username"), properties.getProperty("mail.password"));
+        cmd.setCharsetName(properties.getProperty("mail.charset"));
 
         StringBuilder msg = new StringBuilder();
         msg.append("测试单统计信息如下：").append("\r\n\t");
@@ -83,12 +82,10 @@ public class ApacheEmailCommandTest {
 
     @Test
     public void test2() {
-        SimpleBindings environment = rule.getEnvironment();
-
         ApacheEmailCommand cmd = new ApacheEmailCommand();
-        cmd.setHost((String) environment.get("mail.host"));
-        cmd.setUser((String) environment.get("mail.username"), (String) environment.get("mail.password"));
-        cmd.setCharsetName((String) environment.get("mail.charset"));
+        cmd.setHost(properties.getProperty("mail.host"));
+        cmd.setUser(properties.getProperty("mail.username"), properties.getProperty("mail.password"));
+        cmd.setCharsetName(properties.getProperty("mail.charset"));
 
         List<Mail> it = cmd.search(null, 0, true, null, null);
         for (Mail mail : it) {

@@ -10,7 +10,6 @@ import cn.org.expect.database.JdbcDao;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.Ensure;
-import cn.org.expect.util.ResourcesUtils;
 
 /**
  * 数据库表索引的处理逻辑
@@ -18,19 +17,19 @@ import cn.org.expect.util.ResourcesUtils;
  * @author jeremy8551@qq.com
  * @createtime 2021-06-16
  */
-public class LoadIndex {
-    private final static Log log = LogFactory.getLog(LoadIndex.class);
+public class IndexOperation {
+    private final static Log log = LogFactory.getLog(IndexOperation.class);
 
     /** 数据库表信息 */
     private DatabaseTable table;
 
     /** true 表示需要重建索引 */
-    private boolean rebuild;
+    private volatile boolean rebuild;
 
     /**
      * 初始化
      */
-    public LoadIndex(DatabaseTable table) {
+    public IndexOperation(DatabaseTable table) {
         this.table = Ensure.notNull(table);
     }
 
@@ -50,20 +49,16 @@ public class LoadIndex {
             // 删除表的主键
             DatabaseIndexList list = this.table.getPrimaryIndexs();
             for (DatabaseIndex index : list) {
-                String sql = dao.dropPrimaryKey(index);
-                if (log.isDebugEnabled()) {
-                    log.debug(ResourcesUtils.getMessage("load.standard.output.msg013", context.getId(), sql));
-                }
+                dao.dropPrimaryKey(index);
             }
 
             // 删除表的索引
             DatabaseIndexList indexs = this.table.getIndexs();
             for (DatabaseIndex index : indexs) {
-                String sql = dao.dropIndex(index);
-                if (log.isDebugEnabled()) {
-                    log.debug(ResourcesUtils.getMessage("load.standard.output.msg013", context.getId(), sql));
-                }
+                dao.dropIndex(index);
             }
+
+            dao.commit();
         }
     }
 
@@ -81,10 +76,7 @@ public class LoadIndex {
             for (DatabaseIndex index : list) {
                 DatabaseDDL ddl = dao.toDDL(index, true);
                 for (String sql : ddl) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(ResourcesUtils.getMessage("load.standard.output.msg014", context.getId(), sql));
-                    }
-                    dao.execute(sql);
+                    dao.tryExecute(sql, 10, 200);
                 }
             }
 
@@ -93,10 +85,7 @@ public class LoadIndex {
             for (DatabaseIndex index : indexs) {
                 DatabaseDDL ddl = dao.toDDL(index, false);
                 for (String sql : ddl) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(ResourcesUtils.getMessage("load.standard.output.msg014", context.getId(), sql));
-                    }
-                    dao.execute(sql);
+                    dao.tryExecute(sql, 10, 200);
                 }
             }
 

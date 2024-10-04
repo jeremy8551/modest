@@ -106,7 +106,7 @@ public interface DatabaseIndex extends Cloneable, Comparable<DatabaseIndex> {
     DatabaseIndex clone();
 
     /**
-     * 判断索引索引内容是否相等
+     * 判断索引内容是否相等
      *
      * @param index           索引
      * @param ignoreIndexName true表示忽略字段名大小写不同
@@ -115,4 +115,13 @@ public interface DatabaseIndex extends Cloneable, Comparable<DatabaseIndex> {
      */
     boolean equals(DatabaseIndex index, boolean ignoreIndexName, boolean ignoreIndexSort);
 
+    /**
+     * 判断索引中的列名是否相等
+     *
+     * @param destIndex       目标索引
+     * @param ignoreIndexName true表示忽略字段名大小写不同
+     * @param ignoreIndexSort true表示忽略字段排序方式不同
+     * @return 返回true表示相等 false表示不等
+     */
+    boolean equalsColumnName(DatabaseIndex destIndex, boolean ignoreIndexName, boolean ignoreIndexSort);
 }

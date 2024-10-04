@@ -4,6 +4,7 @@ import java.text.Format;
 import java.util.Arrays;
 import java.util.Map;
 import javax.script.Bindings;
+import javax.script.SimpleBindings;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.expression.AnalysisImpl;
@@ -534,7 +535,7 @@ public class ScriptAnalysis extends AnalysisImpl implements UniversalScriptAnaly
                     int end = this.indexOfBrace(str, next);
                     if (end != -1) {
                         String name = str.substring(next + 1, end); // variable name
-                        if (map.containsKey(name)) {
+                        if (!((map instanceof SimpleBindings) && name.length() == 0) && map.containsKey(name)) {
                             Object value = map.get(name);
                             String valStr = convert == null ? StringUtils.toString(value) : convert.format(value);
                             str = str.substring(0, i) + valStr + str.substring(end + 1);

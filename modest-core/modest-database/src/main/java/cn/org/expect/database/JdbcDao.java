@@ -830,17 +830,6 @@ public class JdbcDao implements OSConnectCommand {
     /**
      * 执行SQL语句
      *
-     * @param sql SQL语句
-     * @return 返回true表示SQL语句执行成功 false表示执行失败
-     * @throws SQLException 数据库错误
-     */
-    public boolean execute(String sql) throws SQLException {
-        return this.createStatement().execute(sql);
-    }
-
-    /**
-     * 执行SQL语句
-     *
      * @param c SQL语句集合
      * @throws SQLException 数据库错误
      */
@@ -848,6 +837,17 @@ public class JdbcDao implements OSConnectCommand {
         for (String sql : c) {
             this.execute(sql);
         }
+    }
+
+    /**
+     * 执行SQL语句
+     *
+     * @param sql SQL语句
+     * @return 返回true表示SQL语句执行成功 false表示执行失败
+     * @throws SQLException 数据库错误
+     */
+    public boolean execute(String sql) throws SQLException {
+        return this.createStatement().execute(sql);
     }
 
     /**
@@ -877,6 +877,32 @@ public class JdbcDao implements OSConnectCommand {
 
     protected RowSetInternal getRowSetInternal(Statement statement, ResultSet resultSet) {
         return new StandardRowSetInternal(statement, resultSet);
+    }
+
+    /**
+     * 尝试执行 SQL 语句
+     *
+     * @param sql             SQL语句
+     * @param tryTimes        尝试次数
+     * @param fixedRateMillis 每次尝试之间的间隔毫秒数
+     * @return 返回true表示SQL语句执行成功 false表示执行失败
+     */
+    public boolean tryExecute(String sql, int tryTimes, int fixedRateMillis) {
+        for (int count = 0; true; ) {
+            if (++count > tryTimes) {
+                if (log.isErrorEnabled()) {
+                    log.error(sql);
+                }
+                return false;
+            }
+
+            try {
+                this.createStatement().execute(sql);
+                return true;
+            } catch (Throwable e) {
+                Dates.sleep(fixedRateMillis);
+            }
+        }
     }
 
     /**
@@ -986,93 +1012,58 @@ public class JdbcDao implements OSConnectCommand {
     }
 
     /**
-     * 删除数据库表的索引信息
-     *
-     * @param table 数据库表信息
-     * @return 执行删除数据库表时使用的SQL语句
-     */
-    public List<String> dropIndex(DatabaseTable table) {
-        Ensure.notNull(table);
-        List<DatabaseIndex> indexs = table.getIndexs();
-        List<String> list = new ArrayList<String>(indexs.size());
-        for (DatabaseIndex index : indexs) {
-            list.add(this.dropIndex(index));
-        }
-        return list;
-    }
-
-    /**
      * 删除数据库表上的主键
      *
      * @param index 索引
-     * @return SQL语句
      * @throws SQLException 数据库错误
      */
-    public String dropPrimaryKey(DatabaseIndex index) throws SQLException {
+    public void dropPrimaryKey(DatabaseIndex index) throws SQLException {
         Ensure.notNull(index);
-
-        return this.getDialect().dropPrimaryKey(this.getConnection(), index);
+        String sql = this.getDialect().toDropPrimaryDDL(index);
+        if (!this.tryExecute(sql, 10, 200)) {
+            throw new SQLException(sql);
+        }
     }
 
     /**
      * 删除数据库表索引
      *
      * @param index 数据库表索引信息
-     * @return 执行删除数据库表索引时使用的SQL语句
+     * @throws SQLException 数据库错误
      */
-    public String dropIndex(DatabaseIndex index) {
+    public void dropIndex(DatabaseIndex index) throws SQLException {
         Ensure.notNull(index);
-
-        String sql = "drop index " + index.getFullName();
-        int count = 0;
-        while (true) {
-            if (++count > 10) {
-                break;
-            }
-
-            try {
-                this.execute(sql);
-                break;
-            } catch (Throwable e) {
-                Dates.sleep(3000);
-                continue;
-            }
+        String sql = this.getDialect().toDropIndexDDL(index);
+        if (!this.tryExecute(sql, 10, 200)) {
+            throw new SQLException(sql);
         }
-        return sql;
     }
 
     /**
      * 删除数据库表
      *
      * @param table 数据库表信息
-     * @return 执行删除数据库表时使用的SQL语句
      * @throws SQLException 数据库错误
      */
-    public String dropTable(DatabaseTable table) throws SQLException {
-        String sql = "drop table " + table.getFullName();
-        this.execute(sql);
-        return sql;
+    public void dropTable(DatabaseTable table) throws SQLException {
+        Ensure.notNull(table);
+        String sql = this.getDialect().toDropTable(table);
+        if (!this.tryExecute(sql, 10, 200)) {
+            throw new SQLException(sql);
+        }
     }
 
     /**
      * 创建数据库表，主键，索引
      *
      * @param ddl 语句
-     * @return 建表语句集合
      * @throws SQLException 数据库错误
      */
-    public List<String> createTable(DatabaseTableDDL ddl) throws SQLException {
+    public void execute(DatabaseTableDDL ddl) throws SQLException {
         this.execute(ddl.getTable());
         this.execute(ddl.getPrimaryKey());
         this.execute(ddl.getIndex());
         this.execute(ddl.getComment());
-
-        List<String> list = new ArrayList<String>();
-        list.add(ddl.getTable());
-        list.addAll(ddl.getPrimaryKey());
-        list.addAll(ddl.getIndex());
-        list.addAll(ddl.getComment());
-        return list;
     }
 
     /**

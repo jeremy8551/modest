@@ -24,16 +24,14 @@ import cn.org.expect.database.DatabaseProcedure;
 import cn.org.expect.database.DatabaseTable;
 import cn.org.expect.database.DatabaseTableColumn;
 import cn.org.expect.database.DatabaseTableDDL;
+import cn.org.expect.database.DatabaseType;
 import cn.org.expect.database.DatabaseTypeSet;
 import cn.org.expect.database.Jdbc;
-import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.SQL;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.CollectionUtils;
-import cn.org.expect.util.Dates;
-import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.Property;
@@ -41,7 +39,7 @@ import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;
 
 public abstract class AbstractDialect implements DatabaseDialect {
-    private final static Log log = LogFactory.getLog(AbstractDialect.class);
+    protected final static Log log = LogFactory.getLog(AbstractDialect.class);
 
     /** 关键字字符串集合 */
     protected Set<String> keyword;
@@ -61,25 +59,16 @@ public abstract class AbstractDialect implements DatabaseDialect {
         return "";
     }
 
-    public String dropPrimaryKey(Connection connection, DatabaseIndex index) throws SQLException {
-        Ensure.notNull(index);
+    public String toDropPrimaryDDL(DatabaseIndex index) {
+        return "alter table " + index.getTableFullName() + " drop primary key ";
+    }
 
-        String sql = "alter table " + index.getTableFullName() + " drop primary key ";
-        int count = 0;
-        while (true) {
-            if (++count > 10) {
-                break;
-            }
+    public String toDropTable(DatabaseTable table) {
+        return "drop table " + table.getFullName();
+    }
 
-            try {
-                JdbcDao.execute(connection, sql);
-                break;
-            } catch (Throwable e) {
-                Dates.sleep(2000);
-                continue;
-            }
-        }
-        return sql;
+    public String toDropIndexDDL(DatabaseIndex index) {
+        return "drop index " + index.getFullName() + " on " + index.getTableFullName();
     }
 
     public DatabaseTableDDL toDDL(Connection connection, DatabaseTable table) throws SQLException {
@@ -110,16 +99,11 @@ public abstract class AbstractDialect implements DatabaseDialect {
      * @return DDL 语句
      */
     protected StringBuilder toDDL(DatabaseTable table) {
-        String schema = table.getSchema();
-        String name = table.getName();
         List<DatabaseTableColumn> columns = table.getColumns();
 
         StringBuilder buf = new StringBuilder();
         buf.append("create table ");
-        if (StringUtils.isNotBlank(schema)) {
-            buf.append(schema).append(".");
-        }
-        buf.append(name).append(" (").append(FileUtils.lineSeparator);
+        buf.append(table.getFullName()).append(" (").append(FileUtils.lineSeparator);
         for (Iterator<DatabaseTableColumn> it = columns.iterator(); it.hasNext(); ) {
             DatabaseTableColumn col = it.next();
             buf.append("    ");
@@ -195,7 +179,7 @@ public abstract class AbstractDialect implements DatabaseDialect {
             StringBuilder buf = new StringBuilder();
             buf.append("ALTER TABLE ");
             buf.append(index.getTableFullName());
-            buf.append(" PRIMARY KEY(");
+            buf.append(" ADD PRIMARY KEY(");
             List<String> indexColumnName = index.getColumnNames();
             for (int i = 0; i < indexColumnName.size(); i++) {
                 String name = indexColumnName.get(i);
@@ -528,7 +512,11 @@ public abstract class AbstractDialect implements DatabaseDialect {
                 // col.setScopeSchema(ST.trimBlank(res.getString("SCOPE_SCHEMA")));
                 // col.setScopeTable(ST.trimBlank(res.getString("SCOPE_TABLE")));
                 column.setIncrement(IS_AUTOINCREMENT);
-                column.setType(types.get(TYPE_NAME));
+                DatabaseType type = types.get(TYPE_NAME);
+                if (type == null) {
+                    throw new UnsupportedOperationException(TYPE_NAME);
+                }
+                column.setType(type);
                 list.add(column);
             }
 

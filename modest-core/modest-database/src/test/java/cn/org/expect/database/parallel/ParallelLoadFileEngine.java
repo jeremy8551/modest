@@ -10,8 +10,8 @@ import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.load.LoadEngineContext;
 import cn.org.expect.database.load.LoadFileMessage;
-import cn.org.expect.database.load.LoadIndex;
-import cn.org.expect.database.load.LoadTable;
+import cn.org.expect.database.load.IndexOperation;
+import cn.org.expect.database.load.DestTable;
 import cn.org.expect.database.load.Loader;
 import cn.org.expect.database.load.inernal.DataWriterFactory;
 import cn.org.expect.io.TextTableFile;
@@ -49,10 +49,10 @@ public class ParallelLoadFileEngine implements Loader, EasyContextAware {
         JdbcDao dao = new JdbcDao(this.ioc);
         try {
             dao.connect(this.context.getDataSource());
-            LoadTable target = new LoadTable(dao, null);
+            DestTable target = new DestTable(dao, null);
 
             // 前置操作
-            LoadIndex listener = new LoadIndex(target.getTable());
+            IndexOperation listener = new IndexOperation(target.getTable());
             listener.before(context, dao);
 
             // 将大数据文件分成四十个任务，并行将数据插入到数据库表中

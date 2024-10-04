@@ -6,10 +6,9 @@ echo $host $admin $adminPw $jdbcfilepath
 cd $curr_dir_path
 
 # 复制文件
-set delfilepath="${HOME}/bhc_finish.del"
+set delfilepath="$temp/bhc_finish.del"
 rm ${delfilepath}
-cp classpath:/bhc_finish.del ${HOME}
-
+cp classpath:/bhc_finish.del ${temp}
 
 set test1=1
 if ${test1} in (1, 2, 3,5) then
@@ -28,33 +27,33 @@ fi
 # 测试for循环语句
 for i in (1,2,3,4, 'test') loop
   echo 遍历for循环中元素 $i
-  
+
   if $i not in (1,2,3,4, "test" ) then
     echo $i not in (1,2,3,4, 'test' )
     exit 5
   fi
-  
+
 end loop
 
 for i in (1 2 3 4 'test') loop
   echo 遍历for循环中元素 $i
-  
+
   if $i not in (1,2,3,4, "test" ) then
     echo $i not in (1,2,3,4, 'test' )
     exit 5
   fi
-  
+
 end loop
 
 set col = "1 2 3 4 'test'"
 for i in `echo $col` loop
   echo 遍历for循环中元素 $i
-  
+
   if $i not in (1,2,3,4, "test" ) then
     echo $i not in (1,2,3,4, 'test' )
     exit 5
   fi
-  
+
 end loop
 
 df
@@ -72,27 +71,27 @@ function test231() {
 	  	echo $# != 3
 	  	exit 11
 	fi
-	
+
 	if "$0" != "test231" then
 		"$0" != "test231"
 	  	exit 11
 	fi
-	
+
 	if "$1" != "1" then
 		"$1" != "1"
 	  	exit 11
 	fi
-	
+
 	if "$2" != "2" then
 		"$2" != "2"
 	  	exit 11
 	fi
-	
+
 	if "$3" != "3" then
 		"$3" != "3"
 	  	exit 11
 	fi
-	
+
 }
 test231 1 2 3
 
@@ -120,11 +119,11 @@ while 1==2 loop end loop;
 
 # 测试子脚本继承父脚本的handler 是否正确
 declare global continue handler for exitcode != 0 begin
-  echo 测试子脚本继承父脚本的handler 是否正确 exitcode != 0 ..	
+  echo 测试子脚本继承父脚本的handler 是否正确 exitcode != 0 ..
 end
 
 declare  global  continue  handler for exception begin
-  echo 测试子脚本继承父脚本的handler 是否正确 exception ..	
+  echo 测试子脚本继承父脚本的handler 是否正确 exception ..
 end
 
 . testDeclareHandler.sql
@@ -162,7 +161,7 @@ if "2021-01-01" != "$currentstr" then
   echo "2021-01-01" != "$currentstr"
   exit 1
 fi
-  
+
    # 测试注释
 
 
@@ -315,7 +314,7 @@ set testname="12345"
 set testvalue=testname.length() + 1
 echo $testvalue
 
-if testname.length() + 1 != 6 then 
+if testname.length() + 1 != 6 then
   echo `testname.length() + 1` != 6
 fi
 
@@ -356,7 +355,7 @@ sleep 2second
 echo ""
 echo ""
 
-help
+
 
 echo ""
 echo ""
@@ -391,7 +390,7 @@ echo ""
 
 
 echo 测试日期命令 ..
-if "" + `date -d 20200103` != '2020-01-03 00:00:00' then 
+if "" + `date -d 20200103` != '2020-01-03 00:00:00' then
   echo `date -d 20200103` != '2020-01-03 00:00:00'
   exit 120
 fi
@@ -478,25 +477,25 @@ ps -s
 ps
 sleep 2s
 terminate -p $tpid
-ps 
+ps
 
 
-echo 启动 db2 数据库
-declare continue handler for exitcode != 0 begin
-  echo db2数据库已启动 ..	
-end
-ssh $admin@${host}:22?password=${adminPw} && db2start
-undeclare handler for exitcode != 0
-
-declare continue handler for exitcode != 0 begin
-  echo vsftp已启动 ..	
-end
-ssh $sshusername@${sshhost}:22?password=${sshpassword} && 'vsftpd /etc/vsftpd/vsftpd.conf'
-undeclare handler for exitcode != 0
-echo ""
-echo ""
-echo ""
-echo ""
+--echo 启动 db2 数据库
+--declare continue handler for exitcode != 0 begin
+--  echo db2数据库已启动 ..
+--end
+--ssh $admin@${host}:22?password=${adminPw} && db2start
+--undeclare handler for exitcode != 0
+--
+--declare continue handler for exitcode != 0 begin
+--  echo vsftp已启动 ..
+--end
+--ssh $sshusername@${sshhost}:22?password=${sshpassword} && 'vsftpd /etc/vsftpd/vsftpd.conf'
+--undeclare handler for exitcode != 0
+--echo ""
+--echo ""
+--echo ""
+--echo ""
 
 set dbdirverclass="${databaseDriverName}"
 set dburl="${databaseUrl}"
@@ -518,11 +517,11 @@ db connect to test0001
 echo 测试导出数据文件功能
 quiet "drop table v12_test_tmp";
 create table v12_test_tmp (
-	branch_id char(6) not null, 
-	branch_name varchar(150), 
-	branch_type char(18), 
-	branch_no char(12), 
-	status char(1), 
+	branch_id char(6) not null,
+	branch_name varchar(150),
+	branch_type char(18),
+	branch_no char(12),
+	status char(1),
 	primary key(branch_id)
 );
 commit;
@@ -539,16 +538,16 @@ while $tcount <= 100123 loop
   set c3 = "机构类型$tcount"
   set c4 = "编号$tcount"
   set c5 = "0"
-  
+
   FETCH c1, c2, c3, c4, c5 insert sname;
   progress
-  
+
   set tcount = $tcount + 1
 end loop
 commit
 undeclare sname Statement
 
-set count = select count(*) from v12_test_tmp ;
+set count = select count(*) from v12_test_tmp;
 echo 笔数 $count
 
 rm $temp/v12_test_tmp.txt
@@ -572,19 +571,19 @@ while read line do
     if array.length() == 2 && array[0].trim() == "数据输出信息" then
        set str = array.length() + ", " + array[0].trim() + ", " + array[1].trim()
        set files=array[1].split(',');
-    
-       for filepath in ${files} loop 
+
+       for filepath in ${files} loop
           set str=`wc $filepath`
           echo $str
 
           set ts=str.split()
           set count = count + ts[0].trim().int()
           set bytes = bytes + ts[2].trim().int()
-          
+
           head -n 5 $filepath
           echo ""
        end loop
-       
+
        echo 文件总行数: $count 总字节数: $bytes
     elseif array.length() == 2 && array[0].trim() == "卸载数据的总行数" then
        set trows=array[1].trim().int()
@@ -600,7 +599,7 @@ if $trows != $count || $tlen != $bytes then
 fi
 
 
-container to execute tasks in parallel using thread=2 begin 
+container to execute tasks in parallel using thread=2 begin
   db export to $temp/v12_test_tmp_t1.del of del modified by sleep=1000 select * from v12_test_tmp ;
   db export to $temp/v12_test_tmp_t2.del of del modified by sleep=2000 select * from v12_test_tmp ;
   db export to $temp/v12_test_tmp_t3.del of del modified by sleep=3000 select * from v12_test_tmp ;
@@ -628,7 +627,7 @@ CREATE TABLE bhcp_finish (
 );
 commit;
 
-db load from ${delfilepath} of del method p(1,2,3,4,5,6,7,8,9,10,11,12) merge into bhcp_finish(orgcode,task_name,task_file_path,file_data,create_date,finish_date,status,step_id,ERROR_TIME,ERROR_LOG,OPER_ID,OPER_NAME) indexing mode rebuild statistics use profile;
+db load from ${delfilepath} of del method p(1,2,3,4,5,6,7,8,9,10,11,12) merge into bhcp_finish(orgcode,task_name,task_file_path,file_data,create_date,finish_date,status,step_id,ERROR_TIME,ERROR_LOG,OPER_ID,OPER_NAME) ;
 commit;
 
 
@@ -649,7 +648,7 @@ declare test0003 catalog configuration use file $temp/jdbcConfig.properties
 db connect to test0003
 db connect reset
 
-declare global test0004  catalog configuration use file $temp/jdbcConfig.properties ; 
+declare global test0004  catalog configuration use file $temp/jdbcConfig.properties ;
 db connect to test0004
 db connect reset
 
@@ -672,17 +671,17 @@ set name="variable"
 set resultcount=name.length()
 while read line do
    echo $line
-   
+
    if line.indexOf('=', 0) == -1 then
      continue
    fi
-   
+
    echo $line
    set array = line.substr($resultcount).ltrim().split('=')
    echo $array
    set varname=array[0]
    set varvalue=array[1]
-   
+
    if array.length() < 2 then
      echo split $line error!
      exit 111
@@ -697,7 +696,7 @@ echo temp is $temp
 while read line do
    set setcount = setcount + 1
    echo "variable $line"  >> $temp/setlist.log
-done <   `set`    
+done <   `set`
 
 set name="variable"
 set resultcount=name.length()
@@ -706,12 +705,12 @@ while read line do
    if line.indexOf('=', 0) == -1 then
      continue
    fi
-   
+
    set array = line.substr($resultcount).ltrim().split('=')
    echo $array
    set varname=array[0]
    set varvalue=array[1]
-   
+
    if array.length() < 2 then
      echo split $line error!
      exit 111
@@ -895,35 +894,35 @@ echo filename is $t1
 if "$t1" != "test.bak.log" then
 echo "$t1" != "test.bak.log"
 exit 123
-fi 
+fi
 
 set t2=filename.getFileExt()
 echo filename ext is $t2
 if "${t2}" != "log" then
 echo "${t2}" != "log"
 exit 123
-fi 
+fi
 
 set t3=filename.getFilenameNoExt();
 echo filename noext is $t3
 if "$t3" != "test.bak" then
 echo "$t1" != "test.bak"
 exit 123
-fi 
+fi
 
 set t4=filename.getFileSuffix()
 echo filename suf is $t4
 if "$t4" != "bak.log" then
 echo "$t4" != "bak.log"
 exit 123
-fi 
+fi
 
 set t5=filename.getFilenameNoSuffix()
 echo filename nosuf is $t5
 if "$t5" != "test" then
 echo "$t5" != "test"
 exit 123
-fi 
+fi
 
 set t6=filename.getParent();
 echo filename dir is $t6
@@ -1085,7 +1084,7 @@ set ttttname="$temp/testsetsetset.txt"
 ttttname.deletefile();
 
 if !ttttname.isfile() then
-else 
+else
   echo `!ttttname.isfile()`
   exit 111
 fi
@@ -1154,14 +1153,14 @@ echo ""
 
 # 测试输出信息到日志
 echo -n "test 123" 1> ${temp}/test111.log
-while read line do 
+while read line do
   if "$line" != "test 123" then
      echo "$line" != "test 123"
      exit 10
   fi
 done < ${temp}/test111.log
 echo -n "4" >> ${temp}/test111.log
-while read line do 
+while read line do
   if "$line" != "test 1234" then
      echo "$line" != "test 1234"
      exit 10
@@ -1183,7 +1182,7 @@ end loop
 
 echo ${temp}/testerrlog.err
 # 测试错误信息输出
-declare continue handler for exitcode != 0 begin 
+declare continue handler for exitcode != 0 begin
   while read line do
     echo $line
     if "$line" == "" then
@@ -1203,7 +1202,7 @@ undeclare handler for exitcode != 0;
 
 # 测试deamon 获取子脚本变量值
 daemon `pwd`/daemontest.sql
-if "$deamonvartest" != "true" || "$deamonvartest0" != "true" then 
+if "$deamonvartest" != "true" || "$deamonvartest0" != "true" then
   echo "$deamonvartest" != "true" || "$deamonvartest0" != "true"
   exit 130
 fi
@@ -1255,7 +1254,7 @@ elseif $tttt == 3 then
   exit $tttt
 elseif $tttt == 4 then
   exit $tttt
-else 
+else
   set tttt=2
 fi
 
@@ -1265,21 +1264,21 @@ elseif $tttt == 3 then
   exit $tttt
 elseif $tttt == 4 then
   exit $tttt
-else 
+else
   exit $tttt
 fi
 
 if $tttt == 8 then
   if $tttt != 8 then
   exit $tttt
-  else 
-  
+  else
+
   fi
 elseif $tttt == 3 then
   exit $tttt
 elseif $tttt == 4 then
   exit $tttt
-else 
+else
   exit $tttt
 fi
 echo ""
@@ -1288,29 +1287,29 @@ echo ""
 echo ""
 
 
-echo 测试 ssh 端口转发功能 ..
-declare test SSH tunnel use proxy ${proxyuser}@${proxyhost}:22?password=${proxypass} connect to  0:${sshhost}:22
-undeclare name ssh  tunnel
-
-declare test SSH tunnel use proxy ${proxyuser}@${proxyhost}:22?password=${proxypass} connect to  testlocalport:${sshhost}:22
-if "$testlocalport" == "" then
-  echo 本地转发端口号 $testlocalport
-  exit 2
-fi
-undeclare name ssh  tunnel
-
-declare test ssh client for connect to ${sshusername}@${sshhost}:22?password=${sshpassword}
-undeclare test ssh client
-
-set localport=`declare test ssh tunnel use proxy ${proxyuser}@${proxyhost}:22?password=${proxypass} connect to 0:${sshhost}:22 | tail -n 1`
-echo 本地ssh转发隧道端口 $localport
-undeclare test ssh tunnel;
-echo ""
-echo ""
-echo ""
-echo ""
-
-handler
+--echo 测试 ssh 端口转发功能 ..
+--declare test SSH tunnel use proxy ${proxyuser}@${proxyhost}:22?password=${proxypass} connect to  0:${sshhost}:22
+--undeclare name ssh  tunnel
+--
+--declare test SSH tunnel use proxy ${proxyuser}@${proxyhost}:22?password=${proxypass} connect to  testlocalport:${sshhost}:22
+--if "$testlocalport" == "" then
+--  echo 本地转发端口号 $testlocalport
+--  exit 2
+--fi
+--undeclare name ssh  tunnel
+--
+--declare test ssh client for connect to ${sshusername}@${sshhost}:22?password=${sshpassword}
+--undeclare test ssh client
+--
+--set localport=`declare test ssh tunnel use proxy ${proxyuser}@${proxyhost}:22?password=${proxypass} connect to 0:${sshhost}:22 | tail -n 1`
+--echo 本地ssh转发隧道端口 $localport
+--undeclare test ssh tunnel;
+--echo ""
+--echo ""
+--echo ""
+--echo ""
+--
+--handler
 
 
 
@@ -1323,9 +1322,9 @@ db connect to uddb12;
 
 quiet drop table v2_test;
 create table v2_test (
-f1 char(10) not null, 
-f2 char(10), 
-f3 char(10), 
+f1 char(10) not null,
+f2 char(10),
+f3 char(10),
 primary key(f1)
 );
 commit;
@@ -1335,18 +1334,18 @@ commit;
 
    -- 测试sql语句注释
    select * from v2_test;-- 测试 11
-   
+
    /**
     * 测试sql语句注释
-    * 
+    *
     */
    select * from v2_test;
-   
-   
-      
+
+
+
    /**
     * 测试sql语句注释
-    * 
+    *
     */select * from v2_test;
 
 # 先删除日志文件
@@ -1355,7 +1354,7 @@ rm $temp/pks.log
 echo 日志文件 $temp/pks.log
 
 # 测试主键冲突发生异常的处理逻辑是否正确
-declare continue handler for errorcode == -803 begin
+declare continue handler for errorcode == 23505 begin
 	echo 日志文件路径: $temp/pks.log
     echo "测试数据库主键冲突异常处理逻辑是否正确" > $temp/pks.log
 end
@@ -1376,9 +1375,11 @@ while read line do
 done < $temp/pks.log
 
 # 删除异常处理逻辑
-undeclare handler for errorcode == -803;
+undeclare handler for errorcode == 23505;
 
-set v2_test_f1=select rtrim(f1) from v2_test ;
+set v2_test_f1=select f1 from v2_test ;
+echo "[${v2_test_f1}]"
+set v2_test_f1=v2_test_f1.trim()
 if "&ads;{$v2_test_f1}" != '${}' then
   echo "&ads;{$v2_test_f1}" != '${}'
   exit 110
@@ -1387,13 +1388,13 @@ fi
 quiet "drop table v10_test_tmp";
 quiet "drop table v10_test_tmp";
 create table v10_test_tmp (
-	branch_id char(6) not null, 
-	branch_name varchar(150), 
-	branch_type char(18), 
-	branch_no char(12), 
-	status char(1), 
+	branch_id char(6) not null,
+	branch_name varchar(150),
+	branch_type char(18),
+	branch_no char(12),
+	status char(1),
 	primary key(branch_id)
-); /* 测 
+); /* 测
 试
 多行
 注释 */commit;
@@ -1407,11 +1408,11 @@ while $tcount <= 100 loop
   set c3 = "机构类型$tcount"
   set c4 = "编号$tcount"
   set c5 = "0"
-  
+
   echo "$c1, $c2, $c3, $c4, $c5"
   FETCH c1, c2, c3, c4, c5 insert sname;
   progress
-  
+
   set tcount = $tcount + 1
 end loop
 
@@ -1431,17 +1432,17 @@ while $tcount <= 100000 loop
   set c3 = "机构类型$tcount"
   set c4 = "编号$tcount"
   set c5 = "0"
-  
+
   FETCH c1, c2, c3, c4, c5 insert sname;
   progress
-  
+
   set tcount = $tcount + 1
 end loop
 
 undeclare sname Statement
 
 echo 测试中断 sql 功能是否可用
-declare continue handler for exitcode == -3 begin 
+declare continue handler for exitcode == -3 begin
   if $exitcode != -3 then
     exit 999
   fi
@@ -1458,17 +1459,17 @@ echo ""
 echo ""
 
 
-echo 测试使用 ssh 命令远程杀掉进程 ..
-ssh ${sshusername}@${sshhost}:22?password=${sshpassword} && echo LANG is $LANG ;
-# 防止下一个命令报错
-DECLARE continue handler for exitcode != 0 begin echo $exitcode end
-# 杀掉后台进程
-ssh ${sshusername}@${sshhost}:22?password=${sshpassword} && "ps -ef | grep export | grep db2 | grep -v grep | awk -F' ' '{print $2}'|xargs kill" ;
-undeclare handler for exitcode != 0;
-echo ""
-echo ""
-echo ""
-echo ""
+--echo 测试使用 ssh 命令远程杀掉进程 ..
+--ssh ${sshusername}@${sshhost}:22?password=${sshpassword} && echo LANG is $LANG ;
+--# 防止下一个命令报错
+--DECLARE continue handler for exitcode != 0 begin echo $exitcode end
+--# 杀掉后台进程
+--ssh ${sshusername}@${sshhost}:22?password=${sshpassword} && "ps -ef | grep export | grep db2 | grep -v grep | awk -F' ' '{print $2}'|xargs kill" ;
+--undeclare handler for exitcode != 0;
+--echo ""
+--echo ""
+--echo ""
+--echo ""
 
 
 
@@ -1478,120 +1479,120 @@ echo ""
 
 
 
-echo 测试执行远程命令卸载数据文件 ..
-DECLARE continue handler for exitcode == 2 begin echo "exitcode is $exitcode"; end
-ssh ${admin}@${host}:22?password=${adminPw} && ls -la && pwd && touch dmd_bank_info1.del && rm dmd_bank_info1.del && export LANG=zh_CN.GBK && db2 connect to ${databaseName} user ${username} using ${password} \
-&& ( db2 "export to dmd_bank_info1.del of del select * from v10_test_tmp " ) \
-;
-echo ssh command exitcode is $?
-undeclare handler for exitcode == 2;
-echo ""
-echo ""
-echo ""
-echo ""
+--echo 测试执行远程命令卸载数据文件 ..
+--DECLARE continue handler for exitcode == 2 begin echo "exitcode is $exitcode"; end
+--ssh ${admin}@${host}:22?password=${adminPw} && ls -la && pwd && touch dmd_bank_info1.del && rm dmd_bank_info1.del && export LANG=zh_CN.GBK && db2 connect to ${databaseName} user ${username} using ${password} \
+--&& ( db2 "export to dmd_bank_info1.del of del select * from v10_test_tmp " ) \
+--;
+--echo ssh command exitcode is $?
+--undeclare handler for exitcode == 2;
+--echo ""
+--echo ""
+--echo ""
+--echo ""
 
 
 
 
-echo 测试 sftp 命令下载数据文件 ..
-sftp ${sshusername}@${sshhost}:22?password=${sshpassword}
-get dmd_bank_info1.del $temp
-echo $temp/dmd_bank_info1.del
-bye
-echo ""
-echo ""
-echo ""
-echo ""
+--echo 测试 sftp 命令下载数据文件 ..
+--sftp ${sshusername}@${sshhost}:22?password=${sshpassword}
+--get dmd_bank_info1.del $temp
+--echo $temp/dmd_bank_info1.del
+--bye
+--echo ""
+--echo ""
+--echo ""
+--echo ""
 
 
 
 
-echo 测试远程执行db2数据库 load 命令 ..
-ssh ${admin}@${host}:22?password=${adminPw} && export LANG=zh_CN.GBK && db2 connect to ${databaseName} user ${username} using ${password} \
-&& db2 "load client from /dev/null of del replace into v10_test_tmp " \
-&& db2 "load client from `pwd`/dmd_bank_info1.del of del replace into v10_test_tmp " \
-&& db2 connect reset ;
-echo ssh command exitcode is $?
-echo ""
-echo ""
-echo ""
-echo ""
+--echo 测试远程执行db2数据库 load 命令 ..
+--ssh ${admin}@${host}:22?password=${adminPw} && export LANG=zh_CN.GBK && db2 connect to ${databaseName} user ${username} using ${password} \
+--&& db2 "load client from /dev/null of del replace into v10_test_tmp " \
+--&& db2 "load client from `pwd`/dmd_bank_info1.del of del replace into v10_test_tmp " \
+--&& db2 connect reset ;
+--echo ssh command exitcode is $?
+--echo ""
+--echo ""
+--echo ""
+--echo ""
 
 
 
 
-echo 测试 sftp 相关命令 ..
-sftp ${ftpuser}@${ftphost}:22?password=${ftppass}
-set ftphome=`pwd`
-echo 远程sftp命令所在目录: $ftphome
-ls ${ftphome}
-set remotetestdir="${ftphome}/rpt1"
-rm ${remotetestdir}
-mkdir ${remotetestdir}
-cd ${remotetestdir}
-put `pwd -l`/test.sql
-ls
-exists ${remotetestdir}/test.sql
-isfile ${remotetestdir}/test.sql
-mkdir ${ftphome}/test
-rm ${ftphome}/test
-get ${remotetestdir}/test.sql ${temp}
-exists -l ${temp}\test.sql
-bye
-echo ""
-echo ""
-echo ""
-echo ""
+--echo 测试 sftp 相关命令 ..
+--sftp ${ftpuser}@${ftphost}:22?password=${ftppass}
+--set ftphome=`pwd`
+--echo 远程sftp命令所在目录: $ftphome
+--ls ${ftphome}
+--set remotetestdir="${ftphome}/rpt1"
+--rm ${remotetestdir}
+--mkdir ${remotetestdir}
+--cd ${remotetestdir}
+--put `pwd -l`/test.sql
+--ls
+--exists ${remotetestdir}/test.sql
+--isfile ${remotetestdir}/test.sql
+--mkdir ${ftphome}/test
+--rm ${ftphome}/test
+--get ${remotetestdir}/test.sql ${temp}
+--exists -l ${temp}\test.sql
+--bye
+--echo ""
+--echo ""
+--echo ""
+--echo ""
 
 
-echo 测试本地文件系统相关命令 ..
-isfile -l ${temp}\test.sql
-isfile  ${temp}\test.sql
-md5sum ${temp}\test.sql
-zip ${temp}\test.sql
-unzip ${temp}\test.zip
-tar -zcvf ${temp}\test.sql
-tar -xvf ${temp}\test.tar
-gzip ${temp}\test.sql
-gunzip ${temp}\test.gz
-rm ${temp}\test.sql
-echo ""
-echo ""
-echo ""
-echo ""
+--echo 测试本地文件系统相关命令 ..
+--isfile -l ${temp}\test.sql
+--isfile  ${temp}\test.sql
+--md5sum ${temp}\test.sql
+--zip ${temp}\test.sql
+--unzip ${temp}\test.zip
+--tar -zcvf ${temp}\test.sql
+--tar -xvf ${temp}\test.tar
+--gzip ${temp}\test.sql
+--gunzip ${temp}\test.gz
+--rm ${temp}\test.sql
+--echo ""
+--echo ""
+--echo ""
+--echo ""
 
 
-echo 测试 ftp 命令 ..
-function testFtpCommands() {
-echo test >> $temp/test.sql
-ls -l $temp/test.sql
-ftp ${ftpuser}@${ftphost}:21?password=${ftppass}
-set ftphome=`pwd`
-set remotetestdir="${ftphome}/rpt1"
-pwd
-rm ${remotetestdir}
-mkdir ${remotetestdir}
-exists ${remotetestdir}/
-ls ${remotetestdir}
-cd ${remotetestdir}
-put $temp/test.sql ${remotetestdir}
-ls ${remotetestdir}
-exists ${remotetestdir}/test.sql
-isfile ${remotetestdir}/test.sql
-mkdir ${ftphome}/test
-isDirectory ${ftphome}/test
-rm ${ftphome}/test
-get ${remotetestdir}/test.sql ${temp}
-exists -l ${temp}\test.sql
-bye
-ls -l `pwd`
-rm -l ${temp}\test.sql
-}
-testFtpCommands
-echo ""
-echo ""
-echo ""
-echo ""
+--echo 测试 ftp 命令 ..
+--function testFtpCommands() {
+--echo test >> $temp/test.sql
+--ls -l $temp/test.sql
+--ftp ${ftpuser}@${ftphost}:21?password=${ftppass}
+--set ftphome=`pwd`
+--set remotetestdir="${ftphome}/rpt1"
+--pwd
+--rm ${remotetestdir}
+--mkdir ${remotetestdir}
+--exists ${remotetestdir}/
+--ls ${remotetestdir}
+--cd ${remotetestdir}
+--put $temp/test.sql ${remotetestdir}
+--ls ${remotetestdir}
+--exists ${remotetestdir}/test.sql
+--isfile ${remotetestdir}/test.sql
+--mkdir ${ftphome}/test
+--isDirectory ${ftphome}/test
+--rm ${ftphome}/test
+--get ${remotetestdir}/test.sql ${temp}
+--exists -l ${temp}\test.sql
+--bye
+--ls -l `pwd`
+--rm -l ${temp}\test.sql
+--}
+--testFtpCommands
+--echo ""
+--echo ""
+--echo ""
+--echo ""
 
 
 # xxxxx
@@ -1688,6 +1689,7 @@ function _update_bhc_cl1_repay_int() {
            and billingId = '${tmp_billingId}' -- xxxxx
            and repaymentDate = '${tmp_repaymentDate}' -- xxxxx
            and repayNo = ${tmp_repayNo} -- xxxxx
+
          ; -- xxxxx xxxxx
          commit;
 
@@ -1712,7 +1714,7 @@ function _update_bhc_cl1_repay_int() {
 }
 
 # 定义 step 命令回调函数
-declare global command callback for step begin 
+declare global command callback for step begin
   echo "execute $1"
 end
 
@@ -1728,7 +1730,7 @@ set _t_test_1= $_t_test_1 + 1
 }
 
 _test
-if $_t_test_1 != 1 then 
+if $_t_test_1 != 1 then
   echo function 错误
 	exit 10
 fi
@@ -1755,7 +1757,7 @@ echo ""
 echo ""
 
 
-if $_t_test_2 != 8 then 
+if $_t_test_2 != 8 then
   echo function 错误 $_t_test_2
 	exit 10
 fi
@@ -1835,9 +1837,9 @@ export set myname = 'this is good ' ;
 
 quiet "drop table v1_test";
 create table v1_test (
-f1 char(10) not null, 
-f2 char(10), 
-f3 char(10), 
+f1 char(10) not null,
+f2 char(10),
+f3 char(10),
 primary key(f1)
 );
 
@@ -1898,7 +1900,7 @@ while ${noname} <= 100 loop
   set noname=${noname}+1
   if ${noname} == 100 then
     break;
-  else 
+  else
     continue
   fi
 end loop
@@ -1910,7 +1912,7 @@ exit 3
 fi
 
 
-# 一下测试 rollback 语句
+# 测试 rollback 语句
 delete from v1_test;
 rollback;
 set t222=select count(*) from v1_test;
@@ -1927,7 +1929,7 @@ DECLARE cno CURSOR WITH RETURN FOR select f1, f2, f3 from v1_test order by f1 as
 CURSOR cno loop
   FETCH cno INTO tmp_f1, tmp_f2, tmp_f3;
   set loono = ${loono} + 1; # 序号 + 1
-  
+
 end loop
 undeclare cno cursor
 
@@ -1947,7 +1949,7 @@ DECLARE cno1 CURSOR WITH RETURN FOR select * from v1_test ;
 
       set _tvl = 0;
       while ${_tvl} < 3 loop
-      
+
         echo "loop${_tvl}" > ${temp}/testloop${_tvl}.log
         while read line do
         	if "${line}" != "loop${_tvl}" then
@@ -1955,7 +1957,7 @@ DECLARE cno1 CURSOR WITH RETURN FOR select * from v1_test ;
         	   exit 111
         	fi
         done < ${temp}/testloop${_tvl}.log
-      	
+
       	set _tvl = $_tvl + 1
       end loop
 
@@ -1975,13 +1977,14 @@ java  cn.org.expect.script.command.JavaCommandTest1
 echo nohup . ${pwd}/test1.sql &
 set ppid=`nohup . ${pwd}/test1.sql & | tail -n 1`
 
+# 用于判断是否运行正确的变量
 set testvalue000="1000"
 
 echo 打印脚本引擎中所有用户会话
 ps -s
 
 echo 打印用户会话中所有后台进程
-ps 
+ps
 
 echo wait pid=$ppid 10sec
 wait pid=$ppid 10sec

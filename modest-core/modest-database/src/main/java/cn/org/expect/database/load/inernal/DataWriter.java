@@ -9,7 +9,7 @@ import cn.org.expect.database.DatabaseException;
 import cn.org.expect.database.DatabaseTable;
 import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.JdbcStringConverter;
-import cn.org.expect.database.load.LoadTable;
+import cn.org.expect.database.load.DestTable;
 import cn.org.expect.io.TableLine;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.ResourcesUtils;
@@ -75,7 +75,7 @@ public class DataWriter {
      * @param saveCount 记录数
      * @throws Exception 初始化类型转换器发生错误
      */
-    public DataWriter(JdbcDao dao, LoadTable target, long saveCount) throws Exception {
+    public DataWriter(JdbcDao dao, DestTable target, long saveCount) throws Exception {
         super();
         Ensure.notNull(target);
         this.dao = Ensure.notNull(dao);

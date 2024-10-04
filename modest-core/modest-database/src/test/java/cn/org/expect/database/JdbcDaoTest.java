@@ -502,7 +502,7 @@ public class JdbcDaoTest {
             DatabaseTable table = list.get(0);
             DatabaseTableDDL ddl = dao.toDDL(table);
             dao.execute("drop table " + table.getFullName());
-            dao.createTable(ddl);
+            dao.execute(ddl);
             dao.commit();
         } catch (Exception e) {
             dao.rollback();
@@ -527,7 +527,7 @@ public class JdbcDaoTest {
             DatabaseTable table = list.get(0);
             DatabaseTableDDL ddl = dao.toDDL(table);
             dao.execute("drop table " + table.getFullName());
-            dao.createTable(ddl);
+            dao.execute(ddl);
             dao.commit();
         } catch (Exception e) {
             dao.rollback();
@@ -565,7 +565,10 @@ public class JdbcDaoTest {
             }
 
             DatabaseTable table = list.get(0);
-            dao.dropIndex(table);
+            DatabaseIndexList indexs = table.getIndexs();
+            for (DatabaseIndex index : indexs) {
+                dao.dropIndex(index);
+            }
             dao.commit();
         } catch (Exception e) {
             dao.rollback();

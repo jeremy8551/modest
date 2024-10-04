@@ -11,7 +11,9 @@ import java.util.List;
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.database.DatabaseDDL;
 import cn.org.expect.database.DatabaseIndex;
+import cn.org.expect.database.DatabaseIndexList;
 import cn.org.expect.database.DatabaseProcedure;
+import cn.org.expect.database.DatabaseTable;
 import cn.org.expect.database.DatabaseTableColumn;
 import cn.org.expect.database.DatabaseURL;
 import cn.org.expect.database.JdbcConverterMapper;
@@ -196,6 +198,10 @@ public class H2Dialect extends AbstractDialect {
     /** 类型映射关系 */
     protected StandardJdbcConverterMapper map;
 
+    public static void main(String[] args) {
+
+    }
+
     public JdbcConverterMapper getObjectConverters() {
         if (this.exp == null) {
             this.exp = new StandardJdbcConverterMapper();
@@ -205,6 +211,8 @@ public class H2Dialect extends AbstractDialect {
             this.exp.add("BINARY", ByteArrayConverter.class);
             this.exp.add("UUID", StringConverter.class);
             this.exp.add("CHARACTER", StringConverter.class);
+            this.exp.add("CHARACTER VARYING", StringConverter.class);
+            this.exp.add("VARCHAR_IGNORECASE", StringConverter.class);
             this.exp.add("DECIMAL", cn.org.expect.database.export.converter.BigDecimalConverter.class);
             this.exp.add("NUMERIC", cn.org.expect.database.export.converter.BigDecimalConverter.class);
             this.exp.add("DECFLOAT", FloatConverter.class);
@@ -231,6 +239,8 @@ public class H2Dialect extends AbstractDialect {
             this.map.add("BINARY", cn.org.expect.database.load.converter.BlobConverter.class);
             this.map.add("UUID", cn.org.expect.database.load.converter.StringConverter.class);
             this.map.add("CHARACTER", cn.org.expect.database.load.converter.StringConverter.class);
+            this.map.add("CHARACTER VARYING", cn.org.expect.database.load.converter.StringConverter.class);
+            this.map.add("VARCHAR_IGNORECASE", cn.org.expect.database.load.converter.StringConverter.class);
             this.map.add("DECIMAL", cn.org.expect.database.load.converter.BigDecimalConverter.class);
             this.map.add("NUMERIC", cn.org.expect.database.load.converter.BigDecimalConverter.class);
             this.map.add("DECFLOAT", cn.org.expect.database.load.converter.FloatConverter.class);
@@ -257,7 +267,7 @@ public class H2Dialect extends AbstractDialect {
     }
 
     public boolean isPrimaryRepeatException(Throwable e) {
-        return false;
+        return (e instanceof SQLException) && (((SQLException) e).getErrorCode() == 23505 || ((SQLException) e).getSQLState().equals("23505"));
     }
 
     public boolean isIndexExistsException(Throwable e) {
@@ -277,79 +287,46 @@ public class H2Dialect extends AbstractDialect {
     }
 
     public boolean supportedMergeStatement() {
-        return true;
+        return false;
     }
 
     public String toMergeStatement(String tableName, List<DatabaseTableColumn> columns, List<String> mergeColumn) {
-        String sql = "";
-
-        /**
-         * 按如下规则拼sql语句: <br>
-         * MERGE INTO XCMDTRANSFERSTATE AS T <br>
-         * USING TABLE (VALUES(?,?,?,?,?,?)) <br>
-         * T1(DATASNO,EXTERIORSYSTEM,STATUS,DATA_TIME,MARKFORDELETE,DATATRANSFERNO) <br>
-         * ON (T.DATATRANSFERNO = T1.DATATRANSFERNO) <br>
-         * WHEN MATCHED THEN update set T.DATASNO = T1.DATASNO,T.EXTERIORSYSTEM = <br>
-         * T1.EXTERIORSYSTEM,T.STATUS = T1.STATUS,T.LASTUP_TIME = T1.DATA_TIME,T.MARKFORDELETE = T1.MARKFORDELETE <br>
-         * WHEN NOT MATCHED THEN INSERT <br>
-         * (DATASNO,EXTERIORSYSTEM,STATUS,CREATE_TIME,MARKFORDELETE,DATATRANSFERNO) VALUES <br>
-         * (T1.DATASNO,T1.EXTERIORSYSTEM,T1.STATUS,T1.DATA_TIME,T1.MARKFORDELETE,T1.DATATRANSFERNO)<br>
-         */
-        sql += "merge into " + tableName + " as T " + FileUtils.lineSeparator;
-        sql += " using table (values(";
-        for (Iterator<DatabaseTableColumn> it = columns.iterator(); it.hasNext(); ) {
-            it.next();
-            sql += "?";
-            if (it.hasNext()) {
-                sql += ", ";
-            }
-        }
-        sql += ")) T1(";
-        for (Iterator<DatabaseTableColumn> it = columns.iterator(); it.hasNext(); ) {
-            sql += it.next().getName();
-            if (it.hasNext()) {
-                sql += ", ";
-            }
-        }
-        sql += ") " + FileUtils.lineSeparator;
-
-        // 唯一索引字段
-        sql += " on (";
-        for (Iterator<String> it = mergeColumn.iterator(); it.hasNext(); ) {
-            String name = it.next();
-            sql += "T." + name + " = T1." + name;
-            if (it.hasNext()) {
-                sql += " and ";
-            }
-        }
-        sql += ")" + FileUtils.lineSeparator;
-
-        // 唯一索引匹配时更新字段值
-        sql += " when matched then update set " + FileUtils.lineSeparator;
-        for (Iterator<DatabaseTableColumn> it = columns.iterator(); it.hasNext(); ) {
-            String name = it.next().getName();
-            sql += "T." + name + " = T1." + name + FileUtils.lineSeparator;
-            if (it.hasNext()) {
-                sql += ", ";
-            }
-        }
-
-        // 唯一索引不匹配时，插入记录
-        sql += " when not matched then insert (";
-        for (Iterator<DatabaseTableColumn> it = columns.iterator(); it.hasNext(); ) {
-            sql += it.next().getName();
-            if (it.hasNext()) {
-                sql += ", ";
-            }
-        }
-        sql += ") values (";
-        for (Iterator<DatabaseTableColumn> it = columns.iterator(); it.hasNext(); ) {
-            sql += "T1." + it.next().getName();
-            if (it.hasNext()) {
-                sql += ", ";
-            }
-        }
-        sql += ")";
-        return sql;
+        throw new UnsupportedOperationException();
     }
+
+    public String toTableName(String catalog, String schema, String tableName) {
+        return tableName;
+    }
+
+    /**
+     * H2数据库在创建索引时，会默认创建一个按字段顺序反向的唯一索引 <br>
+     * 比如: <br>
+     * 创建 ALTER TABLE BHCP_FINISH ADD PRIMARY KEY(FILE_DATA, TASK_NAME) 会默认创建索引: <br>
+     * CREATE UNIQUE index PRIMARY_KEY_7 on BHCP_FINISH(TASK_NAME asc, FILE_DATA asc); <br>
+     *
+     * @param connection 数据库连接
+     * @param catalog    类别名称，因为存储在此数据库中，所以它必须匹配类别名称。该参数为 "" 则检索没有类别的描述，为 null 则表示该类别名称不应用于缩小搜索范围
+     * @param schema     模式名称，因为存储在此数据库中，所以它必须匹配模式名称。该参数为 "" 则检索那些没有模式的描述，为 null 则表示该模式名称不应用于缩小搜索范围
+     * @param tableName  表名（大小写敏感）, 为null表示搜索schema下所有表信息
+     * @return 数据库表信息集合
+     * @throws SQLException 数据库发生错误
+     */
+    public List<DatabaseTable> getTable(Connection connection, String catalog, String schema, String tableName) throws SQLException {
+        List<DatabaseTable> list = super.getTable(connection, catalog, schema, tableName);
+        for (DatabaseTable table : list) {
+            DatabaseIndexList primaryIndexs = table.getPrimaryIndexs();
+            DatabaseIndexList indexs = table.getIndexs();
+            for (DatabaseIndex pk : primaryIndexs) {
+                Iterator<DatabaseIndex> it = indexs.iterator();
+                while (it.hasNext()) {
+                    DatabaseIndex index = it.next();
+                    if (pk.equalsColumnName(index, true, true)) {
+                        it.remove();
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
 }

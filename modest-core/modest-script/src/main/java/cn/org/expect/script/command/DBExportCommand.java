@@ -55,7 +55,7 @@ import cn.org.expect.util.StringUtils;
  * <br>
  * <br>
  * source: <br>
- * select … from table with ur ; <br>
+ * select … from table ; <br>
  * <br>
  * <br>
  * datapath 表达式格式: <br>

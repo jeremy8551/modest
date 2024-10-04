@@ -335,4 +335,39 @@ public class CollectionUtils {
         return false;
     }
 
+    /**
+     * 在忽略字符大小写的情况下判断 list 中是否存在 key
+     *
+     * @param list        字符串集合
+     * @param dest        字符串
+     * @param ignoreBlank 表示忽略字符串两端的空白字符
+     * @return 返回true表示集合中包含字符串 false表示集合中不包含字符串
+     */
+    public static boolean containsIgnoreCase(List<String> list, String dest, boolean ignoreBlank) {
+        if (list == null) {
+            throw new NullPointerException();
+        }
+
+        for (String str : list) {
+            if (str == null && dest == null) {
+                return true;
+            }
+
+            if (str == null || dest == null) {
+                continue;
+            }
+
+            if (ignoreBlank) {
+                str = StringUtils.trimBlank(str);
+                dest = StringUtils.trimBlank(dest);
+            }
+
+            if (str.equalsIgnoreCase(dest)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
 }

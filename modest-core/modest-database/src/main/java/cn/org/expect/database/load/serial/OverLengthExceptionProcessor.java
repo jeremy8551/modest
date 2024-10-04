@@ -15,7 +15,7 @@ import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.database.DatabaseTableColumn;
 import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.load.LoadFileRange;
-import cn.org.expect.database.load.LoadTable;
+import cn.org.expect.database.load.DestTable;
 import cn.org.expect.expression.DataUnitExpression;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileReader;
@@ -52,7 +52,7 @@ public class OverLengthExceptionProcessor {
      * @return 返回已修改字段个数
      * @throws Exception 发生错误
      */
-    public int execute(EasyContext context, JdbcDao dao, TextTableFile file, LoadTable target) throws Exception {
+    public int execute(EasyContext context, JdbcDao dao, TextTableFile file, DestTable target) throws Exception {
         // 扫描数据文件中的长度字段
         ExpandLengthJobReader in = new ExpandLengthJobReader(file, target, DataUnitExpression.parse("100M").longValue());
         context.getBean(ThreadSource.class).getJobService(this.concurrent).execute(new EasyJobReaderImpl(in));
@@ -84,7 +84,7 @@ public class OverLengthExceptionProcessor {
         private TextTableFile file;
 
         /** 目标数据库表 */
-        private LoadTable target;
+        private DestTable target;
 
         /** true表示已终止 */
         private volatile boolean terminate;
@@ -108,7 +108,7 @@ public class OverLengthExceptionProcessor {
          * @param target 目标表信息
          * @param size   每次读取文件的长度
          */
-        public ExpandLengthJobReader(TextTableFile file, LoadTable target, long size) {
+        public ExpandLengthJobReader(TextTableFile file, DestTable target, long size) {
             super();
             this.terminate = false;
             this.index = 0;
@@ -167,7 +167,7 @@ public class OverLengthExceptionProcessor {
     private static class ExpandLengthJob extends AbstractJob {
 
         /** 目标表信息 */
-        private LoadTable target;
+        private DestTable target;
 
         /** 上下文信息 */
         private LoadFileExecutorContext context;
@@ -175,7 +175,7 @@ public class OverLengthExceptionProcessor {
         /** 发生变化字段的集合 */
         private Set<DatabaseTableColumn> set;
 
-        public ExpandLengthJob(LoadFileExecutorContext context, LoadTable target, Set<DatabaseTableColumn> set) {
+        public ExpandLengthJob(LoadFileExecutorContext context, DestTable target, Set<DatabaseTableColumn> set) {
             this.context = Ensure.notNull(context);
             this.target = Ensure.notNull(target);
             this.set = Ensure.notNull(set);

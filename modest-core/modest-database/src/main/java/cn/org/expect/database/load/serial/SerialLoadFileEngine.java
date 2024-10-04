@@ -7,13 +7,13 @@ import java.util.List;
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.database.DatabaseTable;
 import cn.org.expect.database.JdbcDao;
+import cn.org.expect.database.load.DestTable;
+import cn.org.expect.database.load.IndexOperation;
 import cn.org.expect.database.load.LoadEngineContext;
 import cn.org.expect.database.load.LoadException;
 import cn.org.expect.database.load.LoadFileMessage;
-import cn.org.expect.database.load.LoadIndex;
 import cn.org.expect.database.load.LoadListenerFactory;
 import cn.org.expect.database.load.LoadMode;
-import cn.org.expect.database.load.LoadTable;
 import cn.org.expect.database.load.Loader;
 import cn.org.expect.database.load.inernal.DataWriter;
 import cn.org.expect.database.load.inernal.DataWriterFactory;
@@ -83,21 +83,16 @@ public class SerialLoadFileEngine implements Loader, EasyContextAware {
             throw new UnsupportedOperationException(tableCatalog + ", " + tableSchema + ", " + tableName);
         }
 
-        LoadTable target = new LoadTable(dao, table);
-        LoadIndex index = new LoadIndex(table);
+        DestTable target = new DestTable(dao, table);
+        target.open(context);
         try {
-            target.open(context);
-            index.before(context, dao);
-
-            this.execute(dao, context, target);
-            target.close();
+            IndexOperation operation = new IndexOperation(table);
+            operation.before(context, dao); // 前置操作
+            this.execute(dao, context, target); // 装载数据
+            operation.after(context, dao); // 后置操作
+            dao.commit();
         } finally {
-            try {
-                index.after(context, dao); // 后置操作
-                dao.commit();
-            } finally {
-                // TODO 处理主键冲突异常
-            }
+            target.close();
         }
     }
 
@@ -109,7 +104,7 @@ public class SerialLoadFileEngine implements Loader, EasyContextAware {
      * @param target  目标表信息
      * @throws Exception 装载数据发生错误
      */
-    protected void execute(JdbcDao dao, LoadEngineContext context, LoadTable target) throws Exception {
+    protected void execute(JdbcDao dao, LoadEngineContext context, DestTable target) throws Exception {
         DataWriterFactory factory = new DataWriterFactory(dao, context, target);
         try {
             DatabaseTable table = target.getTable();
@@ -193,7 +188,7 @@ public class SerialLoadFileEngine implements Loader, EasyContextAware {
      * @param out     输出流
      * @throws Exception 装载数据发生错误
      */
-    protected synchronized void execute(LoadEngineContext context, LoadTable target, TextTableFile file, TextTableFileReader reader, DataWriter out) throws Exception {
+    protected synchronized void execute(LoadEngineContext context, DestTable target, TextTableFile file, TextTableFileReader reader, DataWriter out) throws Exception {
         TimeWatch watch = new TimeWatch();
         LoadFileMessage msgfile = new LoadFileMessage(context, file);
 
@@ -274,5 +269,4 @@ public class SerialLoadFileEngine implements Loader, EasyContextAware {
     public void terminate() {
         this.running = false;
     }
-
 }

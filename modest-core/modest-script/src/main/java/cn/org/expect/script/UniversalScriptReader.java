@@ -57,7 +57,7 @@ public interface UniversalScriptReader {
      * 从输入流中当前位置读取一个（可能是）跨越多行的语句 <br>
      * 要求语句只能用语句分隔符（{@linkplain UniversalScriptAnalysis#getToken()}）作为结束标志 <br>
      * 如: <br>
-     * select * from table with ur; <br>
+     * select * from table ; <br>
      *
      * @return 命令语句
      * @throws IOException 解析命令语句发生错误

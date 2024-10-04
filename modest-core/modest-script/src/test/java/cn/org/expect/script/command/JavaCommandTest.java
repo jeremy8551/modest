@@ -1,6 +1,7 @@
 package cn.org.expect.script.command;
 
-import cn.org.expect.printer.Printer;
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
@@ -9,12 +10,10 @@ import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.TimeWatch;
 
 public class JavaCommandTest extends AbstractJavaCommand {
+    private final static Log log = LogFactory.getLog(JavaCommandTest.class);
 
     public JavaCommandTest() {
         super();
-    }
-
-    public void echoUsage(Printer out) {
     }
 
     @Override
@@ -24,13 +23,12 @@ public class JavaCommandTest extends AbstractJavaCommand {
         context.addGlobalVariable("JavaCommandTest", "JavaCommandTest110");
         TimeWatch watch = new TimeWatch();
 
-        System.out.println(StringUtils.toString(args));
-        System.out.println("等待 " + timeout + " 秒!");
+        log.info(StringUtils.toString(args));
+        log.info("等待 " + timeout + " 秒!");
         while (!this.terminate) {
             if (this.terminate || watch.useSeconds() >= timeout) {
                 break;
             }
-
         }
 
         this.terminate = false;

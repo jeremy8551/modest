@@ -57,6 +57,10 @@ public class ScriptStatement {
             String typeName = meta.getParameterTypeName(position);
 
             JdbcStringConverter obj = mapper.get(typeName);
+            if (obj == null) {
+                throw new NullPointerException(typeName);
+            }
+
             obj.setAttribute(AbstractConverter.STATEMENT, statement);
             obj.setAttribute(AbstractConverter.COLUMNNAME, "");
             obj.setAttribute(AbstractConverter.COLUMNSIZE, length);

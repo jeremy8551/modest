@@ -69,6 +69,8 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
             buf.append("(").append(this.length()).append(")");
         } else if (expression.equalsIgnoreCase("PRECISION,SCALE")) {
             buf.append("(").append(this.length()).append(", ").append(this.getDigit()).append(")");
+        } else if (expression.equalsIgnoreCase("SCALE")) {
+            buf.append("(").append(this.getDigit()).append(")");
         } else if (expression.equalsIgnoreCase("PRECISION")) {
             buf.append("(").append(this.length()).append(")");
         } else {

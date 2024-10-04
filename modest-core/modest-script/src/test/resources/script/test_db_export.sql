@@ -46,7 +46,7 @@ undeclare sname Statement
 
 declare exportTaskId progress use out print "${taskId}正在执行 ${process}%, 总共${totalRecord}个记录${leftTime}" total $tcount times
 
-db export to $temp\v7_test_tmp.del of del modified by progress=exportTaskId chardel=* charhide=0 escapes=1 writebuf=200 maxrows=30041 title message=$temp/v7_test_tmp.txt select * from v7_test_tmp with ur;
+db export to $temp\v7_test_tmp.del of del modified by progress=exportTaskId chardel=* charhide=0 escapes=1 writebuf=200 maxrows=30041 title message=$temp/v7_test_tmp.txt select * from v7_test_tmp ;
 
 cat $temp\v7_test_tmp.del
 
@@ -55,7 +55,7 @@ echo ""
 echo ""
 echo ""
 echo ""
-db export to $temp\v7_test_tmp1.del of del select * from v7_test_tmp with ur;
+db export to $temp\v7_test_tmp1.del of del select * from v7_test_tmp ;
 
 
 db connect reset

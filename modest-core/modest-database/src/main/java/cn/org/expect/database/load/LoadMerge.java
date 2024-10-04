@@ -39,7 +39,7 @@ public class LoadMerge {
     private JdbcDao dao;
 
     /** 目标表 */
-    private LoadTable target;
+    private DestTable target;
 
     /** 索引字段 */
     private List<String> indexColumn;
@@ -71,7 +71,7 @@ public class LoadMerge {
      * @param columns     字段集合
      * @throws SQLException 数据库错误
      */
-    public LoadMerge(JdbcDao dao, LoadTable target, List<String> indexColumn, List<DatabaseTableColumn> columns) throws SQLException {
+    public LoadMerge(JdbcDao dao, DestTable target, List<String> indexColumn, List<DatabaseTableColumn> columns) throws SQLException {
         this.dao = dao;
         this.target = target;
         this.indexColumn = indexColumn;
@@ -123,13 +123,11 @@ public class LoadMerge {
      * @throws SQLException 数据库错误
      */
     private StandardDatabaseTable createTemp() throws SQLException {
-        String fullname = this.table.getFullName();
-        String schema = Jdbc.getSchema(fullname);
-        String tableName = Jdbc.removeSchema(fullname);
-        String newTableName = Jdbc.getTableNameNoRepeat(this.dao.getConnection(), this.dao.getDialect(), null, schema, tableName);
+        String newTableName = Jdbc.getTableNameNoRepeat(this.dao.getConnection(), this.dao.getDialect(), this.table.getCatalog(), this.table.getSchema(), this.table.getName());
 
         StandardDatabaseTable newtable = new StandardDatabaseTable(this.target.getTable());
         newtable.setName(newTableName);
+        newtable.setFullName(this.dao.getDialect().toTableName(newtable.getCatalog(), newtable.getSchema(), newTableName));
 
         String tableDDL = this.target.getTableDDL().getTable();
         AnalysisImpl analysis = new AnalysisImpl();
@@ -138,12 +136,12 @@ public class LoadMerge {
             throw new SQLException(tableDDL);
         }
 
-        int begin = analysis.indexOf(tableDDL, tableName, indexs[1], 0, 0);
+        int begin = analysis.indexOf(tableDDL, this.table.getName(), indexs[1], 0, 0);
         if (begin == -1) {
             throw new SQLException(tableDDL);
         }
 
-        String newTableDDL = StringUtils.replace(tableDDL, begin, tableName.length(), newTableName);
+        String newTableDDL = StringUtils.replace(tableDDL, begin, this.table.getName().length(), newTableName);
         this.dao.execute(newTableDDL); // 建立临时表
         return newtable;
     }
@@ -236,7 +234,7 @@ public class LoadMerge {
      */
     private String toInsertSQL() {
         String tableName = this.table.getFullName();
-        String sql = "insert into " + tableName + " a (" + FileUtils.lineSeparator;
+        String sql = "insert into " + tableName + " (" + FileUtils.lineSeparator;
         for (Iterator<DatabaseTableColumn> it = this.columns.iterator(); it.hasNext(); ) {
             DatabaseTableColumn col = it.next();
             sql += "    " + col.getName() + (it.hasNext() ? "," : "") + FileUtils.lineSeparator;
@@ -248,8 +246,10 @@ public class LoadMerge {
             sql += "    " + col.getName() + (it.hasNext() ? "," : "") + FileUtils.lineSeparator;
         }
 
-        String newTableName = this.tempTable.getFullName();
-        sql += " from " + newTableName + " b where ";
+        String newtableName = this.tempTable.getFullName();
+        sql += " from " + newtableName + " a " + FileUtils.lineSeparator;
+        sql += " where not exists (" + FileUtils.lineSeparator;
+        sql += "select 1 from " + tableName + " b where " + FileUtils.lineSeparator;
 
         boolean value = false;
         List<String> indexColumn = this.indexColumn;
@@ -261,6 +261,7 @@ public class LoadMerge {
             sql += "a." + name + " = b." + name + FileUtils.lineSeparator;
             value = true;
         }
+        sql += ")";
         return sql;
     }
 

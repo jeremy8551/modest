@@ -49,6 +49,30 @@ public interface DatabaseDialect {
     String toIndexName(String catalog, String schema, String tableName);
 
     /**
+     * 生成删除表的SQL语句
+     *
+     * @param table
+     * @return
+     */
+    String toDropTable(DatabaseTable table);
+
+    /**
+     * 生成删除主键的SQL语句
+     *
+     * @param index 主键
+     * @return SQL语句
+     */
+    String toDropPrimaryDDL(DatabaseIndex index);
+
+    /**
+     * 生成删除索引的SQL语句
+     *
+     * @param index 索引
+     * @return SQL语句
+     */
+    String toDropIndexDDL(DatabaseIndex index);
+
+    /**
      * 将数据库表转为 DDL 语句
      *
      * @param connection 数据库连接
@@ -90,16 +114,6 @@ public interface DatabaseDialect {
      * @return SQL语句
      */
     String toDeleteQuicklySQL(Connection connection, String catalog, String schema, String tableName);
-
-    /**
-     * 删除数据库表的主键
-     *
-     * @param connection 数据库连接
-     * @param index      主键信息
-     * @return 删除主键语句
-     * @throws SQLException 数据库访问错误
-     */
-    String dropPrimaryKey(Connection connection, DatabaseIndex index) throws SQLException;
 
     /**
      * 返回测试数据库连接是否还活着的 SQL 语句

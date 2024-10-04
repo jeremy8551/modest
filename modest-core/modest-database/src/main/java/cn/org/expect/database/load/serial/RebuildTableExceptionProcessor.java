@@ -2,7 +2,7 @@ package cn.org.expect.database.load.serial;
 
 import cn.org.expect.database.DatabaseTableDDL;
 import cn.org.expect.database.JdbcDao;
-import cn.org.expect.database.load.LoadTable;
+import cn.org.expect.database.load.DestTable;
 
 public class RebuildTableExceptionProcessor {
 
@@ -13,11 +13,10 @@ public class RebuildTableExceptionProcessor {
      * @param target 目标表
      * @throws Exception 重建数据库表发生错误
      */
-    public void execute(JdbcDao dao, LoadTable target) throws Exception {
+    public void execute(JdbcDao dao, DestTable target) throws Exception {
         DatabaseTableDDL tableDDL = target.getTableDDL();
         dao.dropTable(target.getTable());
-        dao.createTable(tableDDL);
+        dao.execute(tableDDL);
         dao.commit();
     }
-
 }

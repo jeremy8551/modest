@@ -225,18 +225,10 @@ public class LoadErrorTable {
                 DatabaseTableDDL ddl = this.getTableDDL();
 
                 // 先删除数据库表
-                String sql1 = dao.dropTable(this.table);
-                if (log.isDebugEnabled()) {
-                    log.debug(sql1);
-                }
+                dao.dropTable(this.table);
 
                 // 执行数据库建表语句
-                List<String> list = dao.createTable(ddl);
-                for (String sql2 : list) {
-                    if (log.isDebugEnabled()) {
-                        log.debug(sql2);
-                    }
-                }
+                dao.execute(ddl);
                 dao.commit();
 
                 return this.toJavaClassName(dao, columns);
@@ -368,5 +360,4 @@ public class LoadErrorTable {
     public int getColumn() {
         return this.column;
     }
-
 }

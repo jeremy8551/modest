@@ -28,6 +28,9 @@ CREATE TABLE bhcp_finish (
     PRIMARY KEY (task_name,file_data)
 );
 commit;
+quiet drop index bhcpfinishidx01 on bhcp_finish;
+create index bhcpfinishidx01 on bhcp_finish(ORGCODE,error_time);
+drop index bhcpfinishidx01 on bhcp_finish;
 create index bhcpfinishidx01 on bhcp_finish(ORGCODE,error_time);
 commit;
 
@@ -79,7 +82,7 @@ end loop
 commit
 undeclare sname Statement
 
-set count = select count(*) from v12_test_tmp with ur;
+set count = select count(*) from v12_test_tmp ;
 echo 笔数 $count
 
 rm $temp/v12_test_tmp.del
@@ -87,7 +90,7 @@ rm $temp/v12_test_tmp.txt
 
 declare exportTaskId progress use out print "${taskId}正在执行 ${process}%, 总共${totalRecord}个记录${leftTime}" total $count times
 
-db export to $temp\v12_test_tmp{}.del of del modified by progress=exportTaskId chardel=* charhide=0 escapes=1 writebuf=200 maxrows=30041 title message=$temp/v12_test_tmp.txt select * from v12_test_tmp with ur;
+db export to $temp\v12_test_tmp{}.del of del modified by progress=exportTaskId chardel=* charhide=0 escapes=1 writebuf=200 maxrows=30041 title message=$temp/v12_test_tmp.txt select * from v12_test_tmp ;
 
 echo ""
 echo ""
@@ -132,12 +135,12 @@ fi
 
 
 container to execute tasks in parallel using thread=2 begin
-  db export to $temp/v12_test_tmp_t1.del of del modified by sleep=1000 select * from v12_test_tmp with ur;
-  db export to $temp/v12_test_tmp_t2.del of del modified by sleep=2000 select * from v12_test_tmp with ur;
-  db export to $temp/v12_test_tmp_t3.del of del modified by sleep=3000 select * from v12_test_tmp with ur;
-  db export to $temp/v12_test_tmp_t4.del of del modified by sleep=4000 select * from v12_test_tmp with ur;
-  db export to $temp/v12_test_tmp_t5.del of del modified by sleep=2000 select * from v12_test_tmp with ur;
-  db export to $temp/v12_test_tmp_t6.del of del modified by sleep=1000 select * from v12_test_tmp with ur;
+  db export to $temp/v12_test_tmp_t1.del of del modified by sleep=1000 select * from v12_test_tmp ;
+  db export to $temp/v12_test_tmp_t2.del of del modified by sleep=2000 select * from v12_test_tmp ;
+  db export to $temp/v12_test_tmp_t3.del of del modified by sleep=3000 select * from v12_test_tmp ;
+  db export to $temp/v12_test_tmp_t4.del of del modified by sleep=4000 select * from v12_test_tmp ;
+  db export to $temp/v12_test_tmp_t5.del of del modified by sleep=2000 select * from v12_test_tmp ;
+  db export to $temp/v12_test_tmp_t6.del of del modified by sleep=1000 select * from v12_test_tmp ;
 end
 echo $?
 
