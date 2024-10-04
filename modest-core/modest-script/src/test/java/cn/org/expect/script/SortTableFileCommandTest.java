@@ -45,12 +45,6 @@ public class SortTableFileCommandTest {
         } finally {
             engine.eval("exit 0");
         }
-
-//		s.sort(file, "1 asc");
-//		this.checkFile(file);
-//		
-//		s.sort(file, "int(1) asc");
-//		this.checkFile(file);
     }
 
     protected void checkFile(TextTableFile file) throws NumberFormatException, IOException {

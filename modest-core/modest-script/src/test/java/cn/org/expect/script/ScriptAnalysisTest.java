@@ -8,7 +8,6 @@ import cn.org.expect.script.session.ScriptMainProcess;
 import cn.org.expect.script.session.UniversalScriptSessionFactoryImpl;
 import cn.org.expect.script.session.UniversalScriptSessionImpl;
 import cn.org.expect.util.StringUtils;
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -16,10 +15,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ScriptAnalysisTest {
-
-    @Before
-    public void setUp() throws Exception {
-    }
 
     @Test
     public void test() {
