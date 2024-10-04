@@ -1,8 +1,9 @@
 package cn.org.expect.log;
 
+import cn.org.expect.Modest;
 import cn.org.expect.log.apd.LogEvent;
 import cn.org.expect.log.apd.LogPattern;
-import cn.org.expect.Modest;
+import cn.org.expect.log.cxt.LogConfigAnalysis;
 import cn.org.expect.log.cxt.LogContextImpl;
 import cn.org.expect.util.Ensure;
 
@@ -108,5 +109,15 @@ public class LogFactory {
             pattern = force ? LogFactory.DEFAULT_LOG_PATTERN : "";
         }
         return pattern;
+    }
+
+    /**
+     * 设置日志参数
+     *
+     * @param args 参数数组，详见 {@linkplain LogConfigAnalysis#parse(LogContext, String...)}
+     */
+    public static synchronized void set(String... args) {
+        LogContext context = LogFactory.getContext();
+        LogConfigAnalysis.parse(context, args);
     }
 }
