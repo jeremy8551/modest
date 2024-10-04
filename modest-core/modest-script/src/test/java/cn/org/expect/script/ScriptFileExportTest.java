@@ -15,7 +15,7 @@ import org.junit.runner.RunWith;
  * 测试数据装载命令
  */
 @RunWith(ModestRunner.class)
-public class ScriptEngineDBLoadCmdTest {
+public class ScriptFileExportTest {
 
     @EasyBean
     private Properties properties;
@@ -25,9 +25,10 @@ public class ScriptEngineDBLoadCmdTest {
 
     @Test
     public void test() throws ScriptException, IOException {
-        UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(context);
+        UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
         ScriptEngine engine = manager.getScriptEngine();
         engine.setBindings(ScriptUtils.to(this.properties), UniversalScriptContext.ENVIRONMENT_SCOPE);
-        engine.eval(". classpath:/script/test_db_load.sql");
+        engine.eval(". classpath:/script/test_db_export.sql");
     }
+
 }

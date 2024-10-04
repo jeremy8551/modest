@@ -16,7 +16,7 @@ import org.junit.runner.RunWith;
 
 @Ignore
 @RunWith(ModestRunner.class)
-public class ScriptEngineBySQLTest {
+public class ScriptFileByDB2Test {
 
     @EasyBean
     private Properties properties;
