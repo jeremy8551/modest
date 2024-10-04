@@ -17,16 +17,18 @@ public class NoPatternLayout implements Layout {
             msg = "";
         }
 
-        StringBuilder buf = new StringBuilder(msg.length() + 70);
         Throwable e = event.getThrowable();
         if (e == null) {
+            StringBuilder buf = new StringBuilder(msg.length() + 2);
             buf.append(msg);
             buf.append(FileUtils.lineSeparator);
             return buf.toString();
         } else {
+            String error = StringUtils.toString(e);
+            StringBuilder buf = new StringBuilder(msg.length() + error.length() + 4);
             buf.append(msg);
             buf.append(FileUtils.lineSeparator);
-            buf.append(StringUtils.toString(e));
+            buf.append(error);
             buf.append(FileUtils.lineSeparator);
             return buf.toString();
         }

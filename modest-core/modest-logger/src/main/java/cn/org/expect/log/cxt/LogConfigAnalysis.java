@@ -6,9 +6,10 @@ import java.util.List;
 import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogLevel;
-import cn.org.expect.log.apd.ConsoleAppender;
-import cn.org.expect.log.apd.DefaultLogBuilder;
+import cn.org.expect.log.PatternConsoleAppender;
+import cn.org.expect.log.PatternLogBuilder;
 import cn.org.expect.log.apd.file.FileAppender;
+import cn.org.expect.log.console.ConsoleLogBuilder;
 import cn.org.expect.log.slf4j.Slf4jLogBuilder;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.Settings;
@@ -166,13 +167,10 @@ public class LogConfigAnalysis {
      * @param expression 配置信息
      */
     protected boolean parseBuilder(String expression) {
-        int length = expression.length();
-        int size = "sout".length();
-
         // >${temp}/file.log 不带格式输出日志
         // >${temp}/file.log+ 带格式输出日志
         // >${temp}/file.log+pattern 使用指定格式输出日志
-        if (length >= 1 && expression.charAt(0) == '>') {
+        if (expression.length() >= 1 && expression.charAt(0) == '>') {
             boolean append = false;
             String logfileExpr = StringUtils.trimBlank(expression.substring(1));
             if (logfileExpr.length() > 0 && logfileExpr.charAt(0) == '>') { // 判断是否是 >> 追加模式写入日志
@@ -194,7 +192,7 @@ public class LogConfigAnalysis {
 
             String logfilepath = StringUtils.replaceProperties(StringUtils.replaceEnvironment(logfileExpr));
             String charsetName = Settings.getFileEncoding();
-            this.context.setBuilder(new DefaultLogBuilder());
+            this.context.setBuilder(new PatternLogBuilder());
             new FileAppender(logfilepath, charsetName, pattern, append).setup(this.context);
             return true;
         }
@@ -202,11 +200,15 @@ public class LogConfigAnalysis {
         // sout 直接输出日志
         // sout+ 使用格式输出日志
         // sout+pattern 使用指定格式输出日志
+        int size = "sout".length();
         if (StringUtils.startsWith(expression, "sout", 0, true, false)) { // 使用控制台输出
-            String pattern = "";
-            if (length > size) {
+            if (expression.length() == size) {
+                this.context.setBuilder(new ConsoleLogBuilder());
+                return true;
+            } else {
+                String pattern = "";
                 if (expression.charAt(size) == '-') { // 关闭控制台输出
-                    this.context.removeAppender(ConsoleAppender.class);
+                    this.context.removeAppender(PatternConsoleAppender.class);
                     return true;
                 } else if (expression.charAt(size) == '+') { // sout+ 右侧的都是日志格式信息
                     String str = StringUtils.trimBlank(expression.substring("sout+".length()));
@@ -214,11 +216,11 @@ public class LogConfigAnalysis {
                 } else {
                     throw new IllegalArgumentException(expression);
                 }
-            }
 
-            this.context.setBuilder(new DefaultLogBuilder());
-            new ConsoleAppender(pattern).setup(this.context);
-            return true;
+                this.context.setBuilder(new PatternLogBuilder());
+                new PatternConsoleAppender(pattern).setup(this.context);
+                return true;
+            }
         }
 
         // 使用slf4j输出

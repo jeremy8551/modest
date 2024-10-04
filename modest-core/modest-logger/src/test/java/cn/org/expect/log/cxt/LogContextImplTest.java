@@ -3,8 +3,8 @@ package cn.org.expect.log.cxt;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogLevel;
-import cn.org.expect.log.apd.ConsoleAppender;
-import cn.org.expect.log.apd.DefaultLogBuilder;
+import cn.org.expect.log.PatternConsoleAppender;
+import cn.org.expect.log.PatternLogBuilder;
 import cn.org.expect.log.apd.field.CategoryField;
 import cn.org.expect.log.apd.file.FileAppender;
 import org.junit.Assert;
@@ -15,13 +15,13 @@ public class LogContextImplTest {
     @Test
     public void test1() {
         LogContextImpl context = new LogContextImpl();
-        context.setBuilder(new DefaultLogBuilder());
+        context.setBuilder(new PatternLogBuilder());
         context.updateLevel("", LogLevel.TRACE);
 
         Assert.assertEquals(LogLevel.TRACE, context.getLevel(LogContextImplTest.class));
 
         Log log = LogFactory.getLog(context, LogContextImplTest.class, null, false);
-        Log log1 = LogFactory.getLog(context, ConsoleAppender.class, null, false);
+        Log log1 = LogFactory.getLog(context, PatternConsoleAppender.class, null, false);
         Log log2 = LogFactory.getLog(context, CategoryField.class, null, false);
         Log log3 = LogFactory.getLog(context, FileAppender.class, null, false);
 
@@ -71,7 +71,7 @@ public class LogContextImplTest {
             Assert.assertTrue(true);
         }
 
-        context.setBuilder(new DefaultLogBuilder());
+        context.setBuilder(new PatternLogBuilder());
 
         try {
             context.addAppender(null);

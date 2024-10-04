@@ -6,7 +6,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import cn.org.expect.log.Appender;
 import cn.org.expect.log.LogContext;
-import cn.org.expect.log.apd.ConsoleAppender;
+import cn.org.expect.log.PatternConsoleAppender;
 import cn.org.expect.log.apd.LogEvent;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.JUL;
@@ -17,7 +17,7 @@ import cn.org.expect.util.JUL;
  * @author jeremy8551@qq.com
  * @createtime 2023/11/23
  */
-public class FileAppender extends ConsoleAppender implements Appender {
+public class FileAppender extends PatternConsoleAppender implements Appender {
 
     /** 日志文件 */
     private String file;
@@ -86,7 +86,7 @@ public class FileAppender extends ConsoleAppender implements Appender {
         return this.out.getFile();
     }
 
-    public ConsoleAppender pattern(String pattern) {
+    public PatternConsoleAppender pattern(String pattern) {
         super.pattern(pattern);
         return this;
     }

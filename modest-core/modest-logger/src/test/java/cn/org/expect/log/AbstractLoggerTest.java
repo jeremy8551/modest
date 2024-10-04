@@ -1,6 +1,5 @@
 package cn.org.expect.log;
 
-import cn.org.expect.log.apd.DefaultLog;
 import cn.org.expect.log.cxt.LogContextImpl;
 import org.junit.Assert;
 import org.junit.Test;
@@ -12,21 +11,21 @@ public class AbstractLoggerTest {
         String fqcn = null;
 
         try {
-            new DefaultLog(null, AbstractLoggerTest.class, LogLevel.OFF, fqcn, false);
+            new PatternLog(null, AbstractLoggerTest.class, LogLevel.OFF, fqcn, false);
             Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(true);
         }
 
         try {
-            new DefaultLog(new LogContextImpl(), null, LogLevel.TRACE, fqcn, false);
+            new PatternLog(new LogContextImpl(), null, LogLevel.TRACE, fqcn, false);
             Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(true);
         }
 
         try {
-            new DefaultLog(new LogContextImpl(), AbstractLoggerTest.class, null, fqcn, false);
+            new PatternLog(new LogContextImpl(), AbstractLoggerTest.class, null, fqcn, false);
             Assert.fail();
         } catch (Exception e) {
             Assert.assertTrue(true);
@@ -36,7 +35,7 @@ public class AbstractLoggerTest {
     @Test
     public void test1() {
         String fqcn = null;
-        DefaultLog log = new DefaultLog(new LogContextImpl(), AbstractLoggerTest.class, LogLevel.OFF, fqcn, false);
+        PatternLog log = new PatternLog(new LogContextImpl(), AbstractLoggerTest.class, LogLevel.OFF, fqcn, false);
 
         log.setLevel(LogLevel.TRACE);
         Assert.assertTrue(log.isTraceEnabled());

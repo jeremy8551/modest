@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.Modest;
-import cn.org.expect.log.apd.ConsoleAppender;
-import cn.org.expect.log.apd.DefaultLogBuilder;
 import cn.org.expect.log.apd.file.FileAppender;
 import cn.org.expect.log.cxt.LogContextImpl;
 import cn.org.expect.util.ClassUtils;
@@ -48,8 +46,8 @@ public class LogTest {
 
         String pattern = "-------|%%|%d{yyyy-MM-dd HH:mm:ss.SSS}|%-5.5p|%-5.5level|%processId|%t|%l|%c|%C.%M(%F:%L)|mills=%r|%X{test}|%m%ex%n";
         LogContext context = new LogContextImpl();
-        context.setBuilder(new DefaultLogBuilder());
-        context.findAppender(ConsoleAppender.class).pattern(pattern);
+        context.setBuilder(new PatternLogBuilder());
+        context.findAppender(PatternConsoleAppender.class).pattern(pattern);
         Assert.assertNotNull(new FileAppender(logfile.getAbsolutePath(), LogTest.charsetName, pattern, true).setup(context));
 
         String str = "\r";
@@ -80,8 +78,8 @@ public class LogTest {
         String pattern = "-------|%%|%d{yyyy-MM-dd HH:mm:ss.SSS}|%-5.5p|%-5.5level|%processId|%t|%l|%c|%C.%M(%F:%L)|%r|%X{test}|%m%ex|%c{2}|%c{0}|%c{-2}%n";
         LogContext context = new LogContextImpl();
         context.updateLevel("", LogLevel.TRACE);
-        context.setBuilder(new DefaultLogBuilder());
-        context.findAppender(ConsoleAppender.class).pattern(pattern);
+        context.setBuilder(new PatternLogBuilder());
+        context.findAppender(PatternConsoleAppender.class).pattern(pattern);
         Assert.assertNotNull(new FileAppender(logfile.getAbsolutePath(), LogTest.charsetName, pattern, true).setup(context));
 
         String mdcvalue = "testvalue";
@@ -144,7 +142,7 @@ public class LogTest {
         File logfile = createfile(2);
 
         LogContext context = new LogContextImpl();
-        context.setBuilder(new DefaultLogBuilder());
+        context.setBuilder(new PatternLogBuilder());
         context.updateLevel("*", LogLevel.OFF);
 
         String pattern = "%d|%p|%level|%processId|%t|%l|%c|%C.%M(%F:%L)|mills=%r|%X{test}|%m%ex%n";
@@ -157,7 +155,7 @@ public class LogTest {
         log.error("test level is {}", "error");
         log.fatal("test level is {}", "fatal");
         context.findAppender(FileAppender.class).close();
-        context.findAppender(ConsoleAppender.class).close();
+        context.findAppender(PatternConsoleAppender.class).close();
         Assert.assertEquals("", FileUtils.readline(logfile, charsetName, 0));
     }
 
@@ -171,8 +169,8 @@ public class LogTest {
         LogContextImpl context = new LogContextImpl();
         context.init();
 
-        context.setBuilder(new DefaultLogBuilder());
-        context.findAppender(ConsoleAppender.class).pattern(pattern);
+        context.setBuilder(new PatternLogBuilder());
+        context.findAppender(PatternConsoleAppender.class).pattern(pattern);
         FileAppender fileAppender = new FileAppender(logfile.getAbsolutePath(), LogTest.charsetName, pattern, true).charsetName(charsetName);
         fileAppender.setup(context);
 
@@ -211,8 +209,8 @@ public class LogTest {
 
         String pattern = "-------|%m%ex%n";
         LogContext context = new LogContextImpl();
-        context.setBuilder(new DefaultLogBuilder());
-        context.findAppender(ConsoleAppender.class).pattern(pattern);
+        context.setBuilder(new PatternLogBuilder());
+        context.findAppender(PatternConsoleAppender.class).pattern(pattern);
         Assert.assertNotNull(new FileAppender(logfile.getAbsolutePath(), LogTest.charsetName, pattern, true).setup(context));
 
         LogFactory.getLog(context, LogTest.class).error(null);

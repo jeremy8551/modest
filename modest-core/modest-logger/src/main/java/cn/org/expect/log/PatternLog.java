@@ -1,11 +1,9 @@
-package cn.org.expect.log.apd;
+package cn.org.expect.log;
 
 import java.util.List;
 
-import cn.org.expect.log.AbstractLogger;
-import cn.org.expect.log.Appender;
-import cn.org.expect.log.LogContext;
-import cn.org.expect.log.LogLevel;
+import cn.org.expect.log.apd.LogEvent;
+import cn.org.expect.log.apd.LogEventImpl;
 
 /**
  * 带格式的日志接口
@@ -13,18 +11,18 @@ import cn.org.expect.log.LogLevel;
  * @author jeremy8551@qq.com
  * @createtime 2012-06-28
  */
-public class DefaultLog extends AbstractLogger {
+public class PatternLog extends AbstractLogger {
 
     /** 日志事件 */
-    private LogEventImpl template;
+    private final LogEventImpl template;
 
     /** 日志记录器集合 */
-    private List<Appender> appenders;
+    private final List<Appender> appenders;
 
     /** 用于定位输出日志的代码位置信息的标识符 */
-    public static String FQCN = DefaultLog.class.getName();
+    public static String FQCN = PatternLog.class.getName();
 
-    public DefaultLog(LogContext context, Class<?> type, LogLevel level, String fqcn, boolean dynamicCategory) {
+    public PatternLog(LogContext context, Class<?> type, LogLevel level, String fqcn, boolean dynamicCategory) {
         super(context, type, level);
         this.appenders = context.getAppenders();
         this.template = new LogEventImpl(fqcn == null ? FQCN : fqcn, this, type.getName(), context, dynamicCategory, null, null, null, null);

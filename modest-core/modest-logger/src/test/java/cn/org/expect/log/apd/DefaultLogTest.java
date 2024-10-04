@@ -4,6 +4,7 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogLevel;
+import cn.org.expect.log.PatternLogBuilder;
 import org.junit.Test;
 
 public class DefaultLogTest {
@@ -12,7 +13,7 @@ public class DefaultLogTest {
     public void test1() {
         LogContext context = LogFactory.getContext();
         context.updateLevel("", LogLevel.TRACE);
-        context.setBuilder(new DefaultLogBuilder());
+        context.setBuilder(new PatternLogBuilder());
 
         Log log = LogFactory.getLog(context, DefaultLogTest.class, null, false);
         log.trace("print trace");

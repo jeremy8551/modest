@@ -7,8 +7,8 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogLevel;
-import cn.org.expect.log.apd.ConsoleAppender;
-import cn.org.expect.log.apd.DefaultLogBuilder;
+import cn.org.expect.log.PatternConsoleAppender;
+import cn.org.expect.log.PatternLogBuilder;
 import cn.org.expect.log.slf4j.Slf4jLogBuilder;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.FileUtils;
@@ -23,7 +23,7 @@ public class LogConfigAnalysisTest {
     public void test1() {
         LogContext context = new LogContextImpl();
         Assert.assertEquals(0, LogConfigAnalysis.parse(context, "sout:trace").length);
-        Assert.assertEquals(DefaultLogBuilder.class, context.getBuilder().getClass());
+        Assert.assertEquals(PatternLogBuilder.class, context.getBuilder().getClass());
 
         Log log = LogFactory.getLog(context, LogConfigAnalysisTest.class, null, false);
         Assert.assertTrue(log.isTraceEnabled());
@@ -33,7 +33,7 @@ public class LogConfigAnalysisTest {
         Assert.assertTrue(log.isErrorEnabled());
         Assert.assertTrue(log.isFatalEnabled());
 
-        ConsoleAppender appender = context.findAppender(ConsoleAppender.class);
+        PatternConsoleAppender appender = context.findAppender(PatternConsoleAppender.class);
         Assert.assertNotNull(appender);
         Assert.assertEquals("", appender.getPattern());
     }
@@ -43,7 +43,7 @@ public class LogConfigAnalysisTest {
         System.setProperty(LogFactory.PROPERTY_LOG_SOUT, "");
         LogContext context = new LogContextImpl();
         Assert.assertEquals(0, LogConfigAnalysis.parse(context, "error:sout+").length);
-        Assert.assertEquals(DefaultLogBuilder.class, context.getBuilder().getClass());
+        Assert.assertEquals(PatternLogBuilder.class, context.getBuilder().getClass());
 
         Log log = LogFactory.getLog(context, LogConfigAnalysisTest.class, null, false);
         Assert.assertFalse(log.isTraceEnabled());
@@ -52,7 +52,7 @@ public class LogConfigAnalysisTest {
         Assert.assertFalse(log.isWarnEnabled());
         Assert.assertTrue(log.isErrorEnabled());
 
-        ConsoleAppender appender = context.findAppender(ConsoleAppender.class);
+        PatternConsoleAppender appender = context.findAppender(PatternConsoleAppender.class);
         Assert.assertNotNull(appender);
         Assert.assertEquals(LogFactory.DEFAULT_LOG_PATTERN, appender.getPattern());
     }

@@ -10,6 +10,7 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogTest;
+import cn.org.expect.log.PatternConsoleAppender;
 import cn.org.expect.log.apd.file.FileAppender;
 import cn.org.expect.log.cxt.LogConfigAnalysis;
 import cn.org.expect.log.cxt.LogContextImpl;
@@ -27,7 +28,7 @@ public class NoPatternLayoutTest {
         LogContext context = new LogContextImpl();
         Assert.assertEquals(0, LogConfigAnalysis.parse(context, "info:sout").length);
 
-        ConsoleAppender appender = context.findAppender(ConsoleAppender.class);
+        PatternConsoleAppender appender = context.findAppender(PatternConsoleAppender.class);
         Assert.assertNotNull(appender);
 
         String pattern = appender.getPattern();
@@ -51,7 +52,7 @@ public class NoPatternLayoutTest {
         LogContext context = new LogContextImpl();
         Assert.assertEquals(0, LogConfigAnalysis.parse(context, "info:sout").length);
 
-        ConsoleAppender appender = context.findAppender(ConsoleAppender.class);
+        PatternConsoleAppender appender = context.findAppender(PatternConsoleAppender.class);
         Assert.assertNotNull(appender);
 
         String pattern = appender.getPattern();

@@ -1,9 +1,12 @@
-package cn.org.expect.log.apd;
+package cn.org.expect.log;
 
 import java.io.IOException;
 
-import cn.org.expect.log.Appender;
-import cn.org.expect.log.LogContext;
+import cn.org.expect.log.apd.Layout;
+import cn.org.expect.log.apd.LogEvent;
+import cn.org.expect.log.apd.LogPattern;
+import cn.org.expect.log.apd.NoPatternLayout;
+import cn.org.expect.log.apd.PatternLayout;
 
 /**
  * 控制台输出日志
@@ -11,20 +14,20 @@ import cn.org.expect.log.LogContext;
  * @author jeremy8551@qq.com
  * @createtime 2023/11/22
  */
-public class ConsoleAppender implements Appender {
+public class PatternConsoleAppender implements Appender {
 
     protected Layout layout;
 
-    public ConsoleAppender(String pattern) {
+    public PatternConsoleAppender(String pattern) {
         this.pattern(pattern);
     }
 
     public String getName() {
-        return ConsoleAppender.class.getSimpleName();
+        return PatternConsoleAppender.class.getSimpleName();
     }
 
     public Appender setup(LogContext context) {
-        context.removeAppender(ConsoleAppender.class);
+        context.removeAppender(PatternConsoleAppender.class);
         context.addAppender(this);
         return this;
     }
@@ -34,7 +37,7 @@ public class ConsoleAppender implements Appender {
      *
      * @param pattern 日志格式, {@linkplain LogPattern}
      */
-    public ConsoleAppender pattern(String pattern) {
+    public PatternConsoleAppender pattern(String pattern) {
         if (pattern != null && pattern.length() > 0) {
             this.layout = new PatternLayout(pattern);
         } else {

@@ -10,7 +10,7 @@ import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogLevel;
-import cn.org.expect.log.apd.ConsoleAppender;
+import cn.org.expect.log.PatternConsoleAppender;
 import cn.org.expect.log.apd.file.FileAppender;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.Settings;
@@ -51,7 +51,7 @@ public class ScriptEngineTest {
 
         LogContext logContext = LogFactory.getContext();
         logContext.updateLevel("*", LogLevel.DEBUG);
-        logContext.removeAppender(ConsoleAppender.class);
+        logContext.removeAppender(PatternConsoleAppender.class);
         new FileAppender(logfile.getAbsolutePath(), Settings.getFileEncoding(), null, true).setup(logContext);
 
         EasyContext context = new DefaultEasyContext();
