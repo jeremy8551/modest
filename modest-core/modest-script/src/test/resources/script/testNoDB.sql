@@ -470,7 +470,7 @@ if `date -d "$testdate" - ${jday} day` != "1970-01-01 00:00:00" then
   exit 34
 fi
 
-set tpid=`nohup os sleep 30s & | tail -n 1`
+set tpid=`nohup os sleep 30 & | tail -n 1`
 ps -s
 ps
 sleep 2s
