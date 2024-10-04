@@ -64,6 +64,23 @@
                     <pasteModule>
                         <module>modest-engine</module>
                     </pasteModule>
+                    <plugOutModule>
+                        <module>modest-jdk</module>
+                        <module>modest-logger</module>
+                        <module>modest-concurrent</module>
+                        <module>modest-expression</module>
+                        <module>modest-crypto</module>
+                        <module>modest-printer</module>
+                        <module>modest-ioc</module>
+                        <module>modest-ioc-test</module>
+                        <module>modest-io</module>
+                        <module>modest-cn</module>
+                        <module>modest-os</module>
+                        <module>modest-database</module>
+                        <module>modest-increment</module>
+                        <module>modest-compress</module>
+                        <module>modest-script</module>
+                    </plugOutModule>
                     <plugOut>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
@@ -73,14 +90,14 @@
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-javadoc-plugin</artifactId>
                         </plugin>
-                        <!--                        <plugin>-->
-                        <!--                            <groupId>org.apache.maven.plugins</groupId>-->
-                        <!--                            <artifactId>maven-jar-plugin</artifactId>-->
-                        <!--                        </plugin>-->
-                        <!--                        <plugin>-->
-                        <!--                            <groupId>org.apache.maven.plugins</groupId>-->
-                        <!--                            <artifactId>maven-install-plugin</artifactId>-->
-                        <!--                        </plugin>-->
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-jar-plugin</artifactId>
+                        </plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-install-plugin</artifactId>
+                        </plugin>
                         <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-deploy-plugin</artifactId>

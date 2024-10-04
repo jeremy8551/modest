@@ -42,19 +42,19 @@ public class PlugOutMojo extends AbstractMojo {
     private MavenSession session;
 
     /**
-     * 禁用插件的模块
+     * 禁用插件的项目
      */
     @Parameter
     private List<String> plugOutModule;
 
     /**
-     * 禁用插件的模块
+     * 复制哪些项目中的代码
      */
     @Parameter
     private List<String> copySource;
 
     /**
-     * 需要禁用的插件，可用 plugOutModule 或 copySource 标签指定禁用哪些项目的插件
+     * 需要禁用的插件，可用 plugOutModule 标签（如果未设置，则禁用 copySource 标签）指定禁用哪些项目中的哪些插件
      */
     @Parameter
     private List<DisablePlugin> plugOut;
