@@ -37,15 +37,16 @@ public class PSCommand extends AbstractTraceCommand implements NohupCommandSuppo
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
-        StringBuilder buf = new StringBuilder();
+        String log = null;
         if (this.type == 1) {
-            buf.append(this.printAllSession(session).toString(CharTable.Style.shell));
+            log = this.printAllSession(session).toString(CharTable.Style.shell);
         } else {
-            buf.append(this.printAllProcess(session).toString(CharTable.Style.shell));
+            log = this.printAllProcess(session).toString(CharTable.Style.shell);
         }
 
         if (session.isEchoEnable() || forceStdout) {
-            stdout.println(buf.toString());
+            System.out.println(log);
+            stdout.println(log);
         }
         return 0;
     }
