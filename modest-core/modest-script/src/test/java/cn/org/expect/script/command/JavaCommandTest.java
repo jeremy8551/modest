@@ -18,9 +18,9 @@ public class JavaCommandTest extends AbstractJavaCommand {
 
     @Override
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, String[] args) throws Exception {
-        log.info("输入参数: " + StringUtils.toString(args));
+        log.info(JavaCommandTest.class.getName() + " 输入参数: " + StringUtils.toString(args));
         int timeout = StringUtils.parseInt(args[0], 120);
-        log.info("等待 " + timeout + " 秒!");
+        log.info(JavaCommandTest.class.getName() + " 等待 " + timeout + " 秒!");
 
         context.addGlobalVariable("JavaCommandTest", "JavaCommandTest110");
         TimeWatch watch = new TimeWatch();

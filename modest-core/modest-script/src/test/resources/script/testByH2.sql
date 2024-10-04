@@ -312,7 +312,10 @@ default sql
 # 测试变量方法执行是否正确
 set testname="12345"
 set testvalue=testname.length() + 1
-echo $testvalue
+if $testvalue != 6 then
+    echo $testvalue
+    exit 17
+fi
 
 if testname.length() + 1 != 6 then
   echo `testname.length() + 1` != 6
@@ -472,7 +475,8 @@ if `date -d "$testdate" - ${jday} day` != "1970-01-01 00:00:00" then
   exit 34
 fi
 
-set tpid=`nohup os sleep 30s & | tail -n 1`
+set tpid=`nohup os sleep 30 & | tail -n 1`
+echo "tpid: ${tpid}"
 ps -s
 ps
 sleep 2s
@@ -1766,7 +1770,6 @@ step 第一步
 
 declare global testdb  catalog configuration use file ${jdbcfilepath}
 
-echo . ${pwd}/test2.sql
 . ${pwd}/test2.sql
 
 declare  global testdb1  catalog configuration use driver $databaseDriverName url '${databaseUrl}' username ${username} password $password

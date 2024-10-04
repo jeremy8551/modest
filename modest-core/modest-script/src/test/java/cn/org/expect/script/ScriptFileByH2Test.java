@@ -8,7 +8,6 @@ import javax.script.ScriptException;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,9 +29,10 @@ public class ScriptFileByH2Test {
             engine.setBindings(ScriptUtils.to(this.properties), UniversalScriptContext.ENVIRONMENT_SCOPE);
             engine.eval(". classpath:/script/testByH2.sql");
             Assert.fail();
-        } catch (ScriptException se) {
+        } catch (UniversalScriptException se) {
+            se.printStackTrace(System.out);
             Assert.assertEquals("1000", engine.getContext().getAttribute("testvalue000"));
-            Assert.assertEquals("333", StringUtils.splitByBlank(se.getMessage())[1]);
+            Assert.assertEquals("-3", se.getMessage());
         } finally {
             engine.eval("exit 0");
         }
