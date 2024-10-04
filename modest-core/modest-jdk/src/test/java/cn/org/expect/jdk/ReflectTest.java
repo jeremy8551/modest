@@ -6,12 +6,16 @@ import java.lang.reflect.Modifier;
 import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class ReflectTest {
 
-    @Test
-    public void test0() {
+    @Before
+    public void setUp() {
         System.out.println("choose " + JavaDialectFactory.get().getClass().getName());
     }
 
@@ -22,12 +26,14 @@ public class ReflectTest {
     public void test1() throws NoSuchFieldException {
         Field[] fields = ReflectTestObject.class.getDeclaredFields();
         for (Field field : fields) {
-            if (StringUtils.inArrayIgnoreCase(field.getName(), "n", "n1", "n3")) {
-                boolean isStatic = Modifier.isStatic(field.getModifiers());
-                Assert.assertTrue(isStatic);
-            } else {
-                boolean isStatic = Modifier.isStatic(field.getModifiers());
-                Assert.assertFalse(isStatic);
+            if (StringUtils.inArrayIgnoreCase(field.getName(), "n", "n1", "n2", "n3")) {
+                if (StringUtils.inArrayIgnoreCase(field.getName(), "n", "n1", "n3")) {
+                    boolean isStatic = Modifier.isStatic(field.getModifiers());
+                    Assert.assertTrue(isStatic);
+                } else {
+                    boolean isStatic = Modifier.isStatic(field.getModifiers());
+                    Assert.assertFalse(field.getName(), isStatic);
+                }
             }
         }
     }
@@ -52,7 +58,6 @@ public class ReflectTest {
     @Test
     public void test3() throws NoSuchFieldException {
         ReflectTestObject lc = new ReflectTestObject();
-        System.out.println(JavaDialectFactory.get().getClass().getName());
         Assert.assertEquals("n2", JavaDialectFactory.get().getField(lc, ReflectTestObject.class.getDeclaredField("N2")));
         Assert.assertEquals("n1", JavaDialectFactory.get().getField(lc, ReflectTestObject.class.getDeclaredField("N1")));
         Assert.assertEquals("n3", JavaDialectFactory.get().getField(lc, ReflectTestObject.class.getDeclaredField("N3")));
