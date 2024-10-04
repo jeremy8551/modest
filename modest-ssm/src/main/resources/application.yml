@@ -9,8 +9,8 @@ spring:
         - resources
         - target/classes
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.33.42:3306/modest?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:modest-ssm-db;DB_CLOSE_DELAY=-1;INIT=runscript from '~/.modest/modest-ssm/build.sql'
     username: root
     password: 222222
     druid:
