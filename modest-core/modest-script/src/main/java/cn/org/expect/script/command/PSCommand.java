@@ -37,7 +37,7 @@ public class PSCommand extends AbstractTraceCommand implements NohupCommandSuppo
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
-        String log = null;
+        String log;
         if (this.type == 1) {
             log = this.printAllSession(session).toString(CharTable.Style.shell);
         } else {
@@ -45,7 +45,6 @@ public class PSCommand extends AbstractTraceCommand implements NohupCommandSuppo
         }
 
         if (session.isEchoEnable() || forceStdout) {
-            System.out.println(log);
             stdout.println(log);
         }
         return 0;
