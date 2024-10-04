@@ -17,7 +17,7 @@ import org.junit.runner.RunWith;
  * 使用 H2 数据库进行测试
  */
 @RunWith(ModestRunner.class)
-public class ScriptEngineH2Test {
+public class ScriptFileByH2Test {
 
     @EasyBean
     private Properties properties;

@@ -45,7 +45,6 @@ public class ScriptEngineTest {
      */
     @Test
     public void test2() throws IOException {
-//        StackTraceUtils.print = true;
         File logfile = FileUtils.createTempFile("UniversalScriptEngine.log");
         System.out.println("脚本引擎输出日志, file://" + logfile.getAbsolutePath());
         FileUtils.clearFile(logfile);
