@@ -8,12 +8,14 @@ import javax.script.ScriptException;
 import cn.org.expect.springboot.starter.ModestProperties;
 import cn.org.expect.ssm.dao.UserInfoMapper;
 import cn.org.expect.ssm.entity.UserInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@Slf4j
 public class HelpController {
 
     @Autowired
@@ -50,13 +52,13 @@ public class HelpController {
         user.setPasswordHash("xxxxxxxxx");
         user.setHeadimgurl("https://xxxxx/xxxx/xx.gif");
 
-        System.out.println("insertObj: " + user);
-        System.out.println("删除用户个数: " + this.userInfoMapper.deleteById(user));
-        System.out.println("插入用户个数: " + this.userInfoMapper.insert(user));
+        log.info("insertObj: " + user);
+        log.info("删除用户个数: " + this.userInfoMapper.deleteById(user));
+        log.info("插入用户个数: " + this.userInfoMapper.insert(user));
 
         UserInfo queryObj = this.userInfoMapper.selectById(user.getUserId());
         Assert.notNull(queryObj, "UserInfo not exists!");
-        System.out.println("queryObj: " + queryObj);
+        log.info("queryObj: " + queryObj);
 
         Assert.isTrue(!modestProperties.getLog().isPrintTrace(), "ModestProperties not correct!");
         return "help";

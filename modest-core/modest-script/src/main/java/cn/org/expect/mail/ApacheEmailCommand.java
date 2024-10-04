@@ -166,10 +166,10 @@ public class ApacheEmailCommand implements MailCommand {
 
                 for (MailFile attchment : attachments) {
                     if (attchment != null) {
-                        System.out.println(attchment.getFile().getAbsolutePath());
-                        System.out.println(attchment.getName());
-                        System.out.println(attchment.getDescription());
-                        System.out.println(attchment.getDisposition());
+                        log.info(attchment.getFile().getAbsolutePath());
+                        log.info(attchment.getName());
+                        log.info(attchment.getDescription());
+                        log.info(attchment.getDisposition());
 
                         MimeBodyPart part = new MimeBodyPart();
                         FileDataSource fds = new FileDataSource(attchment.getFile());

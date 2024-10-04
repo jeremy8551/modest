@@ -4475,50 +4475,50 @@ public class StringUtils {
      */
     public static void testEncoding(CharSequence str) {
         if (str == null) {
-            System.out.println("null");
+            JUL.out.info("null");
             return;
         }
 
         String tostr = str.toString();
 
         try {
-            System.out.println(StringUtils.left("original value ", 20, ' ') + " = " + tostr);
+            JUL.out.info(StringUtils.left("original value ", 20, ' ') + " = " + tostr);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            System.out.println(StringUtils.left("GBK -> UTF8 ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.GBK, CharsetName.UTF_8));
+            JUL.out.info(StringUtils.left("GBK -> UTF8 ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.GBK, CharsetName.UTF_8));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            System.out.println(StringUtils.left("UTF8 -> GBK = ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.UTF_8, CharsetName.GBK));
+            JUL.out.info(StringUtils.left("UTF8 -> GBK = ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.UTF_8, CharsetName.GBK));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            System.out.println(StringUtils.left("ISO8859-1 -> GBK ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.ISO_8859_1, CharsetName.GBK));
+            JUL.out.info(StringUtils.left("ISO8859-1 -> GBK ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.ISO_8859_1, CharsetName.GBK));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            System.out.println(StringUtils.left("GBK -> ISO8859-1 ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.GBK, CharsetName.ISO_8859_1));
+            JUL.out.info(StringUtils.left("GBK -> ISO8859-1 ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.GBK, CharsetName.ISO_8859_1));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            System.out.println(StringUtils.left("ISO8859-1 -> UTF8 ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.ISO_8859_1, CharsetName.UTF_8));
+            JUL.out.info(StringUtils.left("ISO8859-1 -> UTF8 ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.ISO_8859_1, CharsetName.UTF_8));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-            System.out.println(StringUtils.left("UTF8 -> ISO8859-1 ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.UTF_8, CharsetName.ISO_8859_1));
+            JUL.out.info(StringUtils.left("UTF8 -> ISO8859-1 ", 20, ' ') + " = " + StringUtils.encodeCharset(tostr, CharsetName.UTF_8, CharsetName.ISO_8859_1));
         } catch (Exception e) {
             e.printStackTrace();
         }
