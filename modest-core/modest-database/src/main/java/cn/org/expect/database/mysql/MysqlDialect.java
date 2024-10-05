@@ -38,16 +38,8 @@ public class MysqlDialect extends AbstractDialect {
         }
     }
 
-    public int getRowNumberStarter() {
-        return 0;
-    }
-
     public void setSchema(Connection conn, String schema) throws SQLException {
         JdbcDao.execute(conn, "set schema " + schema);
-    }
-
-    public boolean supportSchema() {
-        return true;
     }
 
     public List<DatabaseURL> parseJdbcUrl(String url) {

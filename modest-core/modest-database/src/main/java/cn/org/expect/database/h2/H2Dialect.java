@@ -44,10 +44,6 @@ public class H2Dialect extends AbstractDialect {
         return "select 1 from DUAL";
     }
 
-    public boolean supportSchema() {
-        return true;
-    }
-
     public void setSchema(Connection connection, String schema) throws SQLException {
         connection.setSchema(schema);
     }
@@ -132,10 +128,6 @@ public class H2Dialect extends AbstractDialect {
         List<DatabaseURL> list = new ArrayList<DatabaseURL>(1);
         list.add(obj);
         return list;
-    }
-
-    public int getRowNumberStarter() {
-        return 0;
     }
 
     public DatabaseDDL toDDL(Connection connection, DatabaseProcedure procedure) throws SQLException {

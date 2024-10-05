@@ -3,13 +3,13 @@ package cn.org.expect.script;
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
 import cn.org.expect.ProjectPom;
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.cn.ChineseRandom;
 import cn.org.expect.io.BufferedLineWriter;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.test.ModestRunner;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.FileUtils;
@@ -17,11 +17,16 @@ import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * 测试设置临时目录功能
  */
+@RunWith(ModestRunner.class)
 public class IncrementScript2Test {
+
+    @EasyBean
+    private EasyContext context;
 
     public synchronized File[] getTempFiles(int rows) throws IOException {
         File tempDir = FileUtils.getTempDir("test", IncrementScript3Test.class.getSimpleName(), StringUtils.toRandomUUID());
@@ -125,7 +130,7 @@ public class IncrementScript2Test {
     }
 
     @Test
-    public void test() throws IOException, ScriptException {
+    public void test() throws IOException {
         File[] files = this.getTempFiles(100000);
         File oldfile = files[0];
         File newfile = files[1];
@@ -144,8 +149,8 @@ public class IncrementScript2Test {
         System.out.println("日志文件: " + logfile.getAbsolutePath());
         System.out.println("正确文件: " + resultfile.getAbsolutePath());
 
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
+        UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
+        UniversalScriptEngine engine = manager.getScriptEngine();
         try {
             // 设置命令中使用的文件路径与索引字段位置信息
             engine.eval("set newfile='" + newfile.getAbsolutePath() + "'");

@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.Date;
 import java.util.Map;
-import javax.script.ScriptEngine;
 
 import cn.org.expect.script.io.ScriptFileExpression;
 import cn.org.expect.script.session.ScriptMainProcess;
@@ -14,14 +13,14 @@ import cn.org.expect.script.session.ScriptSubProcess;
 /**
  * 用户会话信息 <br>
  * <p>
- * 用户或程序在执行 {@linkplain ScriptEngine#eval(String)} 方法视作一次会话
+ * 用户或程序在执行 {@linkplain UniversalScriptEngine#eval(Reader, UniversalScriptContext)} 方法视作一次会话
  *
  * @author jeremy8551@qq.com
  */
 public interface UniversalScriptSession {
 
     /**
-     * 设置会话的返回值（即 {@linkplain ScriptEngine#eval(String)} 方法的返回值）
+     * 设置会话的返回值（即 {@linkplain UniversalScriptEngine#eval(Reader, UniversalScriptContext)} 方法的返回值）
      *
      * @param key   键
      * @param value 值
@@ -30,7 +29,7 @@ public interface UniversalScriptSession {
     Object putValue(String key, Object value);
 
     /**
-     * 会话的返回值（即 {@linkplain ScriptEngine#eval(String)} 方法的返回值） <br>
+     * 会话的返回值（即 {@linkplain UniversalScriptEngine#eval(Reader, UniversalScriptContext)} 方法的返回值） <br>
      * 如果命令没有返回值，则返回null <br>
      * 如果命令返回了一个值，则直接返回这个值 <br>
      * 如果命令返回了多个值，则将多个值封装到一个 Map 中, 并返回这个 Map 对象（key属性是忽略大小写的）

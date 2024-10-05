@@ -5,8 +5,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.List;
 import java.util.Properties;
-import javax.script.Bindings;
-import javax.script.ScriptContext;
 
 import cn.org.expect.io.AliveReader;
 import cn.org.expect.ioc.EasyContext;
@@ -28,7 +26,7 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2018-06-01
  */
-public class UniversalScriptContext implements ScriptContext {
+public class UniversalScriptContext {
 
     /** 局部变量域（只能在当前脚本引擎内访问） */
     public final static int ENGINE_SCOPE = 100;
@@ -61,7 +59,7 @@ public class UniversalScriptContext implements ScriptContext {
     private UniversalScriptVariable localVariable;
 
     /** 外部的环境变量集合（不可修改内容） */
-    private Bindings environmentVariable;
+    private UniversalScriptVariable environmentVariable;
 
     /** 全局数据库编目集合（可以在当前脚本引擎及其子脚本引擎中访问） */
     private ScriptCatalog globalCatalog;
@@ -133,17 +131,17 @@ public class UniversalScriptContext implements ScriptContext {
 
         // 复制程序
         if (context.globalPrograms != null) {
-            this.globalPrograms.addAll(context.globalPrograms);
+            this.globalPrograms.putAll(context.globalPrograms);
         }
 
         // 复制全局变量
         if (context.globalVariable != null) {
-            this.globalVariable.addAll(context.globalVariable);
+            this.globalVariable.putAll(context.globalVariable);
         }
 
         // 复制全局数据库编目信息
         if (context.globalCatalog != null) {
-            this.globalCatalog.addAll(context.globalCatalog);
+            this.globalCatalog.putAll(context.globalCatalog);
         }
 
         // 复制环境变量的引用
@@ -502,7 +500,7 @@ public class UniversalScriptContext implements ScriptContext {
      *
      * @return 环境变量集合
      */
-    public Bindings getEnvironmentVariable() {
+    public UniversalScriptVariable getEnvironmentVariable() {
         return environmentVariable;
     }
 
@@ -525,7 +523,7 @@ public class UniversalScriptContext implements ScriptContext {
      *                 {@link UniversalScriptContext#GLOBAL_SCOPE} <br>
      *                 {@link UniversalScriptContext#ENVIRONMENT_SCOPE} <br>
      */
-    public void setBindings(Bindings bindings, int scope) {
+    public void setBindings(UniversalScriptVariable bindings, int scope) {
         switch (scope) {
             case UniversalScriptContext.ENGINE_SCOPE:
                 if (bindings != null) {
@@ -682,7 +680,7 @@ public class UniversalScriptContext implements ScriptContext {
      *              {@link UniversalScriptContext#GLOBAL_SCOPE} <br>
      *              {@link UniversalScriptContext#ENVIRONMENT_SCOPE} <br>
      */
-    public Bindings getBindings(int scope) {
+    public UniversalScriptVariable getBindings(int scope) {
         switch (scope) {
             case UniversalScriptContext.ENGINE_SCOPE:
                 return this.localVariable;

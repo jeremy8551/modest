@@ -3,8 +3,6 @@ package cn.org.expect.script;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileWriter;
@@ -106,8 +104,8 @@ public class IncrementScript1Test {
         log.info("日志文件: " + logfile.getAbsolutePath());
         log.info("");
 
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
+        UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(ioc);
+        UniversalScriptEngine engine = manager.getScriptEngine();
         try {
             // 设置命令中使用的文件路径与索引字段位置信息
             engine.eval("set newfile='" + newfile.getAbsolutePath() + "'");

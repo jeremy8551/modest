@@ -3,7 +3,6 @@ package cn.org.expect.script.internal;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.Set;
-import javax.script.ScriptEngine;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.collection.CaseSensitivSet;
@@ -34,55 +33,55 @@ public class ScriptConfiguration implements UniversalScriptConfiguration {
      * @return 默认命令
      */
     public String getDefaultCommand() {
-        return Ensure.notBlank(this.getProperty("javax.script.command.default"));
+        return Ensure.notBlank(this.getProperty("universal.script.command.default"));
     }
 
     public String getMimeTypes() {
-        return this.getProperty("javax.script.mimetypes");
+        return this.getProperty("universal.script.mimetypes");
     }
 
     public String getExtensions() {
-        return this.getProperty("javax.script.extensions");
+        return this.getProperty("universal.script.extensions");
     }
 
     public String getNames() {
-        return this.getProperty("javax.script.names");
+        return this.getProperty("universal.script.names");
     }
 
     public String getCompiler() {
-        return this.getProperty("javax.script.compiler");
+        return this.getProperty("universal.script.compiler");
     }
 
     public String getSessionFactory() {
-        return this.getProperty("javax.script.session");
+        return this.getProperty("universal.script.session");
     }
 
     public String getConverter() {
-        return this.getProperty("javax.script.converter");
+        return this.getProperty("universal.script.converter");
     }
 
     public String getChecker() {
-        return this.getProperty("javax.script.checker");
+        return this.getProperty("universal.script.checker");
     }
 
     public String getEngineName() {
-        return this.getProperty(ScriptEngine.ENGINE);
+        return this.getProperty("universal.script.engine");
     }
 
     public String getEngineVersion() {
-        return this.getProperty(ScriptEngine.ENGINE_VERSION);
+        return this.getProperty("universal.script.engine.version");
     }
 
     public String getLanguageName() {
-        return this.getProperty(ScriptEngine.LANGUAGE);
+        return this.getProperty("universal.script.language");
     }
 
     public String getLanguageVersion() {
-        return this.getProperty(ScriptEngine.LANGUAGE_VERSION);
+        return this.getProperty("universal.script.language.version");
     }
 
     public Set<String> getKeywords() {
-        String keywords = this.getProperty("javax.script.keywords");
+        String keywords = this.getProperty("universal.script.keywords");
         String[] array = StringUtils.removeBlank(StringUtils.split(keywords, ','));
         Set<String> set = new CaseSensitivSet();
         for (String str : array) {
@@ -101,5 +100,4 @@ public class ScriptConfiguration implements UniversalScriptConfiguration {
         // 加载配置文件中的属性值
         return this.config.getProperty(name);
     }
-
 }

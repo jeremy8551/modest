@@ -32,9 +32,6 @@ public class SpringApplicationArgument {
     }
 
     public String toString() {
-        return "SpringApplicationArgument{" +
-                "application=" + application +
-                ", args=" + Arrays.toString(args) +
-                '}';
+        return "SpringApplicationArgument{" + "application=" + application + ", args=" + Arrays.toString(args) + '}';
     }
 }

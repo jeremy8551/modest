@@ -71,8 +71,8 @@ public class ExecuteFileCommand extends AbstractTraceCommand implements NohupCom
             try {
                 UniversalScriptContext parent = context.getParent();
                 if (parent != null && parent.getParent() == null) { // 父脚本引擎是发起方时，需要保留变量信息
-                    parent.getLocalVariable().addAll(engine.getContext().getLocalVariable());
-                    parent.getGlobalVariable().addAll(engine.getContext().getGlobalVariable());
+                    parent.getLocalVariable().putAll(engine.getContext().getLocalVariable());
+                    parent.getGlobalVariable().putAll(engine.getContext().getGlobalVariable());
                 }
             } finally {
                 this.session.close();

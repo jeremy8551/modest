@@ -10,13 +10,9 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
-import javax.script.ScriptEngineManager;
 
 import cn.org.expect.ProjectPom;
 import cn.org.expect.annotation.ScriptCommand;
@@ -29,9 +25,9 @@ import cn.org.expect.database.export.ExtractWriter;
 import cn.org.expect.database.internal.AbstractDialect;
 import cn.org.expect.database.internal.DatabaseDialectBuilder;
 import cn.org.expect.io.TextTableFile;
-import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyBeanBuilder;
 import cn.org.expect.ioc.EasyBeanDefine;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyBeanTable;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.scan.ClassScanRule;
@@ -58,12 +54,10 @@ import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.UniversalScriptVariable;
 import cn.org.expect.script.UniversalScriptVariableMethod;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
-import cn.org.expect.script.internal.CommandCompilerContext;
 import cn.org.expect.script.method.VariableMethodRepository;
 import cn.org.expect.util.CharTable;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.ClassUtils;
-import cn.org.expect.util.CollectionUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.MessageFormatter;
@@ -466,102 +460,6 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
             table.addCell("          " + beanInfo.getType().getName());
         }
         return table.toString(CharTable.Style.markdown);
-    }
-
-    public String supportedVariableMethods(UniversalScriptContext context, VariableMethodRepository repository) {
-        List<EasyBeanInfo> list = context.getContainer().getBeanInfoList(DatabaseDialect.class);
-        Collections.sort(list, new Comparator<EasyBeanInfo>() {
-            public int compare(EasyBeanInfo o1, EasyBeanInfo o2) {
-                return o1.getName().compareTo(o2.getName());
-            }
-        });
-
-        String[] array = StringUtils.split(ResourcesUtils.getMessage("script.engine.usage.msg008"), ',');
-        CharTable table = new CharTable(context.getCharsetName());
-        table.addTitle(array[0], CharTable.ALIGN_MIDDLE);
-        table.addTitle(array[1], CharTable.ALIGN_LEFT);
-        table.addTitle(array[2], CharTable.ALIGN_RIGHT);
-
-        for (EasyBeanInfo beanInfo : list) {
-            table.addCell(beanInfo.getName());
-            table.addCell(StringUtils.defaultString(beanInfo.getDescription(), "") + "     ");
-            table.addCell("          " + beanInfo.getType().getName());
-        }
-        return table.toString(CharTable.Style.markdown);
-    }
-
-    /**
-     * 输出所有命令的使用说明
-     *
-     * @param session 用户会话信息
-     * @param context 脚本引擎上下文信息
-     * @param out     输出流
-     */
-    private void printScriptCommandDetailUsage(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout out) {
-        UniversalCommandRepository commandBuilder = session.getCompiler().getRepository();
-        for (Iterator<CommandCompilerContext> it = commandBuilder.iterator(); it.hasNext(); ) {
-            CommandCompilerContext cxt = it.next();
-            if (ResourcesUtils.existsScriptMessage(cxt.getUsage())) {
-                cxt.getCompiler().usage(context, out);
-                out.println("");
-                out.println("");
-            }
-        }
-    }
-
-    /**
-     * 输出脚本引擎属性信息
-     *
-     * @param context 脚本引擎上下文信息
-     * @return 字符图形表格
-     */
-    protected CharTable getScriptAttributes(UniversalScriptContext context) {
-        String[] array = StringUtils.split(ResourcesUtils.getMessage("script.engine.usage.msg006"), ',');
-
-        CharTable table = new CharTable(context.getCharsetName());
-        table.addTitle(array[0]);
-        table.addTitle(array[0]);
-
-        String[] titles = StringUtils.split(ResourcesUtils.getMessage("script.engine.usage.msg005"), ',');
-        ScriptEngineManager manager = new ScriptEngineManager();
-        List<ScriptEngineFactory> engineFactories = manager.getEngineFactories();
-        for (ScriptEngineFactory factory : engineFactories) {
-            if (factory instanceof UniversalScriptEngineFactory) { // 使用当前脚本引擎的容器上下文信息，防止新脚本引擎创建新容器，导致重新扫描
-                ((UniversalScriptEngineFactory) factory).setContext(context.getContainer());
-            }
-
-            table.addCell(titles[0]);
-            table.addCell(factory.getEngineName());
-            table.addCell(titles[1]);
-            table.addCell(StringUtils.join(factory.getNames(), ", "));
-            table.addCell(titles[2]);
-            table.addCell(factory.getEngineVersion());
-            table.addCell(titles[3]);
-            table.addCell(StringUtils.join(factory.getExtensions(), ", "));
-            table.addCell(titles[4]);
-            table.addCell(StringUtils.join(factory.getMimeTypes(), ", "));
-            table.addCell(titles[5]);
-            table.addCell(factory.getLanguageName());
-            table.addCell(titles[6]);
-            table.addCell(factory.getLanguageVersion());
-            table.addCell(titles[7]);
-            table.addCell(StringUtils.objToStr(factory.getParameter("THREADING")));
-            table.addCell(titles[8]);
-            table.addCell(factory.getOutputStatement("'hello world!'"));
-            table.addCell(titles[9]);
-            table.addCell(factory.getProgram("help", "help script", "help set"));
-            table.addCell(titles[10]);
-            table.addCell(factory.getMethodCallSyntax("obj", "split", new String[]{"':'", "'\\'"}));
-
-            String name = CollectionUtils.firstElement(factory.getNames());
-            ScriptEngine engine = manager.getEngineByName(name);
-            table.addCell(titles[13]);
-            table.addCell(engine == null ? "" : engine.getClass().getName());
-
-            table.addCell("");
-            table.addCell("");
-        }
-        return table;
     }
 
     public boolean enableNohup() {

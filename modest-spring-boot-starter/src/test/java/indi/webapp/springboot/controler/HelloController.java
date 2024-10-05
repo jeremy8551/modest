@@ -7,6 +7,7 @@ import cn.org.expect.io.TextTableFile;
 import cn.org.expect.ioc.EasyBeanDefine;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.UniversalScriptEngine;
+import cn.org.expect.script.UniversalScriptEngineFactory;
 import cn.org.expect.util.FileUtils;
 import indi.jeremy.bean.Bean1;
 import indi.jeremy.bean.Bean2;
@@ -59,7 +60,9 @@ public class HelloController {
         Assert.assertEquals(id0, id1);
 
         // 测试从脚本引擎中取Spring容器中的组件
-        UniversalScriptEngine uengine = (UniversalScriptEngine) engine;
+        Assert.assertNotNull(this.spring.getBean(UniversalScriptEngineFactory.class));
+        Assert.assertNotNull(this.spring.getBean(UniversalScriptEngine.class));
+
         TestFile bean = context.getBean(TestFile.class);
         Assert.assertNotNull(bean);
         bean.hello();
@@ -90,5 +93,4 @@ public class HelloController {
         Assert.assertEquals(id0, id2); // 测试脚本引擎对象的生命周期是 request，也就是在一次 SpringBoot 请求中是同一个脚本引擎
         return FileUtils.replaceLineSeparator((String) engine.getContext().getAttribute("test3"), "<br>");
     }
-
 }

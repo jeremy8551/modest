@@ -30,8 +30,8 @@ public class DaemonCommand extends ExecuteFileCommand {
             // 将脚本文件产生的变量复制到其父脚本引擎中
             UniversalScriptContext parent = context.getParent();
             if (parent != null) {
-                parent.getLocalVariable().addAll(engine.getContext().getLocalVariable());
-                parent.getGlobalVariable().addAll(engine.getContext().getGlobalVariable());
+                parent.getLocalVariable().putAll(engine.getContext().getLocalVariable());
+                parent.getGlobalVariable().putAll(engine.getContext().getGlobalVariable());
             }
         }
     }

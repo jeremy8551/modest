@@ -5,19 +5,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.cn.ChineseRandom;
 import cn.org.expect.io.BufferedLineWriter;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.test.ModestRunner;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+@RunWith(ModestRunner.class)
 public class IncrementScriptTest {
+
+    @EasyBean
+    private EasyContext context;
 
     public synchronized File[] getTempFiles(int rows) throws IOException {
         File tempDir = FileUtils.getTempDir("test", IncrementScriptTest.class.getSimpleName());
@@ -121,7 +126,7 @@ public class IncrementScriptTest {
     }
 
     @Test
-    public void test() throws IOException, ScriptException {
+    public void test() throws IOException {
         File[] files = this.getTempFiles(100000);
         File oldfile = files[0];
         File newfile = files[1];
@@ -137,8 +142,8 @@ public class IncrementScriptTest {
         System.out.println("日志文件: " + logfile.getAbsolutePath());
         System.out.println("正确文件: " + resultfile.getAbsolutePath());
 
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
+        UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
+        UniversalScriptEngine engine = manager.getScriptEngine();
         try {
             engine.eval("echo 脚本引擎初始化完毕，执行增量剥离任务!");
 
@@ -180,12 +185,12 @@ public class IncrementScriptTest {
      * 测试并发执行剥离增量任务
      */
     @Test
-    public void testContainer() throws IOException, ScriptException {
+    public void testContainer() throws IOException {
         List<File> resultList = new ArrayList<File>();
         List<File> incList = new ArrayList<File>();
 
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
+        UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
+        UniversalScriptEngine engine = manager.getScriptEngine();
         try {
             engine.eval("echo 脚本引擎初始化完毕，执行增量剥离任务!");
 

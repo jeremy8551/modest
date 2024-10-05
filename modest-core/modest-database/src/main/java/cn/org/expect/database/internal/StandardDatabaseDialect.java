@@ -18,19 +18,11 @@ public class StandardDatabaseDialect extends AbstractDialect {
         super();
     }
 
-    public boolean supportSchema() {
-        throw new UnsupportedOperationException();
-    }
-
     public void setSchema(Connection connection, String schema) {
         throw new UnsupportedOperationException();
     }
 
     public List<DatabaseURL> parseJdbcUrl(String url) {
-        throw new UnsupportedOperationException();
-    }
-
-    public int getRowNumberStarter() {
         throw new UnsupportedOperationException();
     }
 

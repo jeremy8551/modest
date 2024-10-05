@@ -15,11 +15,11 @@ import org.springframework.core.env.Environment;
  * @author jeremy8551@qq.com
  * @createtime 2023/10/25
  */
-public class SpringEnvironment implements Bindings {
+public class SpringBindings implements Bindings {
 
     private Environment env;
 
-    public SpringEnvironment(ApplicationContext context) {
+    public SpringBindings(ApplicationContext context) {
         this.env = Ensure.notNull(context).getEnvironment();
     }
 
@@ -74,5 +74,4 @@ public class SpringEnvironment implements Bindings {
     public Set<Entry<String, Object>> entrySet() {
         throw new UnsupportedOperationException();
     }
-
 }

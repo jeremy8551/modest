@@ -4,9 +4,6 @@ import java.io.CharArrayReader;
 import java.io.Closeable;
 import java.io.Reader;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.script.Bindings;
-import javax.script.ScriptContext;
-import javax.script.ScriptEngine;
 
 import cn.org.expect.script.internal.ScriptVariable;
 import cn.org.expect.script.session.ScriptMainProcess;
@@ -27,7 +24,7 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2018-06-01
  */
-public class UniversalScriptEngine implements ScriptEngine, Closeable {
+public class UniversalScriptEngine implements Closeable {
 
     /** 唯一编号 */
     private String id;
@@ -94,7 +91,7 @@ public class UniversalScriptEngine implements ScriptEngine, Closeable {
      *
      * @return 域信息
      */
-    public Bindings getBindings(int scope) {
+    public UniversalScriptVariable getBindings(int scope) {
         return this.context.getBindings(scope);
     }
 
@@ -132,7 +129,7 @@ public class UniversalScriptEngine implements ScriptEngine, Closeable {
      * @param bindings 脚本引擎域信息
      * @param scope    域标志信息
      */
-    public void setBindings(Bindings bindings, int scope) {
+    public void setBindings(UniversalScriptVariable bindings, int scope) {
         this.context.setBindings(bindings, scope);
     }
 
@@ -141,8 +138,8 @@ public class UniversalScriptEngine implements ScriptEngine, Closeable {
      *
      * @param context 脚本引擎上下文信息
      */
-    public void setContext(ScriptContext context) {
-        this.context = this.castScriptContext(context);
+    public void setContext(UniversalScriptContext context) {
+        this.context = Ensure.notNull(context);
     }
 
     /**
@@ -152,50 +149,16 @@ public class UniversalScriptEngine implements ScriptEngine, Closeable {
         return new ScriptVariable();
     }
 
-    /**
-     * 将输入参数强制转换为脚本引擎上下文信息
-     *
-     * @param context 脚本引擎上下文信息
-     * @return 脚本引擎上下文信息
-     */
-    protected UniversalScriptContext castScriptContext(ScriptContext context) {
-        if (context instanceof UniversalScriptContext) {
-            return (UniversalScriptContext) context;
-        } else {
-            throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr072", context.getClass().getName(), UniversalScriptContext.class.getName()));
-        }
-    }
-
     public Object eval(String script) {
+        Ensure.notNull(script);
         CharArrayReader in = new CharArrayReader(script.toCharArray());
-        return this.eval(in, this.context);
+        return this.eval(in, this.getContext());
     }
 
-    public Object eval(String script, ScriptContext scriptContext) {
-        CharArrayReader in = new CharArrayReader(script.toCharArray());
-        return this.eval(in, this.castScriptContext(scriptContext));
-    }
-
-    public Object eval(String script, Bindings bindings) {
-        this.setBindings(bindings, UniversalScriptContext.ENGINE_SCOPE);
-        CharArrayReader in = new CharArrayReader(script.toCharArray());
-        return this.eval(in, this.context);
-    }
-
-    public Object eval(Reader in, Bindings bindings) {
-        this.setBindings(bindings, UniversalScriptContext.ENGINE_SCOPE);
-        return this.eval(in, this.context);
-    }
-
-    public Object eval(Reader in) {
-        return this.eval(in, this.context);
-    }
-
-    public Object eval(Reader in, ScriptContext scriptContext) {
-        UniversalScriptContext context = this.castScriptContext(scriptContext);
+    public Object eval(Reader in, UniversalScriptContext context) {
         context.setReader(in);
 
-        int value = -1;
+        int value;
         UniversalScriptSession session = this.sessionFactory.build(this);
         try {
             value = this.eval(session, context, context.getStdout(), context.getStderr(), false, in);
@@ -339,5 +302,4 @@ public class UniversalScriptEngine implements ScriptEngine, Closeable {
     public String toString() {
         return this.toString;
     }
-
 }

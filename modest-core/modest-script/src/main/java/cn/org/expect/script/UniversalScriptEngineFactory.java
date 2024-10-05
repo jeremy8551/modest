@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import javax.script.ScriptEngineFactory;
 
 import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.ioc.EasyContext;
@@ -22,10 +21,10 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2018-06-01
  */
-public class UniversalScriptEngineFactory implements ScriptEngineFactory {
+public class UniversalScriptEngineFactory {
 
     /** 配置信息 */
-    protected volatile UniversalScriptConfiguration config;
+    protected volatile UniversalScriptConfiguration configuration;
 
     /** 容器的上下文信息 */
     protected volatile EasyContext context;
@@ -93,14 +92,14 @@ public class UniversalScriptEngineFactory implements ScriptEngineFactory {
      * @return 配置信息
      */
     public UniversalScriptConfiguration getConfiguration() {
-        if (this.config == null) {
+        if (this.configuration == null) {
             synchronized (this) {
-                if (this.config == null) {
-                    this.config = this.getContext().getBean(UniversalScriptConfiguration.class);
+                if (this.configuration == null) {
+                    this.configuration = this.getContext().getBean(UniversalScriptConfiguration.class);
                 }
             }
         }
-        return this.config;
+        return this.configuration;
     }
 
     public String getEngineName() {
@@ -174,6 +173,7 @@ public class UniversalScriptEngineFactory implements ScriptEngineFactory {
     public List<String> getNames() {
         List<String> list = new ArrayList<String>();
         StringUtils.split(this.getConfiguration().getNames(), ',', list);
+        System.out.println(StringUtils.toString(list));
         return Collections.unmodifiableList(StringUtils.trimBlank(list));
     }
 
@@ -181,7 +181,7 @@ public class UniversalScriptEngineFactory implements ScriptEngineFactory {
         return "echo " + StringUtils.ltrimBlank(message);
     }
 
-    public Object getParameter(String key) {
+    public Object getProperty(String key) {
         return this.getConfiguration().getProperty(key);
     }
 
@@ -277,7 +277,7 @@ public class UniversalScriptEngineFactory implements ScriptEngineFactory {
         table.addCell(titles[6]);
         table.addCell(this.getLanguageVersion());
         table.addCell(titles[7]);
-        table.addCell(StringUtils.objToStr(this.getParameter("THREADING")));
+        table.addCell(StringUtils.objToStr(this.getProperty("universal.threading")));
         table.addCell(titles[8]);
         table.addCell(this.getOutputStatement("'hello world!'"));
         table.addCell(titles[9]);

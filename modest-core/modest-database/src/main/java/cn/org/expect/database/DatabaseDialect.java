@@ -51,8 +51,8 @@ public interface DatabaseDialect {
     /**
      * 生成删除表的SQL语句
      *
-     * @param table
-     * @return
+     * @param table 数据库表信息
+     * @return 删除表的SQL语句
      */
     String toDropTable(DatabaseTable table);
 
@@ -123,13 +123,6 @@ public interface DatabaseDialect {
     String getKeepAliveSQL();
 
     /**
-     * 判断数据库是否支持修改当前连接的schema
-     *
-     * @return true表示支持修改
-     */
-    boolean supportSchema();
-
-    /**
      * 设置数据库连接默认的SCHEMA
      *
      * @param connection 数据库连接
@@ -163,14 +156,6 @@ public interface DatabaseDialect {
      * @return URL集合
      */
     List<DatabaseURL> parseJdbcUrl(String url);
-
-    /**
-     * 如果数据系统支持Rownumber分页查询，则查询结果集的第一个记录的编号 <br>
-     * 返回查询结果集第一记录的偏移位置 <br>
-     *
-     * @return 起始记录编号
-     */
-    int getRowNumberStarter();
 
     /**
      * 返回数据库关键字与保留字

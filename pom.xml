@@ -336,13 +336,6 @@
                 <version>${revision}</version>
             </dependency>
 
-            <!-- modest 脚本引擎模块 -->
-            <dependency>
-                <groupId>cn.org.expect</groupId>
-                <artifactId>modest-script</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
             <!-- modest 压缩模块 -->
             <dependency>
                 <groupId>cn.org.expect</groupId>
@@ -354,6 +347,20 @@
             <dependency>
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-crypto</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 脚本引擎模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-script</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 脚本引擎的SPI模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-script-spi</artifactId>
                 <version>${revision}</version>
             </dependency>
 

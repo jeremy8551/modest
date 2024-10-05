@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
-import javax.script.Bindings;
 
 import cn.org.expect.database.JdbcDao;
 import cn.org.expect.script.UniversalCommandCompiler;
@@ -157,7 +156,7 @@ public class SetCommand extends AbstractGlobalCommand {
     protected int printVariable(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr) {
         Set<String> gks = context.getGlobalVariable().keySet(); // 全局变量名
         Set<String> lks = context.getLocalVariable().keySet(); // 局部变量名
-        Set<String> eks = this.toEnvironmentNames(context.getEnvironmentVariable()); // 环境变量名
+        Set<String> eks = context.getEnvironmentVariable().keySet(); // 环境变量名
         int size = gks.size() + lks.size() + eks.size(); // 变量个数
         HashSet<String> names = new HashSet<String>(size);
         names.addAll(gks);
@@ -185,19 +184,4 @@ public class SetCommand extends AbstractGlobalCommand {
         stdout.println(buf);
         return 0;
     }
-
-    /**
-     * 返回环境变量名集合
-     *
-     * @param bindings 环境变量集合
-     * @return 集合
-     */
-    protected Set<String> toEnvironmentNames(Bindings bindings) {
-        try {
-            return bindings.keySet();
-        } catch (Exception e) {
-            return new HashSet<String>(); // 如果环境变量集合不支持读取变量名
-        }
-    }
-
 }

@@ -170,14 +170,6 @@ public class OracleDialect extends AbstractDialect {
         JdbcDao.execute(conn, "alter session set current_schema=" + schema);
     }
 
-    public boolean supportSchema() {
-        return true;
-    }
-
-    public int getRowNumberStarter() {
-        return 1;
-    }
-
     public String toDeleteQuicklySQL(Connection connection, String catalog, String schema, String tableName) {
         if (StringUtils.isBlank(tableName)) {
             throw new IllegalArgumentException(tableName);

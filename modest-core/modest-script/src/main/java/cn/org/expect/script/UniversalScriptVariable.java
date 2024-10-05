@@ -1,13 +1,14 @@
 package cn.org.expect.script;
 
-import javax.script.Bindings;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * 脚本引擎变量接口
  *
  * @author jeremy8551@qq.com
  */
-public interface UniversalScriptVariable extends Bindings {
+public interface UniversalScriptVariable extends Map<String, Object> {
 
     /** 内置变量: 局部变量，用于查看当前数据库编目名 */
     String VARNAME_CATALOG = "catalog";
@@ -67,10 +68,9 @@ public interface UniversalScriptVariable extends Bindings {
     String SESSION_VARNAME_LASTEXCEPTION = "VARNAME_LAST_EXCEPTION";
 
     /**
-     * 添加变量集合
+     * 将属性集合添加到变量集合中
      *
-     * @param bindings 变量集合
+     * @param properties 属性集合
      */
-    void addAll(Bindings bindings);
-
+    void putAll(Properties properties);
 }

@@ -810,14 +810,6 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
         JdbcDao.execute(conn, "set current schema " + schema);
     }
 
-    public boolean supportSchema() {
-        return true;
-    }
-
-    public int getRowNumberStarter() {
-        return 1;
-    }
-
     public String toDeleteQuicklySQL(Connection connection, String catalog, String schema, String tableName) {
         if (StringUtils.isBlank(tableName)) {
             throw new IllegalArgumentException(tableName);

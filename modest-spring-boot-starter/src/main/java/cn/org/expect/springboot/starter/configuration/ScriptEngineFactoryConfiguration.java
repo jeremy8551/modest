@@ -1,12 +1,14 @@
 package cn.org.expect.springboot.starter.configuration;
 
+import javax.script.ScriptEngineFactory;
+
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.UniversalScriptEngineFactory;
+import cn.org.expect.script.spi.ScriptEngineFactoryImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 
 /**
  * 脚本引擎工厂的Spring配置类
@@ -15,14 +17,19 @@ import org.springframework.context.annotation.ScopedProxyMode;
  * @createtime 2023/10/3
  */
 @Configuration
-public class UniversalScriptEngineFactoryConfiguration {
+public class ScriptEngineFactoryConfiguration {
 
     @Lazy
     @Bean
-    @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
-    public UniversalScriptEngineFactory getScriptEngineFactory(EasyContext context) {
+    @Scope("singleton")
+    public UniversalScriptEngineFactory getUniversalScriptEngineFactory(EasyContext context) {
         return new UniversalScriptEngineFactory(context);
     }
 
+    @Lazy
+    @Bean
+    @Scope("singleton")
+    public ScriptEngineFactory getScriptEngineFactory(UniversalScriptEngineFactory factory) {
+        return new ScriptEngineFactoryImpl(factory);
+    }
 }
-

@@ -3,8 +3,6 @@ package cn.org.expect.script.compiler;
 import java.text.Format;
 import java.util.Arrays;
 import java.util.Map;
-import javax.script.Bindings;
-import javax.script.SimpleBindings;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.expression.AnalysisImpl;
@@ -308,7 +306,7 @@ public class ScriptAnalysis extends AnalysisImpl implements UniversalScriptAnaly
         UniversalScriptVariable globalVariable = context.getGlobalVariable();
         UniversalScriptFormatter format = context.getFormatter();
         Map<String, Object> variables = session.getVariables();
-        Bindings environmentVariable = context.getEnvironmentVariable();
+        UniversalScriptVariable environmentVariable = context.getEnvironmentVariable();
 
         str = this.replaceSubCommand(session, context, stdout, stderr, str, false);
         str = this.replaceShellSpecialVariable(session, str, false);
@@ -343,7 +341,7 @@ public class ScriptAnalysis extends AnalysisImpl implements UniversalScriptAnaly
         UniversalScriptVariable globalVariable = context.getGlobalVariable();
         UniversalScriptFormatter format = context.getFormatter();
         Map<String, Object> variables = session.getVariables();
-        Bindings environmentVariable = context.getEnvironmentVariable();
+        UniversalScriptVariable environmentVariable = context.getEnvironmentVariable();
 
         if (evalInnerCmd) {
             str = this.replaceSubCommand(session, context, stdout, stderr, str, true);
@@ -535,7 +533,7 @@ public class ScriptAnalysis extends AnalysisImpl implements UniversalScriptAnaly
                     int end = this.indexOfBrace(str, next);
                     if (end != -1) {
                         String name = str.substring(next + 1, end); // variable name
-                        if (!((map instanceof SimpleBindings) && name.length() == 0) && map.containsKey(name)) {
+                        if (map.containsKey(name)) {
                             Object value = map.get(name);
                             String valStr = convert == null ? StringUtils.toString(value) : convert.format(value);
                             str = str.substring(0, i) + valStr + str.substring(end + 1);

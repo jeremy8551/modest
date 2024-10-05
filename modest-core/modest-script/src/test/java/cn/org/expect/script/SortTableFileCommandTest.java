@@ -3,39 +3,43 @@ package cn.org.expect.script;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileReader;
 import cn.org.expect.io.TextTableLine;
 import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.test.ModestRunner;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 @FixMethodOrder(MethodSorters.JVM) // 控制JUnit单元测试方法执行顺序
+@RunWith(ModestRunner.class)
 public class SortTableFileCommandTest {
+
+    @EasyBean
+    private EasyContext context;
 
     /**
      * 测试倒序排序
      */
     @Test
-    public void test1() throws IOException, ScriptException {
+    public void test1() throws IOException {
         EasyContext context = new DefaultEasyContext();
         TextTableFile file = context.getBean(TextTableFile.class, "txt");
         file.setDelimiter(",");
         File txtfile = this.createfile(file);
         file.setAbsolutePath(txtfile.getAbsolutePath());
 
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
+        UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
+        UniversalScriptEngine engine = manager.getScriptEngine();
         try {
             engine.eval("sort table file " + txtfile.getAbsolutePath() + " of txt modified by thread=3 maxrow=10000 maxfile=3 covsrc order by int(1) asc,2 desc");
             this.checkFile(file);

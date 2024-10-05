@@ -2,13 +2,10 @@ package cn.org.expect.script;
 
 import java.io.IOException;
 import java.util.Properties;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
 import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -21,17 +18,20 @@ public class ScriptFileByDB2Test {
     @EasyBean
     private Properties properties;
 
+    @EasyBean
+    private EasyContext context;
+
     @Test
-    public void test() throws IOException, ScriptException {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
+    public void test() throws IOException {
+        UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
+        UniversalScriptEngine engine = manager.getScriptEngine();
         try {
-            engine.setBindings(ScriptUtils.to(this.properties), UniversalScriptContext.ENVIRONMENT_SCOPE);
+            engine.getContext().getEnvironmentVariable().putAll(this.properties);
             engine.eval(". classpath:/script/test.sql");
             Assert.fail();
-        } catch (ScriptException se) {
+        } catch (UniversalScriptException se) {
             Assert.assertEquals("1000", engine.getContext().getAttribute("testvalue000"));
-            Assert.assertEquals("333", StringUtils.splitByBlank(se.getMessage())[1]);
+            Assert.assertEquals("333", se.getMessage());
         } finally {
             engine.eval("exit 0");
         }

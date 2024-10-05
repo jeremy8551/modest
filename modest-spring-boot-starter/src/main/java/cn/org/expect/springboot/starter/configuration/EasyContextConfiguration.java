@@ -1,5 +1,7 @@
 package cn.org.expect.springboot.starter.configuration;
 
+import cn.org.expect.cn.NationalHoliday;
+import cn.org.expect.io.Codepage;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.springboot.starter.SpringApplicationArgument;
 import cn.org.expect.springboot.starter.ioc.EasyContextFactory;
@@ -18,7 +20,7 @@ import org.springframework.context.annotation.Scope;
  * @createtime 2023/10/3
  */
 @Configuration
-public class ModestContextConfiguration {
+public class EasyContextConfiguration {
 
     @Lazy
     @Bean
@@ -26,5 +28,16 @@ public class ModestContextConfiguration {
     public synchronized EasyContext getEasyContext(ApplicationContext springContext, SpringApplicationArgument argument) {
         return EasyContextFactory.create(argument, springContext);
     }
-}
 
+    @Lazy
+    @Bean
+    public NationalHoliday getNationalHoliday(EasyContext context) {
+        return context.getBean(NationalHoliday.class);
+    }
+
+    @Lazy
+    @Bean
+    public Codepage getCodepage(EasyContext context) {
+        return context.getBean(Codepage.class);
+    }
+}

@@ -2,8 +2,6 @@ package cn.org.expect.script;
 
 import java.io.IOException;
 import java.util.Properties;
-import javax.script.ScriptEngine;
-import javax.script.ScriptException;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
@@ -24,10 +22,10 @@ public class ScriptFileLoadTest {
     private EasyContext context;
 
     @Test
-    public void test() throws ScriptException, IOException {
-        UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(context);
-        ScriptEngine engine = manager.getScriptEngine();
-        engine.setBindings(ScriptUtils.to(this.properties), UniversalScriptContext.ENVIRONMENT_SCOPE);
+    public void test() throws IOException {
+        UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
+        UniversalScriptEngine engine = manager.getScriptEngine();
+        engine.getContext().getEnvironmentVariable().putAll(this.properties);
         engine.eval(". classpath:/script/test_db_load.sql");
     }
 }
