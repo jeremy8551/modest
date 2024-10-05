@@ -173,7 +173,6 @@ public class UniversalScriptEngineFactory {
     public List<String> getNames() {
         List<String> list = new ArrayList<String>();
         StringUtils.split(this.getConfiguration().getNames(), ',', list);
-        System.out.println(StringUtils.toString(list));
         return Collections.unmodifiableList(StringUtils.trimBlank(list));
     }
 
