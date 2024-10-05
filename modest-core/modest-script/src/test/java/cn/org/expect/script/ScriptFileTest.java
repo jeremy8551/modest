@@ -6,8 +6,6 @@ import java.util.Properties;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.log.LogFactory;
-import cn.org.expect.log.console.ConsoleLogBuilder;
 import cn.org.expect.test.ModestRunner;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.FileUtils;
@@ -36,7 +34,7 @@ public class ScriptFileTest {
         engine.getContext().getEnvironmentVariable().put("curr_dir_path", FileUtils.joinPath(ClassUtils.getClasspath(ScriptFileTest.class), "script"));
         engine.getContext().getEnvironmentVariable().put("temp", FileUtils.getTempDir("test", "script").getAbsolutePath());
         try {
-            engine.eval(". classpath:/script/testNoDB.sql ");
+            engine.eval(". classpath:/script/testNoDB.sql > " + logfile.getAbsolutePath() + " 2>&1");
             Assert.fail();
         } catch (UniversalScriptException se) {
             se.printStackTrace(System.out);
