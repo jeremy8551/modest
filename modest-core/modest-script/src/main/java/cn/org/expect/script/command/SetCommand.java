@@ -20,6 +20,11 @@ import cn.org.expect.util.StringComparator;
 
 /**
  * 设置变量
+ * set
+ * set -E
+ * set name=value
+ * set name=select * from table
+ * set name=
  */
 public class SetCommand extends AbstractGlobalCommand {
 
@@ -62,6 +67,7 @@ public class SetCommand extends AbstractGlobalCommand {
                 return 0;
 
             case 5: // 命令执行完毕后，不检查返回值
+                stdout.println("set -E");
                 session.setVerifyExitcode(false);
                 return 0;
 

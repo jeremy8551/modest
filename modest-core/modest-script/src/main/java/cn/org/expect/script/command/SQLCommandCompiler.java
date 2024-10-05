@@ -27,5 +27,4 @@ public class SQLCommandCompiler extends AbstractCommandCompiler implements Defau
 
         return new SQLCommand(this, command, analysis.unQuotation(sql));
     }
-
 }

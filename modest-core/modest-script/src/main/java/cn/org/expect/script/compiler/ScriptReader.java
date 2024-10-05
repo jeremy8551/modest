@@ -28,6 +28,12 @@ public class ScriptReader extends ScriptAnalysis implements UniversalScriptReade
     /** 语句分析器 */
     protected UniversalScriptAnalysis analysis;
 
+    /** 上一个编译命令的起始行号，从1开始 */
+    protected long startLineNumber;
+
+    /** 上一个编译命令的结束行号，从1开始 */
+    protected long endLineNumber;
+
     /**
      * 初始化
      *
@@ -47,6 +53,39 @@ public class ScriptReader extends ScriptAnalysis implements UniversalScriptReade
     public ScriptReader(Reader in, long n) {
         this(in);
         this.in.setLineNumber(n);
+    }
+
+    /**
+     * 将当行号 记录为 命令的起始行号
+     */
+    public void recordStartLineNumber() {
+        this.startLineNumber = this.getLineNumber();
+        this.endLineNumber = this.startLineNumber;
+    }
+
+    /**
+     * 将当行号 记录为 命令的结束行号
+     */
+    public void recordEndLineNumber() {
+        this.endLineNumber = this.getLineNumber();
+    }
+
+    /**
+     * 返回命令的起始行号
+     *
+     * @return 行号，从1开始
+     */
+    public long getStartLineNumber() {
+        return this.startLineNumber;
+    }
+
+    /**
+     * 返回命令的结束行号
+     *
+     * @return 行号，从1开始
+     */
+    public long getEndLineNumber() {
+        return this.endLineNumber;
     }
 
     public long getLineNumber() {

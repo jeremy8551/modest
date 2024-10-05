@@ -24,5 +24,4 @@ public abstract class AbstractCommandCompiler implements UniversalCommandCompile
     public void usage(UniversalScriptContext context, UniversalScriptStdout out) {
         out.println(new ScriptUsage(this.getClass()).toString());
     }
-
 }

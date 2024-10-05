@@ -60,8 +60,10 @@ public class ScriptParser implements UniversalScriptParser {
         if (line == null) {
             return null;
         } else {
+            in.recordStartLineNumber(); // 命令的起始行
             UniversalCommandCompiler obj = this.repository.get(line);
             String script = obj.read(in, in); // 从脚本语句中读取一个命令
+            in.recordEndLineNumber(); // 命令终止行
             return obj.compile(this.session, this.context, this, in, script); // 编译语句
         }
     }
@@ -70,7 +72,7 @@ public class ScriptParser implements UniversalScriptParser {
         ArrayList<UniversalScriptCommand> list = new ArrayList<UniversalScriptCommand>();
         ScriptReader in = new ScriptReader(new CharArrayReader(script.toCharArray()));
         try {
-            UniversalScriptCommand command = null;
+            UniversalScriptCommand command;
             while ((command = this.read(in)) != null) {
                 list.add(command);
             }
@@ -79,5 +81,4 @@ public class ScriptParser implements UniversalScriptParser {
             in.close();
         }
     }
-
 }

@@ -89,5 +89,4 @@ public class ExecuteFileCommand extends AbstractTraceCommand implements NohupCom
     public boolean enableNohup() {
         return true;
     }
-
 }

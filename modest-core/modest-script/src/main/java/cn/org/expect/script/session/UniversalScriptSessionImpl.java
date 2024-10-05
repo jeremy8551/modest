@@ -141,6 +141,7 @@ public class UniversalScriptSessionImpl implements UniversalScriptSession {
         } else {
             buf.append(ResourcesUtils.getMessage("script.message.stdout017")); // 脚本文件
         }
+        buf.append(' ');
         buf.append(file.getAbsolutePath());
         this.name = buf.toString();
     }

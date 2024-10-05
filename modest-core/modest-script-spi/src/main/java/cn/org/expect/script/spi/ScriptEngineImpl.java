@@ -55,7 +55,7 @@ public class ScriptEngineImpl implements ScriptEngine {
     }
 
     public void setBindings(Bindings bindings, int scope) {
-        this.engine.setBindings(new UniversalScriptVariableImpl(bindings), scope);
+        this.engine.setBindings(new UniversalScriptVariableBindings(bindings), scope);
     }
 
     public Bindings createBindings() {

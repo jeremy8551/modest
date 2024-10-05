@@ -25,7 +25,7 @@ public class SetCommandCompiler extends AbstractGlobalCommandCompiler {
         String line = in.previewline();
         int index = analysis.indexOf(line, "=", 0, 2, 2);
         if (index == -1) { // 没有赋值符号时，表示打印变量表达式（只有一个set关键字）
-            return in.readSingleWord();
+            return in.readSinglelineScript();
         } else if (analysis.indexOf(line, "select", index, 1, 0) != -1) { // 表示数据库查询赋值语句
             return in.readMultilineScript();
         } else {// 赋值语句
@@ -38,7 +38,7 @@ public class SetCommandCompiler extends AbstractGlobalCommandCompiler {
         int optionSize = expr.getOptionSize();
         int parameterSize = expr.getParameterSize();
 
-        // 打印所有变量
+        // set 打印所有变量
         if (optionSize == 0 && parameterSize == 0) {
             return new SetCommand(this, command, null, null, 2);
         }
@@ -54,8 +54,8 @@ public class SetCommandCompiler extends AbstractGlobalCommandCompiler {
             throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr147", command));
         }
 
-        // 变量名
-        String name = StringUtils.trimBlank(str.substring(0, index));
+        // name=value
+        String name = StringUtils.trimBlank(str.substring(0, index)); // 截取变量名
         if (!context.getChecker().isVariableName(name) || name.startsWith("$")) {
             throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr088", command, name));
         }
@@ -63,17 +63,17 @@ public class SetCommandCompiler extends AbstractGlobalCommandCompiler {
         // 变量值
         String value = StringUtils.trimBlank(Linuxs.removeShellNote(str.substring(index + 1), null));
 
-        // 查询SQL语句
+        // set name select * from table 表示查询SQL语句
         if (analysis.indexOf(value, "select", 0, 1, 0) != -1) {
             return new SetCommand(this, command, name, value, 1);
         }
 
-        // 删除变量
+        // set name= 表示删除变量
         if (value.length() == 0) {
             return new SetCommand(this, command, name, value, 3);
         }
 
-        // 变量赋值
+        // set name=value 变量赋值
         return new SetCommand(this, command, name, value, 0);
     }
 

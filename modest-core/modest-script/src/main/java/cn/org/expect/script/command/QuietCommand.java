@@ -59,7 +59,7 @@ public class QuietCommand extends AbstractTraceCommand implements UniversalScrip
             stdout.println(session.getAnalysis().replaceVariable(session, context, this.command, false));
         }
 
-        int value = 0;
+        int value;
         try {
             value = this.subcommand.execute(session, context, new ScriptNullStdout(stdout), new ScriptNullStderr(stderr), forceStdout);
         } catch (Throwable e) {

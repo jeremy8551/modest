@@ -76,7 +76,7 @@ public class DeclareHandlerCommand extends AbstractGlobalCommand implements Loop
     /**
      * 监听器实现类
      */
-    class HandlerListener implements UniversalCommandListener {
+    static class HandlerListener implements UniversalCommandListener {
 
         public HandlerListener() {
         }
@@ -159,5 +159,4 @@ public class DeclareHandlerCommand extends AbstractGlobalCommand implements Loop
     public boolean enableLoop() {
         return false;
     }
-
 }

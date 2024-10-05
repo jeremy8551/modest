@@ -540,5 +540,4 @@ public class CacheLineReader extends Reader implements TextFileReader {
             this.line = line;
         }
     }
-
 }

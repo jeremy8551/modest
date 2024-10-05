@@ -9,11 +9,11 @@ import javax.script.Bindings;
 import cn.org.expect.script.UniversalScriptVariable;
 import cn.org.expect.util.Ensure;
 
-public class UniversalScriptVariableImpl implements UniversalScriptVariable {
+public class UniversalScriptVariableBindings implements UniversalScriptVariable {
 
     protected Bindings bindings;
 
-    public UniversalScriptVariableImpl(Bindings bindings) {
+    public UniversalScriptVariableBindings(Bindings bindings) {
         this.bindings = bindings;
     }
 

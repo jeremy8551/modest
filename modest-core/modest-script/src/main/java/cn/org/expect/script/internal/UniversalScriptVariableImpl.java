@@ -13,14 +13,14 @@ import cn.org.expect.util.StringUtils;
 /**
  * 脚本引擎变量集合
  */
-public class ScriptVariable implements UniversalScriptVariable {
+public class UniversalScriptVariableImpl implements UniversalScriptVariable {
 
     private final Map<String, Object> map;
 
     /**
      * 初始化
      */
-    public ScriptVariable() {
+    public UniversalScriptVariableImpl() {
         this.map = new HashMap<String, Object>();
     }
 

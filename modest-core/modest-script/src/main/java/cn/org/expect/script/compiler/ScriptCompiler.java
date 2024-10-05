@@ -128,7 +128,7 @@ public class ScriptCompiler implements UniversalScriptCompiler {
     }
 
     public long getLineNumber() {
-        return this.reader == null ? 0 : this.reader.getLineNumber();
+        return this.reader == null ? 0 : this.reader.getStartLineNumber();
     }
 
     public long getCompileMillis() {
@@ -142,5 +142,4 @@ public class ScriptCompiler implements UniversalScriptCompiler {
         this.cache.clear();
         this.terminate = false;
     }
-
 }

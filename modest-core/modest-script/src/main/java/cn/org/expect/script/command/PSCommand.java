@@ -62,15 +62,6 @@ public class PSCommand extends AbstractTraceCommand implements NohupCommandSuppo
         table.addTitle(titles[6], CharTable.ALIGN_RIGHT);
         table.addTitle(titles[7]);
 
-//		table.addTitle("pid");
-//		table.addTitle(CharTable.ALIGN_RIGHT, "row");
-//		table.addTitle("alive");
-//		table.addTitle("terminate");
-//		table.addTitle("start");
-//		table.addTitle("end");
-//		table.addTitle(CharTable.ALIGN_RIGHT, "exitcode");
-//		table.addTitle("command");
-
         // 打印主线程
         ScriptMainProcess mainProcess = session.getMainProcess();
         for (Iterator<UniversalScriptCommand> it = mainProcess.iterator(); it.hasNext(); ) {

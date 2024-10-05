@@ -22,12 +22,12 @@ public class ScriptProgram extends HashMap<String, Object> implements Map<String
     public void addAll(ScriptProgram program) {
         Set<Entry<String, Object>> set = program.entrySet();
         for (Entry<String, Object> e : set) {
-            Object val = e.getValue();
+            Object value = e.getValue();
 
             // 如果实现了接口则需要深度复制
-            if (val instanceof UniversalScriptProgram) {
-                UniversalScriptProgram newObj = (UniversalScriptProgram) val;
-                ScriptProgramClone map = newObj.deepClone();
+            if (value instanceof UniversalScriptProgram) {
+                UniversalScriptProgram scriptProgram = (UniversalScriptProgram) value;
+                ScriptProgramClone map = scriptProgram.deepClone();
                 this.put(map.getKey(), map.getValue());
             }
         }

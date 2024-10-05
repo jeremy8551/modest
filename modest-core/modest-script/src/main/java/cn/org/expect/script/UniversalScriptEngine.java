@@ -5,7 +5,7 @@ import java.io.Closeable;
 import java.io.Reader;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import cn.org.expect.script.internal.ScriptVariable;
+import cn.org.expect.script.internal.UniversalScriptVariableImpl;
 import cn.org.expect.script.session.ScriptMainProcess;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.IO;
@@ -146,7 +146,7 @@ public class UniversalScriptEngine implements Closeable {
      * 创建域信息
      */
     public UniversalScriptVariable createBindings() {
-        return new ScriptVariable();
+        return new UniversalScriptVariableImpl();
     }
 
     public Object eval(String script) {
