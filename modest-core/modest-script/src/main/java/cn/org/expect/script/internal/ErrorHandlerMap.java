@@ -20,14 +20,14 @@ import cn.org.expect.util.Ensure;
  */
 public class ErrorHandlerMap implements UniversalScriptProgram {
 
-    public final static String key = "ErrorHandlerMap";
+    private final static String ERROR_HANDLER_MAP = "ERROR_HANDLER_MAP";
 
     public static ErrorHandlerMap get(UniversalScriptContext context, boolean... array) {
         boolean global = array.length == 0 ? false : array[0];
-        ErrorHandlerMap obj = context.getProgram(key, global);
+        ErrorHandlerMap obj = context.getProgram(ERROR_HANDLER_MAP, global);
         if (obj == null) {
             obj = new ErrorHandlerMap();
-            context.addProgram(key, obj, global);
+            context.addProgram(ERROR_HANDLER_MAP, obj, global);
         }
         return obj;
     }
@@ -181,7 +181,7 @@ public class ErrorHandlerMap implements UniversalScriptProgram {
             ScriptHandler val = e.getValue().clone();
             obj.map.put(key, val);
         }
-        return new ScriptProgramClone(key, obj);
+        return new ScriptProgramClone(ERROR_HANDLER_MAP, obj);
     }
 
     public void close() throws IOException {

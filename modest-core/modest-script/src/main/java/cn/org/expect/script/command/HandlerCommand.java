@@ -58,7 +58,7 @@ public class HandlerCommand extends AbstractTraceCommand implements NohupCommand
             for (Iterator<ScriptHandler> it = gehm.values().iterator(); it.hasNext(); ) {
                 ScriptHandler obj = it.next();
                 if (obj != null && print) {
-                    stdout.println(obj.toString());
+                    stdout.println(obj.toString(true));
                 }
             }
 
@@ -66,7 +66,7 @@ public class HandlerCommand extends AbstractTraceCommand implements NohupCommand
             for (Iterator<ScriptHandler> it = lehm.values().iterator(); it.hasNext(); ) {
                 ScriptHandler obj = it.next();
                 if (obj != null && print) {
-                    stdout.println(obj.toString());
+                    stdout.println(obj.toString(false));
                 }
             }
 
@@ -74,7 +74,7 @@ public class HandlerCommand extends AbstractTraceCommand implements NohupCommand
             for (Iterator<ScriptHandler> it = gedm.values().iterator(); it.hasNext(); ) {
                 ScriptHandler obj = it.next();
                 if (obj != null && print) {
-                    stdout.println(obj.toString());
+                    stdout.println(obj.toString(true));
                 }
             }
 
@@ -82,7 +82,7 @@ public class HandlerCommand extends AbstractTraceCommand implements NohupCommand
             for (Iterator<ScriptHandler> it = ledm.values().iterator(); it.hasNext(); ) {
                 ScriptHandler obj = it.next();
                 if (obj != null && print) {
-                    stdout.println(obj.toString());
+                    stdout.println(obj.toString(false));
                 }
             }
         }

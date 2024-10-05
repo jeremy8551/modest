@@ -66,9 +66,9 @@ public class DeclareHandlerCommand extends AbstractGlobalCommand implements Loop
             ErrorHandlerMap.get(context, global).add(handler);
         }
 
-        UniversalScriptListener c = context.getCommandListeners();
-        if (!c.contains(HandlerListener.class)) {
-            c.add(new HandlerListener());
+        UniversalScriptListener listeners = context.getCommandListeners();
+        if (!listeners.contains(HandlerListener.class)) {
+            listeners.add(new HandlerListener());
         }
         return 0;
     }

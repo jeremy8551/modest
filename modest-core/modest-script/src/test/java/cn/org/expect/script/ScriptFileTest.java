@@ -6,6 +6,8 @@ import java.util.Properties;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.log.LogFactory;
+import cn.org.expect.log.console.ConsoleLogBuilder;
 import cn.org.expect.test.ModestRunner;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.FileUtils;

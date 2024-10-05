@@ -19,14 +19,14 @@ import cn.org.expect.util.Ensure;
  */
 public class ExitHandlerMap implements UniversalScriptProgram {
 
-    public final static String key = "ExitHandlerMap";
+    private final static String EXIT_HANDLER_MAP = "EXIT_HANDLER_MAP";
 
     public static ExitHandlerMap get(UniversalScriptContext context, boolean... array) {
         boolean global = array.length != 0 && array[0];
-        ExitHandlerMap obj = context.getProgram(key, global);
+        ExitHandlerMap obj = context.getProgram(EXIT_HANDLER_MAP, global);
         if (obj == null) {
             obj = new ExitHandlerMap();
-            context.addProgram(key, obj, global);
+            context.addProgram(EXIT_HANDLER_MAP, obj, global);
         }
         return obj;
     }
@@ -129,7 +129,7 @@ public class ExitHandlerMap implements UniversalScriptProgram {
             ScriptHandler val = e.getValue().clone();
             obj.map.put(key, val);
         }
-        return new ScriptProgramClone(key, obj);
+        return new ScriptProgramClone(EXIT_HANDLER_MAP, obj);
     }
 
     public void close() {
@@ -143,5 +143,4 @@ public class ExitHandlerMap implements UniversalScriptProgram {
         this.map.clear();
         this.hasHandle = false;
     }
-
 }

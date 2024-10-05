@@ -131,7 +131,7 @@ public class UniversalScriptContext {
 
         // 复制程序
         if (context.globalPrograms != null) {
-            this.globalPrograms.putAll(context.globalPrograms);
+            this.globalPrograms.addAll(context.globalPrograms);
         }
 
         // 复制全局变量

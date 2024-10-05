@@ -285,14 +285,14 @@ public class ScriptHandler {
 //		this.parent = null;
     }
 
-    public String toString() {
+    public String toString(boolean global) {
         StringBuilder buf = new StringBuilder();
         buf.append("declare");
+        buf.append(global ? " global" : "");
         buf.append(this.exit ? " exit" : " continue");
         buf.append(" handler for ");
         buf.append(this.condition);
         buf.append(" begin .. end");
         return buf.toString();
     }
-
 }
