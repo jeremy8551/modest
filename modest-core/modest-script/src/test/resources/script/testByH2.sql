@@ -1,6 +1,6 @@
 echo 当前目录 `pwd`, 当前时间 `date`
 
-echo $host $admin $adminPw $jdbcfilepath
+echo $host $admin $adminPw
 
 # 进入目录
 cd $curr_dir_path
