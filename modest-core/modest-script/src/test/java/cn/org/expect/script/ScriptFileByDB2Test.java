@@ -27,13 +27,13 @@ public class ScriptFileByDB2Test {
         UniversalScriptEngine engine = manager.getScriptEngine();
         try {
             engine.getContext().getEnvironmentVariable().putAll(this.properties);
-            engine.eval(". classpath:/script/test.sql");
+            engine.evaluate(". classpath:/script/test.sql");
             Assert.fail();
         } catch (UniversalScriptException se) {
             Assert.assertEquals("1000", engine.getContext().getAttribute("testvalue000"));
             Assert.assertEquals("333", se.getMessage());
         } finally {
-            engine.eval("exit 0");
+            engine.evaluate("exit 0");
         }
     }
 }

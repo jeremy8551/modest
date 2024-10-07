@@ -38,7 +38,7 @@ public class VariableMethodScanner {
      */
     public VariableMethodScanner(UniversalScriptContext context, VariableMethodRepository repository) {
         this.context = context;
-        this.factory = context.getFactory();
+        this.factory = context.getEngine().getFactory();
         this.repository = repository;
 
         // 显示所有已加载的变量方法

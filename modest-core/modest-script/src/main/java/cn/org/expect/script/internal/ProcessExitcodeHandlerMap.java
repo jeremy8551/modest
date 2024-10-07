@@ -14,18 +14,17 @@ import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.util.Ensure;
 
 /**
- * 脚本引擎异常错误处理逻辑 <br>
- * declare (exit | continue) handler for ( exception | exitcode != 0 | sqlstate == '02501' | errorcode -803 ) begin .. end
+ * 异常处理逻辑集合 <br>
+ * declare (exit | continue) handler for (  exitcode != 0 ) begin .. end
  */
-public class ExitHandlerMap implements UniversalScriptProgram {
+public class ProcessExitcodeHandlerMap implements UniversalScriptProgram {
 
     private final static String EXIT_HANDLER_MAP = "EXIT_HANDLER_MAP";
 
-    public static ExitHandlerMap get(UniversalScriptContext context, boolean... array) {
-        boolean global = array.length != 0 && array[0];
-        ExitHandlerMap obj = context.getProgram(EXIT_HANDLER_MAP, global);
+    public static ProcessExitcodeHandlerMap get(UniversalScriptContext context, boolean global) {
+        ProcessExitcodeHandlerMap obj = context.getProgram(EXIT_HANDLER_MAP, global);
         if (obj == null) {
-            obj = new ExitHandlerMap();
+            obj = new ProcessExitcodeHandlerMap();
             context.addProgram(EXIT_HANDLER_MAP, obj, global);
         }
         return obj;
@@ -34,13 +33,13 @@ public class ExitHandlerMap implements UniversalScriptProgram {
     /** 执行条件与异常错误处理逻辑映射关系 */
     private LinkedHashMap<String, ScriptHandler> map;
 
-    /** true 表示 {@link ExitHandlerMap#execute(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, Integer)} 方法已被执行过 */
-    private boolean hasHandle;
+    /** true 表示 {@link ProcessExitcodeHandlerMap#execute(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, Integer)} 方法已被执行过 */
+    private boolean alreadyExecute;
 
     /**
      * 初始化
      */
-    public ExitHandlerMap() {
+    public ProcessExitcodeHandlerMap() {
         this.map = new LinkedHashMap<String, ScriptHandler>();
     }
 
@@ -88,8 +87,8 @@ public class ExitHandlerMap implements UniversalScriptProgram {
      *
      * @return 返回true表示 {@link #execute(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, Integer)} 方法已被执行过
      */
-    public boolean alreadyExecuted() {
-        return this.hasHandle;
+    public boolean alreadyExecute() {
+        return this.alreadyExecute;
     }
 
     /**
@@ -108,7 +107,7 @@ public class ExitHandlerMap implements UniversalScriptProgram {
             return true;
         }
 
-        this.hasHandle = true;
+        this.alreadyExecute = true;
         boolean exit = true;
         Set<String> keys = this.map.keySet();
         for (String key : keys) {
@@ -121,8 +120,8 @@ public class ExitHandlerMap implements UniversalScriptProgram {
     }
 
     public ScriptProgramClone deepClone() {
-        ExitHandlerMap obj = new ExitHandlerMap();
-        obj.hasHandle = this.hasHandle;
+        ProcessExitcodeHandlerMap obj = new ProcessExitcodeHandlerMap();
+        obj.alreadyExecute = this.alreadyExecute;
         Set<Entry<String, ScriptHandler>> set = this.map.entrySet();
         for (Entry<String, ScriptHandler> e : set) {
             String key = e.getKey();
@@ -141,6 +140,6 @@ public class ExitHandlerMap implements UniversalScriptProgram {
         }
 
         this.map.clear();
-        this.hasHandle = false;
+        this.alreadyExecute = false;
     }
 }

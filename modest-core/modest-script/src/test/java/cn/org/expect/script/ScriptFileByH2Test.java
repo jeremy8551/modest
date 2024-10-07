@@ -32,14 +32,14 @@ public class ScriptFileByH2Test {
         engine.getContext().getEnvironmentVariable().put("curr_dir_path", FileUtils.joinPath(ClassUtils.getClasspath(ScriptFileByH2Test.class), "script"));
         engine.getContext().getEnvironmentVariable().put("temp", FileUtils.getTempDir("test", "script").getAbsolutePath());
         try {
-            engine.eval(". classpath:/script/testByH2.sql");
+            engine.evaluate(". classpath:/script/testByH2.sql");
             Assert.fail();
         } catch (UniversalScriptException se) {
             se.printStackTrace(System.out);
             Assert.assertEquals("1000", engine.getContext().getAttribute("testvalue000"));
             Assert.assertEquals("-3", se.getMessage());
         } finally {
-            engine.eval("exit 0");
+            engine.evaluate("exit 0");
         }
     }
 }

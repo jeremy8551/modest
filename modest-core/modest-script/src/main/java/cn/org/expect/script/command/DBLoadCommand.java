@@ -107,7 +107,7 @@ public class DBLoadCommand extends AbstractTraceCommand implements UniversalScri
             UniversalScriptAnalysis analysis = session.getAnalysis();
             String script = analysis.replaceShellVariable(session, context, this.script, true, true, true, false);
             UniversalScriptEngine engine = context.getEngine();
-            return engine.eval(session, context, stdout, stderr, script) == 0;
+            return engine.evaluate(session, context, stdout, stderr, script) == 0;
         } else {
             return true;
         }

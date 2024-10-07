@@ -108,11 +108,11 @@ public class IncrementScript1Test {
         UniversalScriptEngine engine = manager.getScriptEngine();
         try {
             // 设置命令中使用的文件路径与索引字段位置信息
-            engine.eval("set newfile='" + newfile.getAbsolutePath() + "'");
-            engine.eval("set oldfile='" + oldfile.getAbsolutePath() + "'");
-            engine.eval("set incfile='" + incfile.getAbsolutePath() + "'");
-            engine.eval("set index='1," + column + "'");
-            engine.eval("set compare=");
+            engine.evaluate("set newfile='" + newfile.getAbsolutePath() + "'");
+            engine.evaluate("set oldfile='" + oldfile.getAbsolutePath() + "'");
+            engine.evaluate("set incfile='" + incfile.getAbsolutePath() + "'");
+            engine.evaluate("set index='1," + column + "'");
+            engine.evaluate("set compare=");
 
             // 增量剥离命令
             String inccmd = "";
@@ -122,17 +122,14 @@ public class IncrementScript1Test {
             inccmd += " $oldfile of txt modified by index=$index ";
             inccmd += " write new and upd and del into $incfile ";
             inccmd += " write log into " + logfile.getAbsolutePath();
-            engine.eval(inccmd);
+            engine.evaluate(inccmd);
             Assert.fail();
         } catch (Throwable e) {
             String message = StringUtils.toString(e);
-//            System.out.println(message);
-            String[] array = StringUtils.splitByBlank(message);
+            String[] array = StringUtils.splitByBlank(StringUtils.trimBlank(message));
             Assert.assertTrue(StringUtils.inArrayIgnoreCase(String.valueOf(line), array));
             Assert.assertTrue(StringUtils.inArrayIgnoreCase(String.valueOf(next), array));
-//            System.err.println(e.getMessage());
             e.printStackTrace();
         }
     }
-
 }

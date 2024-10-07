@@ -41,13 +41,13 @@ public class SortTableFileCommandTest {
         UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
         UniversalScriptEngine engine = manager.getScriptEngine();
         try {
-            engine.eval("sort table file " + txtfile.getAbsolutePath() + " of txt modified by thread=3 maxrow=10000 maxfile=3 covsrc order by int(1) asc,2 desc");
+            engine.evaluate("sort table file " + txtfile.getAbsolutePath() + " of txt modified by thread=3 maxrow=10000 maxfile=3 covsrc order by int(1) asc,2 desc");
             this.checkFile(file);
         } catch (Exception e1) {
             e1.printStackTrace();
             Assert.fail();
         } finally {
-            engine.eval("exit 0");
+            engine.evaluate("exit 0");
         }
     }
 

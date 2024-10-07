@@ -39,10 +39,11 @@ while $tcount <= 100 loop
 
   set tcount = $tcount + 1
 end loop
-commit
 undeclare sname Statement
+commit
 
-
+set records = select count(*) from v7_test_tmp;
+echo "表 v7_test_tmp 中共有 ${records} 记录！"
 
 declare exportTaskId progress use out print "${taskId}正在执行 ${process}%, 总共${totalRecord}个记录${leftTime}" total $tcount times
 
@@ -50,11 +51,17 @@ db export to $temp\v7_test_tmp.del of del modified by progress=exportTaskId char
 
 cat $temp\v7_test_tmp.del
 
+echo 校验数据库表中记录数与卸载后的文件行数是否相等 ..
+set wcOut=`wc -l $temp\v7_test_tmp.del`
+if wcOut.split()[1] != "$tcount" then
+    echo tcount is $tcount
+    echo wcOut is $wcOut
+    exit 100
+fi
+
 echo ""
-echo ""
-echo ""
-echo ""
-echo ""
+
+
 db export to $temp\v7_test_tmp1.del of del select * from v7_test_tmp ;
 
 

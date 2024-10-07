@@ -43,8 +43,7 @@ public class ContainerCommand extends AbstractCommand implements WithBodyCommand
         String thread = analysis.replaceShellVariable(session, context, this.attributes.get("thread"), true, true, true, false);
         int number = StringUtils.parseInt(thread, 2);
 
-        boolean print = session.isEchoEnable() || forceStdout;
-        if (print) {
+        if (session.isEchoEnable() || forceStdout) {
             stdout.println(analysis.replaceShellVariable(session, context, this.command, true, false, true, true));
         }
 

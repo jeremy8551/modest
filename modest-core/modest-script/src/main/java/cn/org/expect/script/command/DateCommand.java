@@ -67,11 +67,7 @@ public class DateCommand extends AbstractTraceCommand implements UniversalScript
         }
 
         if (session.isEchoEnable() || forceStdout) {
-            if (pattern != null) {
-                stdout.println(Dates.format(date, pattern));
-            } else {
-                stdout.println(Dates.format19(date));
-            }
+            stdout.println(pattern == null ? Dates.format19(date) : Dates.format(date, pattern));
         }
 
         session.removeValue();

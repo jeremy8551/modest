@@ -13,14 +13,14 @@ import cn.org.expect.script.session.ScriptSubProcess;
 /**
  * 用户会话信息 <br>
  * <p>
- * 用户或程序在执行 {@linkplain UniversalScriptEngine#eval(Reader, UniversalScriptContext)} 方法视作一次会话
+ * 用户或程序在执行 {@linkplain UniversalScriptEngine#evaluate(Reader, UniversalScriptContext)} 方法视作一次会话
  *
  * @author jeremy8551@qq.com
  */
 public interface UniversalScriptSession {
 
     /**
-     * 设置会话的返回值（即 {@linkplain UniversalScriptEngine#eval(Reader, UniversalScriptContext)} 方法的返回值）
+     * 设置会话的返回值（即 {@linkplain UniversalScriptEngine#evaluate(Reader, UniversalScriptContext)} 方法的返回值）
      *
      * @param key   键
      * @param value 值
@@ -29,7 +29,7 @@ public interface UniversalScriptSession {
     Object putValue(String key, Object value);
 
     /**
-     * 会话的返回值（即 {@linkplain UniversalScriptEngine#eval(Reader, UniversalScriptContext)} 方法的返回值） <br>
+     * 会话的返回值（即 {@linkplain UniversalScriptEngine#evaluate(Reader, UniversalScriptContext)} 方法的返回值） <br>
      * 如果命令没有返回值，则返回null <br>
      * 如果命令返回了一个值，则直接返回这个值 <br>
      * 如果命令返回了多个值，则将多个值封装到一个 Map 中, 并返回这个 Map 对象（key属性是忽略大小写的）
@@ -153,21 +153,14 @@ public interface UniversalScriptSession {
     /**
      * 设置echo命令是否可用
      *
-     * @param enable true表示可用 false表示不可用
+     * @param enable true表示已设置 echo on，false表示已执行 echo off
      */
     void setEchoEnabled(boolean enable);
 
     /**
      * 返回echo命令是否可用
      *
-     * @return true表示不可用 false表示可用
-     */
-    boolean isEchoDisable();
-
-    /**
-     * 返回echo命令是否可用
-     *
-     * @return true表示可用 false表示不可用
+     * @return true表示已设置 echo on，false表示已执行 echo off
      */
     boolean isEchoEnable();
 
@@ -245,14 +238,14 @@ public interface UniversalScriptSession {
     String getDirectory();
 
     /**
-     * 是否检查 {@linkplain UniversalScriptEngine#eval(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, Reader)} 方法的返回值
+     * 是否检查 {@linkplain UniversalScriptEngine#evaluate(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, Reader)} 方法的返回值
      *
      * @return 返回true表示校验返回值是否为0 false表示不校验返回值
      */
     boolean isVerifyExitcode();
 
     /**
-     * 设置是否检查 {@linkplain UniversalScriptEngine#eval(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, Reader)} 方法的返回值
+     * 设置是否检查 {@linkplain UniversalScriptEngine#evaluate(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, Reader)} 方法的返回值
      *
      * @param checkExitcode true表示校验返回值是否为0 false表示不校验返回值
      */

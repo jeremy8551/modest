@@ -10,8 +10,8 @@ import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.command.feature.WithBodyCommandSupported;
-import cn.org.expect.script.internal.ErrorHandlerMap;
-import cn.org.expect.script.internal.ExitHandlerMap;
+import cn.org.expect.script.internal.ProcessExceptionHandlerMap;
+import cn.org.expect.script.internal.ProcessExitcodeHandlerMap;
 import cn.org.expect.script.internal.ScriptHandler;
 import cn.org.expect.util.ResourcesUtils;
 
@@ -27,10 +27,10 @@ public class HandlerCommand extends AbstractTraceCommand implements NohupCommand
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         boolean print = session.isEchoEnable() || forceStdout;
         if (print) {
-            ErrorHandlerMap gehm = ErrorHandlerMap.get(context, true);
-            ErrorHandlerMap lehm = ErrorHandlerMap.get(context, false);
-            ExitHandlerMap gedm = ExitHandlerMap.get(context, true);
-            ExitHandlerMap ledm = ExitHandlerMap.get(context, false);
+            ProcessExceptionHandlerMap gehm = ProcessExceptionHandlerMap.get(context, true);
+            ProcessExceptionHandlerMap lehm = ProcessExceptionHandlerMap.get(context, false);
+            ProcessExitcodeHandlerMap gedm = ProcessExitcodeHandlerMap.get(context, true);
+            ProcessExitcodeHandlerMap ledm = ProcessExitcodeHandlerMap.get(context, false);
 
             int count = 0;
 

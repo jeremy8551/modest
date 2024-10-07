@@ -6,8 +6,8 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.LoopCommandSupported;
-import cn.org.expect.script.internal.ErrorHandlerMap;
-import cn.org.expect.script.internal.ExitHandlerMap;
+import cn.org.expect.script.internal.ProcessExceptionHandlerMap;
+import cn.org.expect.script.internal.ProcessExitcodeHandlerMap;
 import cn.org.expect.util.StringUtils;
 
 /**
@@ -37,11 +37,11 @@ public class UndeclareHandlerCommand extends AbstractGlobalCommand implements Lo
 
         String condition = session.getAnalysis().replaceVariable(session, context, this.condition, false);
         if (this.isExitHandler) {
-            ExitHandlerMap map = ExitHandlerMap.get(context, this.isGlobal());
+            ProcessExitcodeHandlerMap map = ProcessExitcodeHandlerMap.get(context, this.isGlobal());
             map.remove(condition);
             return 0;
         } else {
-            ErrorHandlerMap map = ErrorHandlerMap.get(context, this.isGlobal());
+            ProcessExceptionHandlerMap map = ProcessExceptionHandlerMap.get(context, this.isGlobal());
             map.remove(condition);
             return 0;
         }

@@ -17,11 +17,11 @@ public class ScriptContextImpl implements ScriptContext {
     }
 
     public void setBindings(Bindings bindings, int scope) {
-        this.context.setBindings(new UniversalScriptVariableBindings(bindings), scope);
+        this.context.setVariable(new UniversalScriptVariableBindings(bindings), scope);
     }
 
     public Bindings getBindings(int scope) {
-        return new BindingsImpl(this.context.getBindings(scope));
+        return new BindingsImpl(this.context.getVariable(scope));
     }
 
     public void setAttribute(String name, Object value, int scope) {

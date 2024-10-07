@@ -24,9 +24,6 @@ public class ContinueCommand extends AbstractSlaveCommand implements LoopCommand
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         if (this.existsOwner()) {
-//			if (session.isEchoEnable() || forceStdout) {
-//				stdout.println(this.command);
-//			}
             return 0;
         } else {
             stderr.println(ResourcesUtils.getMessage("script.message.stderr005"));

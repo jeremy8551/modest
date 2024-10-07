@@ -25,7 +25,7 @@ public class DB2ExportFileReaderTest {
         UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
         UniversalScriptEngine engine = manager.getScriptEngine();
         File tempfile = FileUtils.createTempFile(".del");
-        engine.eval("cp classpath:/bhc_finish.del " + tempfile.getAbsolutePath());
+        engine.evaluate("cp classpath:/bhc_finish.del " + tempfile.getAbsolutePath());
         DB2ExportFile file = new DB2ExportFile(tempfile);
         TextTableFileReader in = file.getReader(IO.READER_BUFFER_SIZE);
         TextTableLine line = null;

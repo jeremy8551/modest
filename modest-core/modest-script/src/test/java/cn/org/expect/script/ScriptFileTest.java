@@ -1,6 +1,5 @@
 package cn.org.expect.script;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -24,19 +23,15 @@ public class ScriptFileTest {
 
     @Test
     public void test() throws IOException {
-        File logfile = FileUtils.createTempFile("UniversalScriptEngine.log");
-        System.out.println("脚本引擎输出日志, file://" + logfile.getAbsolutePath());
-        FileUtils.clearFile(logfile);
-
         UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
         UniversalScriptEngine engine = manager.getScriptEngine();
         engine.getContext().getEnvironmentVariable().putAll(this.properties);
         engine.getContext().getEnvironmentVariable().put("curr_dir_path", FileUtils.joinPath(ClassUtils.getClasspath(ScriptFileTest.class), "script"));
         engine.getContext().getEnvironmentVariable().put("temp", FileUtils.getTempDir("test", "script").getAbsolutePath());
         try {
-            engine.eval(". classpath:/script/testNoDB.sql > " + logfile.getAbsolutePath() + " 2>&1");
+            engine.evaluate(". classpath:/script/testNoDB.sql");
             Assert.fail();
-        } catch (UniversalScriptException se) {
+        } catch (UniversalScriptException se) { // 为了测试发生错误时，提示信息是否正确
             se.printStackTrace(System.out);
             Assert.assertEquals("1000", engine.getContext().getAttribute("testvalue000"));
             Assert.assertEquals("333", se.getMessage());
@@ -44,7 +39,8 @@ public class ScriptFileTest {
             e.printStackTrace();
             Assert.fail();
         } finally {
-            engine.eval("exit 0");
+            engine.evaluate("exit 0");
         }
     }
+
 }

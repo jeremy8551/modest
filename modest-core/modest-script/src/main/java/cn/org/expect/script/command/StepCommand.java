@@ -6,7 +6,7 @@ import cn.org.expect.script.UniversalCommandCompiler;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptCommand;
 import cn.org.expect.script.UniversalScriptContext;
-import cn.org.expect.script.UniversalScriptListener;
+import cn.org.expect.script.UniversalScriptListenerList;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
@@ -60,7 +60,7 @@ public class StepCommand extends AbstractTraceCommand implements CallbackCommand
         else if (obj.containsTarget()) {
             session.addVariable(UniversalScriptVariable.SESSION_VARNAME_STEP, message);
             if (message.equals(obj.getTarget())) { // 找到了 jump 命令对应的 step 命令
-                UniversalScriptListener set = context.getCommandListeners();
+                UniversalScriptListenerList set = context.getListeners();
                 set.remove(JumpCommand.JumpListener.class);
                 obj.removeTarget();
                 context.addGlobalVariable(UniversalScriptVariable.SESSION_VARNAME_JUMP, "false"); // 移除标示变量

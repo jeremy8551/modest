@@ -18,7 +18,7 @@ import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 
 /**
- * 脚本引擎进程上运行的并发任务
+ * 脚本引擎上运行的并发任务
  *
  * @author jeremy8551@qq.com
  */
@@ -30,7 +30,7 @@ public class ScriptProcessJob implements Runnable {
     /** true表示正在执行 {@linkplain ScriptProcessJob#run()} 方法 */
     private volatile boolean running;
 
-    /** true表示任务已进入执行阶段（等待调度执行或正在运行） */
+    /** true表示任务存活（还未运行或正在运行）false表示任务已运行完毕 */
     private volatile boolean alive;
 
     /** 进程运行环境 */
@@ -53,7 +53,10 @@ public class ScriptProcessJob implements Runnable {
         this.running = false;
         this.terminate = false;
         this.environment = environment;
-        this.start();
+        this.alreadyRun = false;
+        this.running = false;
+        this.terminate = false;
+        this.alive = true;
     }
 
     /**
@@ -66,19 +69,9 @@ public class ScriptProcessJob implements Runnable {
     }
 
     /**
-     * 启动进程
-     */
-    public synchronized void start() {
-        this.alreadyRun = false;
-        this.running = false;
-        this.terminate = false;
-        this.alive = true;
-    }
-
-    /**
-     * 判断任务是否存活
+     * 判断任务是否已终止
      *
-     * @return 返回true表示线程存活（还在运行）false表示线程已运行完毕
+     * @return 返回true表示任务存活（还未运行或正在运行）false表示任务已运行完毕
      */
     public boolean isAlive() {
         return this.alive;
@@ -135,7 +128,7 @@ public class ScriptProcessJob implements Runnable {
             this.alive = false;
             this.environment.getWaitDone().wakeup();
 
-            // 因为 cmdout 与 cmderr 公用一个 out，所以关闭流时需要先将缓存清空，再抓个关闭流
+            // 因为 cmdout 与 cmderr 公用一个 out，所以关闭流时需要先将缓存清空，再一个一个关闭流
             if (cmdout != null) {
                 cmdout.flush();
                 cmdout.setWriter(null);

@@ -64,7 +64,7 @@ public class ReadCommand extends AbstractCommand implements WithBodyCommandSuppo
             }
 
             ScriptStdbuf cache = new ScriptStdbuf(stdout);
-            int exitcode = context.getEngine().eval(session, context, cache, stderr, command);
+            int exitcode = context.getEngine().evaluate(session, context, cache, stderr, command);
             if (exitcode != 0) {
                 return exitcode;
             }

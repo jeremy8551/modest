@@ -13,7 +13,9 @@ public class DebugCommand extends AbstractCommand {
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
-        stdout.println("debug");
+        if (session.isEchoEnable() || forceStdout) {
+            stdout.println("debug");
+        }
         return 0;
     }
 

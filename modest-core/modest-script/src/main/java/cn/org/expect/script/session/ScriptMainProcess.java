@@ -67,7 +67,7 @@ public class ScriptMainProcess {
         String key = StringUtils.toRandomUUID();
         try {
             this.cache.put(key, command);
-            boolean can = context.getCommandListeners().beforeCommand(session, context, stdout, stderr, command); // 脚本命令执行前执行的逻辑代码
+            boolean can = context.getListeners().beforeCommand(session, context, stdout, stderr, command); // 脚本命令执行前执行的逻辑代码
             CommandResultSet resultSet = new CommandResultSet();
             try {
                 int exitcode = 0;
@@ -82,10 +82,10 @@ public class ScriptMainProcess {
                     this.failCommand = command;
                 }
 
-                context.getCommandListeners().afterCommand(session, context, stdout, stderr, forceStdout, command, resultSet); // 脚本命令执行完毕后执行的逻辑代码
+                context.getListeners().afterCommand(session, context, stdout, stderr, forceStdout, command, resultSet); // 脚本命令执行完毕后执行的逻辑代码
             } catch (Exception e) { // 脚本命令执行报错后执行的逻辑代码
                 this.failCommand = command;
-                context.getCommandListeners().catchCommand(session, context, stdout, stderr, forceStdout, command, resultSet, e);
+                context.getListeners().catchCommand(session, context, stdout, stderr, forceStdout, command, resultSet, e);
             }
 
             return resultSet;

@@ -69,7 +69,7 @@ public class ScriptWcCommandTest {
             UniversalScriptEngine engine;
             try {
                 engine = factory.getScriptEngine();
-                engine.eval("wc -l " + tmpfile.getAbsolutePath());
+                engine.evaluate("wc -l " + tmpfile.getAbsolutePath());
             } catch (Exception e1) {
                 e1.printStackTrace();
                 Assert.fail();

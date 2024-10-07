@@ -98,9 +98,9 @@ public class ScriptExpressionParser extends Parser {
 
                 String command = str.substring(i + 1, index);
                 ScriptStdbuf cache = new ScriptStdbuf(this.stdout);
-                int exitcode = this.context.getEngine().eval(this.session, this.context, cache, this.stderr, command);
+                int exitcode = this.context.getEngine().evaluate(this.session, this.context, cache, this.stderr, command);
                 if (exitcode == 0) {
-                    datas.add(ExpressionParameter.parse(cache.trimBlank()));
+                    datas.add(ExpressionParameter.parse(StringUtils.rtrim(cache.toString(), '\r', '\n')));
                     return index;
                 } else {
                     throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr058", command));

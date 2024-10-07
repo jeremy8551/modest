@@ -65,7 +65,7 @@ public class SplitMethod extends AbstractMethod {
 
         if (object instanceof String) {
             String value = (String) object;
-            String[] array = null; // string array
+            String[] array; // string array
             if (parameters.size() == 0) {
                 array = StringUtils.splitByBlank(value);
             } else if (escape == null) {

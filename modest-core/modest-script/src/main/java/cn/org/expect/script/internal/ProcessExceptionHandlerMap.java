@@ -16,17 +16,17 @@ import cn.org.expect.script.io.ScriptStderr;
 import cn.org.expect.util.Ensure;
 
 /**
- * JAVA 错误处理逻辑
+ * 异常处理逻辑集合 <br>
+ * declare (exit | continue) handler for ( exception | exitcode != 0 | sqlstate == '02501' | errorcode -803 ) begin .. end
  */
-public class ErrorHandlerMap implements UniversalScriptProgram {
+public class ProcessExceptionHandlerMap implements UniversalScriptProgram {
 
     private final static String ERROR_HANDLER_MAP = "ERROR_HANDLER_MAP";
 
-    public static ErrorHandlerMap get(UniversalScriptContext context, boolean... array) {
-        boolean global = array.length == 0 ? false : array[0];
-        ErrorHandlerMap obj = context.getProgram(ERROR_HANDLER_MAP, global);
+    public static ProcessExceptionHandlerMap get(UniversalScriptContext context, boolean global) {
+        ProcessExceptionHandlerMap obj = context.getProgram(ERROR_HANDLER_MAP, global);
         if (obj == null) {
-            obj = new ErrorHandlerMap();
+            obj = new ProcessExceptionHandlerMap();
             context.addProgram(ERROR_HANDLER_MAP, obj, global);
         }
         return obj;
@@ -44,13 +44,13 @@ public class ErrorHandlerMap implements UniversalScriptProgram {
     /** 执行条件与异常处理逻辑的映射关系 */
     private LinkedHashMap<String, ScriptHandler> map;
 
-    /** true 表示 {@link ErrorHandlerMap#catchCommandError(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, String, Throwable)}} 已经被执行了 */
-    private boolean hasHandle;
+    /** true 表示 {@link ProcessExceptionHandlerMap#execute(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, String, Throwable)}} 已经被执行了 */
+    private boolean alreadyExecute;
 
     /**
      * 初始化
      */
-    public ErrorHandlerMap() {
+    public ProcessExceptionHandlerMap() {
         this.map = new LinkedHashMap<String, ScriptHandler>();
     }
 
@@ -94,12 +94,12 @@ public class ErrorHandlerMap implements UniversalScriptProgram {
     }
 
     /**
-     * 判断是否已执行过 {@linkplain #catchEvalError(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, String, Throwable)} 方法
+     * 判断是否已执行过 {@linkplain #execute(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, String, Throwable)} 方法
      *
-     * @return 返回 true 表示 {@linkplain #catchEvalError(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, String, Throwable)} 方法已被执行过
+     * @return 返回 true 表示该方法已被执行过
      */
-    public boolean alreadyCatchEvalError() {
-        return this.hasHandle;
+    public boolean alreadyExecute() {
+        return this.alreadyExecute;
     }
 
     /**
@@ -110,71 +110,36 @@ public class ErrorHandlerMap implements UniversalScriptProgram {
      * @param stdout      标准信息输出接口
      * @param stderr      错误信息输出接口
      * @param forceStdout true 表示使用标准信息输出接口输出标准信息（忽略 {@linkplain UniversalScriptSession#isEchoEnable()} 返回值）
-     * @param script      命令语句
+     * @param message     命令语句
      * @param exception   java异常错误信息
      * @return -1表示没有异常处理逻辑，0表示退出脚本，1表示继续向下执行
      */
-    public synchronized int catchCommandError(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, String script, Throwable exception) {
+    public synchronized int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, String message, Throwable exception) {
         if (stderr == null) {
             stderr = new ScriptStderr();
         }
 
         if (this.map.isEmpty()) {
-            return ErrorHandlerMap.EMPTY_HANDLER;
+            return ProcessExceptionHandlerMap.EMPTY_HANDLER;
         }
 
-        int exit = ErrorHandlerMap.EXIT_HANDLER;
-        Set<String> names = this.map.keySet();
-        for (String name : names) {
-            ScriptHandler handler = this.map.get(name);
-            if (handler != null && handler.executeException(session, context, stdout, stderr, forceStdout, script, exception)) {
-                if (!handler.isReturnExit()) {
-                    exit = ErrorHandlerMap.CONTINUE_HANDLER;
-                }
-            }
-        }
-        this.hasHandle = true;
-        return exit;
-    }
-
-    /**
-     * 执行脚本引擎运行错误处理逻辑
-     *
-     * @param session     用户会话信息
-     * @param context     脚本引擎上下文信息
-     * @param stdout      标准信息输出接口
-     * @param stderr      错误信息输出接口
-     * @param forceStdout true 表示使用标准信息输出接口输出标准信息（忽略 {@linkplain UniversalScriptSession#isEchoEnable()} 返回值）
-     * @param message     输出信息
-     * @param exception   脚本引擎运行错误
-     * @return -1表示没有异常处理逻辑；0表示退出脚本；1表示继续向下执行
-     */
-    public synchronized int catchEvalError(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, String message, Throwable exception) {
-        if (stderr == null) {
-            stderr = new ScriptStderr();
-        }
-
-        if (this.map.isEmpty()) {
-            return ErrorHandlerMap.EMPTY_HANDLER;
-        }
-
-        int exit = ErrorHandlerMap.EXIT_HANDLER;
+        int exit = ProcessExceptionHandlerMap.EXIT_HANDLER;
         Set<String> names = this.map.keySet();
         for (String name : names) {
             ScriptHandler handler = this.map.get(name);
             if (handler != null && handler.executeException(session, context, stdout, stderr, forceStdout, message, exception)) {
                 if (!handler.isReturnExit()) {
-                    exit = ErrorHandlerMap.CONTINUE_HANDLER;
+                    exit = ProcessExceptionHandlerMap.CONTINUE_HANDLER;
                 }
             }
         }
-        this.hasHandle = true;
+        this.alreadyExecute = true;
         return exit;
     }
 
     public ScriptProgramClone deepClone() {
-        ErrorHandlerMap obj = new ErrorHandlerMap();
-        obj.hasHandle = this.hasHandle;
+        ProcessExceptionHandlerMap obj = new ProcessExceptionHandlerMap();
+        obj.alreadyExecute = this.alreadyExecute;
         Set<Entry<String, ScriptHandler>> set = this.map.entrySet();
         for (Entry<String, ScriptHandler> e : set) {
             String key = e.getKey();
@@ -193,7 +158,6 @@ public class ErrorHandlerMap implements UniversalScriptProgram {
         }
 
         this.map.clear();
-        this.hasHandle = false;
+        this.alreadyExecute = false;
     }
-
 }

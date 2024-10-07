@@ -17,7 +17,7 @@ public class ScriptProcess {
     private static volatile int number = 20;
 
     /**
-     * 返回进程编号
+     * 返回任务编号
      *
      * @return 编号
      */
@@ -25,22 +25,22 @@ public class ScriptProcess {
         return ++number;
     }
 
-    /** 进程编号 */
+    /** 任务编号 */
     private String pid;
 
-    /** 进程起始时间 */
+    /** 任务起始时间 */
     private Date startTime;
 
-    /** 进程终止时间 */
+    /** 任务终止时间 */
     private Date endTime;
 
-    /** 进程运行环境 */
+    /** 任务运行环境 */
     private ScriptProcessEnvironment environment;
 
-    /** 进程运行线程 */
+    /** 任务运行线程 */
     private ScriptProcessJob scriptJob;
 
-    /** 进程的返回值 */
+    /** 任务的返回值 */
     private Integer exitcode;
 
     /** 行号 */
@@ -61,7 +61,7 @@ public class ScriptProcess {
     }
 
     /**
-     * 启动进程
+     * 启动任务
      */
     public void start() {
         this.startTime = new Date();
@@ -69,7 +69,7 @@ public class ScriptProcess {
     }
 
     /**
-     * 通知进程停止运行并保存返回值
+     * 通知任务停止运行并保存返回值
      *
      * @param exitcode 退出值
      */
@@ -81,7 +81,7 @@ public class ScriptProcess {
     }
 
     /**
-     * 终止进程
+     * 终止任务
      *
      * @return 返回 true 表示终止操作执行成功
      * @throws Exception 发生错误
@@ -91,36 +91,36 @@ public class ScriptProcess {
     }
 
     /**
-     * 判断进程是否已被终止
+     * 判断任务是否已被终止
      *
-     * @return 返回 true 表示进程已被终止
+     * @return 返回 true 表示任务已被终止
      */
     public boolean isTerminate() {
         return this.scriptJob.isTerminate();
     }
 
     /**
-     * 判断进程是否正在运行
+     * 判断任务是否正在运行
      *
-     * @return 返回 true 表示进程正在运行
+     * @return 返回 true 表示任务正在运行
      */
     public boolean isAlive() {
         return this.scriptJob.isAlive() || this.scriptJob.isRunning();
     }
 
     /**
-     * 判断进程是否还未开始执行
+     * 判断任务是否还未开始执行
      *
-     * @return 返回 true 表示进程还未开始执行, 返回 false 表示进程已终止或已开始执行
+     * @return 返回 true 表示任务还未开始执行, 返回 false 表示任务已终止或已开始执行
      */
     public boolean waitFor() {
         return !this.scriptJob.alreadyRun();
     }
 
     /**
-     * 进程编号
+     * 任务编号
      *
-     * @return 进程编号
+     * @return 任务编号
      */
     public String getPid() {
         return pid;
@@ -136,7 +136,7 @@ public class ScriptProcess {
     }
 
     /**
-     * 进程执行的命令
+     * 任务执行的命令
      *
      * @return 正在运行的命令
      */
@@ -145,27 +145,27 @@ public class ScriptProcess {
     }
 
     /**
-     * 进程的返回值
+     * 任务的返回值
      *
-     * @return 进程的返回值
+     * @return 任务的返回值
      */
     public Integer getExitcode() {
         return exitcode;
     }
 
     /**
-     * 进程起始时间
+     * 任务起始时间
      *
-     * @return 进程起始时间
+     * @return 任务起始时间
      */
     public Date getStartTime() {
         return startTime;
     }
 
     /**
-     * 进程结束时间
+     * 任务结束时间
      *
-     * @return 进程结束时间
+     * @return 任务结束时间
      */
     public Date getEndTime() {
         return endTime;
@@ -179,5 +179,4 @@ public class ScriptProcess {
     public long getLineNumber() {
         return this.lineNumber;
     }
-
 }

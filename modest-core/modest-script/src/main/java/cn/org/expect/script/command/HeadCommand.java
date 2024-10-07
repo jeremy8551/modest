@@ -77,7 +77,7 @@ public class HeadCommand extends AbstractFileCommand implements UniversalScriptI
             ScriptFile file = new ScriptFile(session, context, this.filepath);
             BufferedReader in = IO.getBufferedReader(file, StringUtils.defaultString(this.charsetName, context.getCharsetName()));
             try {
-                String line = null;
+                String line;
                 while ((line = in.readLine()) != null && ++count <= this.line && print) {
                     stdout.println(line);
                 }

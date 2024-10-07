@@ -11,6 +11,7 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogLevel;
 import cn.org.expect.log.PatternConsoleAppender;
 import cn.org.expect.log.apd.file.FileAppender;
+import cn.org.expect.script.UniversalScriptEngine;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.Settings;
 import org.junit.Test;
@@ -85,4 +86,21 @@ public class ScriptEngineTest {
         System.out.println("结果2: " + engine.eval("wc -l " + file.getAbsolutePath()));
     }
 
+    /**
+     * 在用户的桌面上生成脚本引擎的使用文档
+     */
+    @Test
+    public void test5() throws IOException, ScriptException {
+        File desktop = new File(Settings.getUserHome(), "Desktop");
+        if (desktop.exists() && desktop.isDirectory()) {
+            File markdown = new File(desktop, UniversalScriptEngine.class.getSimpleName() + ".md");
+            System.out.println("生成脚本引擎的使用文档, file://" + markdown.getAbsolutePath());
+            FileUtils.clearFile(markdown);
+
+            ScriptEngineManager manager = new ScriptEngineManager();
+            ScriptEngine engine = manager.getEngineByName("usl");
+            engine.eval("help > " + markdown.getAbsolutePath());
+            engine.eval("exit 0 >> " + markdown.getAbsolutePath());
+        }
+    }
 }

@@ -13,7 +13,7 @@ public class JavaCommandTest1 extends AbstractJavaCommand {
 
     @Override
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, String[] args) throws Exception {
-        context.getEngine().eval("step java类中的嵌套语句!");
+        context.getEngine().evaluate("step java类中的嵌套语句!");
         return 0;
     }
 

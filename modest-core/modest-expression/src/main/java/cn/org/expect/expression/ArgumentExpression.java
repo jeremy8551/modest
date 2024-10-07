@@ -392,7 +392,7 @@ public class ArgumentExpression implements Serializable, Cloneable {
             }
 
             if (StringUtils.isNotBlank(value) && StringUtils.indexOfBlank(value, 0, -1) != -1 //
-                    && !StringUtils.containsQuotation(value) //
+                    && !StringUtils.containsSingleQuotation(value) //
                     && !StringUtils.containsDoubleQuotation(value) //
                     && !StringUtils.containsParenthes(value) //
             ) {

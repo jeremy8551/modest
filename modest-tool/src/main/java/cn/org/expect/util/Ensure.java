@@ -81,7 +81,7 @@ public class Ensure {
      * @param value 字符串
      * @param array 字符串数组
      */
-    public static void exists(String value, String... array) {
+    public static void existsIgnoreCase(String value, String... array) {
         if (value == null || array == null || array.length == 0 || !StringUtils.inArrayIgnoreCase(value, array)) {
             throw new IllegalArgumentException(value + " != " + Arrays.toString(array));
         }

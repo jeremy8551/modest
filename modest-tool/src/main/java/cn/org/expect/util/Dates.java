@@ -315,7 +315,7 @@ public final class Dates {
             }
         }
 
-        String[] array = StringUtils.splitByBlank(str);
+        String[] array = StringUtils.splitByBlank(StringUtils.trimBlank(str));
 
         // yyyy年MM月dd日
         int b, m;
@@ -536,7 +536,7 @@ public final class Dates {
             datetime[2] = Integer.parseInt(str.substring(8, 10));
             Dates.parseTime(str.substring(11), datetime);
         } else {
-            String[] array = StringUtils.splitByBlank(str);
+            String[] array = StringUtils.splitByBlank(StringUtils.trimBlank(str));
 
             // 31 dec 2017
             if (array.length == 3 //

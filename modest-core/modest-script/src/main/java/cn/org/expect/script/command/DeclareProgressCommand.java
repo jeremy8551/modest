@@ -43,14 +43,12 @@ public class DeclareProgressCommand extends AbstractGlobalCommand {
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
-        boolean global = this.isGlobal();
-
         if (!StringUtils.isInt(this.number)) {
             stderr.println(ResourcesUtils.getMessage("script.message.stderr130", this.command, this.number));
             return UniversalScriptCommand.COMMAND_ERROR;
         }
 
-        Printer out = null;
+        Printer out;
         if ("out".equalsIgnoreCase(this.type)) {
             out = stdout;
         } else if ("err".equalsIgnoreCase(this.type)) {
@@ -63,13 +61,18 @@ public class DeclareProgressCommand extends AbstractGlobalCommand {
         }
 
         int total = Integer.parseInt(this.number);
-        ScriptProgress progress = null;
+        ScriptProgress progress;
         if (session.getAnalysis().isBlankline(this.name)) {
             progress = new ScriptProgress(out, this.message, total);
         } else {
             progress = new ScriptProgress(this.name, out, this.message, total);
         }
-        ProgressMap.get(context, global).add(progress);
+
+        if (session.isEchoEnable() || forceStdout) {
+            stdout.println(progress.toString(this.isGlobal()));
+        }
+
+        ProgressMap.get(context, this.isGlobal()).add(progress);
         return 0;
     }
 

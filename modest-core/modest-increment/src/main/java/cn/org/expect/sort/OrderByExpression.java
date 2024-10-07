@@ -69,7 +69,7 @@ public class OrderByExpression {
         // 解析排序方向
         if (list.size() == 2) {
             String ascOrDesc = list.get(1);
-            Ensure.exists(ascOrDesc, "asc", "desc");
+            Ensure.existsIgnoreCase(ascOrDesc, "asc", "desc");
             this.asc = "asc".equalsIgnoreCase(ascOrDesc);
         } else {
             this.asc = true;

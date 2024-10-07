@@ -112,7 +112,7 @@ public class SortByRepeat2Test {
         } catch (Throwable e) {
             String message = StringUtils.toString(e);
             System.out.println(message);
-            String[] array = StringUtils.splitByBlank(message);
+            String[] array = StringUtils.splitByBlank(StringUtils.trimBlank(message));
             Assert.assertTrue(StringUtils.inArrayIgnoreCase(String.valueOf(line), array));
             Assert.assertTrue(StringUtils.inArrayIgnoreCase(String.valueOf(next), array));
             System.err.println(e.getMessage());

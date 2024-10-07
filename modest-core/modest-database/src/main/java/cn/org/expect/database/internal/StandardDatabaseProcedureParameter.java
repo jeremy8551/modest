@@ -273,7 +273,7 @@ public class StandardDatabaseProcedureParameter implements DatabaseProcedurePara
 
         int type = this.getSqlType();
         String expression = StringUtils.trimBlank(this.getExpression());
-        boolean containQuotes = StringUtils.containsQuotation(expression);
+        boolean containQuotes = StringUtils.containsSingleQuotation(expression);
         String str = StringUtils.unquote(expression);
 
         switch (type) {

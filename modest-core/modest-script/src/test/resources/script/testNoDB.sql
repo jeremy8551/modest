@@ -1,6 +1,7 @@
 echo 当前目录 `pwd`, 当前时间 `date`
-
-echo $host $admin $adminPw $jdbcfilepath
+debug
+echo "打印外部传入的变量''\"\" host=" -n
+echo $host admin=$admin adminPw=$adminPw jdbcfilepath=$jdbcfilepath
 
 # 进入目录
 cd $curr_dir_path
@@ -184,7 +185,7 @@ if `cat $temp/headtest.log | head -n 1` != 1 then
 fi
 
 set testline=`wc -l $temp/headtest.log`
-set testline=testline.split()[0]
+set testline=testline.split()[1]
 if $testline != 5 then
   echo $testline != 5
   exit 1
@@ -1038,23 +1039,46 @@ echo ""
 echo ""
 echo ""
 
+echo "测试 echo on 与 echo off 功能"
+echo off
+echo "print str" > ${temp}/testEchoOff.log
+echo on
+set testEchoOffStr=`wc -l ${temp}/testEchoOff.log`
+if testEchoOffStr.split()[1] != "0" then
+    echo $testEchoOffStr
+    exit 10
+fi
 
 # 测试输出信息到日志
-echo -n "test 123" 1> ${temp}/test111.log
+echo -n "test 123" 1> ${temp}/testEchoNoWrap.log
 while read line do 
   if "$line" != "test 123" then
      echo "$line" != "test 123"
      exit 10
   fi
-done < ${temp}/test111.log
-echo -n "4" >> ${temp}/test111.log
+done < ${temp}/testEchoNoWrap.log
+echo -n "4" >> ${temp}/testEchoNoWrap.log
 while read line do 
   if "$line" != "test 1234" then
      echo "$line" != "test 1234"
      exit 10
   fi
-done < ${temp}/test111.log
+done < ${temp}/testEchoNoWrap.log
 
+echo "test 123" -n 1> ${temp}/testEchoNoWrap.log
+while read line do
+  if "$line" != "test 123" then
+     echo "$line" != "test 123"
+     exit 10
+  fi
+done < ${temp}/testEchoNoWrap.log
+echo "4"  -n >> ${temp}/testEchoNoWrap.log
+while read line do
+  if "$line" != "test 1234" then
+     echo "$line" != "test 1234"
+     exit 10
+  fi
+done < ${temp}/testEchoNoWrap.log
 
 
 set totalLoops = 100000

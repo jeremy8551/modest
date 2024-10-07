@@ -4371,7 +4371,7 @@ public class StringUtils {
      * @param str 字符串
      * @return 返回true表示字符串两端有单引号
      */
-    public static boolean containsQuotation(CharSequence str) {
+    public static boolean containsSingleQuotation(CharSequence str) {
         if (str == null || str.length() <= 1) {
             return false;
         } else {
@@ -4391,6 +4391,33 @@ public class StringUtils {
         } else {
             return str.charAt(0) == '"' && str.charAt(str.length() - 1) == '"';
         }
+    }
+
+    /**
+     * 判断字符串参数 str 二端是否有单引号或双引号
+     *
+     * @param str 字符串
+     * @return 返回-1表示字符串两端没有单引号或双引号，0表示有单引号，1表示有双引号
+     */
+    public static int containsQuotation(CharSequence str) {
+        if (str == null || str.length() <= 1) {
+            return -1;
+        }
+
+        char firstChar = str.charAt(0); // 第一个字符
+        char lastChar = str.charAt(str.length() - 1); // 最后一个字符
+
+        // 单引号
+        if (firstChar == '\'' && lastChar == '\'') {
+            return 0;
+        }
+
+        // 双引号
+        if (firstChar == '"' && lastChar == '"') {
+            return 1;
+        }
+
+        return -1;
     }
 
     /**

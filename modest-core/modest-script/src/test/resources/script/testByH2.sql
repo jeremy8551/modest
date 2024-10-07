@@ -184,7 +184,7 @@ if `cat $temp/headtest.log | head -n 1` != 1 then
 fi
 
 set testline=`wc -l $temp/headtest.log`
-set testline=testline.split()[0]
+set testline=testline.split()[1]
 if $testline != 5 then
   echo $testline != 5
   exit 1
@@ -548,8 +548,8 @@ while $tcount <= 100123 loop
 
   set tcount = $tcount + 1
 end loop
-commit
 undeclare sname Statement
+commit
 
 set count = select count(*) from v12_test_tmp;
 echo 笔数 $count
@@ -581,8 +581,8 @@ while read line do
           echo $str
 
           set ts=str.split()
-          set count = count + ts[0].trim().int()
-          set bytes = bytes + ts[2].trim().int()
+          set count = count + ts[1].trim().int()
+          set bytes = bytes + ts[3].trim().int()
 
           head -n 5 $filepath
           echo ""

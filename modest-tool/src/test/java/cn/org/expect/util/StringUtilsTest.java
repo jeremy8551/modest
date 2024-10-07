@@ -1363,14 +1363,17 @@ public class StringUtilsTest {
 
     @Test
     public void testSplitBlank() {
+        Assert.assertEquals("", StringUtils.join(StringUtils.splitByBlank(""), "|"));
+        Assert.assertEquals("1", StringUtils.join(StringUtils.splitByBlank("1"), "|"));
+        Assert.assertEquals("|1", StringUtils.join(StringUtils.splitByBlank(" 1"), "|"));
+        Assert.assertEquals("1|", StringUtils.join(StringUtils.splitByBlank("1 "), "|"));
+        Assert.assertEquals("|1|", StringUtils.join(StringUtils.splitByBlank(" 1 "), "|"));
         Assert.assertEquals("|11|2|3|4|5|测试|", StringUtils.join(StringUtils.splitByBlank(" 11 2 3 4 5 测试 "), "|"));
         Assert.assertEquals("|11|2|3|4|5|测试|", StringUtils.join(StringUtils.splitByBlank(" 11   2     3 4     5 测试 "), "|"));
         Assert.assertEquals("11|2|3|4|5", StringUtils.join(StringUtils.splitByBlank("11   2     3 4     5"), "|"));
 
         String[] array = StringUtils.splitByBlank("   1   2     3 4     5 6 7   ");
-        System.out.println(Arrays.toString(array));
         Assert.assertEquals(9, array.length);
-
     }
 
     @Test
@@ -1744,11 +1747,25 @@ public class StringUtilsTest {
 
     @Test
     public void testContainQuotes() {
-        Assert.assertTrue(StringUtils.containsQuotation("' '"));
-        Assert.assertTrue(StringUtils.containsQuotation("''"));
-        Assert.assertTrue(StringUtils.containsQuotation("' '"));
-        Assert.assertFalse(StringUtils.containsQuotation("'"));
-        Assert.assertFalse(StringUtils.containsQuotation(""));
+        Assert.assertEquals(0, StringUtils.containsQuotation("' '"));
+        Assert.assertEquals(-1, StringUtils.containsQuotation(" ' '"));
+        Assert.assertEquals(0, StringUtils.containsQuotation("''"));
+        Assert.assertEquals(0, StringUtils.containsQuotation("' '"));
+        Assert.assertEquals(-1, StringUtils.containsQuotation("'"));
+        Assert.assertEquals(-1, StringUtils.containsQuotation(""));
+        Assert.assertEquals(-1, StringUtils.containsQuotation(" \"\" "));
+        Assert.assertEquals(1, StringUtils.containsQuotation("\"\"\""));
+        Assert.assertEquals(1, StringUtils.containsQuotation("\"'''''\""));
+        Assert.assertEquals(1, StringUtils.containsQuotation("\"1\""));
+    }
+
+    @Test
+    public void testContainSingleQuotes() {
+        Assert.assertTrue(StringUtils.containsSingleQuotation("' '"));
+        Assert.assertTrue(StringUtils.containsSingleQuotation("''"));
+        Assert.assertTrue(StringUtils.containsSingleQuotation("' '"));
+        Assert.assertFalse(StringUtils.containsSingleQuotation("'"));
+        Assert.assertFalse(StringUtils.containsSingleQuotation(""));
     }
 
     @Test

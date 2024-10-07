@@ -5,14 +5,14 @@ import java.io.IOException;
 import java.io.Reader;
 
 import cn.org.expect.script.UniversalCommandCompiler;
-import cn.org.expect.script.UniversalCommandListener;
+import cn.org.expect.script.UniversalScriptListener;
+import cn.org.expect.script.UniversalScriptListenerList;
 import cn.org.expect.script.UniversalCommandResultSet;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptCommand;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptException;
 import cn.org.expect.script.UniversalScriptInputStream;
-import cn.org.expect.script.UniversalScriptListener;
 import cn.org.expect.script.UniversalScriptParser;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
@@ -58,9 +58,9 @@ public class JumpCommand extends AbstractTraceCommand implements UniversalScript
         context.addGlobalVariable(UniversalScriptVariable.SESSION_VARNAME_JUMP, "true"); // JUMP 命令标识变量
 
         // 添加 jump 命令的监听器
-        UniversalScriptListener c = context.getCommandListeners();
-        if (!c.contains(JumpListener.class)) {
-            c.add(new JumpListener());
+        UniversalScriptListenerList list = context.getListeners();
+        if (!list.contains(JumpListener.class)) {
+            list.add(new JumpListener());
         }
         return 0;
     }
@@ -77,13 +77,13 @@ public class JumpCommand extends AbstractTraceCommand implements UniversalScript
         return false;
     }
 
-    class JumpListener implements UniversalCommandListener {
+    public static class JumpListener implements UniversalScriptListener {
 
         public JumpListener() {
             super();
         }
 
-        public void startScript(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, Reader in) throws Exception {
+        public void startEvaluate(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, Reader in) throws Exception {
         }
 
         public boolean beforeCommand(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, UniversalScriptCommand command) throws Exception {
@@ -98,11 +98,11 @@ public class JumpCommand extends AbstractTraceCommand implements UniversalScript
             return false;
         }
 
-        public boolean catchScript(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, UniversalScriptCommand command, UniversalCommandResultSet result, Throwable e) throws Exception {
+        public boolean catchEvaluate(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, UniversalScriptCommand command, UniversalCommandResultSet result, Throwable e) throws Exception {
             return false;
         }
 
-        public void exitScript(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, UniversalScriptCommand command, UniversalCommandResultSet result) {
+        public void exitEvaluate(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, UniversalScriptCommand command, UniversalCommandResultSet result) {
         }
 
     }

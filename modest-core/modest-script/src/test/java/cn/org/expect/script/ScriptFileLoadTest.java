@@ -26,6 +26,6 @@ public class ScriptFileLoadTest {
         UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
         UniversalScriptEngine engine = manager.getScriptEngine();
         engine.getContext().getEnvironmentVariable().putAll(this.properties);
-        engine.eval(". classpath:/script/test_db_load.sql");
+        engine.evaluate(". classpath:/script/test_db_load.sql");
     }
 }

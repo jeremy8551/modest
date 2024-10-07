@@ -393,7 +393,7 @@ public class ScriptAnalysis extends AnalysisImpl implements UniversalScriptAnaly
                     int begin = index + 1;
                     String command = script.substring(begin, end);
                     ScriptStdbuf cache = new ScriptStdbuf(stdout);
-                    int exitcode = context.getEngine().eval(session, context, cache, stderr, command);
+                    int exitcode = context.getEngine().evaluate(session, context, cache, stderr, command);
                     if (exitcode != 0) {
                         throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr058", command));
                     }

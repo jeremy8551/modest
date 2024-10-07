@@ -18,4 +18,22 @@ public class ScriptProgress extends Progress {
         super(taskId, out, message, total);
     }
 
+    public String toString(boolean global) {
+        StringBuilder buf = new StringBuilder(200);
+        buf.append("declare ");
+        if (global) {
+            buf.append("global ");
+        }
+        buf.append("progress ");
+        buf.append("use ");
+        buf.append(this.out.getClass().getName());
+        buf.append(" print ");
+        buf.append('"');
+        buf.append(this.message);
+        buf.append('"');
+        buf.append(" total ");
+        buf.append(this.total);
+        buf.append(" times");
+        return buf.toString();
+    }
 }

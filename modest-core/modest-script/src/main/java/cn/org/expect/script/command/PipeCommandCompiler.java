@@ -31,7 +31,7 @@ public class PipeCommandCompiler extends AbstractCommandCompiler implements Univ
 
     public UniversalCommandCompilerResult match(String name, String line) {
         if (this.analysis == null) {
-            this.analysis = this.context.getFactory().buildCompiler().getAnalysis();
+            this.analysis = this.context.getEngine().getFactory().buildCompiler().getAnalysis();
         }
         return this.containsPipe(line) ? UniversalCommandCompilerResult.ACCEPT : UniversalCommandCompilerResult.IGNORE;
     }

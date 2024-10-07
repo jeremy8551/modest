@@ -153,11 +153,11 @@ public class IncrementScript3Test {
         UniversalScriptEngine engine = manager.getScriptEngine();
         try {
             // 设置命令中使用的文件路径与索引字段位置信息
-            engine.eval("set newfile='" + newfile.getAbsolutePath() + "'");
-            engine.eval("set oldfile='" + oldfile.getAbsolutePath() + "'");
-            engine.eval("set incfile='" + incfile.getAbsolutePath() + "'");
-            engine.eval("set index='2'");
-            engine.eval("set compare=");
+            engine.evaluate("set newfile='" + newfile.getAbsolutePath() + "'");
+            engine.evaluate("set oldfile='" + oldfile.getAbsolutePath() + "'");
+            engine.evaluate("set incfile='" + incfile.getAbsolutePath() + "'");
+            engine.evaluate("set index='2'");
+            engine.evaluate("set compare=");
 
             // 增量剥离命令
             String cmd = "";
@@ -167,12 +167,12 @@ public class IncrementScript3Test {
             cmd += " $oldfile of txt modified by index=$index temp=/dev/null";
             cmd += " write new and upd and del into $incfile ";
             cmd += " write log into " + logfile.getAbsolutePath();
-            engine.eval(cmd);
+            engine.evaluate(cmd);
         } catch (Throwable e) {
             e.printStackTrace();
             Assert.fail();
         } finally {
-            engine.eval("exit 0");
+            engine.evaluate("exit 0");
         }
 
         Assert.assertTrue(dir.exists());

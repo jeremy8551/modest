@@ -27,7 +27,7 @@ public class SubCommand extends AbstractCommand implements NohupCommandSupported
             stdout.println(this.command);
         }
 
-        return context.getEngine().eval(session, context, stdout, stderr, this.script);
+        return context.getEngine().evaluate(session, context, stdout, stderr, this.script);
     }
 
     public void terminate() throws Exception {

@@ -545,8 +545,8 @@ while $tcount <= 100123 loop
   
   set tcount = $tcount + 1
 end loop
-commit
 undeclare sname Statement
+commit
 
 set count = select count(*) from v12_test_tmp ;
 echo 笔数 $count

@@ -39,11 +39,11 @@ public class ScriptEngineImpl implements ScriptEngine {
     }
 
     public Object get(String key) {
-        return this.engine.get(key);
+        return this.engine.getContext().getAttribute(key);
     }
 
     public Bindings getBindings(int scope) {
-        return new BindingsImpl(this.engine.getBindings(scope));
+        return new BindingsImpl(this.engine.getContext().getVariable(scope));
     }
 
     public ScriptEngineFactory getFactory() {
@@ -51,15 +51,15 @@ public class ScriptEngineImpl implements ScriptEngine {
     }
 
     public void put(String name, Object value) {
-        this.engine.put(name, value);
+        this.engine.getContext().setAttribute(name, value, UniversalScriptContext.ENGINE_SCOPE);
     }
 
     public void setBindings(Bindings bindings, int scope) {
-        this.engine.setBindings(new UniversalScriptVariableBindings(bindings), scope);
+        this.engine.getContext().setVariable(new UniversalScriptVariableBindings(bindings), scope);
     }
 
     public Bindings createBindings() {
-        return new BindingsImpl(this.engine.createBindings());
+        return new BindingsImpl(this.engine.getFactory().buildVariable());
     }
 
     public ScriptContext getContext() {
@@ -71,29 +71,29 @@ public class ScriptEngineImpl implements ScriptEngine {
     }
 
     public Object eval(String script) {
-        return this.engine.eval(new CharArrayReader(script.toCharArray()), this.engine.getContext());
+        return this.engine.evaluate(new CharArrayReader(script.toCharArray()), this.engine.getContext());
     }
 
     public Object eval(String script, ScriptContext scriptContext) {
-        return this.engine.eval(new CharArrayReader(script.toCharArray()), this.castScriptContext(scriptContext));
+        return this.engine.evaluate(new CharArrayReader(script.toCharArray()), this.castScriptContext(scriptContext));
     }
 
     public Object eval(String script, Bindings bindings) {
         this.setBindings(bindings, UniversalScriptContext.ENGINE_SCOPE);
         CharArrayReader in = new CharArrayReader(script.toCharArray());
-        return this.engine.eval(in, this.engine.getContext());
+        return this.engine.evaluate(in, this.engine.getContext());
     }
 
     public Object eval(Reader in, Bindings bindings) {
         this.setBindings(bindings, UniversalScriptContext.ENGINE_SCOPE);
-        return this.engine.eval(in, this.engine.getContext());
+        return this.engine.evaluate(in, this.engine.getContext());
     }
 
     public Object eval(Reader in) {
-        return this.engine.eval(in, this.engine.getContext());
+        return this.engine.evaluate(in, this.engine.getContext());
     }
 
     public Object eval(Reader in, ScriptContext scriptContext) {
-        return this.engine.eval(in, this.castScriptContext(scriptContext));
+        return this.engine.evaluate(in, this.castScriptContext(scriptContext));
     }
 }

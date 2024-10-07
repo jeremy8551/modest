@@ -35,8 +35,9 @@ public class ExecuteFileCommand extends AbstractTraceCommand implements NohupCom
             stdout.println(". " + file.getAbsolutePath());
         }
 
-        UniversalScriptEngine engine = new UniversalScriptEngine(parent.getEngine());
+        UniversalScriptEngine engine = parent.getEngine().getFactory().getScriptEngine();
         UniversalScriptContext context = engine.getContext();
+        context.setParent(parent);
         context.setWriter(stdout.getWriter());
         context.setErrorWriter(stderr.getWriter());
         context.setStepWriter(parent.getStepWriter());
@@ -66,7 +67,7 @@ public class ExecuteFileCommand extends AbstractTraceCommand implements NohupCom
         this.session = session.subsession();
         try {
             this.session.setScriptFile(file); // 设置脚本文件
-            return engine.eval(this.session, context, stdout, stderr, forceStdout, file.getReader());
+            return engine.evaluate(this.session, context, stdout, stderr, forceStdout, file.getReader());
         } finally {
             try {
                 UniversalScriptContext parent = context.getParent();

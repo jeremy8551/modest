@@ -47,7 +47,7 @@ public class ScriptHandler {
      */
     public ScriptHandler(String exitOrContinue, String condition, CommandList body) {
         this.body = body;
-        Ensure.exists(exitOrContinue, "continue", "exit");
+        Ensure.existsIgnoreCase(exitOrContinue, "continue", "exit");
         this.exit = "exit".equalsIgnoreCase(exitOrContinue);
         this.condition = StringUtils.trimBlank(condition);
         this.key = ScriptHandler.toKey(this.condition);
@@ -113,20 +113,6 @@ public class ScriptHandler {
      */
     public boolean isReturnExit() {
         return exit;
-    }
-
-    /**
-     * 判断异常处理逻辑是JAVA异常处理
-     *
-     * @return 返回 true 表示异常处理逻辑是JAVA异常处理
-     */
-    public boolean isExceptionHandler() {
-        if (this.condition == null) {
-            return false;
-        } else {
-            String str = this.condition.toLowerCase();
-            return str.contains("exception") || str.contains("sqlstate") || str.contains("errorcode");
-        }
     }
 
     /**

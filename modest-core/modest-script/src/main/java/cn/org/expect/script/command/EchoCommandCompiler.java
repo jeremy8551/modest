@@ -3,12 +3,14 @@ package cn.org.expect.script.command;
 import java.io.IOException;
 
 import cn.org.expect.annotation.ScriptCommand;
+import cn.org.expect.expression.WordIterator;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
+import cn.org.expect.script.UniversalScriptException;
 import cn.org.expect.script.UniversalScriptParser;
 import cn.org.expect.script.UniversalScriptReader;
 import cn.org.expect.script.UniversalScriptSession;
-import cn.org.expect.util.Ensure;
+import cn.org.expect.util.ResourcesUtils;
 
 @ScriptCommand(name = "echo", keywords = {"echo"})
 public class EchoCommandCompiler extends AbstractTraceCommandCompiler {
@@ -18,23 +20,45 @@ public class EchoCommandCompiler extends AbstractTraceCommandCompiler {
     }
 
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
-        boolean nonewline = false;
-        String str = command.length() >= 5 ? command.substring(5) : ""; // 截取 echo 的前缀
-        if (analysis.startsWith(str, "off", 0, true)) {
-            return new EchoCommand(this, command, false);
-        } else if (analysis.startsWith(str, "on", 0, true)) {
-            return new EchoCommand(this, command, true);
-        } else if (analysis.startsWith(str, "-n", 0, true)) {
-            int index = str.indexOf("-n");
-            Ensure.fromZero(index);
-            int next = index + 2;
-            if (next >= str.length() || Character.isWhitespace(str.charAt(next))) {
-                str = str.substring(next + 1);
-                nonewline = true;
+        WordIterator it = analysis.parse(command);
+        it.assertNext("echo");
+
+        // echo on
+        if (it.isNext("on")) {
+            it.assertNext("on");
+            it.assertOver();
+            return new EchoSwitchCommand(this, command, true);
+        }
+
+        // echo off
+        if (it.isNext("off")) {
+            it.assertNext("off");
+            it.assertOver();
+            return new EchoSwitchCommand(this, command, false);
+        }
+
+        // echo -n "str"
+        if (it.isNext("-n")) {
+            it.assertNext("-n");
+            String message = it.readOther();
+            if (analysis.containsQuotation(message)) {
+                return new EchoCommand(this, command, message);
+            } else {
+                throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr082", command));
             }
         }
 
-        return new EchoCommand(this, orginalScript, str, nonewline);
-    }
+        // echo "str" -n
+        if (it.isLast("-n")) {
+            String message = it.readUntil("-n");
+            if (analysis.containsQuotation(message)) {
+                return new EchoCommand(this, command, message);
+            } else {
+                throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr082", command));
+            }
+        }
 
+        String message = it.readOther();
+        return new EchoLFCommand(this, orginalScript, message);
+    }
 }

@@ -5,12 +5,10 @@ import java.io.Closeable;
 import java.io.Reader;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import cn.org.expect.script.internal.UniversalScriptVariableImpl;
 import cn.org.expect.script.session.ScriptMainProcess;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.ResourcesUtils;
-import cn.org.expect.util.StringUtils;
 
 /**
  * 脚本引擎 <br>
@@ -28,9 +26,6 @@ public class UniversalScriptEngine implements Closeable {
 
     /** 唯一编号 */
     private String id;
-
-    /** {@linkplain #toString()} 方法的返回值 */
-    private String toString;
 
     /** true表示脚本引擎已关闭 */
     private AtomicBoolean close;
@@ -51,21 +46,10 @@ public class UniversalScriptEngine implements Closeable {
      */
     public UniversalScriptEngine(UniversalScriptEngineFactory factory) {
         this.factory = Ensure.notNull(factory);
+        this.sessionFactory = factory.buildSessionFactory();
         this.id = factory.createSerialNumber();
-        this.toString = UniversalScriptEngine.class.getSimpleName() + "@" + StringUtils.toRandomUUID();
         this.close = new AtomicBoolean(false);
         this.context = new UniversalScriptContext(this);
-        this.sessionFactory = factory.buildSessionFactory();
-    }
-
-    /**
-     * 初始化
-     *
-     * @param parent 上级脚本引擎
-     */
-    public UniversalScriptEngine(UniversalScriptEngine parent) {
-        this(parent.getFactory());
-        this.context.setParent(parent.getContext());
     }
 
     /**
@@ -75,24 +59,6 @@ public class UniversalScriptEngine implements Closeable {
      */
     public String getId() {
         return id;
-    }
-
-    /**
-     * 返回脚本中的变量或数据库编目信息
-     *
-     * @return 变量值或数据库编目信息
-     */
-    public Object get(String key) {
-        return this.context.getAttribute(key);
-    }
-
-    /**
-     * 返回脚本引擎中指定的域信息
-     *
-     * @return 域信息
-     */
-    public UniversalScriptVariable getBindings(int scope) {
-        return this.context.getBindings(scope);
     }
 
     /**
@@ -114,26 +80,6 @@ public class UniversalScriptEngine implements Closeable {
     }
 
     /**
-     * 向脚本引擎中添加全局变量
-     *
-     * @param name  变量名
-     * @param value 变量值
-     */
-    public void put(String name, Object value) {
-        this.context.setAttribute(name, value, UniversalScriptContext.ENGINE_SCOPE);
-    }
-
-    /**
-     * 向指定的域信息
-     *
-     * @param bindings 脚本引擎域信息
-     * @param scope    域标志信息
-     */
-    public void setBindings(UniversalScriptVariable bindings, int scope) {
-        this.context.setBindings(bindings, scope);
-    }
-
-    /**
      * 设置脚本引擎上下文信息
      *
      * @param context 脚本引擎上下文信息
@@ -143,27 +89,33 @@ public class UniversalScriptEngine implements Closeable {
     }
 
     /**
-     * 创建域信息
+     * 执行脚本语句
+     *
+     * @param script 脚本语句
+     * @return 计算结果
      */
-    public UniversalScriptVariable createBindings() {
-        return new UniversalScriptVariableImpl();
-    }
-
-    public Object eval(String script) {
+    public Object evaluate(String script) {
         Ensure.notNull(script);
         CharArrayReader in = new CharArrayReader(script.toCharArray());
-        return this.eval(in, this.getContext());
+        return this.evaluate(in, this.getContext());
     }
 
-    public Object eval(Reader in, UniversalScriptContext context) {
+    /**
+     * 执行脚本语句
+     *
+     * @param in      脚本语句输入流
+     * @param context 脚本引擎上下文信息
+     * @return 计算结果
+     */
+    public Object evaluate(Reader in, UniversalScriptContext context) {
         context.setReader(in);
 
         int value;
         UniversalScriptSession session = this.sessionFactory.build(this);
         try {
-            value = this.eval(session, context, context.getStdout(), context.getStderr(), false, in);
+            value = this.evaluate(session, context, context.getStdout(), context.getStderr(), false, in);
         } catch (Throwable e) {
-            throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr146", session.getMainProcess().getErrorScript(), e.getLocalizedMessage()), e);
+            throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr146", session.getMainProcess().getErrorScript()), e);
         } finally {
             session.close();
         }
@@ -189,8 +141,8 @@ public class UniversalScriptEngine implements Closeable {
      * @return 返回0表示正确, 返回非0表示不正确
      * @throws Exception 文件访问错误
      */
-    public int eval(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, Reader in) throws Exception {
-        context.getCommandListeners().startScript(session, context, stdout, stderr, forceStdout, in);
+    public int evaluate(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, Reader in) throws Exception {
+        context.getListeners().startEvaluate(session, context, stdout, stderr, forceStdout, in);
         UniversalScriptCompiler oldCompiler = session.getCompiler(); // 保存当前使用的编译器
         UniversalScriptCommand command = null;
         UniversalCommandResultSet resultSet = null;
@@ -208,10 +160,10 @@ public class UniversalScriptEngine implements Closeable {
                 }
             }
 
-            context.getCommandListeners().exitScript(session, context, stdout, stderr, forceStdout, command, resultSet);
+            context.getListeners().exitEvaluate(session, context, stdout, stderr, forceStdout, command, resultSet);
             return resultSet.getExitcode();
         } catch (Exception e) {
-            context.getCommandListeners().catchScript(session, context, stdout, stderr, forceStdout, command, resultSet, e);
+            context.getListeners().catchEvaluate(session, context, stdout, stderr, forceStdout, command, resultSet, e);
             return UniversalScriptCommand.ERROR;
         } finally {
             compiler.close(); // 关闭当前编译器
@@ -232,7 +184,7 @@ public class UniversalScriptEngine implements Closeable {
      * @param str     字符串
      * @return 脚本命令的返回值
      */
-    public int eval(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, String str) {
+    public int evaluate(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, String str) {
         UniversalScriptCompiler oldCompiler = session.getCompiler(); // 保存当前使用的编译器
 
         int exitcode = 0;
@@ -297,9 +249,5 @@ public class UniversalScriptEngine implements Closeable {
         this.context.getLocalCatalog().clear(); // 清空局部数据库编目
         this.context.getGlobalPrograms().close(); // 关闭全局程序
         this.context.getLocalPrograms().close(); // 关闭局部程序
-    }
-
-    public String toString() {
-        return this.toString;
     }
 }

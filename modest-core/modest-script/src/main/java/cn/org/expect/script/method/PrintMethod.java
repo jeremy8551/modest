@@ -38,11 +38,15 @@ public class PrintMethod extends AbstractMethod {
             return UniversalScriptCommand.VARIABLE_METHOD_ERROR;
         } else if (value.getClass().isArray()) {
             Object[] array = (Object[]) value;
-            stdout.println(StringUtils.join(array, " "));
+            if (session.isEchoEnable()) {
+                stdout.println(StringUtils.join(array, " "));
+            }
             int next = end + 1;
             return this.executeNextMethod(session, context, stdout, stderr, analysis, variableName, methodHandle, array, next);
         } else {
-            stdout.println(value);
+            if (session.isEchoEnable()) {
+                stdout.println(value);
+            }
             int next = end + 1;
             return this.executeNextMethod(session, context, stdout, stderr, analysis, variableName, methodHandle, value, next);
         }

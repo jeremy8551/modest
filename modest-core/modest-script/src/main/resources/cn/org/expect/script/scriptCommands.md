@@ -32,7 +32,7 @@ echo test # test
 $ echo [-n] string[;]
 
 [选项]
--n      # 选项用于表示输出信息后不追加回车换行符
+-n      # 选项表示：输出内容右侧没有回车符与换行符，输出内容两端必须有成对的双引号或单引号
 \       # 转义字符（反斜杠）可以对回车换行符进行转义
 ```
 
@@ -356,6 +356,31 @@ $ functionName [参数]...[;]
 $ function test() {echo $1;}
 $ test “hello world!”
 ```
+
+
+
+# debug
+
+用于开发调试的命令
+
+如下代码，是一个复制文件的脚本片段
+
+```shell
+set delfilepath="$temp/bhc_finish.del"
+rm ${delfilepath}
+cp classpath:/bhc_finish.del ${temp}
+```
+
+想要在 cp 命令执行之前进入 debug 模式，可以在脚本命令中增加 debug 命令，在 `DebugCommand` 类的 `execute` 方法中打断点
+
+```shell
+set delfilepath="$temp/bhc_finish.del"
+rm ${delfilepath}
+debug
+cp classpath:/bhc_finish.del ${temp}
+```
+
+IDE 在执行到 debug 命令时会停留在断点位置上，便于调试
 
 
 

@@ -8,6 +8,7 @@ import java.util.Set;
 
 import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.script.internal.UniversalScriptVariableImpl;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.CharTable;
 import cn.org.expect.util.Dates;
@@ -246,6 +247,13 @@ public class UniversalScriptEngineFactory {
         UniversalScriptChecker obj = this.getContext().getBean(UniversalScriptChecker.class, flag);
         obj.setScriptEngineKeywords(this.getKeywords());
         return obj;
+    }
+
+    /**
+     * 创建变量域
+     */
+    public UniversalScriptVariable buildVariable() {
+        return new UniversalScriptVariableImpl();
     }
 
     /**

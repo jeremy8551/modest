@@ -47,7 +47,7 @@ public class CommandScanner {
     public CommandScanner(UniversalScriptContext context, UniversalCommandRepository repository) {
         this.context = Ensure.notNull(context);
         this.repository = Ensure.notNull(repository);
-        this.factory = context.getFactory();
+        this.factory = context.getEngine().getFactory();
 
         // 显示所有已加载的脚本引擎命令
         EasyContext cxt = context.getContainer();

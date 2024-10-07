@@ -117,7 +117,7 @@ public class SortByRepeat1Test {
         } catch (IOException e) {
             String message = e.getLocalizedMessage();
             log.info(message);
-            String[] array = StringUtils.splitByBlank(message);
+            String[] array = StringUtils.splitByBlank(StringUtils.trimBlank(message));
             Assert.assertTrue(StringUtils.inArrayIgnoreCase(String.valueOf(line), array));
             Assert.assertTrue(StringUtils.inArrayIgnoreCase(String.valueOf(next), array));
         }

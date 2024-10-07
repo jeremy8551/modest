@@ -145,14 +145,14 @@ public class IncrementScriptTest {
         UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
         UniversalScriptEngine engine = manager.getScriptEngine();
         try {
-            engine.eval("echo 脚本引擎初始化完毕，执行增量剥离任务!");
+            engine.evaluate("echo 脚本引擎初始化完毕，执行增量剥离任务!");
 
             // 设置命令中使用的文件路径与索引字段位置信息
-            engine.eval("set newfile='" + newfile.getAbsolutePath() + "'");
-            engine.eval("set oldfile='" + oldfile.getAbsolutePath() + "'");
-            engine.eval("set incfile='" + incfile.getAbsolutePath() + "'");
-            engine.eval("set index='2'");
-            engine.eval("set compare=");
+            engine.evaluate("set newfile='" + newfile.getAbsolutePath() + "'");
+            engine.evaluate("set oldfile='" + oldfile.getAbsolutePath() + "'");
+            engine.evaluate("set incfile='" + incfile.getAbsolutePath() + "'");
+            engine.evaluate("set index='2'");
+            engine.evaluate("set compare=");
 
             // 增量剥离命令
             String inccmd = "";
@@ -162,12 +162,12 @@ public class IncrementScriptTest {
             inccmd += " $oldfile of txt modified by index=$index keeptemp";
             inccmd += " write new and upd and del into $incfile ";
             inccmd += " write log into " + logfile.getAbsolutePath();
-            engine.eval(inccmd);
+            engine.evaluate(inccmd);
         } catch (Throwable e) {
             e.printStackTrace();
             Assert.fail();
         } finally {
-            engine.eval("exit 0");
+            engine.evaluate("exit 0");
         }
 
         // 判断剥离增量结果文件与正确文件是否相等
@@ -192,11 +192,11 @@ public class IncrementScriptTest {
         UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
         UniversalScriptEngine engine = manager.getScriptEngine();
         try {
-            engine.eval("echo 脚本引擎初始化完毕，执行增量剥离任务!");
+            engine.evaluate("echo 脚本引擎初始化完毕，执行增量剥离任务!");
 
             // 设置命令中使用的文件路径与索引字段位置信息
-            engine.eval("set index='2'");
-            engine.eval("set compare=");
+            engine.evaluate("set index='2'");
+            engine.evaluate("set compare=");
 
             String cmd = "container to execute tasks in parallel using thread=3 begin " + FileUtils.lineSeparator;
             for (int i = 1; i <= 10; i++) {
@@ -232,12 +232,12 @@ public class IncrementScriptTest {
             cmd += "end" + FileUtils.lineSeparator;
             System.out.println(cmd);
 
-            engine.eval(cmd);
+            engine.evaluate(cmd);
         } catch (Throwable e) {
             e.printStackTrace();
             Assert.fail();
         } finally {
-            engine.eval("exit 0");
+            engine.evaluate("exit 0");
         }
 
         for (int i = 0; i < resultList.size(); i++) {

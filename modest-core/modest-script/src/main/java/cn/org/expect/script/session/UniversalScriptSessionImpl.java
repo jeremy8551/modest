@@ -88,7 +88,7 @@ public class UniversalScriptSessionImpl implements UniversalScriptSession {
     /** 会话的返回值 */
     private SessionResult sessionResult;
 
-    /** 是否检查 {@linkplain UniversalScriptEngine#eval(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, Reader)} 方法的返回值 */
+    /** 是否检查 {@linkplain UniversalScriptEngine#evaluate(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, Reader)} 方法的返回值 */
     private volatile boolean checkExitcode;
 
     /**

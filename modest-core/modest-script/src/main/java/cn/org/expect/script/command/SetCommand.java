@@ -54,20 +54,24 @@ public class SetCommand extends AbstractGlobalCommand {
 
             case 2: // 打印所有变量
                 if (session.isEchoEnable() || forceStdout) {
-                    return this.printVariable(session, context, stdout, stderr);
-                } else {
-                    return 0;
+                    this.printVariable(session, context, stdout, stderr);
                 }
+                return 0;
 
             case 3: // 删除变量
                 return this.removeVariable(session, context, stdout, stderr);
 
             case 4: // 命令执行完毕后，检查返回值
+                if (session.isEchoEnable() || forceStdout) {
+                    stdout.println("set -e");
+                }
                 session.setVerifyExitcode(true);
                 return 0;
 
             case 5: // 命令执行完毕后，不检查返回值
-                stdout.println("set -E");
+                if (session.isEchoEnable() || forceStdout) {
+                    stdout.println("set -E");
+                }
                 session.setVerifyExitcode(false);
                 return 0;
 
@@ -157,9 +161,8 @@ public class SetCommand extends AbstractGlobalCommand {
      * @param context 脚本引擎上下文信息
      * @param stdout  标准信息输出接口
      * @param stderr  错误信息输出接口
-     * @return 命令返回值
      */
-    protected int printVariable(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr) {
+    protected void printVariable(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr) {
         Set<String> gks = context.getGlobalVariable().keySet(); // 全局变量名
         Set<String> lks = context.getLocalVariable().keySet(); // 局部变量名
         Set<String> eks = context.getEnvironmentVariable().keySet(); // 环境变量名
@@ -188,6 +191,5 @@ public class SetCommand extends AbstractGlobalCommand {
             }
         }
         stdout.println(buf);
-        return 0;
     }
 }

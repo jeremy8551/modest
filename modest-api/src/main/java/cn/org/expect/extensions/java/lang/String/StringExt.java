@@ -459,8 +459,8 @@ public final class StringExt {
         return StringUtils.containsParenthes(str);
     }
 
-    public static boolean containsQuotation(@This String str) {
-        return StringUtils.containsQuotation(str);
+    public static boolean containsSingleQuotation(@This String str) {
+        return StringUtils.containsSingleQuotation(str);
     }
 
     public static boolean containsDoubleQuotation(@This String str) {

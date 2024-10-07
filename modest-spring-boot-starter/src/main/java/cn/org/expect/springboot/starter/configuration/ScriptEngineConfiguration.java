@@ -31,7 +31,7 @@ public class ScriptEngineConfiguration {
     public UniversalScriptEngine getUniversalScriptEngine(EasyContext context, UniversalScriptEngineFactory factory) {
         UniversalScriptEngine engine = factory.getScriptEngine();
         ApplicationContext springContext = context.getBean(ApplicationContext.class);
-        engine.setBindings(new SpringUniversalScriptVariable(springContext), UniversalScriptContext.ENVIRONMENT_SCOPE);
+        engine.getContext().setVariable(new SpringUniversalScriptVariable(springContext), UniversalScriptContext.ENVIRONMENT_SCOPE);
         return engine;
     }
     

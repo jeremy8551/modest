@@ -9,8 +9,8 @@ import java.util.Properties;
 import cn.org.expect.io.AliveReader;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.internal.ScriptCatalog;
-import cn.org.expect.script.internal.ScriptListener;
 import cn.org.expect.script.internal.ScriptProgram;
+import cn.org.expect.script.internal.UniversalScriptListenerListImpl;
 import cn.org.expect.script.io.ScriptStderr;
 import cn.org.expect.script.io.ScriptStdout;
 import cn.org.expect.script.io.ScriptSteper;
@@ -46,11 +46,8 @@ public class UniversalScriptContext {
     /** 归属的脚本引擎 */
     private UniversalScriptEngine engine;
 
-    /** 脚本引擎的工厂 */
-    private UniversalScriptEngineFactory factory;
-
     /** 命令监听器集合 */
-    private UniversalScriptListener listeners;
+    private UniversalScriptListenerList listeners;
 
     /** 全局变量集合 */
     private UniversalScriptVariable globalVariable;
@@ -98,14 +95,13 @@ public class UniversalScriptContext {
      */
     public UniversalScriptContext(UniversalScriptEngine engine) {
         this.engine = Ensure.notNull(engine);
-        this.factory = engine.getFactory();
         this.ioc = engine.getFactory().getContext();
-        this.format = this.factory.buildFormatter();
-        this.checker = this.factory.buildChecker();
-        this.listeners = new ScriptListener();
-        this.globalVariable = this.engine.createBindings();
-        this.localVariable = this.engine.createBindings();
-        this.environmentVariable = this.engine.createBindings();
+        this.format = engine.getFactory().buildFormatter();
+        this.checker = engine.getFactory().buildChecker();
+        this.listeners = new UniversalScriptListenerListImpl();
+        this.globalVariable = engine.getFactory().buildVariable();
+        this.localVariable = engine.getFactory().buildVariable();
+        this.environmentVariable = engine.getFactory().buildVariable();
         this.globalCatalog = new ScriptCatalog();
         this.localCatalog = new ScriptCatalog();
         this.globalPrograms = new ScriptProgram();
@@ -157,15 +153,6 @@ public class UniversalScriptContext {
      */
     public UniversalScriptContext getParent() {
         return this.parent;
-    }
-
-    /**
-     * 返回脚本引擎工厂
-     *
-     * @return 脚本引擎工厂
-     */
-    public UniversalScriptEngineFactory getFactory() {
-        return factory;
     }
 
     /**
@@ -223,7 +210,7 @@ public class UniversalScriptContext {
      *
      * @return 监听器
      */
-    public UniversalScriptListener getCommandListeners() {
+    public UniversalScriptListenerList getListeners() {
         return listeners;
     }
 
@@ -523,7 +510,7 @@ public class UniversalScriptContext {
      *                 {@link UniversalScriptContext#GLOBAL_SCOPE} <br>
      *                 {@link UniversalScriptContext#ENVIRONMENT_SCOPE} <br>
      */
-    public void setBindings(UniversalScriptVariable bindings, int scope) {
+    public void setVariable(UniversalScriptVariable bindings, int scope) {
         switch (scope) {
             case UniversalScriptContext.ENGINE_SCOPE:
                 if (bindings != null) {
@@ -680,7 +667,7 @@ public class UniversalScriptContext {
      *              {@link UniversalScriptContext#GLOBAL_SCOPE} <br>
      *              {@link UniversalScriptContext#ENVIRONMENT_SCOPE} <br>
      */
-    public UniversalScriptVariable getBindings(int scope) {
+    public UniversalScriptVariable getVariable(int scope) {
         switch (scope) {
             case UniversalScriptContext.ENGINE_SCOPE:
                 return this.localVariable;

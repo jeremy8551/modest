@@ -44,10 +44,8 @@ public class DDLCommand extends AbstractTraceCommand implements NohupCommandSupp
         }
 
         DatabaseTable table = this.dao.getTable(catalog, schema, tableName);
-        if (table == null) {
-            stdout.println("null");
-        } else {
-            stdout.println(this.dao.toDDL(table));
+        if (session.isEchoEnable() || forceStdout) {
+            stdout.println(table == null ? "null" : this.dao.toDDL(table));
         }
         return 0;
     }

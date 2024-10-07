@@ -3,11 +3,11 @@ package cn.org.expect.script.command;
 import java.io.Reader;
 
 import cn.org.expect.script.UniversalCommandCompiler;
-import cn.org.expect.script.UniversalCommandListener;
+import cn.org.expect.script.UniversalScriptListener;
 import cn.org.expect.script.UniversalCommandResultSet;
 import cn.org.expect.script.UniversalScriptCommand;
 import cn.org.expect.script.UniversalScriptContext;
-import cn.org.expect.script.UniversalScriptListener;
+import cn.org.expect.script.UniversalScriptListenerList;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
@@ -45,9 +45,9 @@ public class CallbackCommand extends AbstractGlobalCommand implements LoopComman
         }
 
         CallbackMap.get(context, this.isGlobal()).add(this.cls, this.body);
-        UniversalScriptListener set = context.getCommandListeners();
-        if (!set.contains(CallbackListener.class)) {
-            set.add(new CallbackListener());
+        UniversalScriptListenerList list = context.getListeners();
+        if (!list.contains(CallbackListener.class)) {
+            list.add(new CallbackListener());
         }
         return 0;
     }
@@ -59,12 +59,12 @@ public class CallbackCommand extends AbstractGlobalCommand implements LoopComman
         return false;
     }
 
-    static class CallbackListener implements UniversalCommandListener {
+    static class CallbackListener implements UniversalScriptListener {
 
         public CallbackListener() {
         }
 
-        public void startScript(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, Reader in) throws Exception {
+        public void startEvaluate(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, Reader in) throws Exception {
         }
 
         public boolean beforeCommand(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, UniversalScriptCommand command) throws Exception {
@@ -93,11 +93,11 @@ public class CallbackCommand extends AbstractGlobalCommand implements LoopComman
             return false;
         }
 
-        public boolean catchScript(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, UniversalScriptCommand command, UniversalCommandResultSet result, Throwable e) throws Exception {
+        public boolean catchEvaluate(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, UniversalScriptCommand command, UniversalCommandResultSet result, Throwable e) throws Exception {
             return false;
         }
 
-        public void exitScript(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, UniversalScriptCommand command, UniversalCommandResultSet result) {
+        public void exitEvaluate(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, UniversalScriptCommand command, UniversalCommandResultSet result) {
         }
     }
 
