@@ -37,6 +37,7 @@ public class PatternLayout implements Layout {
         this.buf.setLength(0);
         String message = event.getMessage();
         if (StringUtils.contains(message, '\r', '\n')) {
+            this.list.clear();
             StringUtils.splitLines(message, this.list);
             this.addRows(event);
         } else {

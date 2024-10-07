@@ -87,7 +87,7 @@ public interface UniversalScriptSession {
     ScriptMainProcess getMainProcess();
 
     /**
-     * 返回后台运行的进程
+     * 返回（并行运行的）后台任务
      *
      * @return 后台运行的进程
      */

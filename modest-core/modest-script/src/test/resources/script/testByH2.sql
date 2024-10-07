@@ -1719,7 +1719,7 @@ function _update_bhc_cl1_repay_int() {
 
 # 定义 step 命令回调函数
 declare global command callback for step begin
-  echo "execute $1"
+  echo "step 命令的回调函数输出: $1"
 end
 
 

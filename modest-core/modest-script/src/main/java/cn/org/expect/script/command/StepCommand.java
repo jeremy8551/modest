@@ -103,10 +103,10 @@ public class StepCommand extends AbstractTraceCommand implements CallbackCommand
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, UniversalScriptSteper steper, String message) throws Exception {
         if (steper.getWriter() == null) {
             if (session.isEchoEnable() || forceStdout) {
-                stdout.println(message);
+                stdout.println("step " + message);
             }
         } else {
-            steper.println(message);
+            steper.println("step " + message);
         }
         return 0;
     }

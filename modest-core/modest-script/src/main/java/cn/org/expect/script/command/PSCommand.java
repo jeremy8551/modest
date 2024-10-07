@@ -1,7 +1,6 @@
 package cn.org.expect.script.command;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import cn.org.expect.script.UniversalCommandCompiler;
@@ -50,6 +49,12 @@ public class PSCommand extends AbstractTraceCommand implements NohupCommandSuppo
         return 0;
     }
 
+    /**
+     * 打印所有后台任务
+     *
+     * @param session 用户会话
+     * @return 字符表格
+     */
     public CharTable printAllProcess(UniversalScriptSession session) {
         String[] titles = StringUtils.split(ResourcesUtils.getMessage("script.message.stdout048"), ',');
         CharTable table = new CharTable();
@@ -93,6 +98,12 @@ public class PSCommand extends AbstractTraceCommand implements NohupCommandSuppo
         return table;
     }
 
+    /**
+     * ps -e 打印所有会话信息
+     *
+     * @param session 会话信息
+     * @return 字符表格
+     */
     public CharTable printAllSession(UniversalScriptSession session) {
         String[] titles = StringUtils.split(ResourcesUtils.getMessage("script.message.stdout049"), ',');
         CharTable table = new CharTable();
@@ -104,16 +115,8 @@ public class PSCommand extends AbstractTraceCommand implements NohupCommandSuppo
         table.addTitle(titles[5]);
         table.addTitle("");
 
-//		table.addTitle("id");
-//		table.addTitle("parent");
-//		table.addTitle("alive");
-//		table.addTitle("terminate");
-//		table.addTitle("start");
-//		table.addTitle("end");
-//		table.addTitle("");
-
         UniversalScriptSessionFactory sessionFactory = session.getSessionFactory();
-        for (Iterator<String> it = new ArrayList<String>(sessionFactory.getSessionIDs()).iterator(); it.hasNext(); ) {
+        for (Iterator<String> it = sessionFactory.getSessionIDs().iterator(); it.hasNext(); ) {
             String id = it.next();
             UniversalScriptSession obj = sessionFactory.get(id);
             boolean self = id.equals(session.getId());
