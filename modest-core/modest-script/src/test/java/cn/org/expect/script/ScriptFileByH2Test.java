@@ -36,7 +36,7 @@ public class ScriptFileByH2Test {
             Assert.fail();
         } catch (UniversalScriptException se) {
             se.printStackTrace(System.out);
-            Assert.assertEquals("1000", engine.getContext().getAttribute("testvalue000"));
+            Assert.assertEquals("1000", engine.getContext().getVariable("testvalue000"));
             Assert.assertEquals("-3", se.getMessage());
         } finally {
             engine.evaluate("exit 0");

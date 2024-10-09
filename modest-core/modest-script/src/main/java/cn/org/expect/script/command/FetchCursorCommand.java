@@ -34,7 +34,7 @@ public class FetchCursorCommand extends AbstractCommand {
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
-        if (!context.getChecker().isVariableName(this.name)) {
+        if (!context.getEngine().getChecker().isVariableName(this.name)) {
             stderr.println(ResourcesUtils.getMessage("script.message.stderr088", this.command, this.name));
             return UniversalScriptCommand.COMMAND_ERROR;
         }

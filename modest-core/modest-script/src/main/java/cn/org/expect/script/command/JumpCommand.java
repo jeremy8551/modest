@@ -58,7 +58,7 @@ public class JumpCommand extends AbstractTraceCommand implements UniversalScript
         context.addGlobalVariable(UniversalScriptVariable.SESSION_VARNAME_JUMP, "true"); // JUMP 命令标识变量
 
         // 添加 jump 命令的监听器
-        UniversalScriptListenerList list = context.getListeners();
+        UniversalScriptListenerList list = context.getListenerList();
         if (!list.contains(JumpListener.class)) {
             list.add(new JumpListener());
         }

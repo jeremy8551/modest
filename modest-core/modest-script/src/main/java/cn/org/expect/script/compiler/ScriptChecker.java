@@ -63,5 +63,4 @@ public class ScriptChecker implements UniversalScriptChecker {
     public boolean isDatabaseKeyword(String name) {
         return this.databaseKeyword != null && this.databaseKeyword.contains(name);
     }
-
 }

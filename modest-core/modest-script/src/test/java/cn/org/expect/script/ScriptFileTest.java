@@ -33,7 +33,7 @@ public class ScriptFileTest {
             Assert.fail();
         } catch (UniversalScriptException se) { // 为了测试发生错误时，提示信息是否正确
             se.printStackTrace(System.out);
-            Assert.assertEquals("1000", engine.getContext().getAttribute("testvalue000"));
+            Assert.assertEquals("1000", engine.getContext().getVariable("testvalue000"));
             Assert.assertEquals("333", se.getMessage());
         } catch (Throwable e) {
             e.printStackTrace();

@@ -54,7 +54,7 @@ public class DeclareStatementCommand extends AbstractCommand {
             }
 
             String name = analysis.replaceVariable(session, context, this.name, false);
-            UniversalScriptChecker checker = context.getChecker();
+            UniversalScriptChecker checker = context.getEngine().getChecker();
             if (!checker.isVariableName(name) || checker.isDatabaseKeyword(name)) {
                 stderr.println(ResourcesUtils.getMessage("script.message.stderr079", this.command, name));
                 return UniversalScriptCommand.COMMAND_ERROR;
@@ -66,7 +66,7 @@ public class DeclareStatementCommand extends AbstractCommand {
 
             int batch = Ensure.isInt(analysis.replaceVariable(session, context, this.batchRecords, true));
 
-            ScriptStatement statement = new ScriptStatement(this.dao, context.getFormatter(), batch, name, sql);
+            ScriptStatement statement = new ScriptStatement(this.dao, context.getEngine().getFormatter(), batch, name, sql);
             StatementMap.get(context).put(name, statement);
             return 0;
         } catch (Exception e) {

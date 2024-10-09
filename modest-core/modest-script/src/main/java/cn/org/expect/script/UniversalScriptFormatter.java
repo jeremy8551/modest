@@ -8,7 +8,6 @@ import java.text.Format;
  * @author jeremy8551@qq.com
  */
 public abstract class UniversalScriptFormatter extends Format {
-    private final static long serialVersionUID = 1L;
 
     /**
      * 将 JDBC 参数 object 转为脚本引擎内部类型
@@ -20,5 +19,4 @@ public abstract class UniversalScriptFormatter extends Format {
      * @throws Exception 转换错误
      */
     public abstract Object formatJdbcParameter(UniversalScriptSession session, UniversalScriptContext context, Object object) throws Exception;
-
 }

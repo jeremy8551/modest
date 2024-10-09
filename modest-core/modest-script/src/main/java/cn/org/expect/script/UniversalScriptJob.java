@@ -27,5 +27,4 @@ public interface UniversalScriptJob {
      * @return 并发任务
      */
     EasyJob getJob();
-
 }

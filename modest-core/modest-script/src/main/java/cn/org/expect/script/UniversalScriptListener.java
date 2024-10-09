@@ -90,5 +90,4 @@ public interface UniversalScriptListener {
      * @throws Exception 发生错误
      */
     boolean catchCommand(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, UniversalScriptCommand command, UniversalCommandResultSet result, Throwable e) throws Exception;
-
 }

@@ -45,7 +45,7 @@ public class CallbackCommand extends AbstractGlobalCommand implements LoopComman
         }
 
         CallbackMap.get(context, this.isGlobal()).add(this.cls, this.body);
-        UniversalScriptListenerList list = context.getListeners();
+        UniversalScriptListenerList list = context.getListenerList();
         if (!list.contains(CallbackListener.class)) {
             list.add(new CallbackListener());
         }

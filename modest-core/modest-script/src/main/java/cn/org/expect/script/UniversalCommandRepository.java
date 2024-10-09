@@ -90,5 +90,4 @@ public interface UniversalCommandRepository {
      * @return 字符图形
      */
     String toString(String charsetName);
-
 }

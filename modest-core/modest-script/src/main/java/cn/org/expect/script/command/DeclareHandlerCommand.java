@@ -58,7 +58,7 @@ public class DeclareHandlerCommand extends AbstractGlobalCommand implements Loop
         }
 
         // 让异常处理模块与 UniversalScriptListenerList 解耦
-        UniversalScriptListenerList list = context.getListeners();
+        UniversalScriptListenerList list = context.getListenerList();
         if (!list.contains(UniversalCommandHandlerListener.class)) {
             list.add(new UniversalCommandHandlerListener());
         }

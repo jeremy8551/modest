@@ -25,5 +25,4 @@ public interface UniversalScriptParser {
      * @throws Exception 读取语句发生错误
      */
     List<UniversalScriptCommand> read(String script) throws Exception;
-
 }

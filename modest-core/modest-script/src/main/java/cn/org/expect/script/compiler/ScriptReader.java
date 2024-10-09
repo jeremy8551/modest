@@ -684,5 +684,4 @@ public class ScriptReader extends ScriptAnalysis implements UniversalScriptReade
         IO.close(this.in);
         this.cacheline = null;
     }
-
 }

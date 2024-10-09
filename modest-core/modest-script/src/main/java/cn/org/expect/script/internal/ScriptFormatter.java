@@ -27,7 +27,7 @@ import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
 
 /**
- * 脚本引擎内部的类型转换器
+ * 类型转换器
  *
  * @author jeremy8551@qq.com
  */
@@ -36,6 +36,9 @@ public class ScriptFormatter extends UniversalScriptFormatter {
     private final static Log log = LogFactory.getLog(ScriptFormatter.class);
 
     private final static long serialVersionUID = 1L;
+
+    public ScriptFormatter() {
+    }
 
     public Object formatJdbcParameter(UniversalScriptSession session, UniversalScriptContext context, Object object) throws Exception {
         if (object == null) {
@@ -252,5 +255,4 @@ public class ScriptFormatter extends UniversalScriptFormatter {
     public Object parseObject(String source, ParsePosition pos) {
         throw new UnsupportedOperationException();
     }
-
 }

@@ -60,5 +60,4 @@ public interface UniversalCommandCompiler {
      * @param out     脚本引擎的标准信息输出接口
      */
     void usage(UniversalScriptContext context, UniversalScriptStdout out);
-    
 }

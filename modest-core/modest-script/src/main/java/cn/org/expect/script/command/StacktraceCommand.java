@@ -41,7 +41,7 @@ public class StacktraceCommand extends AbstractTraceCommand implements NohupComm
                 }
 
                 // 格式化异常错误信息
-                buf.append(context.getFormatter().format(exp.getCause()));
+                buf.append(context.getEngine().getFormatter().format(exp.getCause()));
 
                 // 打印异常信息
                 stdout.println(buf.toString());

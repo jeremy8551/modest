@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-script-spi</artifactId>
+    <description>提供 javax.script 包中的脚本引擎接口</description>
 
     <dependencies>
         <dependency>

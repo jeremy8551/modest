@@ -3,8 +3,13 @@ package cn.org.expect.script;
 import java.io.CharArrayReader;
 import java.io.Closeable;
 import java.io.Reader;
+import java.io.Writer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import cn.org.expect.io.AliveReader;
+import cn.org.expect.script.io.ScriptStderr;
+import cn.org.expect.script.io.ScriptStdout;
+import cn.org.expect.script.io.ScriptSteper;
 import cn.org.expect.script.session.ScriptMainProcess;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.IO;
@@ -25,10 +30,13 @@ import cn.org.expect.util.ResourcesUtils;
 public class UniversalScriptEngine implements Closeable {
 
     /** 唯一编号 */
-    private String id;
+    private final String id;
+
+    /** 脚本引擎正在执行的语句输入流 */
+    private Reader reader;
 
     /** true表示脚本引擎已关闭 */
-    private AtomicBoolean close;
+    private final AtomicBoolean close;
 
     /** 脚本引擎上下文信息 */
     protected UniversalScriptContext context;
@@ -39,6 +47,21 @@ public class UniversalScriptEngine implements Closeable {
     /** 用户会话信息工厂 */
     protected UniversalScriptSessionFactory sessionFactory;
 
+    /** 内部对象转换器 */
+    protected UniversalScriptFormatter format;
+
+    /** 校验规则 */
+    protected UniversalScriptChecker checker;
+
+    /** 标准信息输出接口 */
+    protected final UniversalScriptStdout stdout;
+
+    /** 错误信息输出接口 */
+    protected final UniversalScriptStderr stderr;
+
+    /** 步骤信息输出接口 */
+    protected final UniversalScriptSteper steper;
+
     /**
      * 初始化
      *
@@ -46,10 +69,18 @@ public class UniversalScriptEngine implements Closeable {
      */
     public UniversalScriptEngine(UniversalScriptEngineFactory factory) {
         this.factory = Ensure.notNull(factory);
-        this.sessionFactory = factory.buildSessionFactory();
         this.id = factory.createSerialNumber();
+        this.sessionFactory = factory.buildSessionFactory();
+        this.format = factory.buildFormatter();
+        this.checker = factory.buildChecker();
         this.close = new AtomicBoolean(false);
-        this.context = new UniversalScriptContext(this);
+
+        UniversalScriptFormatter formatter = this.getFactory().buildFormatter();
+        this.stdout = new ScriptStdout(null, formatter);
+        this.stderr = new ScriptStderr(null, formatter);
+        this.steper = new ScriptSteper(null, formatter);
+
+        this.context = new UniversalScriptContext(this); // 最后初始化上下文信息
     }
 
     /**
@@ -77,6 +108,38 @@ public class UniversalScriptEngine implements Closeable {
      */
     public UniversalScriptEngineFactory getFactory() {
         return factory;
+    }
+
+    /**
+     * 返回读取脚本语句的 Reader
+     */
+    public Reader getReader() {
+        return this.reader;
+    }
+
+    /**
+     * 设置读取脚本语句的 Reader
+     */
+    public void setReader(Reader reader) {
+        this.reader = new AliveReader(reader);
+    }
+
+    /**
+     * 返回脚本引擎内部对象转换器
+     *
+     * @return 对象转换器
+     */
+    public UniversalScriptFormatter getFormatter() {
+        return this.format;
+    }
+
+    /**
+     * 返回校验规则
+     *
+     * @return 校验规则
+     */
+    public UniversalScriptChecker getChecker() {
+        return this.checker;
     }
 
     /**
@@ -108,12 +171,12 @@ public class UniversalScriptEngine implements Closeable {
      * @return 计算结果
      */
     public Object evaluate(Reader in, UniversalScriptContext context) {
-        context.setReader(in);
+        this.setReader(in);
 
         int value;
         UniversalScriptSession session = this.sessionFactory.build(this);
         try {
-            value = this.evaluate(session, context, context.getStdout(), context.getStderr(), false, in);
+            value = this.evaluate(session, context, context.getEngine().getStdout(), context.getEngine().getStderr(), false, in);
         } catch (Throwable e) {
             throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr146", session.getMainProcess().getErrorScript()), e);
         } finally {
@@ -142,7 +205,7 @@ public class UniversalScriptEngine implements Closeable {
      * @throws Exception 文件访问错误
      */
     public int evaluate(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, Reader in) throws Exception {
-        context.getListeners().startEvaluate(session, context, stdout, stderr, forceStdout, in);
+        context.getListenerList().startEvaluate(session, context, stdout, stderr, forceStdout, in);
         UniversalScriptCompiler oldCompiler = session.getCompiler(); // 保存当前使用的编译器
         UniversalScriptCommand command = null;
         UniversalCommandResultSet resultSet = null;
@@ -160,10 +223,11 @@ public class UniversalScriptEngine implements Closeable {
                 }
             }
 
-            context.getListeners().exitEvaluate(session, context, stdout, stderr, forceStdout, command, resultSet);
+            context.getListenerList().exitEvaluate(session, context, stdout, stderr, forceStdout, command, resultSet);
+            assert resultSet != null;
             return resultSet.getExitcode();
         } catch (Exception e) {
-            context.getListeners().catchEvaluate(session, context, stdout, stderr, forceStdout, command, resultSet, e);
+            context.getListenerList().catchEvaluate(session, context, stdout, stderr, forceStdout, command, resultSet, e);
             return UniversalScriptCommand.ERROR;
         } finally {
             compiler.close(); // 关闭当前编译器
@@ -201,8 +265,6 @@ public class UniversalScriptEngine implements Closeable {
                 exitcode = result.getExitcode();
                 if (result.isExitSession()) {
                     break;
-                } else {
-                    continue;
                 }
             }
 
@@ -224,6 +286,79 @@ public class UniversalScriptEngine implements Closeable {
     }
 
     /**
+     * 设置输出标准信息使用的 Writer
+     */
+    public void setWriter(Writer writer) {
+        this.stdout.setWriter(writer);
+    }
+
+    /**
+     * 返回输出标准信息使用的 Writer
+     */
+    public Writer getWriter() {
+        return this.stdout.getWriter();
+    }
+
+    /**
+     * 设置用于显示错误输出的 Writer
+     */
+    public void setErrorWriter(Writer writer) {
+        this.stderr.setWriter(writer);
+    }
+
+    /**
+     * 返回用于显示错误输出的 Writer
+     */
+    public Writer getErrorWriter() {
+        return this.stderr.getWriter();
+    }
+
+    /**
+     * 设置用于输出步骤信息的 Writer
+     *
+     * @param writer 步骤信息输出流
+     */
+    public void setStepWriter(Writer writer) {
+        this.steper.setWriter(writer);
+    }
+
+    /**
+     * 返回用于输出步骤信息的 Writer
+     *
+     * @return 步骤信息输出流
+     */
+    public Writer getStepWriter() {
+        return this.steper.getWriter();
+    }
+
+    /**
+     * 返回脚本引擎的标准输出对象
+     *
+     * @return 标准输出对象
+     */
+    public UniversalScriptStdout getStdout() {
+        return this.stdout;
+    }
+
+    /**
+     * 返回脚本引擎的错误输出对象
+     *
+     * @return 错误输出对象
+     */
+    public UniversalScriptStderr getStderr() {
+        return this.stderr;
+    }
+
+    /**
+     * 返回脚本引擎的步骤输出对象
+     *
+     * @return 步骤输出对象
+     */
+    public UniversalScriptSteper getSteper() {
+        return this.steper;
+    }
+
+    /**
      * 判断脚本引擎是否已关闭
      *
      * @return 返回true表示脚本引擎已关闭 false表示未关闭
@@ -237,11 +372,11 @@ public class UniversalScriptEngine implements Closeable {
             return;
         }
 
-        IO.flushQuietly(this.context.getWriter(), this.context.getErrorWriter(), this.context.getStepWriter());
-        this.context.setWriter(null);
-        this.context.setWriter(null);
-        this.context.setWriter(null);
-        this.context.setReader(null);
+        IO.flushQuietly(this.getWriter(), this.getErrorWriter(), this.getStepWriter());
+        this.setWriter(null);
+        this.setErrorWriter(null);
+        this.setStepWriter(null);
+        this.setReader(null);
 
         this.context.getGlobalVariable().clear(); // 清空全局变量
         this.context.getLocalVariable().clear(); // 清空局部变量

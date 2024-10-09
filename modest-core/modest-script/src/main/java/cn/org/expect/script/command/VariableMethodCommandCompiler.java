@@ -34,7 +34,7 @@ public class VariableMethodCommandCompiler extends AbstractTraceCommandCompiler 
     }
 
     public UniversalCommandCompilerResult match(String name, String script) {
-        return this.context.containsAttribute(name) ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return this.context.containVariable(name) ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {

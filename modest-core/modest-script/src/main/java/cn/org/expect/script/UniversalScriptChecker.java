@@ -38,5 +38,4 @@ public interface UniversalScriptChecker {
      * @return 返回true表示关键字合法 false表示关键字非法
      */
     boolean isDatabaseKeyword(String name);
-
 }

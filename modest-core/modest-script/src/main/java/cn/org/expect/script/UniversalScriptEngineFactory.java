@@ -297,5 +297,4 @@ public class UniversalScriptEngineFactory {
         table.addCell("set processId=`nothup script.txt & | tail -n 1`");
         return table.toString(CharTable.Style.db2);
     }
-
 }

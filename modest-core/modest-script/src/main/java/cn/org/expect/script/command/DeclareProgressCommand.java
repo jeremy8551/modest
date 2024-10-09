@@ -54,7 +54,7 @@ public class DeclareProgressCommand extends AbstractGlobalCommand {
         } else if ("err".equalsIgnoreCase(this.type)) {
             out = stderr;
         } else if ("step".equalsIgnoreCase(this.type)) {
-            out = context.getSteper();
+            out = context.getEngine().getSteper();
         } else {
             stderr.println(ResourcesUtils.getMessage("script.message.stderr131", this.command, this.type, "out, err, step"));
             return UniversalScriptCommand.COMMAND_ERROR;

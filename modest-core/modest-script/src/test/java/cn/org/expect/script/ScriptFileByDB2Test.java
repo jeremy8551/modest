@@ -30,7 +30,7 @@ public class ScriptFileByDB2Test {
             engine.evaluate(". classpath:/script/test.sql");
             Assert.fail();
         } catch (UniversalScriptException se) {
-            Assert.assertEquals("1000", engine.getContext().getAttribute("testvalue000"));
+            Assert.assertEquals("1000", engine.getContext().getVariable("testvalue000"));
             Assert.assertEquals("333", se.getMessage());
         } finally {
             engine.evaluate("exit 0");

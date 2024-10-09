@@ -134,5 +134,4 @@ public interface UniversalScriptListenerList {
      * @throws Exception 发生错误
      */
     void exitEvaluate(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, UniversalScriptCommand command, UniversalCommandResultSet result) throws Exception;
-
 }

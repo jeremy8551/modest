@@ -118,8 +118,8 @@ public class SetCommand extends AbstractGlobalCommand {
      * @return 命令返回值
      */
     protected int removeVariable(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr) {
-        context.removeAttribute(this.name, UniversalScriptContext.ENGINE_SCOPE);
-        context.removeAttribute(this.name, UniversalScriptContext.GLOBAL_SCOPE);
+        context.removeVariable(this.name, UniversalScriptContext.ENGINE_SCOPE);
+        context.removeVariable(this.name, UniversalScriptContext.GLOBAL_SCOPE);
         return 0;
     }
 
@@ -145,7 +145,7 @@ public class SetCommand extends AbstractGlobalCommand {
 
         // 执行查询并将结果集保存到变量域
         Object value = dao.queryFirstRowFirstCol(sql);
-        Object newvalue = context.getFormatter().formatJdbcParameter(session, context, value);
+        Object newvalue = context.getEngine().getFormatter().formatJdbcParameter(session, context, value);
         if (this.isGlobal()) {
             context.addGlobalVariable(this.name, newvalue);
         } else {
@@ -184,7 +184,7 @@ public class SetCommand extends AbstractGlobalCommand {
                 buf.append(name).append('=').append(context.getGlobalVariable(name)).append(FileUtils.lineSeparator);
             } else if (context.containsLocalVariable(name)) {
                 buf.append(name).append('=').append(context.getLocalVariable(name)).append(FileUtils.lineSeparator);
-            } else if (context.containsEnvironmentVariable(name)) {
+            } else if (context.containEnvironmentVariable(name)) {
                 buf.append(name).append('=').append(context.getEnvironmentVariable(name)).append(FileUtils.lineSeparator);
             } else {
                 throw new UnsupportedOperationException(name);

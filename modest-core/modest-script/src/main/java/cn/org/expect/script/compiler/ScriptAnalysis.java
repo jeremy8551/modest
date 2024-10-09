@@ -300,11 +300,11 @@ public class ScriptAnalysis extends AnalysisImpl implements UniversalScriptAnaly
             return null;
         }
 
-        UniversalScriptStdout stdout = context.getStdout();
-        UniversalScriptStderr stderr = context.getStderr();
+        UniversalScriptStdout stdout = context.getEngine().getStdout();
+        UniversalScriptStderr stderr = context.getEngine().getStderr();
         UniversalScriptVariable localVariable = context.getLocalVariable();
         UniversalScriptVariable globalVariable = context.getGlobalVariable();
-        UniversalScriptFormatter format = context.getFormatter();
+        UniversalScriptFormatter format = context.getEngine().getFormatter();
         Map<String, Object> variables = session.getVariables();
         UniversalScriptVariable environmentVariable = context.getEnvironmentVariable();
 
@@ -335,11 +335,11 @@ public class ScriptAnalysis extends AnalysisImpl implements UniversalScriptAnaly
             return null;
         }
 
-        UniversalScriptStdout stdout = context.getStdout();
-        UniversalScriptStderr stderr = context.getStderr();
+        UniversalScriptStdout stdout = context.getEngine().getStdout();
+        UniversalScriptStderr stderr = context.getEngine().getStderr();
         UniversalScriptVariable localVariable = context.getLocalVariable();
         UniversalScriptVariable globalVariable = context.getGlobalVariable();
-        UniversalScriptFormatter format = context.getFormatter();
+        UniversalScriptFormatter format = context.getEngine().getFormatter();
         Map<String, Object> variables = session.getVariables();
         UniversalScriptVariable environmentVariable = context.getEnvironmentVariable();
 

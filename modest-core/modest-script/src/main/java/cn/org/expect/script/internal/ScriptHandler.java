@@ -169,7 +169,7 @@ public class ScriptHandler {
         try {
             // 保存内置变量
             session.addVariable(UniversalScriptVariable.VARNAME_ERRORSCRIPT, script);
-            session.addVariable(UniversalScriptVariable.VARNAME_EXCEPTION, context.getFormatter().format(exception));
+            session.addVariable(UniversalScriptVariable.VARNAME_EXCEPTION, context.getEngine().getFormatter().format(exception));
 
             if (UniversalScriptVariable.VARNAME_EXCEPTION.equalsIgnoreCase(this.condition)) {
                 this.execute(session, context, stdout, stderr, forceStdout, this.body, new String[]{"handler"});

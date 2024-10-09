@@ -39,11 +39,11 @@ public class ScriptEngineImpl implements ScriptEngine {
     }
 
     public Object get(String key) {
-        return this.engine.getContext().getAttribute(key);
+        return this.engine.getContext().getVariable(key);
     }
 
     public Bindings getBindings(int scope) {
-        return new BindingsImpl(this.engine.getContext().getVariable(scope));
+        return new BindingsImpl(this.engine.getContext().getVariables(scope));
     }
 
     public ScriptEngineFactory getFactory() {
@@ -51,11 +51,11 @@ public class ScriptEngineImpl implements ScriptEngine {
     }
 
     public void put(String name, Object value) {
-        this.engine.getContext().setAttribute(name, value, UniversalScriptContext.ENGINE_SCOPE);
+        this.engine.getContext().addVariable(name, value, UniversalScriptContext.ENGINE_SCOPE);
     }
 
     public void setBindings(Bindings bindings, int scope) {
-        this.engine.getContext().setVariable(new UniversalScriptVariableBindings(bindings), scope);
+        this.engine.getContext().addVariable(new UniversalScriptVariableBindings(bindings), scope);
     }
 
     public Bindings createBindings() {

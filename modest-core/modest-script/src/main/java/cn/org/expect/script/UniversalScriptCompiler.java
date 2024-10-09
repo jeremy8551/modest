@@ -87,5 +87,4 @@ public interface UniversalScriptCompiler {
      * 关闭编译器
      */
     void close();
-
 }

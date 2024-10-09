@@ -1,19 +1,13 @@
 package cn.org.expect.script;
 
 import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
 import java.util.List;
 import java.util.Properties;
 
-import cn.org.expect.io.AliveReader;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.internal.ScriptCatalog;
 import cn.org.expect.script.internal.ScriptProgram;
 import cn.org.expect.script.internal.UniversalScriptListenerListImpl;
-import cn.org.expect.script.io.ScriptStderr;
-import cn.org.expect.script.io.ScriptStdout;
-import cn.org.expect.script.io.ScriptSteper;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
@@ -37,56 +31,38 @@ public class UniversalScriptContext {
     /** 环境变量（可以在当前脚本及其子脚本中访问） */
     public final static int ENVIRONMENT_SCOPE = 300;
 
-    /** 脚本引擎正在执行的语句输入流 */
-    private Reader reader;
+    /** 容器上下文信息 */
+    protected final EasyContext ioc;
 
     /** 父脚本引擎的上下文信息 */
-    private UniversalScriptContext parent;
+    protected UniversalScriptContext parent;
 
     /** 归属的脚本引擎 */
-    private UniversalScriptEngine engine;
+    protected final UniversalScriptEngine engine;
 
     /** 命令监听器集合 */
-    private UniversalScriptListenerList listeners;
+    protected final UniversalScriptListenerList listeners;
 
     /** 全局变量集合 */
-    private UniversalScriptVariable globalVariable;
+    protected final UniversalScriptVariable globalVariable;
 
     /** 局部变量集合 */
-    private UniversalScriptVariable localVariable;
+    protected final UniversalScriptVariable localVariable;
 
     /** 外部的环境变量集合（不可修改内容） */
-    private UniversalScriptVariable environmentVariable;
+    protected UniversalScriptVariable environmentVariable;
 
     /** 全局数据库编目集合（可以在当前脚本引擎及其子脚本引擎中访问） */
-    private ScriptCatalog globalCatalog;
+    protected final ScriptCatalog globalCatalog;
 
     /** 局部数据库编目集合（只能在当前脚本引擎中使用） */
-    private ScriptCatalog localCatalog;
+    protected final ScriptCatalog localCatalog;
 
     /** 用于保存用户自定义数据或程序 */
-    private ScriptProgram globalPrograms;
+    protected final ScriptProgram globalPrograms;
 
     /** 用于保存用户自定义数据或程序 */
-    private ScriptProgram localPrograms;
-
-    /** 内部对象转换器 */
-    private UniversalScriptFormatter format;
-
-    /** 标准信息输出接口 */
-    private UniversalScriptStdout stdout;
-
-    /** 错误信息输出接口 */
-    private UniversalScriptStderr stderr;
-
-    /** 步骤信息输出接口 */
-    private UniversalScriptSteper steper;
-
-    /** 校验规则 */
-    private UniversalScriptChecker checker;
-
-    /** 容器上下文信息 */
-    private EasyContext ioc;
+    protected final ScriptProgram localPrograms;
 
     /**
      * 初始化
@@ -95,10 +71,8 @@ public class UniversalScriptContext {
      */
     public UniversalScriptContext(UniversalScriptEngine engine) {
         this.engine = Ensure.notNull(engine);
-        this.ioc = engine.getFactory().getContext();
-        this.format = engine.getFactory().buildFormatter();
-        this.checker = engine.getFactory().buildChecker();
         this.listeners = new UniversalScriptListenerListImpl();
+        this.ioc = engine.getFactory().getContext();
         this.globalVariable = engine.getFactory().buildVariable();
         this.localVariable = engine.getFactory().buildVariable();
         this.environmentVariable = engine.getFactory().buildVariable();
@@ -106,10 +80,6 @@ public class UniversalScriptContext {
         this.localCatalog = new ScriptCatalog();
         this.globalPrograms = new ScriptProgram();
         this.localPrograms = new ScriptProgram();
-
-        this.stdout = new ScriptStdout(null, this.format);
-        this.stderr = new ScriptStderr(null, this.format);
-        this.steper = new ScriptSteper(null, this.format);
     }
 
     /**
@@ -174,30 +144,12 @@ public class UniversalScriptContext {
     }
 
     /**
-     * 返回脚本引擎内部对象转换器
-     *
-     * @return 对象转换器
-     */
-    public UniversalScriptFormatter getFormatter() {
-        return this.format;
-    }
-
-    /**
-     * 返回校验规则
-     *
-     * @return 校验规则
-     */
-    public UniversalScriptChecker getChecker() {
-        return this.checker;
-    }
-
-    /**
      * 返回用户设置的全局和局部变量中的字符集名
      *
      * @return 字符集名
      */
     public String getCharsetName() {
-        Object value = this.getAttribute(UniversalScriptVariable.VARNAME_CHARSET);
+        Object value = this.getVariable(UniversalScriptVariable.VARNAME_CHARSET);
         if (value instanceof String) {
             return (String) value;
         } else {
@@ -210,7 +162,7 @@ public class UniversalScriptContext {
      *
      * @return 监听器
      */
-    public UniversalScriptListenerList getListeners() {
+    public UniversalScriptListenerList getListenerList() {
         return listeners;
     }
 
@@ -270,7 +222,7 @@ public class UniversalScriptContext {
      * @param name 数据库编目名
      * @return 返回true表示存在局部变量 false表示不存在局部变量
      */
-    public boolean containsLocalCatalog(String name) {
+    public boolean containLocalCatalog(String name) {
         return this.localCatalog.containsKey(name.toUpperCase());
     }
 
@@ -284,14 +236,18 @@ public class UniversalScriptContext {
     public Properties addLocalCatalog(String name, Object value) throws IOException {
         if (StringUtils.isBlank(name) || value == null) {
             throw new IllegalArgumentException();
-        } else if (value instanceof Properties) {
+        }
+
+        if (value instanceof Properties) {
             return this.localCatalog.put(name.toUpperCase(), (Properties) value);
-        } else if (value instanceof String) {
+        }
+
+        if (value instanceof String) {
             Properties catalog = FileUtils.loadProperties((String) value);
             return this.localCatalog.put(name.toUpperCase(), catalog);
-        } else {
-            throw new UnsupportedOperationException(value.getClass().getName());
         }
+
+        throw new UnsupportedOperationException(value.getClass().getName());
     }
 
     /**
@@ -349,14 +305,18 @@ public class UniversalScriptContext {
     public Properties addGlobalCatalog(String name, Object value) throws IOException {
         if (StringUtils.isBlank(name) || value == null) {
             throw new IllegalArgumentException();
-        } else if (value instanceof Properties) {
+        }
+
+        if (value instanceof Properties) {
             return this.globalCatalog.put(name.toUpperCase(), (Properties) value);
-        } else if (value instanceof String) {
+        }
+
+        if (value instanceof String) {
             Properties catalog = FileUtils.loadProperties((String) value);
             return this.globalCatalog.put(name.toUpperCase(), catalog);
-        } else {
-            throw new UnsupportedOperationException(value.getClass().getName());
         }
+
+        throw new UnsupportedOperationException(value.getClass().getName());
     }
 
     /**
@@ -497,36 +457,36 @@ public class UniversalScriptContext {
      * @param name 变量名
      * @return 返回true表示存在
      */
-    public boolean containsEnvironmentVariable(String name) {
+    public boolean containEnvironmentVariable(String name) {
         return this.environmentVariable.containsKey(name);
     }
 
     /**
      * 将参数集合中的所有参数添加到指定域中
      *
-     * @param bindings 参数集合
-     * @param scope    域的编号 <br>
-     *                 {@link UniversalScriptContext#ENGINE_SCOPE} <br>
-     *                 {@link UniversalScriptContext#GLOBAL_SCOPE} <br>
-     *                 {@link UniversalScriptContext#ENVIRONMENT_SCOPE} <br>
+     * @param variables 参数集合
+     * @param scope     域的编号 <br>
+     *                  {@link UniversalScriptContext#ENGINE_SCOPE} <br>
+     *                  {@link UniversalScriptContext#GLOBAL_SCOPE} <br>
+     *                  {@link UniversalScriptContext#ENVIRONMENT_SCOPE} <br>
      */
-    public void setVariable(UniversalScriptVariable bindings, int scope) {
+    public void addVariable(UniversalScriptVariable variables, int scope) {
         switch (scope) {
             case UniversalScriptContext.ENGINE_SCOPE:
-                if (bindings != null) {
-                    this.localVariable.putAll(bindings);
+                if (variables != null) {
+                    this.localVariable.putAll(variables);
                 }
                 break;
 
             case UniversalScriptContext.GLOBAL_SCOPE:
-                if (bindings != null) {
-                    this.globalVariable.putAll(bindings);
+                if (variables != null) {
+                    this.globalVariable.putAll(variables);
                 }
                 break;
 
             case UniversalScriptContext.ENVIRONMENT_SCOPE:
-                if (bindings != null) {
-                    this.environmentVariable = bindings;
+                if (variables != null) {
+                    this.environmentVariable = variables;
                 }
                 break;
 
@@ -541,7 +501,7 @@ public class UniversalScriptContext {
      * @param name 变量名
      * @return 返回true表示存在变量
      */
-    public boolean containsAttribute(String name) {
+    public boolean containVariable(String name) {
         return this.globalVariable.containsKey(name) || this.localVariable.containsKey(name) || this.environmentVariable.containsKey(name);
     }
 
@@ -550,7 +510,7 @@ public class UniversalScriptContext {
      * 如果在不同的域中存在同名的变量名时，按域的优先级从高到低返回变量值，域的优先级如下：<br>
      * {@literal 局部变量域 > 全局变量域 > 全局数据库编目域 > 内置变量域 }
      */
-    public Object getAttribute(String name) {
+    public Object getVariable(String name) {
         if (this.localVariable.containsKey(name)) {
             return this.getLocalVariable(name);
         }
@@ -575,7 +535,7 @@ public class UniversalScriptContext {
      *              {@link UniversalScriptContext#GLOBAL_SCOPE} <br>
      *              {@link UniversalScriptContext#ENVIRONMENT_SCOPE} <br>
      */
-    public Object getAttribute(String name, int scope) {
+    public Object getVariable(String name, int scope) {
         switch (scope) {
             case UniversalScriptContext.ENGINE_SCOPE:
                 return this.getLocalVariable(name);
@@ -599,7 +559,7 @@ public class UniversalScriptContext {
      *              {@link UniversalScriptContext#ENGINE_SCOPE} <br>
      *              {@link UniversalScriptContext#GLOBAL_SCOPE} <br>
      */
-    public Object removeAttribute(String name, int scope) {
+    public Object removeVariable(String name, int scope) {
         switch (scope) {
             case UniversalScriptContext.ENGINE_SCOPE:
                 return this.localVariable.remove(name);
@@ -621,7 +581,7 @@ public class UniversalScriptContext {
      *              {@link UniversalScriptContext#ENGINE_SCOPE} <br>
      *              {@link UniversalScriptContext#GLOBAL_SCOPE} <br>
      */
-    public void setAttribute(String name, Object value, int scope) {
+    public void addVariable(String name, Object value, int scope) {
         switch (scope) {
             case UniversalScriptContext.ENGINE_SCOPE:
                 this.addLocalVariable(name, value);
@@ -646,16 +606,19 @@ public class UniversalScriptContext {
      * {@link UniversalScriptContext#GLOBAL_SCOPE} <br>
      * {@link UniversalScriptContext#ENVIRONMENT_SCOPE} <br>
      */
-    public int getAttributesScope(String name) {
+    public int getVariableScope(String name) {
         if (this.localVariable.containsKey(name)) {
             return UniversalScriptContext.ENGINE_SCOPE;
         }
+
         if (this.globalVariable.containsKey(name)) {
             return UniversalScriptContext.GLOBAL_SCOPE;
         }
+
         if (this.environmentVariable.containsKey(name)) {
             return UniversalScriptContext.ENVIRONMENT_SCOPE;
         }
+
         return -1;
     }
 
@@ -667,7 +630,7 @@ public class UniversalScriptContext {
      *              {@link UniversalScriptContext#GLOBAL_SCOPE} <br>
      *              {@link UniversalScriptContext#ENVIRONMENT_SCOPE} <br>
      */
-    public UniversalScriptVariable getVariable(int scope) {
+    public UniversalScriptVariable getVariables(int scope) {
         switch (scope) {
             case UniversalScriptContext.ENGINE_SCOPE:
                 return this.localVariable;
@@ -689,92 +652,4 @@ public class UniversalScriptContext {
     public List<Integer> getScopes() {
         return ArrayUtils.asList(UniversalScriptContext.ENGINE_SCOPE, UniversalScriptContext.GLOBAL_SCOPE);
     }
-
-    /**
-     * 返回读取脚本语句的 Reader
-     */
-    public Reader getReader() {
-        return this.reader;
-    }
-
-    /**
-     * 设置读取脚本语句的 Reader
-     */
-    public void setReader(Reader reader) {
-        this.reader = new AliveReader(reader);
-    }
-
-    /**
-     * 设置输出标准信息使用的 Writer
-     */
-    public void setWriter(Writer writer) {
-        this.stdout.setWriter(writer);
-    }
-
-    /**
-     * 返回输出标准信息使用的 Writer
-     */
-    public Writer getWriter() {
-        return this.stdout.getWriter();
-    }
-
-    /**
-     * 设置用于显示错误输出的 Writer
-     */
-    public void setErrorWriter(Writer writer) {
-        this.stderr.setWriter(writer);
-    }
-
-    /**
-     * 返回用于显示错误输出的 Writer
-     */
-    public Writer getErrorWriter() {
-        return this.stderr.getWriter();
-    }
-
-    /**
-     * 设置用于输出步骤信息的 Writer
-     *
-     * @param writer 步骤信息输出流
-     */
-    public void setStepWriter(Writer writer) {
-        this.steper.setWriter(writer);
-    }
-
-    /**
-     * 返回用于输出步骤信息的 Writer
-     *
-     * @return 步骤信息输出流
-     */
-    public Writer getStepWriter() {
-        return this.steper.getWriter();
-    }
-
-    /**
-     * 返回脚本引擎的标准输出对象
-     *
-     * @return 标准输出对象
-     */
-    public UniversalScriptStdout getStdout() {
-        return this.stdout;
-    }
-
-    /**
-     * 返回脚本引擎的错误输出对象
-     *
-     * @return 错误输出对象
-     */
-    public UniversalScriptStderr getStderr() {
-        return this.stderr;
-    }
-
-    /**
-     * 返回脚本引擎的步骤输出对象
-     *
-     * @return 步骤输出对象
-     */
-    public UniversalScriptSteper getSteper() {
-        return this.steper;
-    }
-
 }

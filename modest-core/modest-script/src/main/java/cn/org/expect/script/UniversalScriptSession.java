@@ -297,5 +297,4 @@ public interface UniversalScriptSession {
      * @return 目录
      */
     File getTempDir();
-
 }

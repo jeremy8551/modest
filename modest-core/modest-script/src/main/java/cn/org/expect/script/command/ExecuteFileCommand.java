@@ -38,9 +38,9 @@ public class ExecuteFileCommand extends AbstractTraceCommand implements NohupCom
         UniversalScriptEngine engine = parent.getEngine().getFactory().getScriptEngine();
         UniversalScriptContext context = engine.getContext();
         context.setParent(parent);
-        context.setWriter(stdout.getWriter());
-        context.setErrorWriter(stderr.getWriter());
-        context.setStepWriter(parent.getStepWriter());
+        engine.setWriter(stdout.getWriter());
+        engine.setErrorWriter(stderr.getWriter());
+        engine.setStepWriter(parent.getEngine().getStepWriter());
 
         try {
             return this.execute(session, engine, context, stdout, stderr, forceStdout, file, charsetName);

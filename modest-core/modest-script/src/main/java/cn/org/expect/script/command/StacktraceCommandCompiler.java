@@ -33,7 +33,7 @@ public class StacktraceCommandCompiler extends AbstractTraceCommandCompiler {
     }
 
     public void usage(UniversalScriptContext context, UniversalScriptStdout out) {
-        out.println(new ScriptUsage(this.getClass(), context.getFormatter().getClass().getName()));
+        out.println(new ScriptUsage(this.getClass(), context.getEngine().getFormatter().getClass().getName()));
     }
 
 }

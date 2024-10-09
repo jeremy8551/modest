@@ -34,5 +34,4 @@ public interface UniversalCommandResultSet {
      * @param value 返回值
      */
     void setExitcode(int value);
-
 }

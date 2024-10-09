@@ -6,13 +6,14 @@ import java.util.Set;
 import javax.script.Bindings;
 
 import cn.org.expect.script.UniversalScriptVariable;
+import cn.org.expect.util.Ensure;
 
 public class BindingsImpl implements Bindings {
 
     protected UniversalScriptVariable variable;
 
     public BindingsImpl(UniversalScriptVariable variable) {
-        this.variable = variable;
+        this.variable = Ensure.notNull(variable);
     }
 
     public Object put(String name, Object value) {

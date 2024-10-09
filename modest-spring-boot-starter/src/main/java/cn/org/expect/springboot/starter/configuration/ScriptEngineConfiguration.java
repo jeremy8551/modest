@@ -31,10 +31,10 @@ public class ScriptEngineConfiguration {
     public UniversalScriptEngine getUniversalScriptEngine(EasyContext context, UniversalScriptEngineFactory factory) {
         UniversalScriptEngine engine = factory.getScriptEngine();
         ApplicationContext springContext = context.getBean(ApplicationContext.class);
-        engine.getContext().setVariable(new SpringUniversalScriptVariable(springContext), UniversalScriptContext.ENVIRONMENT_SCOPE);
+        engine.getContext().addVariable(new SpringUniversalScriptVariable(springContext), UniversalScriptContext.ENVIRONMENT_SCOPE);
         return engine;
     }
-    
+
     @Lazy
     @Bean
     @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)

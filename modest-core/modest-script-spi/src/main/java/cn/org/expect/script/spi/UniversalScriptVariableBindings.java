@@ -14,7 +14,7 @@ public class UniversalScriptVariableBindings implements UniversalScriptVariable 
     protected Bindings bindings;
 
     public UniversalScriptVariableBindings(Bindings bindings) {
-        this.bindings = bindings;
+        this.bindings = Ensure.notNull(bindings);
     }
 
     public Object put(String name, Object value) {

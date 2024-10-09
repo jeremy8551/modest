@@ -148,5 +148,4 @@ public interface UniversalScriptAnalysis extends Analysis, Escape {
      * @return 单词分析器
      */
     WordIterator parse(String script);
-
 }

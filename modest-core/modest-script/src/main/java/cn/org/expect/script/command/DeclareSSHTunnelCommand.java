@@ -64,8 +64,8 @@ public class DeclareSSHTunnelCommand extends AbstractCommand {
         // 解析本地端口号
         String localStr = portforward.get(0);
         boolean variableName = false;
-        int inputPort = 0;
-        UniversalScriptChecker checker = context.getChecker();
+        int inputPort;
+        UniversalScriptChecker checker = context.getEngine().getChecker();
         if (checker.isVariableName(localStr)) { // 本地端口位置是变量名
             inputPort = 0; // 随机分配
             variableName = true;

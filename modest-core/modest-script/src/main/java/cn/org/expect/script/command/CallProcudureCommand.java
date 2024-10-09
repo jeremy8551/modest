@@ -54,7 +54,7 @@ public class CallProcudureCommand extends AbstractTraceCommand implements JumpCo
                 stdout.println(sql);
             }
 
-            UniversalScriptChecker checker = context.getChecker();
+            UniversalScriptChecker checker = context.getEngine().getChecker();
             DatabaseProcedure obj = this.dao.callProcedure(sql);
             DatabaseProcedureParameterList parameters = obj.getParameters();
             for (int i = 0, size = parameters.size(); i < size; i++) {

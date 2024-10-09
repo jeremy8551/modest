@@ -22,5 +22,4 @@ public interface UniversalScriptInputStream {
      * @throws Exception 读取数据发生错误
      */
     void read(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, Reader in) throws Exception;
-
 }

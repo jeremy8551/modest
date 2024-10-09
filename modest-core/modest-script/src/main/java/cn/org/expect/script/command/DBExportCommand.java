@@ -156,8 +156,8 @@ public class DBExportCommand extends AbstractTraceCommand implements UniversalSc
             cxt.setTitle(attribute.contains("colname"));
             cxt.setMaximum(attribute.contains("maxrows") ? attribute.getIntAttribute("maxrows") : 0);
             cxt.setProgress(attribute.contains("progress") ? ProgressMap.getProgress(context, attribute.getAttribute("progress")) : null);
-            cxt.setHttpServletRequest(context.getAttribute("httpServletRequest"));
-            cxt.setHttpServletResponse(context.getAttribute("httpServletResponse"));
+            cxt.setHttpServletRequest(context.getVariable("httpServletRequest"));
+            cxt.setHttpServletResponse(context.getVariable("httpServletResponse"));
 
             // 确定卸数使用的数据库连接
             ScriptDataSource pool = ScriptDataSource.get(context);

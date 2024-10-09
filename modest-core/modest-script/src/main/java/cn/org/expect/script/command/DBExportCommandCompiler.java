@@ -109,5 +109,4 @@ public class DBExportCommandCompiler extends AbstractTraceCommandCompiler {
                 , TextTable.class.getName() // 7
         ));
     }
-
 }

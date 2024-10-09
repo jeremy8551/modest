@@ -49,7 +49,7 @@ public class DeclareCursorCommand extends AbstractCommand implements WithBodyCom
 
             UniversalScriptAnalysis analysis = session.getAnalysis();
             String name = analysis.replaceVariable(session, context, this.name, false);
-            UniversalScriptChecker checker = context.getChecker();
+            UniversalScriptChecker checker = context.getEngine().getChecker();
             if (!checker.isVariableName(name) || checker.isDatabaseKeyword(name)) {
                 stderr.println(ResourcesUtils.getMessage("script.message.stderr077", this.command, name));
                 return UniversalScriptCommand.COMMAND_ERROR;

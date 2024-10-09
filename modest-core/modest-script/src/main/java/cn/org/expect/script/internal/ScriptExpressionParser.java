@@ -245,7 +245,7 @@ public class ScriptExpressionParser extends Parser {
      * @return 返回true表示存在变量
      */
     public boolean containsVariable(String name) {
-        return this.context.containsAttribute(name) || this.session.containsVariable(name);
+        return this.context.containVariable(name) || this.session.containsVariable(name);
     }
 
     /**
@@ -255,8 +255,8 @@ public class ScriptExpressionParser extends Parser {
      * @return 变量值6
      */
     public Object getVariable(String name) {
-        if (this.context.containsAttribute(name)) {
-            return this.context.getAttribute(name);
+        if (this.context.containVariable(name)) {
+            return this.context.getVariable(name);
         }
 
         if (this.session.containsVariable(name)) {

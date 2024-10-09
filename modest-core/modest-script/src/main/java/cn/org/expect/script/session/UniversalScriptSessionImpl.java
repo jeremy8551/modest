@@ -334,5 +334,4 @@ public class UniversalScriptSessionImpl implements UniversalScriptSession {
         this.factory.remove(this.sessionId);
         this.endTime = new Date();
     }
-
 }

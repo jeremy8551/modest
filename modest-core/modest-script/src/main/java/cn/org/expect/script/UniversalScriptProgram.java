@@ -22,5 +22,4 @@ public interface UniversalScriptProgram {
      * @throws Exception 释放资源发生错误
      */
     void close() throws Exception;
-
 }

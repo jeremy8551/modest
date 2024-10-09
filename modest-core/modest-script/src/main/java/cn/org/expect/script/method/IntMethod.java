@@ -38,7 +38,7 @@ public class IntMethod extends AbstractMethod {
             return UniversalScriptCommand.VARIABLE_METHOD_ERROR;
         }
 
-        String str = context.getFormatter().format(value);
+        String str = context.getEngine().getFormatter().format(value);
         if (StringUtils.isInt(str)) {
             this.value = Integer.parseInt(str);
             int next = end + 1;

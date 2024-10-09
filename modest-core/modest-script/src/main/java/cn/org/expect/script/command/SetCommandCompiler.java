@@ -56,7 +56,7 @@ public class SetCommandCompiler extends AbstractGlobalCommandCompiler {
 
         // name=value
         String name = StringUtils.trimBlank(str.substring(0, index)); // 截取变量名
-        if (!context.getChecker().isVariableName(name) || name.startsWith("$")) {
+        if (!context.getEngine().getChecker().isVariableName(name) || name.startsWith("$")) {
             throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr088", command, name));
         }
 
@@ -104,5 +104,4 @@ public class SetCommandCompiler extends AbstractGlobalCommandCompiler {
                 , StringUtils.left(UniversalScriptVariable.VARNAME_CATALOG, 15, ' ') // 22
         ));
     }
-
 }

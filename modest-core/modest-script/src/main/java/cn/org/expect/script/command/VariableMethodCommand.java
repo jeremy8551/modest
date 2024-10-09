@@ -60,7 +60,7 @@ public class VariableMethodCommand extends AbstractTraceCommand implements Nohup
         String methodStr = analysis.trim(analysis.replaceShellVariable(session, context, this.methodName, false, true, true, false), 2, 3, '.');
 
         try {
-            Object value = context.getAttribute(variableName);
+            Object value = context.getVariable(variableName);
             session.addMethodVariable(variableName, value);
 
             // 提取变量方法名

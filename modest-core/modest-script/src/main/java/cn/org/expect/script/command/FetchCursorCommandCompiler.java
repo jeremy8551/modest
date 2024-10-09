@@ -39,7 +39,7 @@ public class FetchCursorCommandCompiler extends AbstractCommandCompiler {
         String script = it.readOther();
         List<String> variableNames = analysis.split(script, analysis.getSegment());
         for (String variableName : variableNames) {
-            if (!context.getChecker().isVariableName(variableName)) {
+            if (!context.getEngine().getChecker().isVariableName(variableName)) {
                 throw new UniversalScriptException(ResourcesUtils.getMessage("script.message.stderr088", command, variableName));
             }
         }

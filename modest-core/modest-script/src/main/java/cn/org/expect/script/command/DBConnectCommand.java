@@ -83,7 +83,7 @@ public class DBConnectCommand extends AbstractTraceCommand implements UniversalS
             }
 
             if (dao.getDialect() != null) {
-                context.getChecker().setDatabaseKeywords(dao.getDialect().getKeyword(dao.getConnection()));
+                context.getEngine().getChecker().setDatabaseKeywords(dao.getDialect().getKeyword(dao.getConnection()));
             }
             return 0;
         } else {
@@ -98,5 +98,4 @@ public class DBConnectCommand extends AbstractTraceCommand implements UniversalS
     public boolean enableNohup() {
         return true;
     }
-
 }

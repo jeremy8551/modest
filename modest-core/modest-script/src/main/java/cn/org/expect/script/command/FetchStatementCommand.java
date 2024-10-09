@@ -34,7 +34,7 @@ public class FetchStatementCommand extends AbstractCommand implements JumpComman
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
-        if (!context.getChecker().isVariableName(this.name)) {
+        if (!context.getEngine().getChecker().isVariableName(this.name)) {
             stderr.println(ResourcesUtils.getMessage("script.message.stderr088", this.command, this.name));
             return UniversalScriptCommand.COMMAND_ERROR;
         }
@@ -56,7 +56,7 @@ public class FetchStatementCommand extends AbstractCommand implements JumpComman
         try {
             for (int i = 0; i < size; i++) {
                 String variableName = this.variableNames.get(i); // variable name
-                Object value = context.getAttribute(variableName); // variable value
+                Object value = context.getVariable(variableName); // variable value
                 statement.setParameter(i, value);
             }
             statement.executeBatch();

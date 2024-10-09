@@ -92,5 +92,4 @@ public interface UniversalScriptReader {
      * @return 行号
      */
     long getLineNumber();
-
 }

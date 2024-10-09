@@ -106,5 +106,4 @@ public interface UniversalScriptConfiguration {
      * @return 脚本引擎中语言版本号
      */
     String getLanguageVersion();
-
 }

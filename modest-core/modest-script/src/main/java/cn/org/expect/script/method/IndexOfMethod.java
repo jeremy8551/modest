@@ -88,7 +88,7 @@ public class IndexOfMethod extends AbstractMethod {
             } else {
                 for (int i = (from == -1 ? 0 : from); i < array.length; i++) {
                     Object obj = array[i];
-                    if (str.equals(context.getFormatter().format(obj))) {
+                    if (str.equals(context.getEngine().getFormatter().format(obj))) {
                         index = i;
                         break;
                     }

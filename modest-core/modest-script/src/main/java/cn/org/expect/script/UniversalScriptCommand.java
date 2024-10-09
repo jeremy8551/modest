@@ -52,5 +52,4 @@ public interface UniversalScriptCommand {
      * @return 脚本命令
      */
     String getScript();
-
 }
