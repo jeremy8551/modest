@@ -31,10 +31,10 @@ public class ScriptFileTest {
         try {
             engine.evaluate(". classpath:/script/testNoDB.sql");
             Assert.fail();
-        } catch (UniversalScriptException se) { // 为了测试发生错误时，提示信息是否正确
-            se.printStackTrace(System.out);
+        } catch (UniversalScriptException e) { // 为了测试发生错误时，提示信息是否正确
+            e.printStackTrace(System.out);
             Assert.assertEquals("1000", engine.getContext().getVariable("testvalue000"));
-            Assert.assertEquals("333", se.getMessage());
+            Assert.assertEquals("333", e.getMessage());
         } catch (Throwable e) {
             e.printStackTrace();
             Assert.fail();

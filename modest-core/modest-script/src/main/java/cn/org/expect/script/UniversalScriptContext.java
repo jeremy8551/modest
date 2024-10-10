@@ -652,4 +652,16 @@ public class UniversalScriptContext {
     public List<Integer> getScopes() {
         return ArrayUtils.asList(UniversalScriptContext.ENGINE_SCOPE, UniversalScriptContext.GLOBAL_SCOPE);
     }
+
+    /**
+     * 释放所有资源
+     */
+    protected void close() {
+        this.getGlobalVariable().clear(); // 清空全局变量
+        this.getLocalVariable().clear(); // 清空局部变量
+        this.getGlobalCatalog().clear(); // 清空全局数据库编目
+        this.getLocalCatalog().clear(); // 清空局部数据库编目
+        this.getGlobalPrograms().close(); // 关闭全局程序
+        this.getLocalPrograms().close(); // 关闭局部程序
+    }
 }

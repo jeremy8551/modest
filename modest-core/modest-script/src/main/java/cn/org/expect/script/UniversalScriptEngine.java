@@ -186,10 +186,9 @@ public class UniversalScriptEngine implements Closeable {
         // 校验返回值是否正确
         if (session.isVerifyExitcode() && value != 0) {
             throw new UniversalScriptException(String.valueOf(value));
+        } else {
+            return session.getValue(); // 会话的返回值
         }
-
-        // 会话的返回值
-        return session.getValue();
     }
 
     /**
@@ -367,8 +366,8 @@ public class UniversalScriptEngine implements Closeable {
         return this.close.get();
     }
 
-    public void close() {
-        if (!this.close.compareAndSet(false, true) || this.context == null) {
+    public synchronized void close() {
+        if (!this.close.compareAndSet(false, true)) {
             return;
         }
 
@@ -378,11 +377,8 @@ public class UniversalScriptEngine implements Closeable {
         this.setStepWriter(null);
         this.setReader(null);
 
-        this.context.getGlobalVariable().clear(); // 清空全局变量
-        this.context.getLocalVariable().clear(); // 清空局部变量
-        this.context.getGlobalCatalog().clear(); // 清空全局数据库编目
-        this.context.getLocalCatalog().clear(); // 清空局部数据库编目
-        this.context.getGlobalPrograms().close(); // 关闭全局程序
-        this.context.getLocalPrograms().close(); // 关闭局部程序
+        if (this.context != null) {
+            this.context.close();
+        }
     }
 }
