@@ -27,13 +27,13 @@ public class MavenFinderChooseContributor implements ChooseByNameContributor {
      * @return
      */
     public String[] getNames(Project project, boolean includeNonProjectItems) {
-        System.out.println("getNames() " + project.getName());
         MavenFinderResult result = resultSet.getLast();
+        System.out.println("getNames() " + project.getName() + " " + (result == null ? "" : result.getPattern()));
         return result == null ? new String[0] : result.canGetItems().getNames();
     }
 
     public NavigationItem[] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
-        MavenFinderResult result = resultSet.getLast();
+        MavenFinderResult result = resultSet.get(pattern);
         return result == null ? new NavigationItem[0] : result.getItems();
     }
 }

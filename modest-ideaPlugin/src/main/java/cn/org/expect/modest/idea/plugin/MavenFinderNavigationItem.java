@@ -13,7 +13,7 @@ public class MavenFinderNavigationItem implements NavigationItem {
     }
 
     public String getName() {
-        return this.presentation.getItem().getArtifact();
+        return this.presentation.getItem().getArtifact() + ", " + this.presentation.getItem().getId();
     }
 
     public ItemPresentation getPresentation() {
@@ -21,15 +21,15 @@ public class MavenFinderNavigationItem implements NavigationItem {
     }
 
     public void navigate(boolean requestFocus) {
-        StringBuilder buf = new StringBuilder();
-        buf.append("https://repo1.maven.org/maven2/");
-        buf.append(this.presentation.getItem().getGroupId().replace('.', '/'));
-        buf.append('/');
-        buf.append(this.presentation.getItem().getArtifact().replace('.', '/'));
-        BrowserUtil.browse(buf.toString());
+        BrowserUtil.browse(this.presentation.getItem().getRepositoryUrl());
     }
 
     public boolean canNavigate() {
         return true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return false;
     }
 }

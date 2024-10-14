@@ -4,31 +4,37 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import cn.org.expect.util.StringUtils;
+
 public class MavenFinderResultSet {
 
     protected volatile Map<String, MavenFinderResult> map;
 
-    protected volatile MavenFinderResult result;
+    protected volatile MavenFinderResult last;
 
     public MavenFinderResultSet() {
         this.map = new ConcurrentHashMap<String, MavenFinderResult>();
     }
 
-    public void query(String pattern) {
+    public synchronized void query(String pattern) {
         MavenFinderResult result = this.map.get(pattern);
         if (result == null) {
             List<MavenFinderItem> list = null;
             try {
                 MavenFinderQuery finder = new MavenFinderQuery();
-                list = finder.execute(pattern);
+                String newPattern = StringUtils.replaceAll(pattern, ".", "%2E");
+                list = finder.execute(StringUtils.trimBlank(newPattern));
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            result = new MavenFinderResult(pattern).addAll(list);
-            this.map.put(result.getPattern(), result);
-            this.result = result;
+            if (list != null && !list.isEmpty()) {
+                result = new MavenFinderResult(pattern).addAll(list);
+                this.map.put(result.getPattern(), result);
+            }
         }
+
+        this.last = result;
     }
 
     /**
@@ -37,6 +43,10 @@ public class MavenFinderResultSet {
      * @return
      */
     public MavenFinderResult getLast() {
-        return this.result;
+        return this.last;
+    }
+
+    public MavenFinderResult get(String pattern) {
+        return this.map.get(pattern);
     }
 }

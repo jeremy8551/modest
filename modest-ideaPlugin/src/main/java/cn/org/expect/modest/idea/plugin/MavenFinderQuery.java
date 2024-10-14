@@ -27,7 +27,7 @@ public class MavenFinderQuery {
 
         System.out.println("response: " + response.code() + ", pattern: " + pattern + ", docs: " + docs.length() + ", responseBody: " + responseBody);
 
-        List<MavenFinderItem> list = new ArrayList<MavenFinderItem>();
+        List<MavenFinderItem> list = new ArrayList<MavenFinderItem>(docs.length());
         for (int i = 0; i < docs.length(); i++) {
             JSONObject doc = docs.getJSONObject(i);
             MavenFinderItem item = this.parse(doc);
@@ -57,6 +57,6 @@ public class MavenFinderQuery {
             ec[j] = ecArray.get(j).toString();
         }
 
-        return new MavenFinderItem(artifactId, groupId, version, packaging, repositoryId, timestamp, versionCount, text, ec);
+        return new MavenFinderItem(groupId, artifactId, version, packaging, repositoryId, timestamp, versionCount, text, ec);
     }
 }

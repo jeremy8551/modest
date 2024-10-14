@@ -9,9 +9,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.containers.ContainerUtil;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
-import org.jetbrains.annotations.NotNull;
 
 public class MavenFinderContributor extends AbstractGotoSEContributor {
 
@@ -32,6 +29,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
      */
     public String filterControlSymbols(String pattern) {
         System.out.println("filterControlSymbols " + pattern);
+
         if (pattern != null && pattern.length() > 0) {
             this.contributor.query(pattern);
         }
@@ -50,8 +48,8 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
         return super.getDataForItem(element, dataId);
     }
 
-    public int getElementPriority(@NotNull Object element, @NotNull String searchPattern) {
-        return 0;
+    public int getElementPriority(Object element, String searchPattern) {
+        return 50;
     }
 
     /**
@@ -63,11 +61,11 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
         return "Maven Repository";
     }
 
-    protected @NotNull FilteringGotoByModel<?> createModel(@NotNull Project project) {
+    protected FilteringGotoByModel<?> createModel(Project project) {
         return new MavenFinderFilteringGotoByModel(project, this.contributor);
     }
 
-    public @NotNull List<AnAction> createRightActions(Function1<? super AnAction, Unit> function1, Runnable runnable) {
+    public List<AnAction> createRightActions(String pattern, Runnable onChanged) {
         return ContainerUtil.emptyList();
     }
 
@@ -95,7 +93,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
      *
      * @return 标签页名
      */
-    public @NotNull String getGroupName() {
+    public String getGroupName() {
         return "MavenRepository";
     }
 
@@ -115,5 +113,9 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
      */
     public boolean showInFindResults() {
         return true;
+    }
+
+    public boolean isEmptyPatternSupported() {
+        return false;
     }
 }
