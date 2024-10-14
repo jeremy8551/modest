@@ -49,7 +49,7 @@ public class MavenFinderResult {
         String[] array = new String[this.list.size()];
         for (int i = 0; i < this.list.size(); i++) {
             MavenFinderItem item = this.list.get(i);
-            array[i] = "getNames(): " + item.getPresentableText();
+            array[i] = item.getPresentableText();
 //            System.out.println("item: " + item.getPresentableText());
         }
         return array;

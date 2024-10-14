@@ -1,6 +1,7 @@
 package cn.org.expect.modest.idea.plugin;
 
 import java.util.List;
+import javax.swing.*;
 
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
@@ -19,6 +20,10 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     public MavenFinderContributor(AnActionEvent event) {
         super(event);
         this.contributor = new MavenFinderChooseContributor();
+    }
+
+    public ListCellRenderer<Object> getElementsRenderer() {
+        return new MavenFinderRenderer(this);
     }
 
     /**
@@ -62,7 +67,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     }
 
     protected FilteringGotoByModel<?> createModel(Project project) {
-        return new MavenFinderFilteringGotoByModel(project, this.contributor);
+        return new MavenFinderModel(project, this.contributor);
     }
 
     public List<AnAction> createRightActions(String pattern, Runnable onChanged) {

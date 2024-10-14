@@ -8,9 +8,9 @@ import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
-public class MavenFinderFilteringGotoByModel extends FilteringGotoByModel<Object> {
+public class MavenFinderModel extends FilteringGotoByModel<Object> {
 
-    public MavenFinderFilteringGotoByModel(Project project, ChooseByNameContributor contributor) {
+    public MavenFinderModel(Project project, ChooseByNameContributor contributor) {
         super(project, new ChooseByNameContributor[]{contributor});
     }
 
@@ -33,7 +33,7 @@ public class MavenFinderFilteringGotoByModel extends FilteringGotoByModel<Object
     }
 
     public String getCheckBoxName() {
-        return "MavenFinder";
+        return "MavenFinderBox";
     }
 
     public boolean loadInitialCheckBoxState() {
