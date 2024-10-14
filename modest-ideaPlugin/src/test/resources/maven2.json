@@ -1,0 +1,162 @@
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 4,
+    "params": {
+      "q": "easyetl",
+      "core": "",
+      "defType": "dismax",
+      "qf": "text^20 g^5 a^10",
+      "indent": "off",
+      "spellcheck": "true",
+      "fl": "id,g,a,latestVersion,p,ec,repositoryId,text,timestamp,versionCount",
+      "start": "",
+      "spellcheck.count": "5",
+      "sort": "score desc,timestamp desc,g asc,a asc",
+      "rows": "20",
+      "wt": "json",
+      "version": "2.2"
+    }
+  },
+  "response": {
+    "numFound": 6,
+    "start": 0,
+    "docs": [
+      {
+        "id": "icu.etl:easyetl",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "latestVersion": "2.0.9",
+        "repositoryId": "central",
+        "p": "jar",
+        "timestamp": 1702997114000,
+        "versionCount": 17,
+        "text": [
+          "icu.etl",
+          "easyetl",
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl-parent",
+        "g": "icu.etl",
+        "a": "easyetl-parent",
+        "latestVersion": "2.0.9",
+        "repositoryId": "central",
+        "p": "pom",
+        "timestamp": 1702997100000,
+        "versionCount": 7,
+        "text": [
+          "icu.etl",
+          "easyetl-parent",
+          ".pom"
+        ],
+        "ec": [
+          ".pom"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl-dependencies",
+        "g": "icu.etl",
+        "a": "easyetl-dependencies",
+        "latestVersion": "2.0.9",
+        "repositoryId": "central",
+        "p": "pom",
+        "timestamp": 1702995382000,
+        "versionCount": 8,
+        "text": [
+          "icu.etl",
+          "easyetl-dependencies",
+          ".pom"
+        ],
+        "ec": [
+          ".pom"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl-tool",
+        "g": "icu.etl",
+        "a": "easyetl-tool",
+        "latestVersion": "2.0.9",
+        "repositoryId": "central",
+        "p": "jar",
+        "timestamp": 1702995411000,
+        "versionCount": 10,
+        "text": [
+          "icu.etl",
+          "easyetl-tool",
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl-spring-boot-starter",
+        "g": "icu.etl",
+        "a": "easyetl-spring-boot-starter",
+        "latestVersion": "2.0.9",
+        "repositoryId": "central",
+        "p": "jar",
+        "timestamp": 1702997750000,
+        "versionCount": 9,
+        "text": [
+          "icu.etl",
+          "easyetl-spring-boot-starter",
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl-maven-plugin",
+        "g": "icu.etl",
+        "a": "easyetl-maven-plugin",
+        "latestVersion": "2.0.9",
+        "repositoryId": "central",
+        "p": "maven-plugin",
+        "timestamp": 1702995365000,
+        "versionCount": 10,
+        "text": [
+          "icu.etl",
+          "easyetl-maven-plugin",
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ]
+      }
+    ]
+  },
+  "spellcheck": {
+    "suggestions": []
+  }
+}

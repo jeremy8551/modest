@@ -1,0 +1,2645 @@
+{
+  "object": [
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.9.jar",
+      "groupId": "icu.etl",
+      "id": "69656586",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-2.0.9-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69656731",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.9.jar",
+      "groupId": "icu.etl",
+      "id": "69656592",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.9.pom",
+      "groupId": "icu.etl",
+      "id": "69642391",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-2.0.9-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69656730",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.8.jar",
+      "groupId": "icu.etl",
+      "id": "69566795",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-2.0.8-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69567026",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.8.pom",
+      "groupId": "icu.etl",
+      "id": "69548504",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.8.jar",
+      "groupId": "icu.etl",
+      "id": "69566798",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-2.0.8-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69567030",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.7.pom",
+      "groupId": "icu.etl",
+      "id": "69204691",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.7.jar",
+      "groupId": "icu.etl",
+      "id": "69268206",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-2.0.7-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69210692",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.7.jar",
+      "groupId": "icu.etl",
+      "id": "69268231",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.6.jar",
+      "groupId": "icu.etl",
+      "id": "68759736",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.6.pom",
+      "groupId": "icu.etl",
+      "id": "68724287",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-2.0.6-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877956",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-2.0.6-sources.jar",
+      "groupId": "icu.etl",
+      "id": "68735544",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.6.jar",
+      "groupId": "icu.etl",
+      "id": "68759727",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.5.pom",
+      "groupId": "icu.etl",
+      "id": "66981871",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-2.0.5-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68294181",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.5.pom",
+      "groupId": "icu.etl",
+      "id": "66982331",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-2.0.5-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67096387",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.5.pom.sha256",
+      "groupId": "icu.etl",
+      "id": "66982542",
+      "packaging": "pom.sha256",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.5.jar",
+      "groupId": "icu.etl",
+      "id": "67042994",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-2.0.5-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67095779",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.5.jar",
+      "groupId": "icu.etl",
+      "id": "67042997",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.4.pom",
+      "groupId": "icu.etl",
+      "id": "66832099",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.4.pom",
+      "groupId": "icu.etl",
+      "id": "66832096",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.4.jar",
+      "groupId": "icu.etl",
+      "id": "66836712",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-2.0.4-sources.jar",
+      "groupId": "icu.etl",
+      "id": "66862788",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.4.jar",
+      "groupId": "icu.etl",
+      "id": "66836697",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-2.0.4-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877949",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.3.jar",
+      "groupId": "icu.etl",
+      "id": "66693242",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-2.0.3-sources.jar",
+      "groupId": "icu.etl",
+      "id": "66832672",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.3.jar",
+      "groupId": "icu.etl",
+      "id": "66693194",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-2.0.3-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68295055",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.3.pom",
+      "groupId": "icu.etl",
+      "id": "66693127",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.3.pom",
+      "groupId": "icu.etl",
+      "id": "66693135",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-2.0.3-sources.jar",
+      "groupId": "icu.etl",
+      "id": "66832668",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.2.pom",
+      "groupId": "icu.etl",
+      "id": "67021046",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-2.0.2-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877948",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.2.jar",
+      "groupId": "icu.etl",
+      "id": "74877947",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-2.0.2-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67089406",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.1.jar",
+      "groupId": "icu.etl",
+      "id": "67881821",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.1.pom",
+      "groupId": "icu.etl",
+      "id": "66674382",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.1.pom",
+      "groupId": "icu.etl",
+      "id": "66674482",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-2.0.1-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68295282",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-2.0.1-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67090700",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-2.0.1.pom.sha256",
+      "groupId": "icu.etl",
+      "id": "66674506",
+      "packaging": "pom.sha256",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-1.1.2-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "64764693",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "1.1.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.1.2.jar",
+      "groupId": "icu.etl",
+      "id": "64764204",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "1.1.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.1.2.pom",
+      "groupId": "icu.etl",
+      "id": "64764109",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "1.1.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.1.2-sources.jar",
+      "groupId": "icu.etl",
+      "id": "64764564",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "1.1.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.1.2.pom",
+      "groupId": "icu.etl",
+      "id": "64764113",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "1.1.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-1.1.2-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "64764823",
+      "packaging": "javadoc",
+      "repositoryId": "gradle-plugin",
+      "version": "1.1.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.1.2.jar",
+      "groupId": "icu.etl",
+      "id": "64764146",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "1.1.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.1.2-sources.jar",
+      "groupId": "icu.etl",
+      "id": "64764520",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "1.1.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.1.1.pom",
+      "groupId": "icu.etl",
+      "id": "64683928",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "1.1.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.1.1.jar",
+      "groupId": "icu.etl",
+      "id": "64683888",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "1.1.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.1.1.pom",
+      "groupId": "icu.etl",
+      "id": "64683921",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "1.1.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.1.1-sources.jar.sha256",
+      "groupId": "icu.etl",
+      "id": "64684021",
+      "packaging": "jar.sha256",
+      "repositoryId": "gradle-plugin",
+      "version": "1.1.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-1.1.1-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "64684035",
+      "packaging": "javadoc",
+      "repositoryId": "gradle-plugin",
+      "version": "1.1.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.1.1-sources.jar",
+      "groupId": "icu.etl",
+      "id": "64683917",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "1.1.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.1.1-sources.jar",
+      "groupId": "icu.etl",
+      "id": "64684001",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "1.1.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-1.1.1-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "64684028",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "1.1.1"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.1.0.jar",
+      "groupId": "icu.etl",
+      "id": "64662855",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "1.1.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.1.0.pom",
+      "groupId": "icu.etl",
+      "id": "64662815",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "1.1.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-1.1.0-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "64663470",
+      "packaging": "javadoc",
+      "repositoryId": "gradle-plugin",
+      "version": "1.1.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.1.0-sources.jar",
+      "groupId": "icu.etl",
+      "id": "64663324",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "1.1.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.1.0.jar",
+      "groupId": "icu.etl",
+      "id": "64662829",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "1.1.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.1.0.pom",
+      "groupId": "icu.etl",
+      "id": "64662816",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "1.1.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-1.1.0-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "64663464",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "1.1.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.1.0-sources.jar",
+      "groupId": "icu.etl",
+      "id": "64663317",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "1.1.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.9.jar",
+      "groupId": "icu.etl",
+      "id": "63070172",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "1.0.9"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.9.jar",
+      "groupId": "icu.etl",
+      "id": "63070175",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "1.0.9"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.9.pom",
+      "groupId": "icu.etl",
+      "id": "63070151",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "1.0.9"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-1.0.9-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "63070259",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "1.0.9"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.0.9-sources.jar",
+      "groupId": "icu.etl",
+      "id": "63070217",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "1.0.9"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.0.9-sources.jar",
+      "groupId": "icu.etl",
+      "id": "63070221",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "1.0.9"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.0.8-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67824989",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "1.0.8"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-1.0.8-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68295958",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "1.0.8"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.8.jar",
+      "groupId": "icu.etl",
+      "id": "68295467",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "1.0.8"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.8.pom",
+      "groupId": "icu.etl",
+      "id": "63765698",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "1.0.8"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.7.pom",
+      "groupId": "icu.etl",
+      "id": "62918125",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "1.0.7"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.7.jar",
+      "groupId": "icu.etl",
+      "id": "62918172",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "1.0.7"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.7.pom",
+      "groupId": "icu.etl",
+      "id": "62918111",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "1.0.7"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.0.7-sources.jar",
+      "groupId": "icu.etl",
+      "id": "62918219",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "1.0.7"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-1.0.7-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68296081",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "1.0.7"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.2.jar",
+      "groupId": "icu.etl",
+      "id": "67822597",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "1.0.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.0.2-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67823021",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "1.0.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-1.0.2-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877943",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "1.0.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.2.pom",
+      "groupId": "icu.etl",
+      "id": "63762376",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "1.0.2"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.0.jar",
+      "groupId": "icu.etl",
+      "id": "62873812",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "1.0.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.0.jar",
+      "groupId": "icu.etl",
+      "id": "62873808",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "1.0.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.0.0-sources.jar",
+      "groupId": "icu.etl",
+      "id": "62874935",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "1.0.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.0.0-sources.jar.sha256",
+      "groupId": "icu.etl",
+      "id": "62874976",
+      "packaging": "jar.sha256",
+      "repositoryId": "gradle-plugin",
+      "version": "1.0.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-1.0.0-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "62874985",
+      "packaging": "javadoc",
+      "repositoryId": "gradle-plugin",
+      "version": "1.0.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "sources",
+      "fileName": "easyetl-1.0.0-sources.jar",
+      "groupId": "icu.etl",
+      "id": "62874966",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "1.0.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.0.pom",
+      "groupId": "icu.etl",
+      "id": "62873753",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "1.0.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "",
+      "fileName": "easyetl-1.0.0.pom",
+      "groupId": "icu.etl",
+      "id": "62873752",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "1.0.0"
+    },
+    {
+      "artifactId": "easyetl",
+      "classifier": "javadoc",
+      "fileName": "easyetl-1.0.0-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "62874980",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "1.0.0"
+    },
+    {
+      "artifactId": "easyetl-dependencies",
+      "classifier": "",
+      "fileName": "easyetl-dependencies-2.0.9.pom",
+      "groupId": "icu.etl",
+      "id": "69637590",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-dependencies",
+      "classifier": "",
+      "fileName": "easyetl-dependencies-2.0.8.pom",
+      "groupId": "icu.etl",
+      "id": "69542282",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-dependencies",
+      "classifier": "",
+      "fileName": "easyetl-dependencies-2.0.7.pom",
+      "groupId": "icu.etl",
+      "id": "69196046",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-dependencies",
+      "classifier": "",
+      "fileName": "easyetl-dependencies-2.0.6.pom",
+      "groupId": "icu.etl",
+      "id": "68726349",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-dependencies",
+      "classifier": "",
+      "fileName": "easyetl-dependencies-2.0.5.pom",
+      "groupId": "icu.etl",
+      "id": "66966096",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-dependencies",
+      "classifier": "",
+      "fileName": "easyetl-dependencies-2.0.5.pom",
+      "groupId": "icu.etl",
+      "id": "66966104",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-dependencies",
+      "classifier": "",
+      "fileName": "easyetl-dependencies-2.0.4.pom",
+      "groupId": "icu.etl",
+      "id": "66833655",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-dependencies",
+      "classifier": "",
+      "fileName": "easyetl-dependencies-2.0.4.pom",
+      "groupId": "icu.etl",
+      "id": "66833654",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-dependencies",
+      "classifier": "",
+      "fileName": "easyetl-dependencies-2.0.3.pom",
+      "groupId": "icu.etl",
+      "id": "66693108",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-dependencies",
+      "classifier": "",
+      "fileName": "easyetl-dependencies-2.0.3.pom",
+      "groupId": "icu.etl",
+      "id": "66693111",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-dependencies",
+      "classifier": "",
+      "fileName": "easyetl-dependencies-2.0.2.pom",
+      "groupId": "icu.etl",
+      "id": "67015032",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "sources",
+      "fileName": "easyetl-maven-plugin-2.0.9-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69685428",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.9.pom",
+      "groupId": "icu.etl",
+      "id": "69637646",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.9.jar",
+      "groupId": "icu.etl",
+      "id": "76478594",
+      "packaging": "maven-plugin",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.8.jar",
+      "groupId": "icu.etl",
+      "id": "69546270",
+      "packaging": "maven-plugin",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "sources",
+      "fileName": "easyetl-maven-plugin-2.0.8-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69597319",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.8.pom",
+      "groupId": "icu.etl",
+      "id": "69542269",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "sources",
+      "fileName": "easyetl-maven-plugin-2.0.7-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69210533",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.7.pom",
+      "groupId": "icu.etl",
+      "id": "69204825",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.7.jar",
+      "groupId": "icu.etl",
+      "id": "76481341",
+      "packaging": "maven-plugin",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.6.pom",
+      "groupId": "icu.etl",
+      "id": "68725782",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "sources",
+      "fileName": "easyetl-maven-plugin-2.0.6-sources.jar",
+      "groupId": "icu.etl",
+      "id": "68735360",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "javadoc",
+      "fileName": "easyetl-maven-plugin-2.0.6-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877959",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.6.jar",
+      "groupId": "icu.etl",
+      "id": "68725811",
+      "packaging": "maven-plugin",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.5.pom",
+      "groupId": "icu.etl",
+      "id": "67037744",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "javadoc",
+      "fileName": "easyetl-maven-plugin-2.0.5-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68294379",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.5.jar",
+      "groupId": "icu.etl",
+      "id": "67881807",
+      "packaging": "maven-plugin",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "sources",
+      "fileName": "easyetl-maven-plugin-2.0.5-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67881808",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.4.jar",
+      "groupId": "icu.etl",
+      "id": "67881804",
+      "packaging": "maven-plugin",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "sources",
+      "fileName": "easyetl-maven-plugin-2.0.4-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67110104",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "javadoc",
+      "fileName": "easyetl-maven-plugin-2.0.4-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877957",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.4.pom",
+      "groupId": "icu.etl",
+      "id": "67025217",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "javadoc",
+      "fileName": "easyetl-maven-plugin-2.0.3-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877955",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.3.jar",
+      "groupId": "icu.etl",
+      "id": "69589659",
+      "packaging": "maven-plugin",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.3.pom",
+      "groupId": "icu.etl",
+      "id": "67016275",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "sources",
+      "fileName": "easyetl-maven-plugin-2.0.3-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67881806",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.2.jar",
+      "groupId": "icu.etl",
+      "id": "67881805",
+      "packaging": "maven-plugin",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "javadoc",
+      "fileName": "easyetl-maven-plugin-2.0.2-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877954",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.2.pom",
+      "groupId": "icu.etl",
+      "id": "67020249",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "sources",
+      "fileName": "easyetl-maven-plugin-2.0.2-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67089983",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.1.pom",
+      "groupId": "icu.etl",
+      "id": "67019681",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "sources",
+      "fileName": "easyetl-maven-plugin-2.0.1-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67090821",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "javadoc",
+      "fileName": "easyetl-maven-plugin-2.0.1-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877952",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.1.jar",
+      "groupId": "icu.etl",
+      "id": "74877953",
+      "packaging": "maven-plugin",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.0.jar",
+      "groupId": "icu.etl",
+      "id": "67859253",
+      "packaging": "maven-plugin",
+      "repositoryId": "central",
+      "version": "2.0.0"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "javadoc",
+      "fileName": "easyetl-maven-plugin-2.0.0-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68296027",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.0"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "sources",
+      "fileName": "easyetl-maven-plugin-2.0.0-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67859256",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.0"
+    },
+    {
+      "artifactId": "easyetl-maven-plugin",
+      "classifier": "",
+      "fileName": "easyetl-maven-plugin-2.0.0.pom",
+      "groupId": "icu.etl",
+      "id": "66618512",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.0"
+    },
+    {
+      "artifactId": "easyetl-parent",
+      "classifier": "",
+      "fileName": "easyetl-parent-2.0.9.pom",
+      "groupId": "icu.etl",
+      "id": "69642379",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-parent",
+      "classifier": "",
+      "fileName": "easyetl-parent-2.0.8.pom",
+      "groupId": "icu.etl",
+      "id": "69548485",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-parent",
+      "classifier": "",
+      "fileName": "easyetl-parent-2.0.7.pom",
+      "groupId": "icu.etl",
+      "id": "69197913",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-parent",
+      "classifier": "",
+      "fileName": "easyetl-parent-2.0.6.pom",
+      "groupId": "icu.etl",
+      "id": "68725555",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-parent",
+      "classifier": "",
+      "fileName": "easyetl-parent-2.0.6.pom",
+      "groupId": "icu.etl",
+      "id": "68725557",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-parent",
+      "classifier": "",
+      "fileName": "easyetl-parent-2.0.5.pom",
+      "groupId": "icu.etl",
+      "id": "66965898",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-parent",
+      "classifier": "",
+      "fileName": "easyetl-parent-2.0.5.pom",
+      "groupId": "icu.etl",
+      "id": "66965922",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-parent",
+      "classifier": "",
+      "fileName": "easyetl-parent-2.0.4.pom",
+      "groupId": "icu.etl",
+      "id": "66831803",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-parent",
+      "classifier": "",
+      "fileName": "easyetl-parent-2.0.4.pom",
+      "groupId": "icu.etl",
+      "id": "66831806",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-parent",
+      "classifier": "",
+      "fileName": "easyetl-parent-2.0.3.pom",
+      "groupId": "icu.etl",
+      "id": "66693092",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-parent",
+      "classifier": "",
+      "fileName": "easyetl-parent-2.0.3.pom",
+      "groupId": "icu.etl",
+      "id": "66693088",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.9-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69685256",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.9.jar",
+      "groupId": "icu.etl",
+      "id": "69656588",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.9.jar",
+      "groupId": "icu.etl",
+      "id": "69656584",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.9.pom",
+      "groupId": "icu.etl",
+      "id": "69656520",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.9.pom",
+      "groupId": "icu.etl",
+      "id": "69656515",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.8-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69581429",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.8.jar",
+      "groupId": "icu.etl",
+      "id": "69566794",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.8-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69581427",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.8.jar",
+      "groupId": "icu.etl",
+      "id": "69566796",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.8.pom",
+      "groupId": "icu.etl",
+      "id": "69548483",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.7.pom.sha256",
+      "groupId": "icu.etl",
+      "id": "69268141",
+      "packaging": "pom.sha256",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.7.jar",
+      "groupId": "icu.etl",
+      "id": "69268207",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.7-sources.jar.sha256",
+      "groupId": "icu.etl",
+      "id": "69273377",
+      "packaging": "jar.sha256",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.7.pom",
+      "groupId": "icu.etl",
+      "id": "69268026",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.7-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69317240",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.7.jar",
+      "groupId": "icu.etl",
+      "id": "69268198",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.7.pom",
+      "groupId": "icu.etl",
+      "id": "71115003",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.7-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69272985",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "javadoc",
+      "fileName": "easyetl-spring-boot-starter-2.0.6-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877961",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.6-sources.jar",
+      "groupId": "icu.etl",
+      "id": "68735488",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.6.jar",
+      "groupId": "icu.etl",
+      "id": "68759730",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.6.pom",
+      "groupId": "icu.etl",
+      "id": "68724894",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.6.pom",
+      "groupId": "icu.etl",
+      "id": "68724893",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.6.jar",
+      "groupId": "icu.etl",
+      "id": "68759725",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.5-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67096672",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.5.jar",
+      "groupId": "icu.etl",
+      "id": "67041330",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.5.pom",
+      "groupId": "icu.etl",
+      "id": "66965770",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.5.pom",
+      "groupId": "icu.etl",
+      "id": "66965745",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.5.jar",
+      "groupId": "icu.etl",
+      "id": "67042813",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.5-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67096648",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "javadoc",
+      "fileName": "easyetl-spring-boot-starter-2.0.5-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68293989",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.4.pom",
+      "groupId": "icu.etl",
+      "id": "66831792",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.4.jar",
+      "groupId": "icu.etl",
+      "id": "66836692",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.4.pom",
+      "groupId": "icu.etl",
+      "id": "66831789",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.4-sources.jar",
+      "groupId": "icu.etl",
+      "id": "66862977",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.4-sources.jar",
+      "groupId": "icu.etl",
+      "id": "66862979",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.4.jar",
+      "groupId": "icu.etl",
+      "id": "66836706",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "javadoc",
+      "fileName": "easyetl-spring-boot-starter-2.0.4-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68294528",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.3.jar",
+      "groupId": "icu.etl",
+      "id": "66693200",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "javadoc",
+      "fileName": "easyetl-spring-boot-starter-2.0.3-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68294776",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.3.pom",
+      "groupId": "icu.etl",
+      "id": "66692379",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.3.jar",
+      "groupId": "icu.etl",
+      "id": "66693191",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.3.pom",
+      "groupId": "icu.etl",
+      "id": "66692382",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.3-sources.jar",
+      "groupId": "icu.etl",
+      "id": "66832739",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.3-sources.jar",
+      "groupId": "icu.etl",
+      "id": "66832742",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "javadoc",
+      "fileName": "easyetl-spring-boot-starter-2.0.2-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68293841",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.2-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69962466",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.2.pom",
+      "groupId": "icu.etl",
+      "id": "67881803",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.2.jar",
+      "groupId": "icu.etl",
+      "id": "67881802",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.1.pom",
+      "groupId": "icu.etl",
+      "id": "66674578",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.1.jar",
+      "groupId": "icu.etl",
+      "id": "67881801",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "sources",
+      "fileName": "easyetl-spring-boot-starter-2.0.1-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67090591",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "",
+      "fileName": "easyetl-spring-boot-starter-2.0.1.pom",
+      "groupId": "icu.etl",
+      "id": "66674584",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl-spring-boot-starter",
+      "classifier": "javadoc",
+      "fileName": "easyetl-spring-boot-starter-2.0.1-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68294791",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.9.jar",
+      "groupId": "icu.etl",
+      "id": "69656589",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "sources",
+      "fileName": "easyetl-tool-2.0.9-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69637396",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.9.pom",
+      "groupId": "icu.etl",
+      "id": "69637006",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.9.jar",
+      "groupId": "icu.etl",
+      "id": "69656585",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.9"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.8.jar",
+      "groupId": "icu.etl",
+      "id": "69546292",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "sources",
+      "fileName": "easyetl-tool-2.0.8-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69567857",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.8.pom",
+      "groupId": "icu.etl",
+      "id": "69542270",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "sources",
+      "fileName": "easyetl-tool-2.0.8-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69567860",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.8"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.7.pom",
+      "groupId": "icu.etl",
+      "id": "69204822",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "sources",
+      "fileName": "easyetl-tool-2.0.7-sources.jar",
+      "groupId": "icu.etl",
+      "id": "69210543",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.7.jar",
+      "groupId": "icu.etl",
+      "id": "76023292",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.7.jar.sha256",
+      "groupId": "icu.etl",
+      "id": "69268409",
+      "packaging": "jar.sha256",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.7.jar",
+      "groupId": "icu.etl",
+      "id": "69268223",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.7"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "sources",
+      "fileName": "easyetl-tool-2.0.6-sources.jar",
+      "groupId": "icu.etl",
+      "id": "68735357",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.6.jar",
+      "groupId": "icu.etl",
+      "id": "68759732",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.6.pom",
+      "groupId": "icu.etl",
+      "id": "68726318",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.6.jar",
+      "groupId": "icu.etl",
+      "id": "68759726",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "javadoc",
+      "fileName": "easyetl-tool-2.0.6-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877968",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.6"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "javadoc",
+      "fileName": "easyetl-tool-2.0.5-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877967",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.5.pom",
+      "groupId": "icu.etl",
+      "id": "66982587",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "sources",
+      "fileName": "easyetl-tool-2.0.5-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67095369",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.5.jar",
+      "groupId": "icu.etl",
+      "id": "67038443",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "sources",
+      "fileName": "easyetl-tool-2.0.5-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67095333",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.5.pom",
+      "groupId": "icu.etl",
+      "id": "66982603",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.5"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.4.jar",
+      "groupId": "icu.etl",
+      "id": "66836698",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.4.pom",
+      "groupId": "icu.etl",
+      "id": "66833836",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "javadoc",
+      "fileName": "easyetl-tool-2.0.4-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877965",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.4.pom",
+      "groupId": "icu.etl",
+      "id": "66833829",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "sources",
+      "fileName": "easyetl-tool-2.0.4-sources.jar",
+      "groupId": "icu.etl",
+      "id": "66862740",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.4.jar",
+      "groupId": "icu.etl",
+      "id": "66836694",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.4"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.3.pom",
+      "groupId": "icu.etl",
+      "id": "66693162",
+      "packaging": "pom",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "sources",
+      "fileName": "easyetl-tool-2.0.3-sources.jar",
+      "groupId": "icu.etl",
+      "id": "66832656",
+      "packaging": "java-source",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "sources",
+      "fileName": "easyetl-tool-2.0.3-sources.jar",
+      "groupId": "icu.etl",
+      "id": "66832653",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.3.jar",
+      "groupId": "icu.etl",
+      "id": "66693192",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.3.pom",
+      "groupId": "icu.etl",
+      "id": "66693154",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "javadoc",
+      "fileName": "easyetl-tool-2.0.3-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68294980",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.3.jar",
+      "groupId": "icu.etl",
+      "id": "66693198",
+      "packaging": "jar",
+      "repositoryId": "gradle-plugin",
+      "version": "2.0.3"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.2.jar",
+      "groupId": "icu.etl",
+      "id": "68295531",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.2.pom",
+      "groupId": "icu.etl",
+      "id": "67015100",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "sources",
+      "fileName": "easyetl-tool-2.0.2-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67881800",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "javadoc",
+      "fileName": "easyetl-tool-2.0.2-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877963",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.2"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "sources",
+      "fileName": "easyetl-tool-2.0.1-sources.jar",
+      "groupId": "icu.etl",
+      "id": "67090669",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.1.jar",
+      "groupId": "icu.etl",
+      "id": "69589660",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.1.pom",
+      "groupId": "icu.etl",
+      "id": "67014111",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "javadoc",
+      "fileName": "easyetl-tool-2.0.1-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "74877962",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.1"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.0.pom",
+      "groupId": "icu.etl",
+      "id": "66618486",
+      "packaging": "pom",
+      "repositoryId": "central",
+      "version": "2.0.0"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "",
+      "fileName": "easyetl-tool-2.0.0.jar",
+      "groupId": "icu.etl",
+      "id": "67859254",
+      "packaging": "jar",
+      "repositoryId": "central",
+      "version": "2.0.0"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "javadoc",
+      "fileName": "easyetl-tool-2.0.0-javadoc.jar",
+      "groupId": "icu.etl",
+      "id": "68295675",
+      "packaging": "javadoc",
+      "repositoryId": "central",
+      "version": "2.0.0"
+    },
+    {
+      "artifactId": "easyetl-tool",
+      "classifier": "sources",
+      "fileName": "easyetl-tool-2.0.0-sources.jar",
+      "groupId": "icu.etl",
+      "id": "70033037",
+      "packaging": "java-source",
+      "repositoryId": "central",
+      "version": "2.0.0"
+    }
+  ],
+  "successful": true
+}
