@@ -16,7 +16,7 @@ public class MavenFinderQuery {
     private static final Logger log = Logger.getInstance(MavenFinderQuery.class);
 
     public List<MavenFinderItem> execute(String pattern) throws IOException {
-        String url = "https://search.maven.org/solrsearch/select?q=" + pattern + "&rows=999&wt=json"; // 构建请求 URL
+        String url = "https://search.maven.org/solrsearch/select?q=" + pattern + "&rows=99&wt=json"; // 构建请求 URL
         OkHttpClient client = new OkHttpClient(); // 创建 OkHttpClient 实例
         Request request = new Request.Builder().url(url).header("User-Agent", "Mozilla/5.0").build(); // 创建 Request 实例
         Response response = client.newCall(request).execute(); // 发送请求并获取响应
@@ -25,7 +25,7 @@ public class MavenFinderQuery {
         JSONObject responseStr = json.getJSONObject("response");
         JSONArray docs = responseStr.getJSONArray("docs");
 
-        System.out.println("response: " + response.code() + ", pattern: " + pattern + ", docs: " + docs.length() + ", responseBody: " + responseBody);
+//        System.out.println("response: " + response.code() + ", pattern: " + pattern + ", docs: " + docs.length() + ", responseBody: " + responseBody);
 
         List<MavenFinderItem> list = new ArrayList<MavenFinderItem>(docs.length());
         for (int i = 0; i < docs.length(); i++) {

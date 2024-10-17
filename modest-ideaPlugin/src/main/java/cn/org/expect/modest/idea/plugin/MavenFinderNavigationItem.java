@@ -8,7 +8,12 @@ public class MavenFinderNavigationItem implements NavigationItem {
 
     private final MavenFinderItemPresentation presentation;
 
+    private static volatile long NUMBER = 0;
+
+    private long id;
+
     public MavenFinderNavigationItem(MavenFinderItem item) {
+        this.id = NUMBER++;
         this.presentation = new MavenFinderItemPresentation(item);
     }
 
@@ -28,8 +33,7 @@ public class MavenFinderNavigationItem implements NavigationItem {
         return true;
     }
 
-    @Override
     public boolean equals(Object o) {
-        return false;
+        return o != null && o.getClass().equals(this.getClass()) && ((MavenFinderNavigationItem) o).id == this.id;
     }
 }

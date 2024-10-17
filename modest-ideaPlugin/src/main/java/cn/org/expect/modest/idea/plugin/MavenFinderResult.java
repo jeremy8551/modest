@@ -61,12 +61,16 @@ public class MavenFinderResult {
         }
 
         ++this.count;
-        System.out.println("\ngetItemsByName() " + pattern + ", size: " + list.size());
+        System.out.println("\ngetItemsByName() " + this.pattern + ", size: " + this.list.size());
+        MavenFinderNavigationItem[] items = this.getList();
+        return items;
+    }
+
+    public MavenFinderNavigationItem[] getList() {
         MavenFinderNavigationItem[] array = new MavenFinderNavigationItem[this.list.size()];
         for (int i = 0; i < this.list.size(); i++) {
             MavenFinderItem item = this.list.get(i);
             array[i] = new MavenFinderNavigationItem(item);
-            System.out.println(item.toString());
         }
         return array;
     }

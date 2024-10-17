@@ -1,6 +1,5 @@
 package cn.org.expect.modest.idea.plugin;
 
-import java.util.concurrent.atomic.AtomicLong;
 import javax.swing.*;
 
 import cn.org.expect.util.Ensure;
@@ -11,12 +10,7 @@ public class MavenFinderItemPresentation implements ItemPresentation {
 
     private final MavenFinderItem item;
 
-    private final static AtomicLong NUMBER = new AtomicLong(0);
-
-    private long id;
-
     public MavenFinderItemPresentation(MavenFinderItem item) {
-        this.id = NUMBER.incrementAndGet();
         this.item = Ensure.notNull(item);
     }
 
@@ -36,7 +30,6 @@ public class MavenFinderItemPresentation implements ItemPresentation {
         return AllIcons.Actions.Find;
     }
 
-    @Override
     public boolean equals(Object o) {
         return false;
     }

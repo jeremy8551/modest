@@ -8,15 +8,17 @@ import cn.org.expect.util.StringUtils;
 
 public class MavenFinderResultSet {
 
+    public final static MavenFinderResultSet INSTANCE = new MavenFinderResultSet();
+
     protected volatile Map<String, MavenFinderResult> map;
 
     protected volatile MavenFinderResult last;
 
-    public MavenFinderResultSet() {
+    private MavenFinderResultSet() {
         this.map = new ConcurrentHashMap<String, MavenFinderResult>();
     }
 
-    public synchronized void query(String pattern) {
+    public synchronized MavenFinderResult query(String pattern) {
         MavenFinderResult result = this.map.get(pattern);
         if (result == null) {
             List<MavenFinderItem> list = null;
@@ -35,6 +37,7 @@ public class MavenFinderResultSet {
         }
 
         this.last = result;
+        return result;
     }
 
     /**
@@ -47,6 +50,8 @@ public class MavenFinderResultSet {
     }
 
     public MavenFinderResult get(String pattern) {
-        return this.map.get(pattern);
+        MavenFinderResult result = this.map.get(pattern);
+        this.last = result;
+        return result;
     }
 }

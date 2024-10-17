@@ -4,9 +4,9 @@ import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributorFactory;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class MavenFinderFactory implements SearchEverywhereContributorFactory {
+public class MavenFinderFactory implements SearchEverywhereContributorFactory<Object> {
 
-    public SearchEverywhereContributor createContributor(AnActionEvent initEvent) {
+    public SearchEverywhereContributor<Object> createContributor(AnActionEvent initEvent) {
         return new MavenFinderContributor(initEvent);
     }
 }

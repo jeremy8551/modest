@@ -9,13 +9,14 @@ public class MavenFinderChooseContributor implements ChooseByNameContributor {
 
     private static final Logger log = Logger.getInstance(MavenFinderChooseContributor.class);
 
-    protected final static MavenFinderResultSet resultSet = new MavenFinderResultSet();
+    private MavenFinderContributor contributor;
 
-    public MavenFinderChooseContributor() {
+    public MavenFinderChooseContributor(MavenFinderContributor contributor) {
+        this.contributor = contributor;
     }
 
     public void query(String pattern) {
-        resultSet.query(pattern);
+        MavenFinderResultSet.INSTANCE.query(pattern);
     }
 
     /**
@@ -27,13 +28,27 @@ public class MavenFinderChooseContributor implements ChooseByNameContributor {
      * @return
      */
     public String[] getNames(Project project, boolean includeNonProjectItems) {
-        MavenFinderResult result = resultSet.getLast();
+        MavenFinderResult result = MavenFinderResultSet.INSTANCE.getLast();
         System.out.println("getNames() " + project.getName() + " " + (result == null ? "" : result.getPattern()));
-        return result == null ? new String[0] : result.canGetItems().getNames();
+        if (result == null) {
+            return new String[0];
+        } else {
+            String[] names = result.canGetItems().getNames();
+            System.out.println("names length: " + names.length);
+            return names;
+        }
     }
 
     public NavigationItem[] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
-        MavenFinderResult result = resultSet.get(pattern);
-        return result == null ? new NavigationItem[0] : result.getItems();
+        MavenFinderResult result = MavenFinderResultSet.INSTANCE.get(pattern);
+        if (result == null) {
+            return new NavigationItem[0];
+        } else {
+            MavenFinderNavigationItem[] array = result.getItems();
+            if (array.length > 0) {
+                new Thread(this.contributor).start();
+            }
+            return array;
+        }
     }
 }
