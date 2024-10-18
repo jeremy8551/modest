@@ -1,15 +1,11 @@
 package cn.org.expect.modest.idea.plugin;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.util.Dates;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
-import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -20,27 +16,26 @@ import com.intellij.util.Processor;
 import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 
-public class MavenFinderContributor extends AbstractGotoSEContributor implements Runnable {
+public class MavenFinderContributor extends AbstractGotoSEContributor {
 
     private static final Logger log = Logger.getInstance(MavenFinderContributor.class);
 
     protected final MavenFinderChooseContributor contributor;
 
-    protected volatile JList list;
+    protected final JListRenderer renderer;
 
     public MavenFinderContributor(AnActionEvent event) {
         super(event);
         this.contributor = new MavenFinderChooseContributor(this);
+        this.renderer = new JListRenderer(this);
+    }
+
+    public JListRenderer getRenderer() {
+        return renderer;
     }
 
     public String getSearchProviderId() {
-        return MavenFinderContributor.class.getSimpleName();
-    }
-
-    public void setList(JList list) {
-        if (list != null) {
-            this.list = list;
-        }
+        return MavenFinderContributor.class.getSimpleName() + Dates.currentTimeStamp();
     }
 
     @Override
@@ -52,66 +47,13 @@ public class MavenFinderContributor extends AbstractGotoSEContributor implements
 
     @Override
     public void fetchElements(@NotNull String pattern, @NotNull ProgressIndicator progressIndicator, @NotNull Processor<? super Object> consumer) {
-        System.out.println("fetchElements() " + pattern);
+//        System.out.println("fetchElements() " + pattern);
         super.fetchElements(pattern, progressIndicator, consumer);
     }
 
     @Override
     public ListCellRenderer<Object> getElementsRenderer() {
         return new MavenFinderRenderer(this);
-    }
-
-    public void run() {
-        Dates.sleep(200);
-        this.renderer(this.list);
-    }
-
-    public void renderer(JList list) {
-        if (list == null) {
-            return;
-        }
-        System.out.println("renderer()");
-
-        ListModel model = list.getModel();
-        if (model instanceof SearchListModel) {
-            SearchListModel listModel = (SearchListModel) model;
-
-            if (listModel.getClass().getSimpleName().equals("MixedSearchListModel")) {
-                try {
-                    Field field = listModel.getClass().getDeclaredField("myElementsComparator");
-                    field.setAccessible(true);
-                    field.set(listModel, new SearchEverywhereFoundElementInfoComparator());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            for (int i = listModel.getSize() - 1; i >= 0; i--) {
-                Object object = listModel.getElementAt(i);
-                if (object instanceof MavenFinderNavigationItem) {
-                    listModel.removeElement(object, this);
-                }
-            }
-
-//            System.out.println("delete " + (oldSize - listModel.getSize()) + " 个");
-
-            // 添加查询结果
-            List<SearchEverywhereFoundElementInfo> listModelElements = new ArrayList<SearchEverywhereFoundElementInfo>(99);
-            MavenFinderResult last = MavenFinderResultSet.INSTANCE.getLast();
-            if (last != null) {
-                for (MavenFinderNavigationItem item : last.getList()) {
-                    listModelElements.add(new SearchEverywhereFoundElementInfo(item, 50, this));
-                }
-            }
-
-            try {
-                System.out.println("mode size: " + listModelElements.size());
-                listModel.addElements(listModelElements);
-                list.repaint();
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
-            }
-        }
     }
 
     /**
@@ -195,7 +137,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor implements
      */
     @Override
     public String getGroupName() {
-        return "MavenRepository";
+        return "Maven Repository";
     }
 
     /**

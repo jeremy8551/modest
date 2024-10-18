@@ -36,7 +36,9 @@ public class MavenFinderResultSet {
             }
         }
 
-        this.last = result;
+        if (result != null) {
+            this.last = result;
+        }
         return result;
     }
 
@@ -45,13 +47,11 @@ public class MavenFinderResultSet {
      *
      * @return
      */
-    public MavenFinderResult getLast() {
+    public MavenFinderResult last() {
         return this.last;
     }
 
-    public MavenFinderResult get(String pattern) {
-        MavenFinderResult result = this.map.get(pattern);
-        this.last = result;
-        return result;
+    public MavenFinderResult getResult(String pattern) {
+        return this.map.get(pattern);
     }
 }

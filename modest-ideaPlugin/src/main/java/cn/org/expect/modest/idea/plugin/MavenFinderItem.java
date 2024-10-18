@@ -2,7 +2,7 @@ package cn.org.expect.modest.idea.plugin;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public final class MavenFinderItem {
+public class MavenFinderItem {
 
     private final static AtomicLong NUMBER = new AtomicLong(0);
 
@@ -16,6 +16,10 @@ public final class MavenFinderItem {
     private int versionCount;
     private String[] text;
     private String[] ec;
+
+    public MavenFinderItem() {
+        this("", "", "", "", "", 0, 0, new String[0], new String[0]);
+    }
 
     public MavenFinderItem(String groupId, String artifact, String version, String type, String repository, long timestamp, int versionCount, String[] text, String[] ec) {
         this.id = NUMBER.incrementAndGet();
@@ -80,7 +84,7 @@ public final class MavenFinderItem {
     }
 
     public boolean equals(Object o) {
-        return false;
+        return o != null && o.getClass().equals(this.getClass()) && ((MavenFinderItem) o).id == this.id;
     }
 
     public String toString() {
@@ -94,4 +98,33 @@ public final class MavenFinderItem {
     public String getLocationString() {
         return this.type;
     }
+
+    public static class Blank extends MavenFinderItem {
+
+        public Blank() {
+            super();
+        }
+
+        public String getRepositoryUrl() {
+            return "https://repo1.maven.org/maven2/";
+        }
+
+        public String getPresentableText() {
+            return toString();
+        }
+
+        public String getLocationString() {
+            return toString();
+        }
+
+        public boolean equals(Object o) {
+            return false;
+        }
+
+        public String toString() {
+            return "" + this.getId();
+        }
+    }
 }
+
+
