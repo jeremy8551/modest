@@ -17,10 +17,6 @@ public class MavenFinderChooseContributor implements ChooseByNameContributor {
         this.contributor = contributor;
     }
 
-    public void query(String pattern) {
-        MavenFinderResultSet.INSTANCE.query(pattern);
-    }
-
     /**
      * 先执行一次这个方法，然后再调用 {@linkplain #getItemsByName(String, String, Project, boolean)} 方法
      *
@@ -30,15 +26,11 @@ public class MavenFinderChooseContributor implements ChooseByNameContributor {
      * @return
      */
     public String[] getNames(Project project, boolean includeNonProjectItems) {
-        MavenFinderResult result = MavenFinderResultSet.INSTANCE.last();
+        MavenFinderResult result = MavenFinderStatement.INSTANCE.last();
         if (result == null) {
-//            System.out.println("getNames() ");
             return new String[0];
         } else {
-            String[] names = result.getNames();
-//            System.out.println("getNames() pattern: " + result.getPattern() + ", length: " + names.length + ": " + StringUtils.toString(names));
-            new Thread(JListRenderer.INSTANCE, JListRenderer.INSTANCE.getThreadName()).start();
-            return names;
+            return result.getNames();
         }
     }
 
@@ -52,7 +44,7 @@ public class MavenFinderChooseContributor implements ChooseByNameContributor {
 //        }
 //        return items;
 
-        MavenFinderResult result = MavenFinderResultSet.INSTANCE.getResult(pattern);
+        MavenFinderResult result = MavenFinderStatement.INSTANCE.getResult(pattern);
         if (result == null) {
 //            System.out.println("getItemsByName() blank result !" + name + ", pattern: " + pattern);
             return new NavigationItem[0];

@@ -8,8 +8,10 @@ import javax.swing.*;
 import cn.org.expect.util.Dates;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
+import com.intellij.openapi.diagnostic.Logger;
 
 public class JListRenderer implements Runnable {
+    private static final Logger log = Logger.getInstance(JListRenderer.class);
 
     public final static JListRenderer INSTANCE = new JListRenderer();
 
@@ -17,7 +19,7 @@ public class JListRenderer implements Runnable {
 
     protected volatile MavenFinderContributor contributor;
 
-    private JListRenderer() {
+    protected JListRenderer() {
     }
 
     /**
@@ -40,17 +42,16 @@ public class JListRenderer implements Runnable {
     }
 
     public void run() {
-        Dates.sleep(400);
-        this.run(this.jlist);
+        Dates.sleep(900);
+        this.execute();
     }
 
-    public synchronized void run(JList list) {
+    public synchronized void execute() {
+        JList list = this.jlist;
         if (list == null) {
-            System.out.println("renderer() not have JList !");
+            log.warn("--->      MavenFinder renderer not have JList !");
             return;
         }
-
-//        System.out.println("renderer()");
 
         ListModel model = list.getModel();
         if (model instanceof SearchListModel) {
@@ -66,6 +67,7 @@ public class JListRenderer implements Runnable {
                 }
             }
 
+            boolean print = true;
             for (int i = listModel.getSize() - 1; i >= 0; i--) {
                 Object object = listModel.getElementAt(i);
                 if (object instanceof MavenFinderNavigationItem) {
@@ -73,14 +75,17 @@ public class JListRenderer implements Runnable {
                         SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
                         listModel.removeElement(object, info.getContributor());
                     } catch (Exception e) {
-                        e.printStackTrace();
+                        if (print) {
+                            print = false;
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
 
             // 添加查询结果
             List<SearchEverywhereFoundElementInfo> listModelElements = new ArrayList<SearchEverywhereFoundElementInfo>(99);
-            MavenFinderResult last = MavenFinderResultSet.INSTANCE.last();
+            MavenFinderResult last = MavenFinderStatement.INSTANCE.last();
             if (last != null) {
                 for (MavenFinderNavigationItem item : last.getNavigationItems()) {
                     listModelElements.add(new SearchEverywhereFoundElementInfo(item, 50, this.contributor));
@@ -88,12 +93,19 @@ public class JListRenderer implements Runnable {
             }
 
             try {
-//                System.out.println("mode size: " + listModelElements.size());
                 listModel.addElements(listModelElements);
                 list.repaint();
-            } catch (Throwable ignored) {
-                ignored.printStackTrace();
+            } catch (Throwable e) {
+                e.printStackTrace();
             }
+
+//            try {
+//                if (this.ui != null) {
+//                    this.ui.repaint();
+//                }
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
         }
     }
 }
