@@ -31,7 +31,7 @@ public class JListRenderer {
         this.contributor = contributor;
     }
 
-    public synchronized void execute() {
+    public synchronized void execute(MavenFinderResult result) {
         JList list = this.jlist;
         if (list == null) {
             log.warn("--->      MavenFinder renderer not have JList !");
@@ -69,10 +69,10 @@ public class JListRenderer {
             }
 
             // 添加查询结果
-            List<SearchEverywhereFoundElementInfo> listModelElements = new ArrayList<SearchEverywhereFoundElementInfo>(99);
-            MavenFinderResult last = MavenFinderStatement.INSTANCE.last();
-            if (last != null) {
-                for (MavenFinderNavigationItem item : last.getNavigationItems()) {
+            int length = result == null ? 10 : result.size();
+            List<SearchEverywhereFoundElementInfo> listModelElements = new ArrayList<SearchEverywhereFoundElementInfo>(length);
+            if (result != null) {
+                for (MavenFinderNavigationItem item : result.getNavigationItems()) {
                     listModelElements.add(new SearchEverywhereFoundElementInfo(item, 50, this.contributor));
                 }
             }

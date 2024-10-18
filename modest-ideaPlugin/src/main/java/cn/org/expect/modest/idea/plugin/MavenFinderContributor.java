@@ -127,7 +127,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
      */
     @Override
     public String getGroupName() {
-        return "Maven Repository";
+        return "Repository";
     }
 
     /**
@@ -153,6 +153,11 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     @Override
     public boolean isEmptyPatternSupported() {
         return false;
+    }
+
+    @Override
+    public List<AnAction> getActions(@NotNull Runnable onChanged) {
+        return super.getActions(onChanged);
     }
 
     @Override

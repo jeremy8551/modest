@@ -1,6 +1,5 @@
 package cn.org.expect.modest.idea.plugin;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class MavenFinderResult {
@@ -9,9 +8,9 @@ public class MavenFinderResult {
 
     private final List<MavenFinderItem> list;
 
-    public MavenFinderResult(String pattern) {
+    public MavenFinderResult(String pattern, List<MavenFinderItem> list) {
         this.pattern = pattern;
-        this.list = new ArrayList<MavenFinderItem>();
+        this.list = list;
     }
 
     public MavenFinderResult addAll(List<MavenFinderItem> list) {
@@ -43,5 +42,9 @@ public class MavenFinderResult {
 
     public List<MavenFinderItem> getItems() {
         return this.list;
+    }
+
+    public int size() {
+        return this.list.size();
     }
 }

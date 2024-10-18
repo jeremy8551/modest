@@ -23,10 +23,10 @@ public class MavenFinderStatement {
         this.query = new MavenFinderQuery();
     }
 
-    public synchronized void query(String pattern) {
+    public synchronized MavenFinderResult query(String pattern) {
         String patternFinal = MavenFinderPattern.parse(pattern);
         if (StringUtils.isBlank(patternFinal)) {
-            return;
+            return null;
         }
 
         log.warn("search Pattern: " + patternFinal);
@@ -40,7 +40,7 @@ public class MavenFinderStatement {
             }
 
             if (list != null && !list.isEmpty()) {
-                result = new MavenFinderResult(patternFinal).addAll(list);
+                result = new MavenFinderResult(patternFinal, list);
                 this.map.put(result.getPattern(), result);
             }
         }
@@ -51,6 +51,8 @@ public class MavenFinderStatement {
             this.last = result;
             log.warn("search Pattern: " + patternFinal + ", Size: " + result.getItems().size() + ", List: " + StringUtils.toString(result.getItems()));
         }
+
+        return result;
     }
 
     /**

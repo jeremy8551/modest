@@ -1,6 +1,9 @@
 package cn.org.expect.modest.idea.plugin;
 
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
+
+import cn.org.expect.util.Dates;
 
 public class MavenFinderItem {
 
@@ -54,8 +57,8 @@ public class MavenFinderItem {
         return repository;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public Date getTimestamp() {
+        return new Date(timestamp);
     }
 
     public int getVersionCount() {
@@ -88,7 +91,7 @@ public class MavenFinderItem {
     }
 
     public String toString() {
-        return this.groupId + ":" + this.artifact + ":" + this.version + ", id=" + this.id;
+        return "id=" + this.id + ", " + this.groupId + ":" + this.artifact + ":" + this.version + ", time: " + Dates.format21(this.getTimestamp()) + ", " + this.getVersionCount();
     }
 
     public String getPresentableText() {

@@ -2,6 +2,7 @@ package cn.org.expect.modest.idea.plugin;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import com.intellij.openapi.diagnostic.Logger;
@@ -33,6 +34,22 @@ public class MavenFinderQuery {
             MavenFinderItem item = this.parse(doc);
             list.add(item);
         }
+
+        Comparator<MavenFinderItem> comparator = (o1, o2) -> {
+            int gv = o1.getGroupId().compareTo(o2.getGroupId());
+            if (gv != 0) {
+                return gv;
+            }
+
+            int av = o1.getArtifact().compareTo(o2.getArtifact());
+            if (av != 0) {
+                return av;
+            }
+
+            return o1.getTimestamp().compareTo(o2.getTimestamp());
+        };
+        list.sort(comparator);
+
         return list;
     }
 

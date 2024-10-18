@@ -59,10 +59,10 @@ public class MavenFinderThread extends Thread {
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
                 Dates.sleep(500);
                 if (StringUtils.isNotBlank(pattern) && this.queue.isEmpty()) {
-                    MavenFinderStatement.INSTANCE.query(pattern);
+                    MavenFinderResult result = MavenFinderStatement.INSTANCE.query(pattern);
 
                     if (this.running) {
-                        JListRenderer.INSTANCE.execute();
+                        JListRenderer.INSTANCE.execute(result);
                     }
                 }
             } catch (Exception e) {
