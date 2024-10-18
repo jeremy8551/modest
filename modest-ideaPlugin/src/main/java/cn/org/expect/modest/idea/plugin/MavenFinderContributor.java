@@ -22,16 +22,9 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
     protected final MavenFinderChooseContributor contributor;
 
-    protected final JListRenderer renderer;
-
     public MavenFinderContributor(AnActionEvent event) {
         super(event);
         this.contributor = new MavenFinderChooseContributor(this);
-        this.renderer = new JListRenderer(this);
-    }
-
-    public JListRenderer getRenderer() {
-        return renderer;
     }
 
     public String getSearchProviderId() {
@@ -66,6 +59,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     public String filterControlSymbols(String pattern) {
 //        System.out.println("filterControlSymbols " + pattern);
         if (pattern != null && pattern.length() > 0) {
+            pattern = MavenFinderPattern.parse(pattern);
             this.contributor.query(pattern);
         }
         return pattern;

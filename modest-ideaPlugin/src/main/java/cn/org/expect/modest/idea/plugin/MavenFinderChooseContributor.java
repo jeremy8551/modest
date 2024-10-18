@@ -2,7 +2,6 @@ package cn.org.expect.modest.idea.plugin;
 
 import java.util.List;
 
-import cn.org.expect.util.Dates;
 import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.diagnostic.Logger;
@@ -38,7 +37,7 @@ public class MavenFinderChooseContributor implements ChooseByNameContributor {
         } else {
             String[] names = result.getNames();
 //            System.out.println("getNames() pattern: " + result.getPattern() + ", length: " + names.length + ": " + StringUtils.toString(names));
-            new Thread(this.contributor.getRenderer(), JListRenderer.class.getSimpleName() + Dates.currentTimeStamp()).start();
+            new Thread(JListRenderer.INSTANCE, JListRenderer.INSTANCE.getThreadName()).start();
             return names;
         }
     }
@@ -53,12 +52,12 @@ public class MavenFinderChooseContributor implements ChooseByNameContributor {
 //        }
 //        return items;
 
-//        System.out.println("getItemsByName() " + name + ", " + pattern);
         MavenFinderResult result = MavenFinderResultSet.INSTANCE.getResult(pattern);
         if (result == null) {
 //            System.out.println("getItemsByName() blank result !" + name + ", pattern: " + pattern);
             return new NavigationItem[0];
         } else {
+//            System.out.println("getItemsByName() " + name + ", " + pattern);
             List<MavenFinderItem> list = result.getItems();
             for (int i = 0, size = list.size(); i < size; i++) {
                 MavenFinderItem item = list.get(i);

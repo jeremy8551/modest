@@ -11,28 +11,42 @@ import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 
 public class JListRenderer implements Runnable {
 
-    protected static volatile JList JLIST;
+    public final static JListRenderer INSTANCE = new JListRenderer();
 
-    protected MavenFinderContributor contributor;
+    protected volatile JList jlist;
 
-    public JListRenderer(MavenFinderContributor contributor) {
-        this.contributor = contributor;
+    protected volatile MavenFinderContributor contributor;
+
+    private JListRenderer() {
     }
 
-    public static void setList(JList list) {
+    /**
+     * 返回线程名
+     *
+     * @return 线程名
+     */
+    public String getThreadName() {
+        return this.getClass().getSimpleName() + Dates.currentTimeStamp();
+    }
+
+    public void setList(JList list) {
         if (list != null) {
-//            System.out.println("set JListRenderer Jlist ..");
-            JListRenderer.JLIST = list;
+            this.jlist = list;
         }
     }
 
+    public void setContributor(MavenFinderContributor contributor) {
+        this.contributor = contributor;
+    }
+
     public void run() {
-        Dates.sleep(200);
-        this.run(JListRenderer.JLIST);
+        Dates.sleep(400);
+        this.run(this.jlist);
     }
 
     public synchronized void run(JList list) {
         if (list == null) {
+            System.out.println("renderer() not have JList !");
             return;
         }
 
@@ -55,7 +69,12 @@ public class JListRenderer implements Runnable {
             for (int i = listModel.getSize() - 1; i >= 0; i--) {
                 Object object = listModel.getElementAt(i);
                 if (object instanceof MavenFinderNavigationItem) {
-                    listModel.removeElement(object, this.contributor);
+                    try {
+                        SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
+                        listModel.removeElement(object, info.getContributor());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 

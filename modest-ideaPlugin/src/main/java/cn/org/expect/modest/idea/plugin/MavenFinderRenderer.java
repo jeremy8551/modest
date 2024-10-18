@@ -12,8 +12,7 @@ public class MavenFinderRenderer extends SearchEverywherePsiRenderer {
     }
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-//        System.out.println("getListCellRendererComponent()");
-        JListRenderer.setList(list);
+        JListRenderer.INSTANCE.setList(list);
         return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
     }
 }

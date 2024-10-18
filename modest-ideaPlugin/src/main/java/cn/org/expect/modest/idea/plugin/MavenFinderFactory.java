@@ -7,6 +7,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class MavenFinderFactory implements SearchEverywhereContributorFactory<Object> {
 
     public SearchEverywhereContributor<Object> createContributor(AnActionEvent initEvent) {
-        return new MavenFinderContributor(initEvent);
+        MavenFinderContributor contributor = new MavenFinderContributor(initEvent);
+        JListRenderer.INSTANCE.setContributor(contributor);
+        return contributor;
     }
 }
