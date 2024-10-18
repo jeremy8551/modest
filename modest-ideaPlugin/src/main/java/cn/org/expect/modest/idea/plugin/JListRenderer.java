@@ -79,18 +79,15 @@ public class JListRenderer {
 
             try {
                 listModel.addElements(listModelElements);
-                list.repaint();
             } catch (Throwable e) {
                 e.printStackTrace();
             }
 
-//            try {
-//                if (this.ui != null) {
-//                    this.ui.repaint();
-//                }
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
+            try {
+                list.repaint();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }

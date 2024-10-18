@@ -23,7 +23,7 @@ public class MavenFinderFactory implements SearchEverywhereContributorFactory<Ob
                 new Thread(new IdeaSearchTask(event, ui -> {
                     ui.getSearchField().setText(MavenFinderPattern.parse(selectedText)); // 更新搜索内容
                     try {
-                        ui.switchToTab(contributor.getSearchProviderId()); // 选择标签页
+//                        ui.switchToTab(contributor.getSearchProviderId()); // 选择标签页
                         ui.repaint();
                     } catch (Exception ignored) {
                     }

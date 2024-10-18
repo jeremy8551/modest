@@ -13,7 +13,6 @@ public class IdeaSearchTask implements Runnable {
 
     public static void repaint() {
         if (UI != null) {
-            System.out.println("repaint()");
             UI.repaint();
         }
     }
