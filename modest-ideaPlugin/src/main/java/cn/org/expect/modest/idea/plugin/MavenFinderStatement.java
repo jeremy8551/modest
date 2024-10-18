@@ -24,13 +24,12 @@ public class MavenFinderStatement {
     }
 
     public synchronized void query(String pattern) {
-        if (StringUtils.isBlank(pattern)) {
+        String patternFinal = MavenFinderPattern.parse(pattern);
+        if (StringUtils.isBlank(patternFinal)) {
             return;
         }
 
-        String patternFinal = MavenFinderPattern.parse(pattern);
         log.warn("search Pattern: " + patternFinal);
-
         MavenFinderResult result = this.map.get(patternFinal);
         if (result == null) {
             List<MavenFinderItem> list = null;
@@ -43,13 +42,15 @@ public class MavenFinderStatement {
             if (list != null && !list.isEmpty()) {
                 result = new MavenFinderResult(patternFinal).addAll(list);
                 this.map.put(result.getPattern(), result);
-                log.warn("search Pattern: " + patternFinal + ", Size: " + result.getItems().size() + ", List: " + StringUtils.toString(result.getItems()));
-            } else {
-                log.warn("search Pattern: " + patternFinal + ", result is null!");
             }
         }
 
-        this.last = result;
+        if (result == null) {
+            log.warn("search Pattern: " + patternFinal + ", result is null!");
+        } else {
+            this.last = result;
+            log.warn("search Pattern: " + patternFinal + ", Size: " + result.getItems().size() + ", List: " + StringUtils.toString(result.getItems()));
+        }
     }
 
     /**

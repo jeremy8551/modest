@@ -27,7 +27,7 @@ public class MavenFinderThread extends Thread {
      */
     public void terminate() {
         this.running = false;
-        this.addPattern("");
+        this.search("");
     }
 
     /**
@@ -35,7 +35,7 @@ public class MavenFinderThread extends Thread {
      *
      * @param pattern 字符串
      */
-    public void addPattern(String pattern) {
+    public void search(String pattern) {
         try {
             this.queue.put(pattern);
         } catch (Exception e) {
@@ -51,9 +51,10 @@ public class MavenFinderThread extends Thread {
                 Dates.sleep(500);
                 if (this.queue.isEmpty()) {
                     MavenFinderStatement.INSTANCE.query(pattern);
-                    
+
                     if (this.running) {
                         JListRenderer.INSTANCE.execute();
+                        IdeaSearchTask.repaint();
                     }
                 }
             } catch (Exception e) {

@@ -3,18 +3,12 @@ package cn.org.expect.modest.idea.plugin;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.util.Dates;
-import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.Processor;
@@ -29,29 +23,6 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     public MavenFinderContributor(AnActionEvent event) {
         super(event);
         this.contributor = new MavenFinderChooseContributor(this);
-
-        Editor editor = event.getDataContext().getData(CommonDataKeys.EDITOR);
-        if (editor != null) {
-            String selectedText = editor.getSelectionModel().getSelectedText();
-            if (StringUtils.isNotBlank(selectedText)) {
-                log.warn("--->      Selected text: " + selectedText);
-                MavenFinderThread.INSTANCE.addPattern(selectedText);
-
-                new Thread(() -> {
-                    SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
-                    while (!manager.isShown()) {
-                        Dates.sleep(100);
-                    }
-
-                    SearchEverywhereUI ui = manager.getCurrentlyShownUI();
-                    ui.getSearchField().setText(StringUtils.trimBlank(selectedText));
-                    try {
-                        ui.switchToTab(this.getSearchProviderId());
-                    } catch (Exception ignored) {
-                    }
-                }).start();
-            }
-        }
     }
 
     public String getSearchProviderId() {
@@ -85,8 +56,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     @Override
     public String filterControlSymbols(String pattern) {
         if (pattern != null && pattern.length() > 0) {
-//            pattern = MavenFinderStatement.INSTANCE.query(pattern);
-            MavenFinderThread.INSTANCE.addPattern(pattern);
+            MavenFinderThread.INSTANCE.search(pattern);
         }
         return pattern;
     }

@@ -5,12 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.util.Dates;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.diagnostic.Logger;
 
-public class JListRenderer implements Runnable {
+public class JListRenderer {
     private static final Logger log = Logger.getInstance(JListRenderer.class);
 
     public final static JListRenderer INSTANCE = new JListRenderer();
@@ -22,15 +21,6 @@ public class JListRenderer implements Runnable {
     protected JListRenderer() {
     }
 
-    /**
-     * 返回线程名
-     *
-     * @return 线程名
-     */
-    public String getThreadName() {
-        return this.getClass().getSimpleName() + Dates.currentTimeStamp();
-    }
-
     public void setList(JList list) {
         if (list != null) {
             this.jlist = list;
@@ -39,11 +29,6 @@ public class JListRenderer implements Runnable {
 
     public void setContributor(MavenFinderContributor contributor) {
         this.contributor = contributor;
-    }
-
-    public void run() {
-        Dates.sleep(900);
-        this.execute();
     }
 
     public synchronized void execute() {

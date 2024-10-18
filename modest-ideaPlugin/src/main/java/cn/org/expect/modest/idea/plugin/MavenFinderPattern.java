@@ -5,6 +5,10 @@ import cn.org.expect.util.StringUtils;
 public class MavenFinderPattern {
 
     public static String parse(String pattern) {
+        if (pattern == null) {
+            return null;
+        }
+
         String tag = "<artifactId>";
         int begin = StringUtils.indexOf(pattern, tag, 0, true);
         if (begin != -1) {
