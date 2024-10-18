@@ -3,7 +3,6 @@ package cn.org.expect.modest.idea.plugin;
 import javax.swing.*;
 
 import cn.org.expect.util.Ensure;
-import com.intellij.icons.AllIcons;
 import com.intellij.navigation.ItemPresentation;
 
 public class MavenFinderItemPresentation implements ItemPresentation {
@@ -27,7 +26,8 @@ public class MavenFinderItemPresentation implements ItemPresentation {
     }
 
     public Icon getIcon(boolean unused) {
-        return AllIcons.Actions.Find;
+//        return AllIcons.Actions.Find;
+        return Icons.MAVEN_REPOSITORY;
     }
 
     public boolean equals(Object o) {
