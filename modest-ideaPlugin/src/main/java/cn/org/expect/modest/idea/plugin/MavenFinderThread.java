@@ -57,7 +57,7 @@ public class MavenFinderThread extends Thread {
                 String pattern = this.queue.take();
 
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
-                Dates.sleep(500);
+                Dates.sleep(400);
                 if (StringUtils.isNotBlank(pattern) && this.queue.isEmpty()) {
                     MavenFinderResult result = MavenFinderStatement.INSTANCE.query(pattern);
 

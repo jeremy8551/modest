@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 
-public class SearchEverywhereFoundElementInfoComparator implements Comparator<SearchEverywhereFoundElementInfo> {
+public class ElementInfoComparator implements Comparator<SearchEverywhereFoundElementInfo> {
 
     @Override
     public int compare(SearchEverywhereFoundElementInfo o1, SearchEverywhereFoundElementInfo o2) {
@@ -16,6 +16,11 @@ public class SearchEverywhereFoundElementInfoComparator implements Comparator<Se
         }
         if (o2 == null) {
             return 1;
+        }
+
+        int pv = o1.getPriority() - o2.getPriority();
+        if (pv != 0) {
+            return pv;
         }
 
         String n1 = o1.getElement().getClass().getName();
@@ -32,6 +37,6 @@ public class SearchEverywhereFoundElementInfoComparator implements Comparator<Se
             return cv;
         }
 
-        return o1.getPriority() - o2.getPriority();
+        return 0;
     }
 }

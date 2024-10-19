@@ -88,7 +88,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
      */
     @Override
     public String getAdvertisement() {
-        return "Maven Repository";
+        return "Search In Maven Repository";
     }
 
     @Override

@@ -46,7 +46,7 @@ public class JListRenderer {
                 try {
                     Field field = listModel.getClass().getDeclaredField("myElementsComparator");
                     field.setAccessible(true);
-                    field.set(listModel, new SearchEverywhereFoundElementInfoComparator());
+                    field.set(listModel, new ElementInfoComparator());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
