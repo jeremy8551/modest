@@ -20,7 +20,7 @@ public class MavenFinderStatement {
 
     protected MavenFinderStatement() {
         this.map = new ConcurrentHashMap<String, MavenFinderResult>();
-        this.query = new MavenFinderQuery();
+        this.query = new CentralMavenFinderQuery();
     }
 
     public synchronized MavenFinderResult query(String pattern) {

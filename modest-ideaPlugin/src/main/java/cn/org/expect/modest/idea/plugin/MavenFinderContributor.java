@@ -1,6 +1,5 @@
 package cn.org.expect.modest.idea.plugin;
 
-import java.util.Collections;
 import java.util.List;
 import javax.swing.*;
 
@@ -12,8 +11,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.registry.Registry;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.Processor;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,9 +30,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
     @Override
     protected boolean processElement(@NotNull ProgressIndicator progressIndicator, @NotNull Processor<? super FoundItemDescriptor<Object>> consumer, FilteringGotoByModel<?> model, Object element, int degree) {
-        boolean value = super.processElement(progressIndicator, consumer, model, element, degree);
-//        System.out.println("processElement() ");
-        return value;
+        return super.processElement(progressIndicator, consumer, model, element, degree);
     }
 
     @Override
@@ -66,8 +61,8 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     /**
      * 获取所选元素的上下文数据
      *
-     * @param element
-     * @param dataId
+     * @param element 元素
+     * @param dataId  数据编号
      * @return
      */
     @Override
@@ -99,14 +94,6 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     @Override
     protected FilteringGotoByModel<?> createModel(Project project) {
         return new MavenFinderModel(project, this.contributor);
-    }
-
-    @Override
-    public List<AnAction> createRightActions(String pattern, Runnable onChanged) {
-        if (!Registry.is("search.everywhere.recents")) return super.createRightActions(pattern, onChanged);
-        if (StringUtil.isNotEmpty(pattern)) return super.createRightActions(pattern, onChanged);
-
-        return Collections.singletonList(new MavenFinderAnAction());
     }
 
     /**

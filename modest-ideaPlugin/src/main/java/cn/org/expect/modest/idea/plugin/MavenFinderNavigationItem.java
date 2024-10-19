@@ -1,5 +1,6 @@
 package cn.org.expect.modest.idea.plugin;
 
+import cn.org.expect.util.Ensure;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.navigation.NavigationItem;
 
@@ -13,7 +14,7 @@ public class MavenFinderNavigationItem implements NavigationItem {
 
     public MavenFinderNavigationItem(MavenFinderItem item) {
         this.id = NUMBER++;
-        this.presentation = new MavenFinderItemPresentation(item);
+        this.presentation = new MavenFinderItemPresentation(Ensure.notNull(item));
     }
 
     public String getName() {
@@ -25,7 +26,7 @@ public class MavenFinderNavigationItem implements NavigationItem {
     }
 
     public void navigate(boolean requestFocus) {
-        BrowserUtil.browse(this.presentation.getItem().getRepositoryUrl());
+        BrowserUtil.browse(this.presentation.getItem().getNavigateUrl());
     }
 
     public boolean canNavigate() {

@@ -17,11 +17,18 @@ public class MavenFinderRenderer extends SearchEverywherePsiRenderer {
         return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
     }
 
+    /**
+     * 渲染搜索结果右侧的图标和文字
+     *
+     * @param value 记录
+     * @return 图标与文字信息
+     */
     protected TextWithIcon getItemLocation(Object value) {
         if (value instanceof MavenFinderNavigationItem) {
-            MavenFinderNavigationItem item = (MavenFinderNavigationItem) value;
-            return new TextWithIcon(item.getPresentation().getItem().getRepository(), Icons.MAVEN_REPOSITORY_RIGHT);
+            String repository = ((MavenFinderNavigationItem) value).getPresentation().getItem().getRepositoryUrl();
+            return new TextWithIcon(repository, Icons.MAVEN_REPOSITORY_RIGHT);
+        } else {
+            return super.getItemLocation(value);
         }
-        return super.getItemLocation(value);
     }
 }

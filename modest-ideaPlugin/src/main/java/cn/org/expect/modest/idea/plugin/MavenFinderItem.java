@@ -19,6 +19,7 @@ public class MavenFinderItem {
     private int versionCount;
     private String[] text;
     private String[] ec;
+    private String repositoryUrl;
 
     public MavenFinderItem() {
         this("", "", "", "", "", 0, 0, new String[0], new String[0]);
@@ -49,20 +50,20 @@ public class MavenFinderItem {
         return version;
     }
 
-    public String getType() {
-        return type;
-    }
-
     public String getRepository() {
-        return repository;
+        return this.repository;
     }
 
     public Date getTimestamp() {
-        return new Date(timestamp);
+        return new Date(this.timestamp);
     }
 
     public int getVersionCount() {
         return versionCount;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public String[] getText() {
@@ -73,9 +74,17 @@ public class MavenFinderItem {
         return ec;
     }
 
+    public void setRepositoryUrl(String repositoryUrl) {
+        this.repositoryUrl = repositoryUrl;
+    }
+
     public String getRepositoryUrl() {
+        return repositoryUrl;
+    }
+
+    public String getNavigateUrl() {
         StringBuilder buf = new StringBuilder();
-        buf.append("https://repo1.maven.org/maven2/");
+        buf.append(this.repositoryUrl);
         buf.append(this.groupId.replace('.', '/'));
         buf.append('/');
         buf.append(this.artifact.replace('.', '/'));
@@ -108,7 +117,7 @@ public class MavenFinderItem {
             super();
         }
 
-        public String getRepositoryUrl() {
+        public String getNavigateUrl() {
             return "https://repo1.maven.org/maven2/";
         }
 

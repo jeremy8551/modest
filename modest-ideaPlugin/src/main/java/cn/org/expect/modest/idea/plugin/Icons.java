@@ -9,9 +9,9 @@ import com.intellij.openapi.util.IconLoader;
  */
 public class Icons {
 
-    public static final Icon MAVEN_REPOSITORY = load("/META-INF/mavenRepository.png");
+    public static final Icon MAVEN_REPOSITORY_LEFT = load("/META-INF/maven-repository-left.svg");
 
-    public static final Icon MAVEN_REPOSITORY_RIGHT = load("/META-INF/mavenRepository-Right.svg");
+    public static final Icon MAVEN_REPOSITORY_RIGHT = load("/META-INF/maven-repository-right.svg");
 
     public static Icon load(String path) {
         return IconLoader.getIcon(path, Icons.class);

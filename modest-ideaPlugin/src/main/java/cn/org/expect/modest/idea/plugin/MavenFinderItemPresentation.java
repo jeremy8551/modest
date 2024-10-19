@@ -17,17 +17,26 @@ public class MavenFinderItemPresentation implements ItemPresentation {
         return item;
     }
 
+    /**
+     * 在搜索结果中，显示为项目名称
+     *
+     * @return 文本
+     */
     public String getPresentableText() {
         return this.item.getPresentableText();
     }
 
+    /**
+     * 在搜索结果中，显示为项目名称旁边的灰色文本
+     *
+     * @return 文本
+     */
     public String getLocationString() {
         return this.item.getLocationString();
     }
 
     public Icon getIcon(boolean unused) {
-//        return AllIcons.Actions.Find;
-        return Icons.MAVEN_REPOSITORY;
+        return Icons.MAVEN_REPOSITORY_LEFT;
     }
 
     public boolean equals(Object o) {
