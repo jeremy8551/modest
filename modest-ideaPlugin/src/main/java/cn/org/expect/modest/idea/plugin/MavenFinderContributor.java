@@ -1,5 +1,6 @@
 package cn.org.expect.modest.idea.plugin;
 
+import java.util.Collections;
 import java.util.List;
 import javax.swing.*;
 
@@ -11,8 +12,9 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.util.registry.Registry;
+import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.Processor;
-import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class MavenFinderContributor extends AbstractGotoSEContributor {
@@ -79,6 +81,11 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
         return 50;
     }
 
+    @Override
+    public boolean processSelectedItem(@NotNull Object selected, int modifiers, @NotNull String searchText) {
+        return super.processSelectedItem(selected, modifiers, searchText);
+    }
+
     /**
      * 返回可显示在搜索字段右侧的广告文本
      *
@@ -96,7 +103,10 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
     @Override
     public List<AnAction> createRightActions(String pattern, Runnable onChanged) {
-        return ContainerUtil.emptyList();
+        if (!Registry.is("search.everywhere.recents")) return super.createRightActions(pattern, onChanged);
+        if (StringUtil.isNotEmpty(pattern)) return super.createRightActions(pattern, onChanged);
+
+        return Collections.singletonList(new MavenFinderAnAction());
     }
 
     /**

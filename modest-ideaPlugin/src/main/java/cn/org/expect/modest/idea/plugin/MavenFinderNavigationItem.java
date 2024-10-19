@@ -1,7 +1,6 @@
 package cn.org.expect.modest.idea.plugin;
 
 import com.intellij.ide.BrowserUtil;
-import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.NavigationItem;
 
 public class MavenFinderNavigationItem implements NavigationItem {
@@ -21,7 +20,7 @@ public class MavenFinderNavigationItem implements NavigationItem {
         return this.presentation.getItem().getArtifact() + ", " + this.presentation.getItem().getId();
     }
 
-    public ItemPresentation getPresentation() {
+    public MavenFinderItemPresentation getPresentation() {
         return this.presentation;
     }
 

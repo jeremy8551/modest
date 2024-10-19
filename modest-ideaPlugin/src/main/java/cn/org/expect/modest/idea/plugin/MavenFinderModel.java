@@ -6,7 +6,6 @@ import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.Nullable;
 
 public class MavenFinderModel extends FilteringGotoByModel<Object> {
 
@@ -14,7 +13,7 @@ public class MavenFinderModel extends FilteringGotoByModel<Object> {
         super(project, new ChooseByNameContributor[]{contributor});
     }
 
-    protected @Nullable Object filterValueFor(NavigationItem item) {
+    protected Object filterValueFor(NavigationItem item) {
         return item instanceof MavenFinderNavigationItem ? item : null;
     }
 
