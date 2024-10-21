@@ -18,6 +18,7 @@ public class MavenFinderFactory implements SearchEverywhereContributorFactory<Ob
 
     public SearchEverywhereContributor<Object> createContributor(AnActionEvent event) {
         MavenFinderContributor contributor = new MavenFinderContributor(event);
+        JListRenderer.INSTANCE.setContributor(contributor);
 
         // 使用选中的文本进行搜索
         Editor editor = event.getDataContext().getData(CommonDataKeys.EDITOR);
@@ -38,7 +39,6 @@ public class MavenFinderFactory implements SearchEverywhereContributorFactory<Ob
             }
         }
 
-        JListRenderer.INSTANCE.setContributor(contributor);
         return contributor;
     }
 }

@@ -18,6 +18,9 @@ public class MavenArtifact {
     private int versionCount;
     private String repositoryUrl;
 
+    /** true表示折叠版本列表 */
+    private volatile boolean fold;
+
     public MavenArtifact() {
         this("", "", "", "", 0, 0);
     }
@@ -30,6 +33,7 @@ public class MavenArtifact {
         this.type = type;
         this.timestamp = timestamp;
         this.versionCount = versionCount;
+        this.fold = true;
     }
 
     public String getArtifactId() {
@@ -62,6 +66,14 @@ public class MavenArtifact {
 
     public String getRepositoryUrl() {
         return repositoryUrl;
+    }
+
+    public boolean isFold() {
+        return fold;
+    }
+
+    public void setFold(boolean fold) {
+        this.fold = fold;
     }
 
     public boolean equals(Object o) {

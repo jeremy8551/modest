@@ -28,7 +28,7 @@ public class MavenFinderChooseContributor implements ChooseByNameContributor {
         this.map.clear();
 
         MavenFinderResult result = MavenSearchStatement.INSTANCE.last();
-        if (!includeNonProjectItems || result == null) {
+        if (result == null) {
             return new String[0];
         }
 

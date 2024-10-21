@@ -76,18 +76,16 @@ public class JListRenderer {
                     MavenFinderNavigationItem item = new MavenFinderNavigationItem(artifact);
                     listModelElements.add(new SearchEverywhereFoundElementInfo(item, 50, this.contributor));
 
-                    String groupId = artifact.getGroupId();
-                    String artifactId = artifact.getArtifactId();
-                    MavenFinderResult artifactList = MavenSearchStatement.INSTANCE.getResult(groupId, artifactId);
-                    if (artifactList != null) {
-                        if (item.isFold()) { // 如果当前是折叠状态，就展开
-                            item.setFold(false);
+                    // 如果当前是展开状态
+                    if (!artifact.isFold()) {
+                        String groupId = artifact.getGroupId();
+                        String artifactId = artifact.getArtifactId();
+                        MavenFinderResult artifactList = MavenSearchStatement.INSTANCE.getResult(groupId, artifactId);
+                        if (artifactList != null) {
                             for (MavenArtifact listItem : artifactList.getArtifacts()) {
                                 MavenFinderNavigationList nodeItem = new MavenFinderNavigationList(listItem);
                                 listModelElements.add(new SearchEverywhereFoundElementInfo(nodeItem, 50, this.contributor));
                             }
-                        } else { // 如果当前是展开状态，就折叠
-                            item.setFold(true);
                         }
                     }
                 }
@@ -97,6 +95,22 @@ public class JListRenderer {
                 } catch (Throwable e) {
                     e.printStackTrace();
                 }
+            }
+
+            // 选中某个记录
+            String selectText = NavigationFold.selectText;
+            if (selectText != null) {
+                int selectedIndex = -1;
+                for (int i = listModel.getSize() - 1; i >= 0; i--) {
+                    Object object = listModel.getElementAt(i);
+                    if (object instanceof MavenFinderNavigationItem item) {
+                        if (selectText.equals(item.getPresentableText())) {
+                            selectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                list.setSelectedIndex(selectedIndex);
             }
 
             try {

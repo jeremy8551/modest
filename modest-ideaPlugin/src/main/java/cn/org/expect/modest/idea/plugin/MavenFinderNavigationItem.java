@@ -15,12 +15,9 @@ public class MavenFinderNavigationItem implements NavigationItem, ItemPresentati
 
     private final long id;
 
-    private volatile boolean fold;
-
     public MavenFinderNavigationItem(MavenArtifact artifact) {
         this.id = NUMBER++;
         this.artifact = artifact;
-        this.fold = false;
     }
 
     public String getName() {
@@ -73,13 +70,5 @@ public class MavenFinderNavigationItem implements NavigationItem, ItemPresentati
     @Override
     public Icon getIcon(boolean unused) {
         return MavenFinderIcons.MAVEN_REPOSITORY_LEFT;
-    }
-
-    public boolean isFold() {
-        return fold;
-    }
-
-    public void setFold(boolean fold) {
-        this.fold = fold;
     }
 }

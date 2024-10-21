@@ -65,7 +65,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
      */
     @Override
     public Object getDataForItem(Object element, String dataId) {
-        System.out.println("getDataForItem " + element + ", " + dataId);
+//        System.out.println("getDataForItem " + element + ", " + dataId);
         return super.getDataForItem(element, dataId);
     }
 
@@ -81,8 +81,9 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
     @Override
     public boolean processSelectedItem(@NotNull Object selected, int modifiers, @NotNull String searchText) {
-//        super.processSelectedItem(selected, modifiers, searchText);
-        System.out.println("selected: " + selected);
+        // 禁用来源的处理逻辑：自动打开 url
+        // super.processSelectedItem(selected, modifiers, searchText);
+
         if (selected instanceof MavenFinderNavigationItem) {
             MavenFinderNavigationItem item = (MavenFinderNavigationItem) selected;
 
@@ -90,13 +91,22 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
                 return false;
             }
 
-            String groupId = item.getArtifact().getGroupId();
-            String artifact = item.getArtifact().getArtifactId();
+            // 保存选择记录
+            NavigationFold.selectText = item.getPresentableText();
 
-            if (MavenSearchStatement.INSTANCE.getResult(groupId, artifact) != null) {
+            if (item.getArtifact().isFold()) { // 设置为：展开
+                item.getArtifact().setFold(false);
+                String groupId = item.getArtifact().getGroupId();
+                String artifact = item.getArtifact().getArtifactId();
+
+                if (MavenSearchStatement.INSTANCE.getResult(groupId, artifact) == null) {
+                    MavenSearchExtraThread.INSTANCE.search(groupId, artifact);
+                }
                 return false;
-            } else {
-                MavenSearchExtraThread.INSTANCE.search(groupId, artifact);
+            } else { // 设置为：折叠
+                item.getArtifact().setFold(true);
+                JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
+                return false;
             }
         }
         return false;
@@ -165,7 +175,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
      */
     @Override
     public boolean showInFindResults() {
-        return true;
+        return false;
     }
 
     @Override

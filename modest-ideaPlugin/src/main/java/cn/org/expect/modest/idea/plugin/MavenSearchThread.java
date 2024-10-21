@@ -38,6 +38,7 @@ public class MavenSearchThread extends Thread {
      */
     public void search(String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
+            NavigationFold.selectText = null;
             this.add(pattern);
         }
     }
