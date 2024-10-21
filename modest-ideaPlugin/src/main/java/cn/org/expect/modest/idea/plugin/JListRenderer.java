@@ -46,7 +46,7 @@ public class JListRenderer {
                 try {
                     Field field = listModel.getClass().getDeclaredField("myElementsComparator");
                     field.setAccessible(true);
-                    field.set(listModel, new ElementInfoComparator());
+                    field.set(listModel, new NavigationItemComparator());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -55,7 +55,7 @@ public class JListRenderer {
             boolean print = true;
             for (int i = listModel.getSize() - 1; i >= 0; i--) {
                 Object object = listModel.getElementAt(i);
-                if (object instanceof MavenFinderNavigationItem) {
+                if (object instanceof MavenFinderNavigationItem || object instanceof MavenFinderNavigationList) {
                     try {
                         SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
                         listModel.removeElement(object, info.getContributor());
@@ -69,18 +69,28 @@ public class JListRenderer {
             }
 
             // 添加查询结果
-            int length = result == null ? 10 : result.size();
+            int length = result == null ? 0 : result.size();
             List<SearchEverywhereFoundElementInfo> listModelElements = new ArrayList<SearchEverywhereFoundElementInfo>(length);
-            if (result != null) {
+            if (length > 0) {
                 for (MavenFinderNavigationItem item : result.getNavigationItems()) {
                     listModelElements.add(new SearchEverywhereFoundElementInfo(item, 50, this.contributor));
-                }
-            }
 
-            try {
-                listModel.addElements(listModelElements);
-            } catch (Throwable e) {
-                e.printStackTrace();
+                    String groupId = item.getPresentation().getItem().getGroupId();
+                    String artifact = item.getPresentation().getItem().getArtifact();
+                    MavenFinderResult listResult = MavenSearchStatement.INSTANCE.getResult(groupId, artifact);
+                    if (listResult != null) {
+                        for (MavenFinderItem listItem : listResult.getItems()) {
+                            MavenFinderNavigationList nodeItem = new MavenFinderNavigationList(listItem);
+                            listModelElements.add(new SearchEverywhereFoundElementInfo(nodeItem, 50, this.contributor));
+                        }
+                    }
+                }
+
+                try {
+                    listModel.addElements(listModelElements);
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
             }
 
             try {

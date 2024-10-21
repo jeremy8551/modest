@@ -26,7 +26,7 @@ public class MavenFinderChooseContributor implements ChooseByNameContributor {
      * @return
      */
     public String[] getNames(Project project, boolean includeNonProjectItems) {
-        MavenFinderResult result = MavenFinderStatement.INSTANCE.last();
+        MavenFinderResult result = MavenSearchStatement.INSTANCE.last();
         if (result == null) {
             return new String[0];
         } else {
@@ -44,7 +44,7 @@ public class MavenFinderChooseContributor implements ChooseByNameContributor {
 //        }
 //        return items;
 
-        MavenFinderResult result = MavenFinderStatement.INSTANCE.getResult(pattern);
+        MavenFinderResult result = MavenSearchStatement.INSTANCE.getResult(pattern);
         if (result == null) {
 //            System.out.println("getItemsByName() blank result !" + name + ", pattern: " + pattern);
             return new NavigationItem[0];

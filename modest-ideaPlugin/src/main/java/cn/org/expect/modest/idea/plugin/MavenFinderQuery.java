@@ -5,8 +5,9 @@ import java.util.List;
 
 public interface MavenFinderQuery {
 
-    List<MavenFinderItem> execute(String pattern) throws IOException;
-
     String getRepositoryUrl();
 
+    List<MavenFinderItem> execute(String pattern) throws IOException;
+
+    List<MavenFinderItem> execute(String groupId, String artifactId) throws IOException;
 }

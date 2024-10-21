@@ -1,0 +1,143 @@
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 2,
+    "params": {
+      "q": "g:icu.etl AND a:easyetl-dependencies",
+      "core": "gav",
+      "indent": "off",
+      "fl": "id,g,a,v,p,ec,timestamp,tags",
+      "start": "",
+      "sort": "score desc,timestamp desc,g asc,a asc,v desc",
+      "rows": "99",
+      "wt": "json",
+      "version": "2.2"
+    }
+  },
+  "response": {
+    "numFound": 8,
+    "start": 0,
+    "docs": [
+      {
+        "id": "icu.etl:easyetl-dependencies:2.0.9",
+        "g": "icu.etl",
+        "a": "easyetl-dependencies",
+        "v": "2.0.9",
+        "p": "pom",
+        "timestamp": 1702995382000,
+        "ec": [
+          ".pom"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl-dependencies:2.0.8",
+        "g": "icu.etl",
+        "a": "easyetl-dependencies",
+        "v": "2.0.8",
+        "p": "pom",
+        "timestamp": 1702819976000,
+        "ec": [
+          ".pom"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl-dependencies:2.0.7",
+        "g": "icu.etl",
+        "a": "easyetl-dependencies",
+        "v": "2.0.7",
+        "p": "pom",
+        "timestamp": 1702547583000,
+        "ec": [
+          ".pom"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl-dependencies:2.0.6",
+        "g": "icu.etl",
+        "a": "easyetl-dependencies",
+        "v": "2.0.6",
+        "p": "pom",
+        "timestamp": 1701851303000,
+        "ec": [
+          ".pom"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl-dependencies:2.0.5",
+        "g": "icu.etl",
+        "a": "easyetl-dependencies",
+        "v": "2.0.5",
+        "p": "pom",
+        "timestamp": 1699458317000,
+        "ec": [
+          ".pom"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl-dependencies:2.0.4",
+        "g": "icu.etl",
+        "a": "easyetl-dependencies",
+        "v": "2.0.4",
+        "p": "pom",
+        "timestamp": 1699370028000,
+        "ec": [
+          ".pom"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl-dependencies:2.0.3",
+        "g": "icu.etl",
+        "a": "easyetl-dependencies",
+        "v": "2.0.3",
+        "p": "pom",
+        "timestamp": 1699281118000,
+        "ec": [
+          ".pom"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl-dependencies:2.0.2",
+        "g": "icu.etl",
+        "a": "easyetl-dependencies",
+        "v": "2.0.2",
+        "p": "pom",
+        "timestamp": 1699270879000,
+        "ec": [
+          ".pom"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      }
+    ]
+  }
+}

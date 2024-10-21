@@ -8,14 +8,12 @@ import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.Processor;
 import org.jetbrains.annotations.NotNull;
 
 public class MavenFinderContributor extends AbstractGotoSEContributor {
-    private static final Logger log = Logger.getInstance(MavenFinderContributor.class);
 
     protected final MavenFinderChooseContributor contributor;
 
@@ -53,7 +51,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     @Override
     public String filterControlSymbols(String pattern) {
         if (pattern != null && pattern.length() > 0) {
-            MavenFinderThread.INSTANCE.search(pattern);
+            MavenSearchThread.INSTANCE.search(pattern);
         }
         return pattern;
     }
@@ -67,7 +65,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
      */
     @Override
     public Object getDataForItem(Object element, String dataId) {
-        log.info("getDataForItem " + element + ", " + dataId);
+        System.out.println("getDataForItem " + element + ", " + dataId);
         return super.getDataForItem(element, dataId);
     }
 
@@ -77,8 +75,25 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     }
 
     @Override
+    public boolean isMultiSelectionSupported() {
+        return false;
+    }
+
+    @Override
     public boolean processSelectedItem(@NotNull Object selected, int modifiers, @NotNull String searchText) {
-        return super.processSelectedItem(selected, modifiers, searchText);
+//        super.processSelectedItem(selected, modifiers, searchText);
+        System.out.println("selected: " + selected);
+        if (selected instanceof MavenFinderNavigationItem) {
+            MavenFinderNavigationItem item = (MavenFinderNavigationItem) selected;
+            if (item.getPresentation().getItem().getVersionCount() <= 1) { // 如果版本数量只有1个，则不需要显示
+                return false;
+            }
+
+            String groupId = item.getPresentation().getItem().getGroupId();
+            String artifact = item.getPresentation().getItem().getArtifact();
+            MavenSearchExtraThread.INSTANCE.search(groupId, artifact);
+        }
+        return false;
     }
 
     /**

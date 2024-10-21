@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
 import cn.org.expect.util.Dates;
+import cn.org.expect.util.StringUtils;
 
 public class MavenFinderItem {
 
@@ -104,38 +105,15 @@ public class MavenFinderItem {
     }
 
     public String getPresentableText() {
-        return this.groupId + ":" + this.artifact + ":" + this.version;
+        if (StringUtils.isBlank(this.groupId) && StringUtils.isBlank(this.artifact) && StringUtils.isBlank(this.version)) {
+            return "";
+        } else {
+            return this.groupId + ":" + this.artifact + ":" + this.version;
+        }
     }
 
     public String getLocationString() {
         return this.type;
-    }
-
-    public static class Blank extends MavenFinderItem {
-
-        public Blank() {
-            super();
-        }
-
-        public String getNavigateUrl() {
-            return "https://repo1.maven.org/maven2/";
-        }
-
-        public String getPresentableText() {
-            return toString();
-        }
-
-        public String getLocationString() {
-            return toString();
-        }
-
-        public boolean equals(Object o) {
-            return false;
-        }
-
-        public String toString() {
-            return "" + this.getId();
-        }
     }
 }
 

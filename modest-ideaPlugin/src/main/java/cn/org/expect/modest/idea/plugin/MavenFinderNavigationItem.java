@@ -4,13 +4,13 @@ import cn.org.expect.util.Ensure;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.navigation.NavigationItem;
 
-public class MavenFinderNavigationItem implements NavigationItem {
+public class MavenFinderNavigationItem implements NavigationItem, MavenFinderNavigation {
 
     private final MavenFinderItemPresentation presentation;
 
     private static volatile long NUMBER = 0;
 
-    private long id;
+    private final long id;
 
     public MavenFinderNavigationItem(MavenFinderItem item) {
         this.id = NUMBER++;
@@ -30,7 +30,11 @@ public class MavenFinderNavigationItem implements NavigationItem {
     }
 
     public boolean canNavigate() {
-        return true;
+        return false;
+    }
+
+    public boolean canNavigateToSource() {
+        return false;
     }
 
     public boolean equals(Object o) {

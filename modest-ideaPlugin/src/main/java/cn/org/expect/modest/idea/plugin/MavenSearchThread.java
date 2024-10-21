@@ -6,20 +6,21 @@ import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.diagnostic.Logger;
 
-public class MavenFinderThread extends Thread {
-    private static final Logger log = Logger.getInstance(MavenFinderThread.class);
+public class MavenSearchThread extends Thread {
+    private static final Logger log = Logger.getInstance(MavenSearchThread.class);
 
-    public final static MavenFinderThread INSTANCE = new MavenFinderThread();
+    public final static MavenSearchThread INSTANCE = new MavenSearchThread();
 
     protected volatile LinkedBlockingQueue<String> queue;
 
     protected volatile boolean running;
 
-    protected MavenFinderThread() {
+    protected MavenSearchThread() {
         super();
         this.queue = new LinkedBlockingQueue<String>(10);
         this.running = true;
         this.setDaemon(true);
+        this.setName(MavenSearchThread.class.getSimpleName());
         this.start();
     }
 
@@ -59,8 +60,7 @@ public class MavenFinderThread extends Thread {
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
                 Dates.sleep(400);
                 if (StringUtils.isNotBlank(pattern) && this.queue.isEmpty()) {
-                    MavenFinderResult result = MavenFinderStatement.INSTANCE.query(pattern);
-
+                    MavenFinderResult result = MavenSearchStatement.INSTANCE.query(pattern);
                     if (this.running) {
                         JListRenderer.INSTANCE.execute(result);
                     }

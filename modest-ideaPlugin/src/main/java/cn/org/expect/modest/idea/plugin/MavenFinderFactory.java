@@ -13,12 +13,13 @@ public class MavenFinderFactory implements SearchEverywhereContributorFactory<Ob
 
     public SearchEverywhereContributor<Object> createContributor(AnActionEvent event) {
         MavenFinderContributor contributor = new MavenFinderContributor(event);
+
         Editor editor = event.getDataContext().getData(CommonDataKeys.EDITOR);
         if (editor != null) {
             String selectedText = editor.getSelectionModel().getSelectedText(); // 编辑器中选中的文本
             if (StringUtils.isNotBlank(selectedText)) {
                 log.warn("--->      Selected text: " + selectedText);
-                MavenFinderThread.INSTANCE.search(selectedText);
+                MavenSearchThread.INSTANCE.search(selectedText);
 
                 new Thread(new IdeaSearchTask(event, ui -> {
                     ui.getSearchField().setText(MavenFinderPattern.parse(selectedText)); // 更新搜索内容
