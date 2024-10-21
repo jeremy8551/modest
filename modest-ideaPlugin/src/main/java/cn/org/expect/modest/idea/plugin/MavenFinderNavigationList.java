@@ -4,7 +4,6 @@ import javax.swing.*;
 
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
-import cn.org.expect.util.StringUtils;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.navigation.NavigationItem;
@@ -12,19 +11,23 @@ import com.intellij.platform.backend.navigation.NavigationRequest;
 
 public class MavenFinderNavigationList implements NavigationItem, ItemPresentation, MavenFinderNavigation {
 
-    private final MavenFinderItem item;
+    private final MavenArtifact artifact;
 
     private static volatile long NUMBER = 0;
 
     private final long id;
 
-    public MavenFinderNavigationList(MavenFinderItem item) {
+    public MavenFinderNavigationList(MavenArtifact artifact) {
         this.id = NUMBER++;
-        this.item = Ensure.notNull(item);
+        this.artifact = Ensure.notNull(artifact);
     }
 
     public String getName() {
-        return MavenFinderNavigationList.class.getSimpleName() + ":" + item.getGroupId() + ":" + item.getArtifact() + ":" + item.getVersion();
+        return MavenFinderNavigationList.class.getSimpleName() + ":" + artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion();
+    }
+
+    public MavenArtifact getArtifact() {
+        return artifact;
     }
 
     public ItemPresentation getPresentation() {
@@ -32,7 +35,7 @@ public class MavenFinderNavigationList implements NavigationItem, ItemPresentati
     }
 
     public void navigate(boolean requestFocus) {
-        BrowserUtil.browse(this.item.getNavigateUrl());
+        BrowserUtil.browse("");
     }
 
     public boolean canNavigate() {
@@ -54,12 +57,12 @@ public class MavenFinderNavigationList implements NavigationItem, ItemPresentati
 
     @Override
     public String getPresentableText() {
-        return this.item.getArtifact() + "     " + StringUtils.right(this.item.getVersion(), 40, ' ') + StringUtils.right(Dates.format19(this.item.getTimestamp()), 27, ' ');
+        return "     " + this.artifact.getVersion();
     }
 
     @Override
     public String getLocationString() {
-        return "";
+        return Dates.format19(this.artifact.getTimestamp());
     }
 
     @Override

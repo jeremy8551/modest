@@ -23,12 +23,17 @@ public class MavenFinderRenderer extends SearchEverywherePsiRenderer {
      * @param value 记录
      * @return 图标与文字信息
      */
-    protected TextWithIcon getItemLocation(Object value) {
+    public TextWithIcon getItemLocation(Object value) {
         if (value instanceof MavenFinderNavigationItem) {
-            String repository = ((MavenFinderNavigationItem) value).getPresentation().getItem().getRepositoryUrl();
-            return new TextWithIcon(repository, Icons.MAVEN_REPOSITORY_RIGHT);
-        } else {
-            return super.getItemLocation(value);
+            String repository = ((MavenFinderNavigationItem) value).getArtifact().getRepositoryUrl();
+            return new TextWithIcon(repository, MavenFinderIcons.MAVEN_REPOSITORY_RIGHT);
         }
+
+        if (value instanceof MavenFinderNavigationList) {
+            MavenArtifact item = ((MavenFinderNavigationList) value).getArtifact();
+            return new TextWithIcon(item.getArtifactId(), MavenFinderIcons.MAVEN_REPOSITORY_RIGHT);
+        }
+
+        return super.getItemLocation(value);
     }
 }

@@ -19,7 +19,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
     public MavenFinderContributor(AnActionEvent event) {
         super(event);
-        this.contributor = new MavenFinderChooseContributor(this);
+        this.contributor = new MavenFinderChooseContributor();
     }
 
     public String getSearchProviderId() {
@@ -85,13 +85,19 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
         System.out.println("selected: " + selected);
         if (selected instanceof MavenFinderNavigationItem) {
             MavenFinderNavigationItem item = (MavenFinderNavigationItem) selected;
-            if (item.getPresentation().getItem().getVersionCount() <= 1) { // 如果版本数量只有1个，则不需要显示
+
+            if (item.getArtifact().getVersionCount() <= 1) { // 如果版本数量只有1个，则不需要显示
                 return false;
             }
 
-            String groupId = item.getPresentation().getItem().getGroupId();
-            String artifact = item.getPresentation().getItem().getArtifact();
-            MavenSearchExtraThread.INSTANCE.search(groupId, artifact);
+            String groupId = item.getArtifact().getGroupId();
+            String artifact = item.getArtifact().getArtifactId();
+
+            if (MavenSearchStatement.INSTANCE.getResult(groupId, artifact) != null) {
+                return false;
+            } else {
+                MavenSearchExtraThread.INSTANCE.search(groupId, artifact);
+            }
         }
         return false;
     }

@@ -23,7 +23,6 @@ public class MavenSearchExtraThread extends Thread {
         this.running = true;
         this.setDaemon(true);
         this.setName(MavenSearchExtraThread.class.getSimpleName());
-        this.start();
     }
 
     /**

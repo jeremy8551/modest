@@ -11,14 +11,23 @@ import com.intellij.openapi.diagnostic.Logger;
 public class MavenSearchStatement {
     private static final Logger log = Logger.getInstance(MavenSearchStatement.class);
 
+    /** 单例模式 */
     public final static MavenSearchStatement INSTANCE = new MavenSearchStatement();
 
+    /**
+     * 模糊搜索词 pattern 与 MavenFinderResult 的映射
+     */
     protected final Map<String, MavenFinderResult> map;
 
+    /**
+     * groupid、artifactId 与 MavenFinderResult 的映射
+     */
     protected final Map<String, MavenFinderResult> map1;
 
+    /** 最近一次模糊搜索结果 */
     protected volatile MavenFinderResult last;
 
+    /** 远程调用组件 */
     protected final MavenFinderQuery query;
 
     protected MavenSearchStatement() {
@@ -36,7 +45,7 @@ public class MavenSearchStatement {
         log.warn("search Pattern: " + patternFinal);
         MavenFinderResult result = this.map.get(patternFinal);
         if (result == null) {
-            List<MavenFinderItem> list = null;
+            List<MavenArtifact> list = null;
             try {
                 list = this.query.execute(StringUtils.trimBlank(StringUtils.replaceAll(pattern, ".", "%2E")));
             } catch (Exception e) {
@@ -53,7 +62,7 @@ public class MavenSearchStatement {
             log.warn("search Pattern: " + patternFinal + ", result is null!");
         } else {
             this.last = result;
-            log.warn("search Pattern: " + patternFinal + ", Size: " + result.getItems().size() + ", List: " + StringUtils.toString(result.getItems()));
+            log.warn("search Pattern: " + patternFinal + ", Size: " + result.getArtifacts().size() + ", List: " + StringUtils.toString(result.getArtifacts()));
         }
 
         return result;
@@ -68,14 +77,14 @@ public class MavenSearchStatement {
         String key = this.toExtraSearchKey(groupId, artifactId);
         MavenFinderResult result = this.map1.get(key);
         if (result == null) {
-            List<MavenFinderItem> list = null;
+            List<MavenArtifact> list = null;
             try {
                 list = this.query.execute(StringUtils.trimBlank(groupId), StringUtils.trimBlank(artifactId));
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            if (list != null && !list.isEmpty()) {
+            if (list != null) {
                 result = new MavenFinderResult(key, list);
                 this.map1.put(result.getPattern(), result);
             }
@@ -84,7 +93,7 @@ public class MavenSearchStatement {
         if (result == null) {
             log.warn("search groupId: " + groupId + ", artifactId: " + artifactId + ", result is null!");
         } else {
-            log.warn("search groupId: " + groupId + ", artifactId: " + artifactId + ", Size: " + result.getItems().size() + ", List: " + StringUtils.toString(result.getItems()));
+            log.warn("search groupId: " + groupId + ", artifactId: " + artifactId + ", Size: " + result.getArtifacts().size() + ", List: " + StringUtils.toString(result.getArtifacts()));
         }
 
         return result;

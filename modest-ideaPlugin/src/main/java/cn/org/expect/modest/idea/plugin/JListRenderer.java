@@ -59,7 +59,7 @@ public class JListRenderer {
                     try {
                         SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
                         listModel.removeElement(object, info.getContributor());
-                    } catch (Exception e) {
+                    } catch (Exception e) { // TODO 如果不能删除，则将导航记录清空，排序时放到最后
                         if (print) {
                             print = false;
                             e.printStackTrace();
@@ -69,19 +69,25 @@ public class JListRenderer {
             }
 
             // 添加查询结果
-            int length = result == null ? 0 : result.size();
-            List<SearchEverywhereFoundElementInfo> listModelElements = new ArrayList<SearchEverywhereFoundElementInfo>(length);
+            int length = (result == null) ? 0 : result.size();
             if (length > 0) {
-                for (MavenFinderNavigationItem item : result.getNavigationItems()) {
+                List<SearchEverywhereFoundElementInfo> listModelElements = new ArrayList<SearchEverywhereFoundElementInfo>(length);
+                for (MavenArtifact artifact : result.getArtifacts()) {
+                    MavenFinderNavigationItem item = new MavenFinderNavigationItem(artifact);
                     listModelElements.add(new SearchEverywhereFoundElementInfo(item, 50, this.contributor));
 
-                    String groupId = item.getPresentation().getItem().getGroupId();
-                    String artifact = item.getPresentation().getItem().getArtifact();
-                    MavenFinderResult listResult = MavenSearchStatement.INSTANCE.getResult(groupId, artifact);
-                    if (listResult != null) {
-                        for (MavenFinderItem listItem : listResult.getItems()) {
-                            MavenFinderNavigationList nodeItem = new MavenFinderNavigationList(listItem);
-                            listModelElements.add(new SearchEverywhereFoundElementInfo(nodeItem, 50, this.contributor));
+                    String groupId = artifact.getGroupId();
+                    String artifactId = artifact.getArtifactId();
+                    MavenFinderResult artifactList = MavenSearchStatement.INSTANCE.getResult(groupId, artifactId);
+                    if (artifactList != null) {
+                        if (item.isFold()) { // 如果当前是折叠状态，就展开
+                            item.setFold(false);
+                            for (MavenArtifact listItem : artifactList.getArtifacts()) {
+                                MavenFinderNavigationList nodeItem = new MavenFinderNavigationList(listItem);
+                                listModelElements.add(new SearchEverywhereFoundElementInfo(nodeItem, 50, this.contributor));
+                            }
+                        } else { // 如果当前是展开状态，就折叠
+                            item.setFold(true);
                         }
                     }
                 }

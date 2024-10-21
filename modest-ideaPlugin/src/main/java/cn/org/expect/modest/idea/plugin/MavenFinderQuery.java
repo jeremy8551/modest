@@ -7,7 +7,7 @@ public interface MavenFinderQuery {
 
     String getRepositoryUrl();
 
-    List<MavenFinderItem> execute(String pattern) throws IOException;
+    List<MavenArtifact> execute(String pattern) throws IOException;
 
-    List<MavenFinderItem> execute(String groupId, String artifactId) throws IOException;
+    List<MavenArtifact> execute(String groupId, String artifactId) throws IOException;
 }

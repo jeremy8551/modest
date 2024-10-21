@@ -11,9 +11,15 @@ import com.intellij.openapi.editor.Editor;
 public class MavenFinderFactory implements SearchEverywhereContributorFactory<Object> {
     private static final Logger log = Logger.getInstance(MavenFinderFactory.class);
 
+    static {
+        MavenSearchThread.INSTANCE.start();
+        MavenSearchExtraThread.INSTANCE.start();
+    }
+
     public SearchEverywhereContributor<Object> createContributor(AnActionEvent event) {
         MavenFinderContributor contributor = new MavenFinderContributor(event);
 
+        // 使用选中的文本进行搜索
         Editor editor = event.getDataContext().getData(CommonDataKeys.EDITOR);
         if (editor != null) {
             String selectedText = editor.getSelectionModel().getSelectedText(); // 编辑器中选中的文本

@@ -21,7 +21,6 @@ public class MavenSearchThread extends Thread {
         this.running = true;
         this.setDaemon(true);
         this.setName(MavenSearchThread.class.getSimpleName());
-        this.start();
     }
 
     /**
