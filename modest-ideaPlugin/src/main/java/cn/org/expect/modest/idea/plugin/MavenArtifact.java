@@ -72,6 +72,10 @@ public class MavenArtifact {
         return fold;
     }
 
+    public boolean isUnfold() {
+        return !this.fold;
+    }
+
     public void setFold(boolean fold) {
         this.fold = fold;
     }

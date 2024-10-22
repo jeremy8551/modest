@@ -77,7 +77,7 @@ public class JListRenderer {
                     listModelElements.add(new SearchEverywhereFoundElementInfo(item, 50, this.contributor));
 
                     // 如果当前是展开状态
-                    if (!artifact.isFold()) {
+                    if (artifact.isUnfold()) {
                         String groupId = artifact.getGroupId();
                         String artifactId = artifact.getArtifactId();
                         MavenFinderResult artifactList = MavenSearchStatement.INSTANCE.getResult(groupId, artifactId);
@@ -98,19 +98,28 @@ public class JListRenderer {
             }
 
             // 选中某个记录
-            String selectText = NavigationFold.selectText;
+            String selectText = MavenFinderContributor.SELECT_TEXT;
             if (selectText != null) {
                 int selectedIndex = -1;
                 for (int i = listModel.getSize() - 1; i >= 0; i--) {
                     Object object = listModel.getElementAt(i);
                     if (object instanceof MavenFinderNavigationItem item) {
                         if (selectText.equals(item.getPresentableText())) {
-                            selectedIndex = i;
+                            if (item.getArtifact().isFold()) {
+                                selectedIndex = -1;
+                            } else {
+                                selectedIndex = i;
+                            }
                             break;
                         }
                     }
                 }
-                list.setSelectedIndex(selectedIndex);
+
+                if (selectedIndex == -1) {
+                    list.clearSelection();
+                } else {
+                    list.setSelectedIndex(selectedIndex);
+                }
             }
 
             try {

@@ -57,7 +57,7 @@ public class MavenFinderNavigationList implements NavigationItem, ItemPresentati
 
     @Override
     public String getPresentableText() {
-        return "     " + this.artifact.getVersion();
+        return "      " + this.artifact.getVersion() + " ";
     }
 
     @Override

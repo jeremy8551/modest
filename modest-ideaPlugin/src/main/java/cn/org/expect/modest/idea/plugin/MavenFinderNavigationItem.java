@@ -25,7 +25,7 @@ public class MavenFinderNavigationItem implements NavigationItem, ItemPresentati
     }
 
     public MavenArtifact getArtifact() {
-        return artifact;
+        return this.artifact;
     }
 
     @Override
@@ -49,8 +49,8 @@ public class MavenFinderNavigationItem implements NavigationItem, ItemPresentati
     }
 
     @Override
-    public boolean equals(Object o) {
-        return o != null && o.getClass().equals(this.getClass()) && ((MavenFinderNavigationItem) o).id == this.id;
+    public boolean equals(Object obj) {
+        return obj != null && obj.getClass().equals(this.getClass()) && ((MavenFinderNavigationItem) obj).id == this.id;
     }
 
     @Override

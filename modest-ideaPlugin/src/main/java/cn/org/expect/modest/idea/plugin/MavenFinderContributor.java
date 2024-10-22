@@ -15,6 +15,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class MavenFinderContributor extends AbstractGotoSEContributor {
 
+    public static volatile String SELECT_TEXT;
+
     protected final MavenFinderChooseContributor contributor;
 
     public MavenFinderContributor(AnActionEvent event) {
@@ -86,27 +88,28 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
         if (selected instanceof MavenFinderNavigationItem) {
             MavenFinderNavigationItem item = (MavenFinderNavigationItem) selected;
+            MavenArtifact artifact = item.getArtifact();
 
-            if (item.getArtifact().getVersionCount() <= 1) { // 如果版本数量只有1个，则不需要显示
+            if (artifact.getVersionCount() <= 1) { // 如果版本数量只有1个，则不需要显示
                 return false;
             }
 
             // 保存选择记录
-            NavigationFold.selectText = item.getPresentableText();
+            MavenFinderContributor.SELECT_TEXT = item.getPresentableText();
 
-            if (item.getArtifact().isFold()) { // 设置为：展开
-                item.getArtifact().setFold(false);
-                String groupId = item.getArtifact().getGroupId();
-                String artifact = item.getArtifact().getArtifactId();
+            if (artifact.isFold()) { // 设置为：展开
+                artifact.setFold(false);
+                String groupId = artifact.getGroupId();
+                String artifactId = artifact.getArtifactId();
 
-                if (MavenSearchStatement.INSTANCE.getResult(groupId, artifact) == null) {
-                    MavenSearchExtraThread.INSTANCE.search(groupId, artifact);
+                if (MavenSearchStatement.INSTANCE.getResult(groupId, artifactId) == null) {
+                    MavenSearchExtraThread.INSTANCE.search(groupId, artifactId);
                 }
-                
+
                 JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
                 return false;
             } else { // 设置为：折叠
-                item.getArtifact().setFold(true);
+                artifact.setFold(true);
                 JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
                 return false;
             }
