@@ -56,6 +56,11 @@ public class MavenSearchStatement {
                 result = new MavenFinderResult(patternFinal, list);
                 this.map.put(result.getPattern(), result);
             }
+        } else {
+            List<MavenArtifact> artifacts = result.getArtifacts();
+            for (MavenArtifact artifact : artifacts) {
+                artifact.setFold(true);
+            }
         }
 
         if (result == null) {

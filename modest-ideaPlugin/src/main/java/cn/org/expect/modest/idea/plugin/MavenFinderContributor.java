@@ -102,6 +102,8 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
                 if (MavenSearchStatement.INSTANCE.getResult(groupId, artifact) == null) {
                     MavenSearchExtraThread.INSTANCE.search(groupId, artifact);
                 }
+                
+                JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
                 return false;
             } else { // 设置为：折叠
                 item.getArtifact().setFold(true);
