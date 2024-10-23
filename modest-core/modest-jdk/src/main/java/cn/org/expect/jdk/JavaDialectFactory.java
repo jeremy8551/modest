@@ -11,7 +11,7 @@ import cn.org.expect.util.Settings;
 public class JavaDialectFactory {
 
     /** JDK方言 */
-    private volatile static JavaDialect dialect;
+    private volatile static JavaDialect DIALECT;
 
     /**
      * 返回 JDK 方言对象
@@ -19,14 +19,14 @@ public class JavaDialectFactory {
      * @return 方言接口的实现类
      */
     public static JavaDialect get() {
-        if (dialect == null) {
+        if (DIALECT == null) {
             synchronized (JavaDialectFactory.class) {
-                if (dialect == null) {
-                    dialect = new JavaDialectFactory().loadDialect();
+                if (DIALECT == null) {
+                    DIALECT = new JavaDialectFactory().loadDialect();
                 }
             }
         }
-        return dialect;
+        return DIALECT;
     }
 
     /**

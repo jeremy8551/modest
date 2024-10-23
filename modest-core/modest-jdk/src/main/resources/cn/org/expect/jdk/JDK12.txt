@@ -5,7 +5,7 @@ import java.lang.reflect.Modifier;
 
 import cn.org.expect.util.JUL;
 
-public class JDK21 extends JDK8 {
+public class JDK12 extends JDK8 {
 
     public <E> void setField(Object obj, String fieldRegex, Class<E> fieldClass, E newValue) {
         Field[] list = obj.getClass().getDeclaredFields();
