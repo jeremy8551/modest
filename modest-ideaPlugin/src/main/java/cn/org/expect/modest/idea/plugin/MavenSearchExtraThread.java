@@ -51,7 +51,7 @@ public class MavenSearchExtraThread extends Thread {
                 if (result != null && this.queue.isEmpty()) { // 如果没有其他任务，则重新渲染UI
                     JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }

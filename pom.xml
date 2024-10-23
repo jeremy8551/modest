@@ -22,6 +22,7 @@
         <maven.compiler.target>5</maven.compiler.target>
         <maven.plugin.version>3.5.2</maven.plugin.version> <!-- Maven插件版本 -->
         <skipTests>false</skipTests> <!-- true表示不执行单元测试及代码验证等插件 -->
+        <manifold.version>2024.1.34</manifold.version>
     </properties>
 
     <!-- 子模块 -->
@@ -221,6 +222,13 @@
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
                 <version>1.1.1</version>
+            </dependency>
+
+            <!-- 用于扩展Java核心API -->
+            <dependency>
+                <groupId>systems.manifold</groupId>
+                <artifactId>manifold-ext</artifactId>
+                <version>${manifold.version}</version>
             </dependency>
 
             <!-- modest 工具包 -->

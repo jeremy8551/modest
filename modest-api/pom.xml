@@ -11,16 +11,11 @@
 
     <artifactId>modest-api</artifactId>
 
-    <properties>
-        <manifold.version>2024.1.34</manifold.version>
-    </properties>
-
     <dependencies>
         <!-- Java编译器插件，用于扩展核心API -->
         <dependency>
             <groupId>systems.manifold</groupId>
             <artifactId>manifold-ext</artifactId>
-            <version>${manifold.version}</version>
         </dependency>
 
         <dependency>

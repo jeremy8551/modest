@@ -15,13 +15,20 @@ public class MavenFinderNavigationItem implements NavigationItem, ItemPresentati
 
     private final long id;
 
+    private volatile Icon icon;
+
     public MavenFinderNavigationItem(MavenArtifact artifact) {
         this.id = NUMBER++;
         this.artifact = artifact;
+        this.icon = MavenFinderIcons.MAVEN_REPOSITORY_LEFT;
     }
 
     public String getName() {
         return MavenFinderNavigationItem.class.getSimpleName() + ":" + this.artifact.getGroupId() + ":" + this.artifact.getArtifactId() + ":" + this.artifact.getVersion();
+    }
+
+    public void setIcon(Icon icon) {
+        this.icon = icon;
     }
 
     public MavenArtifact getArtifact() {
@@ -69,6 +76,6 @@ public class MavenFinderNavigationItem implements NavigationItem, ItemPresentati
 
     @Override
     public Icon getIcon(boolean unused) {
-        return MavenFinderIcons.MAVEN_REPOSITORY_LEFT;
+        return this.icon;
     }
 }

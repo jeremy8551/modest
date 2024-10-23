@@ -8,16 +8,16 @@ import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.Processor;
 import org.jetbrains.annotations.NotNull;
 
 public class MavenFinderContributor extends AbstractGotoSEContributor {
+    private static final Logger log = Logger.getInstance(MavenFinderContributor.class);
 
-    public static volatile String SELECT_TEXT;
-
-    protected final MavenFinderChooseContributor contributor;
+    private final MavenFinderChooseContributor contributor;
 
     public MavenFinderContributor(AnActionEvent event) {
         super(event);
@@ -82,26 +82,23 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     }
 
     @Override
-    public boolean processSelectedItem(@NotNull Object selected, int modifiers, @NotNull String searchText) {
+    public boolean processSelectedItem(Object selectedObject, int modifiers, String searchText) {
         // 禁用来源的处理逻辑：自动打开 url
-        // super.processSelectedItem(selected, modifiers, searchText);
+        // super.processSelectedItem(selectedObject, modifiers, searchText);
 
-        if (selected instanceof MavenFinderNavigationItem) {
-            MavenFinderNavigationItem item = (MavenFinderNavigationItem) selected;
+        if (selectedObject instanceof MavenFinderNavigationItem) {
+            MavenFinderNavigationItem item = (MavenFinderNavigationItem) selectedObject;
+
             MavenArtifact artifact = item.getArtifact();
-
-            if (artifact.getVersionCount() <= 1) { // 如果版本数量只有1个，则不需要显示
-                return false;
-            }
+            log.warn("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
 
             // 保存选择记录
-            MavenFinderContributor.SELECT_TEXT = item.getPresentableText();
-
+            Selected.JLIST_SELECT_TEXT = item.getPresentableText();
             if (artifact.isFold()) { // 设置为：展开
                 artifact.setFold(false);
+
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
-
                 if (MavenSearchStatement.INSTANCE.getResult(groupId, artifactId) == null) {
                     MavenSearchExtraThread.INSTANCE.search(groupId, artifactId);
                 }

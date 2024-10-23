@@ -38,7 +38,7 @@ public class MavenSearchThread extends Thread {
      */
     public void search(String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
-            MavenFinderContributor.SELECT_TEXT = null;
+            Selected.JLIST_SELECT_TEXT = null;
             this.add(pattern);
         }
     }
@@ -65,7 +65,7 @@ public class MavenSearchThread extends Thread {
                         JListRenderer.INSTANCE.execute(result);
                     }
                 }
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 e.printStackTrace();
             }
         }

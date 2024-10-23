@@ -14,9 +14,9 @@ public class JListRenderer {
 
     public final static JListRenderer INSTANCE = new JListRenderer();
 
-    protected volatile JList jlist;
+    private volatile JList jlist;
 
-    protected volatile MavenFinderContributor contributor;
+    private volatile MavenFinderContributor contributor;
 
     protected JListRenderer() {
     }
@@ -33,6 +33,10 @@ public class JListRenderer {
 
     public synchronized void execute(MavenFinderResult result) {
         JList list = this.jlist;
+        if (list == null) {
+            list = EveryWhereSearch.getJList();
+        }
+
         if (list == null) {
             log.warn("--->      MavenFinder renderer not have JList !");
             return;
@@ -76,17 +80,27 @@ public class JListRenderer {
                     MavenFinderNavigationItem item = new MavenFinderNavigationItem(artifact);
                     listModelElements.add(new SearchEverywhereFoundElementInfo(item, 50, this.contributor));
 
+                    String groupId = artifact.getGroupId();
+                    String artifactId = artifact.getArtifactId();
+
+                    MavenFinderResult artifactList = MavenSearchStatement.INSTANCE.getResult(groupId, artifactId);
+                    if (artifactList != null) {
+                        item.setIcon(MavenFinderIcons.MAVEN_REPOSITORY_LEFT_HAS_QUERY);
+                    }
+
                     // 如果当前是展开状态
                     if (artifact.isUnfold()) {
-                        String groupId = artifact.getGroupId();
-                        String artifactId = artifact.getArtifactId();
-                        MavenFinderResult artifactList = MavenSearchStatement.INSTANCE.getResult(groupId, artifactId);
                         if (artifactList != null) {
+                            item.setIcon(MavenFinderIcons.MAVEN_REPOSITORY_LEFT_UNFOLD);
                             for (MavenArtifact listItem : artifactList.getArtifacts()) {
                                 MavenFinderNavigationList nodeItem = new MavenFinderNavigationList(listItem);
                                 listModelElements.add(new SearchEverywhereFoundElementInfo(nodeItem, 50, this.contributor));
                             }
                         }
+                    }
+
+                    if (MavenSearchStatement.INSTANCE.isQuerying(groupId, artifactId)) {
+                        item.setIcon(MavenFinderIcons.MAVEN_REPOSITORY_LEFT_WAITING);
                     }
                 }
 
@@ -98,7 +112,7 @@ public class JListRenderer {
             }
 
             // 选中某个记录
-            String selectText = MavenFinderContributor.SELECT_TEXT;
+            String selectText = Selected.JLIST_SELECT_TEXT;
             if (selectText != null) {
                 int selectedIndex = -1;
                 for (int i = listModel.getSize() - 1; i >= 0; i--) {

@@ -408,7 +408,7 @@
                         <path>
                             <groupId>systems.manifold</groupId>
                             <artifactId>manifold-ext</artifactId>
-                            <version>2024.1.32</version>
+                            <version>${manifold.version}</version>
                         </path>
                         <!-- lombok插件 -->
                         <path>

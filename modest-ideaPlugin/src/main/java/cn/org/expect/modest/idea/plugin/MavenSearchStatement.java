@@ -30,10 +30,18 @@ public class MavenSearchStatement {
     /** 远程调用组件 */
     protected final MavenFinderQuery query;
 
+    /** 正在精确查找的工件 */
+    protected volatile String groupId;
+
+    /** 正在精确查找的工件 */
+    protected volatile String artifactId;
+
     protected MavenSearchStatement() {
         this.map = new ConcurrentHashMap<String, MavenFinderResult>();
         this.map1 = new ConcurrentHashMap<String, MavenFinderResult>();
         this.query = new MavenFinderQueryByCentral();
+        this.groupId = "";
+        this.artifactId = "";
     }
 
     public synchronized MavenFinderResult query(String pattern) {
@@ -82,16 +90,24 @@ public class MavenSearchStatement {
         String key = this.toExtraSearchKey(groupId, artifactId);
         MavenFinderResult result = this.map1.get(key);
         if (result == null) {
-            List<MavenArtifact> list = null;
             try {
-                list = this.query.execute(StringUtils.trimBlank(groupId), StringUtils.trimBlank(artifactId));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                this.groupId = groupId;
+                this.artifactId = artifactId;
 
-            if (list != null) {
-                result = new MavenFinderResult(key, list);
-                this.map1.put(result.getPattern(), result);
+                List<MavenArtifact> list = null;
+                try {
+                    list = this.query.execute(StringUtils.trimBlank(groupId), StringUtils.trimBlank(artifactId));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (list != null) {
+                    result = new MavenFinderResult(key, list);
+                    this.map1.put(result.getPattern(), result);
+                }
+            } finally {
+                this.groupId = "";
+                this.artifactId = "";
             }
         }
 
@@ -102,6 +118,17 @@ public class MavenSearchStatement {
         }
 
         return result;
+    }
+
+    /**
+     * 判断当前是否正在查询某个 Maven 工件
+     *
+     * @param groupId    域名
+     * @param artifactId 工件名
+     * @return 返回true表示正在查询
+     */
+    public boolean isQuerying(String groupId, String artifactId) {
+        return this.groupId.equals(groupId) && this.artifactId.equals(artifactId);
     }
 
     /**
@@ -119,7 +146,7 @@ public class MavenSearchStatement {
     }
 
     public MavenFinderResult getResult(String groupId, String artifactId) {
-        String key = toExtraSearchKey(groupId, artifactId);
+        String key = this.toExtraSearchKey(groupId, artifactId);
         return this.map1.get(key);
     }
 
