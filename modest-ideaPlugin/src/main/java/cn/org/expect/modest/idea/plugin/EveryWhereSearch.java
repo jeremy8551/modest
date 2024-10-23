@@ -18,8 +18,13 @@ public class EveryWhereSearch {
 
     public static void detect(AnActionEvent event) {
         SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
+        long startMillis = System.currentTimeMillis();
         while (!manager.isShown()) { // 等待对话框显示
-            Dates.sleep(50);
+            if (System.currentTimeMillis() - startMillis >= 2000) {
+                break;
+            } else {
+                Dates.sleep(100);
+            }
         }
 
         SearchEverywhereUI ui = manager.getCurrentlyShownUI();

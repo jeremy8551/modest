@@ -85,7 +85,7 @@ public class MavenArtifact {
     }
 
     public String toString() {
-        return "id=" + this.id + ":" + this.groupId + ":" + this.artifact + ":" + this.version + ":" + Dates.format19(this.getTimestamp()) + ", " + this.getVersionCount();
+        return "id=" + this.id + ", " + this.groupId + ":" + this.artifact + ":" + this.version + ", time=" + Dates.format19(this.getTimestamp()) + ", " + this.getVersionCount();
     }
 }
 

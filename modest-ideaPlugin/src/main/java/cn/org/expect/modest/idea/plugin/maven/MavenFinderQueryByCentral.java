@@ -7,6 +7,7 @@ import java.util.List;
 
 import cn.org.expect.modest.idea.plugin.MavenArtifact;
 import cn.org.expect.modest.idea.plugin.MavenFinderQuery;
+import com.intellij.openapi.diagnostic.Logger;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -14,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class MavenFinderQueryByCentral implements MavenFinderQuery {
+    private static final Logger log = Logger.getInstance(MavenFinderQueryByCentral.class);
 
     protected MavenParse1 parse1;
 
@@ -45,6 +47,7 @@ public class MavenFinderQueryByCentral implements MavenFinderQuery {
 
     protected List<MavenArtifact> send(String url, JsonParse parse) throws IOException {
         OkHttpClient client = new OkHttpClient(); // 创建 OkHttpClient 实例
+        log.warn("send Request: " + url);
         Request request = new Request.Builder().url(url).header("User-Agent", "Mozilla/5.0").build(); // 创建 Request 实例
         Response response = client.newCall(request).execute(); // 发送请求并获取响应
         String responseBody = response.body().string(); // 读取响应体
@@ -52,7 +55,7 @@ public class MavenFinderQueryByCentral implements MavenFinderQuery {
         JSONObject responseStr = json.getJSONObject("response");
         JSONArray docs = responseStr.getJSONArray("docs");
 
-//        System.out.println("response: " + response.code() + ", docs: " + docs.length() + ", responseBody: " + responseBody);
+        log.warn("send Response: " + response.code() + ", docs: " + docs.length() + ", responseBody: " + responseBody);
 
         List<MavenArtifact> list = new ArrayList<MavenArtifact>(docs.length());
         for (int i = 0; i < docs.length(); i++) {

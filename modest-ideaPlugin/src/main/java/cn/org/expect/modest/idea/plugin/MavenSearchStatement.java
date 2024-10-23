@@ -55,12 +55,12 @@ public class MavenSearchStatement {
         if (result == null) {
             List<MavenArtifact> list = null;
             try {
-                list = this.query.execute(StringUtils.trimBlank(StringUtils.replaceAll(pattern, ".", "%2E")));
+                list = this.query.execute(StringUtils.trimBlank(StringUtils.replaceAll(patternFinal, ".", "%2E")));
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            if (list != null && !list.isEmpty()) {
+            if (list != null) {
                 result = new MavenFinderResult(patternFinal, list);
                 this.map.put(result.getPattern(), result);
             }

@@ -24,16 +24,17 @@ public class MavenFinderFactory implements SearchEverywhereContributorFactory<Ob
         // 使用选中的文本进行搜索
         Editor editor = event.getDataContext().getData(CommonDataKeys.EDITOR);
         if (editor != null) {
-            Selected.EDETOR_SELECT_TEXT = editor.getSelectionModel().getSelectedText(); // 编辑器中选中的文本
-            if (StringUtils.isNotBlank(Selected.EDETOR_SELECT_TEXT)) {
-                log.warn("--->      Selected text: " + Selected.EDETOR_SELECT_TEXT);
-                MavenSearchThread.INSTANCE.search(Selected.EDETOR_SELECT_TEXT);
+            String selectedText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
+            Selected.EDETOR_SELECT_TEXT = selectedText; // 编辑器中选中的文本
+            if (StringUtils.isNotBlank(selectedText)) {
+                log.warn("--->      Selected text: " + selectedText);
+                MavenSearchThread.INSTANCE.search(selectedText);
             }
         }
 
         // 启动线程
         Thread thread = new Thread(() -> {
-            log.warn("start MavenFinderFactory Thread ..");
+            log.warn("start MavenFinder Detected Thread ..");
             EveryWhereSearch.detect(event);
             SearchEverywhereUI ui = EveryWhereSearch.getUI();
 
@@ -42,7 +43,6 @@ public class MavenFinderFactory implements SearchEverywhereContributorFactory<Ob
                 try {
                     ui.getSearchField().setText(MavenFinderPattern.parse(editorSelectText)); // 更新搜索内容
 //                        ui.switchToTab(contributor.getSearchProviderId()); // 选择标签页
-                    ui.repaint();
                 } catch (Exception ignored) {
                 }
             }
