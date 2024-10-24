@@ -46,7 +46,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
     @Override
     public ListCellRenderer<Object> getElementsRenderer() {
-        return new MavenFinderRenderer(this);
+        return new MavenFinderListCellRenderer(this);
     }
 
     /**
@@ -85,11 +85,11 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
                     MavenSearchExtraThread.INSTANCE.search(groupId, artifactId);
                 }
 
-                JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
+                MavenFinderRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
                 return false;
             } else { // 设置为：折叠
                 artifact.setFold(true);
-                JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
+                MavenFinderRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
                 return false;
             }
         }
