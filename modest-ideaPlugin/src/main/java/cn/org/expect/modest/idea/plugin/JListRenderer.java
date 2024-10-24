@@ -1,10 +1,10 @@
 package cn.org.expect.modest.idea.plugin;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
+import cn.org.expect.jdk.JavaDialectFactory;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.diagnostic.Logger;
@@ -39,18 +39,19 @@ public class JListRenderer {
 
         if (list == null) {
             log.warn("--->      MavenFinder renderer not have JList !");
+            String message = "<html><span style='color:orange;'>MavenFinder renderer fail: have not JList</span></html>";
+            EveryWhereSearch.updateAdvertiser(message);
             return;
         }
 
+        int size = 0;
         ListModel model = list.getModel();
         if (model instanceof SearchListModel) {
             SearchListModel listModel = (SearchListModel) model;
 
             if (listModel.getClass().getSimpleName().equals("MixedSearchListModel")) {
                 try {
-                    Field field = listModel.getClass().getDeclaredField("myElementsComparator");
-                    field.setAccessible(true);
-                    field.set(listModel, new NavigationItemComparator());
+                    JavaDialectFactory.get().setField(listModel, "myElementsComparator", new NavigationItemComparator());
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -66,16 +67,16 @@ public class JListRenderer {
                     } catch (Exception e) { // TODO 如果不能删除，则将导航记录清空，排序时放到最后
                         if (print) {
                             print = false;
-                            e.printStackTrace();
+                            log.error(e.getMessage());
                         }
                     }
                 }
             }
 
             // 添加查询结果
-            int length = (result == null) ? 0 : result.size();
-            if (length > 0) {
-                List<SearchEverywhereFoundElementInfo> listModelElements = new ArrayList<SearchEverywhereFoundElementInfo>(length);
+            size = (result == null) ? 0 : result.size();
+            if (size > 0) {
+                List<SearchEverywhereFoundElementInfo> listModelElements = new ArrayList<SearchEverywhereFoundElementInfo>(size);
                 for (MavenArtifact artifact : result.getArtifacts()) {
                     MavenFinderNavigationItem item = new MavenFinderNavigationItem(artifact);
                     listModelElements.add(new SearchEverywhereFoundElementInfo(item, 50, this.contributor));
@@ -106,8 +107,8 @@ public class JListRenderer {
 
                 try {
                     listModel.addElements(listModelElements);
-                } catch (Throwable e) {
-                    e.printStackTrace();
+                } catch (Throwable ignored) {
+                    log.error(ignored.getMessage());
                 }
             }
 
@@ -138,9 +139,12 @@ public class JListRenderer {
 
             try {
                 list.repaint();
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Throwable ignored) {
+                log.error(ignored.getMessage());
             }
         }
+
+        String message = "<html><span style='color:orange;'>There are " + size + " matching maven artifact!</span></html>";
+        EveryWhereSearch.updateAdvertiser(message);
     }
 }

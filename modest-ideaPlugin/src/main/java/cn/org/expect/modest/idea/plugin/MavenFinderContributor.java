@@ -58,29 +58,6 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
         return pattern;
     }
 
-    /**
-     * 获取所选元素的上下文数据
-     *
-     * @param element 元素
-     * @param dataId  数据编号
-     * @return
-     */
-    @Override
-    public Object getDataForItem(Object element, String dataId) {
-//        System.out.println("getDataForItem " + element + ", " + dataId);
-        return super.getDataForItem(element, dataId);
-    }
-
-    @Override
-    public int getElementPriority(Object element, String searchPattern) {
-        return 50;
-    }
-
-    @Override
-    public boolean isMultiSelectionSupported() {
-        return false;
-    }
-
     @Override
     public boolean processSelectedItem(Object selectedObject, int modifiers, String searchText) {
         // 禁用来源的处理逻辑：自动打开 url
@@ -111,6 +88,29 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
                 return false;
             }
         }
+        return false;
+    }
+
+    /**
+     * 获取所选元素的上下文数据
+     *
+     * @param element 元素
+     * @param dataId  数据编号
+     * @return
+     */
+    @Override
+    public Object getDataForItem(Object element, String dataId) {
+//        System.out.println("getDataForItem " + element + ", " + dataId);
+        return super.getDataForItem(element, dataId);
+    }
+
+    @Override
+    public int getElementPriority(Object element, String searchPattern) {
+        return 50;
+    }
+
+    @Override
+    public boolean isMultiSelectionSupported() {
         return false;
     }
 

@@ -1107,4 +1107,40 @@ public class ClassUtils {
         return null;
     }
 
+    /**
+     * 在实例对象中搜索字段信息
+     *
+     * @param obj       实例对象
+     * @param fieldName 字段名，大小写敏感
+     * @return 字段信息
+     */
+    public static Field findField(Object obj, String fieldName) {
+        if (obj == null) {
+            return null;
+        }
+
+        Class<?> cls = obj.getClass();
+        Field field;
+        while ((field = ClassUtils.getField(cls, fieldName)) == null) {
+            Class<?> superclass = cls.getSuperclass();
+            if (superclass == null) {
+                return null;
+            } else {
+                cls = superclass;
+            }
+        }
+        return field;
+    }
+
+    public static Field getField(Class<?> cls, String fieldName) {
+        if (cls == null) {
+            throw new NullPointerException(fieldName);
+        }
+
+        try {
+            return cls.getDeclaredField(fieldName);
+        } catch (Throwable e) {
+            return null;
+        }
+    }
 }

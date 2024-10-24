@@ -34,6 +34,9 @@ public class MavenSearchExtraThread extends Thread {
 
     public void search(String groupId, String artifactId) {
         if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
+            String message = "<html><span style='color:orange;'>Search " + groupId + ":" + artifactId + " in Maven Repository ..</span></html>";
+            EveryWhereSearch.updateAdvertiser(message);
+
             try {
                 this.queue.put(new String[]{groupId, artifactId});
             } catch (Exception e) {

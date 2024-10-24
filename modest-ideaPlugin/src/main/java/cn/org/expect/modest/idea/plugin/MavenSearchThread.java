@@ -38,6 +38,8 @@ public class MavenSearchThread extends Thread {
      */
     public void search(String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
+            String message = "<html><span style='color:orange;'>Search " + pattern + " in Maven Repository ..</span></html>";
+            EveryWhereSearch.updateAdvertiser(message);
             Selected.JLIST_SELECT_TEXT = null;
             this.add(pattern);
         }
@@ -59,11 +61,10 @@ public class MavenSearchThread extends Thread {
 
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
                 Dates.sleep(400);
+
                 if (StringUtils.isNotBlank(pattern) && this.queue.isEmpty()) {
                     MavenFinderResult result = MavenSearchStatement.INSTANCE.query(pattern);
-                    if (this.running) {
-                        JListRenderer.INSTANCE.execute(result);
-                    }
+                    JListRenderer.INSTANCE.execute(result);
                 }
             } catch (Throwable e) {
                 e.printStackTrace();

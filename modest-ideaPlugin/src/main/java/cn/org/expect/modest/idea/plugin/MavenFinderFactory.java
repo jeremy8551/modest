@@ -47,6 +47,7 @@ public class MavenFinderFactory implements SearchEverywhereContributorFactory<Ob
                 }
             }
         });
+        thread.setName("MavenFinder Detected Thread");
         thread.start();
 
         return contributor;

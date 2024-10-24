@@ -10,6 +10,8 @@ import java.sql.Statement;
 import java.util.Date;
 import java.util.Properties;
 
+import cn.org.expect.util.ClassUtils;
+
 public class JDK5 implements JavaDialect {
 
     public int getNetworkTimeout(Connection conn) throws SQLException {
@@ -60,13 +62,7 @@ public class JDK5 implements JavaDialect {
     }
 
     public void setField(Object obj, String fieldName, Object value) {
-        Field field = null;
-        try {
-            field = obj.getClass().getDeclaredField(fieldName);
-        } catch (Throwable e) {
-            throw new RuntimeException(e.getLocalizedMessage(), e);
-        }
-
+        Field field = ClassUtils.findField(obj, fieldName);
         if (field == null) {
             throw new IllegalArgumentException(fieldName);
         } else {
@@ -87,13 +83,7 @@ public class JDK5 implements JavaDialect {
     }
 
     public <E> E getField(Object obj, String fieldName) {
-        Field field = null;
-        try {
-            field = obj.getClass().getDeclaredField(fieldName);
-        } catch (Throwable e) {
-            throw new RuntimeException(e.getLocalizedMessage(), e);
-        }
-
+        Field field = ClassUtils.findField(obj, fieldName);
         if (field == null) {
             return null;
         } else {
