@@ -59,19 +59,34 @@ public class JDK5 implements JavaDialect {
         }
     }
 
-    public <E> Object getField(Object obj, Field field) {
+    public void setField(Object obj, String fieldName, Object value) {
+        Field field = null;
+        try {
+            field = obj.getClass().getDeclaredField(fieldName);
+        } catch (Throwable e) {
+            throw new RuntimeException(e.getLocalizedMessage(), e);
+        }
+
+        if (field == null) {
+            throw new IllegalArgumentException(fieldName);
+        } else {
+            this.setField(obj, field, value);
+        }
+    }
+
+    public <E> E getField(Object obj, Field field) {
         try {
             field.setAccessible(true);
             Field modifiers = Field.class.getDeclaredField("modifiers");
             modifiers.setAccessible(true);
             modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-            return field.get(obj);
+            return (E) field.get(obj);
         } catch (Throwable e) {
             throw new RuntimeException(e.getLocalizedMessage(), e);
         }
     }
 
-    public <E> Object getField(Object obj, String fieldName) {
+    public <E> E getField(Object obj, String fieldName) {
         Field field = null;
         try {
             field = obj.getClass().getDeclaredField(fieldName);

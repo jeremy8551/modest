@@ -102,6 +102,15 @@ public interface JavaDialect {
     void setField(Object obj, Field field, Object value);
 
     /**
+     * 修改实例对象中的静态字段值
+     *
+     * @param obj       实例对象
+     * @param fieldName 字段类型
+     * @param value     新值
+     */
+    void setField(Object obj, String fieldName, Object value);
+
+    /**
      * 返回对象中某个属性值
      *
      * @param obj   对象
@@ -109,7 +118,7 @@ public interface JavaDialect {
      * @param <E>   属性值的类型
      * @return 属性值
      */
-    <E> Object getField(Object obj, Field field);
+    <E> E getField(Object obj, Field field);
 
     /**
      * 返回对象中某个属性值
@@ -119,5 +128,5 @@ public interface JavaDialect {
      * @param <E>       属性值的类型
      * @return 属性值
      */
-    <E> Object getField(Object obj, String fieldName);
+    <E> E getField(Object obj, String fieldName);
 }
