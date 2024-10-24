@@ -3,6 +3,11 @@ package cn.org.expect.modest.idea.plugin;
 import java.util.List;
 import javax.swing.*;
 
+import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
+import cn.org.expect.modest.idea.plugin.navigation.MavenFinderNavigationItem;
+import cn.org.expect.modest.idea.plugin.query.MavenSearchExtraThread;
+import cn.org.expect.modest.idea.plugin.query.MavenSearchStatement;
+import cn.org.expect.modest.idea.plugin.query.MavenSearchThread;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
@@ -70,7 +75,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
             log.warn("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
 
             // 保存选择记录
-            Selected.JLIST_SELECT_TEXT = item.getPresentableText();
+            IdeaUI.JLIST_SELECT_TEXT = item.getPresentableText();
             if (artifact.isFold()) { // 设置为：展开
                 artifact.setFold(false);
 

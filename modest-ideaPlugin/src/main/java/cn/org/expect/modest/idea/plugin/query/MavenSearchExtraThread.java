@@ -1,7 +1,9 @@
-package cn.org.expect.modest.idea.plugin;
+package cn.org.expect.modest.idea.plugin.query;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import cn.org.expect.modest.idea.plugin.IdeaUI;
+import cn.org.expect.modest.idea.plugin.JListRenderer;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.diagnostic.Logger;
 
@@ -35,7 +37,7 @@ public class MavenSearchExtraThread extends Thread {
     public void search(String groupId, String artifactId) {
         if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
             String message = "<html><span style='color:orange;'>Search " + groupId + ":" + artifactId + " in Maven Repository ..</span></html>";
-            EveryWhereSearch.updateAdvertiser(message);
+            IdeaUI.updateAdvertiser(message);
 
             try {
                 this.queue.put(new String[]{groupId, artifactId});

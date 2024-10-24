@@ -1,9 +1,11 @@
-package cn.org.expect.modest.idea.plugin;
+package cn.org.expect.modest.idea.plugin.query;
 
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
+import cn.org.expect.modest.idea.plugin.MavenFinderPattern;
 import cn.org.expect.modest.idea.plugin.maven.MavenFinderQueryByCentral;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.diagnostic.Logger;

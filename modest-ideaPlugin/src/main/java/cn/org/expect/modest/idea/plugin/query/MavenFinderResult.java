@@ -1,6 +1,8 @@
-package cn.org.expect.modest.idea.plugin;
+package cn.org.expect.modest.idea.plugin.query;
 
 import java.util.List;
+
+import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
 
 public class MavenFinderResult {
 

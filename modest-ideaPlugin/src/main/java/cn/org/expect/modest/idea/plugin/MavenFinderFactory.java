@@ -1,5 +1,7 @@
 package cn.org.expect.modest.idea.plugin;
 
+import cn.org.expect.modest.idea.plugin.query.MavenSearchExtraThread;
+import cn.org.expect.modest.idea.plugin.query.MavenSearchThread;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributorFactory;
@@ -25,7 +27,7 @@ public class MavenFinderFactory implements SearchEverywhereContributorFactory<Ob
         Editor editor = event.getDataContext().getData(CommonDataKeys.EDITOR);
         if (editor != null) {
             String selectedText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
-            Selected.EDETOR_SELECT_TEXT = selectedText; // 编辑器中选中的文本
+            IdeaUI.EDETOR_SELECT_TEXT = selectedText; // 编辑器中选中的文本
             if (StringUtils.isNotBlank(selectedText)) {
                 log.warn("--->      Selected text: " + selectedText);
                 MavenSearchThread.INSTANCE.search(selectedText);
@@ -35,14 +37,14 @@ public class MavenFinderFactory implements SearchEverywhereContributorFactory<Ob
         // 启动线程
         Thread thread = new Thread(() -> {
             log.warn("start MavenFinder Detected Thread ..");
-            EveryWhereSearch.detect(event);
-            SearchEverywhereUI ui = EveryWhereSearch.getUI();
+            IdeaUI.detect(event);
+            SearchEverywhereUI ui = IdeaUI.get();
 
-            String editorSelectText = Selected.EDETOR_SELECT_TEXT;
+            String editorSelectText = IdeaUI.EDETOR_SELECT_TEXT;
             if (StringUtils.isNotBlank(editorSelectText)) {
                 try {
                     ui.getSearchField().setText(MavenFinderPattern.parse(editorSelectText)); // 更新搜索内容
-//                        ui.switchToTab(contributor.getSearchProviderId()); // 选择标签页
+                    // ui.switchToTab(contributor.getSearchProviderId()); // 选择标签页
                 } catch (Exception ignored) {
                 }
             }

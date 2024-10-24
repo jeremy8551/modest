@@ -1,7 +1,8 @@
-package cn.org.expect.modest.idea.plugin;
+package cn.org.expect.modest.idea.plugin.navigation;
 
 import javax.swing.*;
 
+import cn.org.expect.modest.idea.plugin.MavenFinderIcons;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.navigation.ItemPresentation;

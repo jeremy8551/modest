@@ -1,7 +1,9 @@
-package cn.org.expect.modest.idea.plugin;
+package cn.org.expect.modest.idea.plugin.query;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import cn.org.expect.modest.idea.plugin.IdeaUI;
+import cn.org.expect.modest.idea.plugin.JListRenderer;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.diagnostic.Logger;
@@ -39,8 +41,8 @@ public class MavenSearchThread extends Thread {
     public void search(String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
             String message = "<html><span style='color:orange;'>Search " + pattern + " in Maven Repository ..</span></html>";
-            EveryWhereSearch.updateAdvertiser(message);
-            Selected.JLIST_SELECT_TEXT = null;
+            IdeaUI.updateAdvertiser(message);
+            IdeaUI.JLIST_SELECT_TEXT = null;
             this.add(pattern);
         }
     }

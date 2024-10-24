@@ -1,4 +1,4 @@
-package cn.org.expect.modest.idea.plugin;
+package cn.org.expect.modest.idea.plugin.provider;
 
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Nls;

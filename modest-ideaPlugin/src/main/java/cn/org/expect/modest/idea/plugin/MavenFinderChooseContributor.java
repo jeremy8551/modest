@@ -4,6 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
+import cn.org.expect.modest.idea.plugin.navigation.MavenFinderNavigationItem;
+import cn.org.expect.modest.idea.plugin.query.MavenFinderResult;
+import cn.org.expect.modest.idea.plugin.query.MavenSearchStatement;
 import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;

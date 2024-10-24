@@ -1,4 +1,4 @@
-package cn.org.expect.modest.idea.plugin;
+package cn.org.expect.modest.idea.plugin.navigation;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;

@@ -1,5 +1,6 @@
 package cn.org.expect.modest.idea.plugin;
 
+import cn.org.expect.modest.idea.plugin.navigation.MavenFinderNavigationItem;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.navigation.ChooseByNameContributor;

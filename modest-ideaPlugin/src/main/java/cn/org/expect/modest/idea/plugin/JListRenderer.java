@@ -5,6 +5,12 @@ import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.jdk.JavaDialectFactory;
+import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
+import cn.org.expect.modest.idea.plugin.navigation.MavenFinderNavigationItem;
+import cn.org.expect.modest.idea.plugin.navigation.MavenFinderNavigationList;
+import cn.org.expect.modest.idea.plugin.navigation.NavigationItemComparator;
+import cn.org.expect.modest.idea.plugin.query.MavenFinderResult;
+import cn.org.expect.modest.idea.plugin.query.MavenSearchStatement;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.diagnostic.Logger;
@@ -34,13 +40,13 @@ public class JListRenderer {
     public synchronized void execute(MavenFinderResult result) {
         JList list = this.jlist;
         if (list == null) {
-            list = EveryWhereSearch.getJList();
+            list = IdeaUI.getJList();
         }
 
         if (list == null) {
             log.warn("--->      MavenFinder renderer not have JList !");
             String message = "<html><span style='color:orange;'>MavenFinder renderer fail: have not JList</span></html>";
-            EveryWhereSearch.updateAdvertiser(message);
+            IdeaUI.updateAdvertiser(message);
             return;
         }
 
@@ -113,7 +119,7 @@ public class JListRenderer {
             }
 
             // 选中某个记录
-            String selectText = Selected.JLIST_SELECT_TEXT;
+            String selectText = IdeaUI.JLIST_SELECT_TEXT;
             if (selectText != null) {
                 int selectedIndex = -1;
                 for (int i = listModel.getSize() - 1; i >= 0; i--) {
@@ -145,6 +151,6 @@ public class JListRenderer {
         }
 
         String message = "<html><span style='color:orange;'>There are " + size + " matching maven artifact!</span></html>";
-        EveryWhereSearch.updateAdvertiser(message);
+        IdeaUI.updateAdvertiser(message);
     }
 }

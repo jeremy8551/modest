@@ -1,31 +1,45 @@
 package cn.org.expect.modest.idea.plugin;
 
 import java.awt.*;
-import java.lang.reflect.Field;
 import javax.swing.*;
 
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.util.Dates;
-import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.util.ui.Advertiser;
 
-public class EveryWhereSearch {
-    private static final Logger log = Logger.getInstance(EveryWhereSearch.class);
+public class IdeaUI {
+    private static final Logger log = Logger.getInstance(IdeaUI.class);
 
+    /** IDea 编辑器中选中的文本 */
+    public static volatile String EDETOR_SELECT_TEXT;
+
+    /** 查找结果中选中记录的文本 */
+    public static volatile String JLIST_SELECT_TEXT;
+
+    /** Idea查询对话框对象 */
     private static volatile SearchEverywhereUI UI;
 
+    /** 查询结果中的列表 */
     private static volatile JList<?> JLIST;
 
-    private static volatile JPanel SUGGESTIONS_PANEL;
-
+    /** 查询结果中的列表所在的滚动组件 */
     private static volatile JScrollPane SCROLL_PANE;
 
-    public static volatile Advertiser MYHINTLABEL;
+    /** 滚动组件所在的面板 */
+    private static volatile JPanel SUGGESTIONS_PANEL;
 
+    /** 查询结果最下面的广告栏 */
+    private static volatile Advertiser ADVERTISER;
+
+    /**
+     * 检测Idea中的组件
+     *
+     * @param event
+     */
     public static void detect(AnActionEvent event) {
         SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
         long startMillis = System.currentTimeMillis();
@@ -38,46 +52,30 @@ public class EveryWhereSearch {
         }
 
         SearchEverywhereUI ui = manager.getCurrentlyShownUI();
-        EveryWhereSearch.UI = Ensure.notNull(ui);
-        Class<?> jlistClass = ui.getClass().getSuperclass();
-        if (jlistClass == null) {
-            jlistClass = ui.getClass();
-        }
+        IdeaUI.UI = ui;
 
         try {
-            EveryWhereSearch.JLIST = JavaDialectFactory.get().getField(ui, "myResultsList");
+            IdeaUI.JLIST = JavaDialectFactory.get().getField(ui, "myResultsList");
         } catch (Exception e) {
-            printError(e, jlistClass);
+            log.error(e.getLocalizedMessage(), e);
         }
 
         try {
             JPanel jpanel = JavaDialectFactory.get().getField(ui, "suggestionsPanel");
-            BorderLayout layout = (BorderLayout) jpanel.getLayout();
-            JScrollPane scrollPane = (JScrollPane) layout.getLayoutComponent(jpanel, BorderLayout.CENTER);
-
-            EveryWhereSearch.SUGGESTIONS_PANEL = jpanel;
-            EveryWhereSearch.SCROLL_PANE = scrollPane;
+            IdeaUI.SUGGESTIONS_PANEL = jpanel;
+            IdeaUI.SCROLL_PANE = (JScrollPane) ((BorderLayout) jpanel.getLayout()).getLayoutComponent(jpanel, BorderLayout.CENTER);
         } catch (Exception e) {
-            printError(e, jlistClass);
+            log.error(e.getLocalizedMessage(), e);
         }
 
         try {
-            Advertiser myHintLabel = JavaDialectFactory.get().getField(ui, "myHintLabel");
-            EveryWhereSearch.MYHINTLABEL = myHintLabel;
+            IdeaUI.ADVERTISER = JavaDialectFactory.get().getField(ui, "myHintLabel");
         } catch (Exception e) {
-            printError(e, jlistClass);
+            log.error(e.getLocalizedMessage(), e);
         }
     }
 
-    private static void printError(Exception e, Class<?> jlistClass) {
-        Field[] fields = jlistClass.getDeclaredFields();
-        for (Field field : fields) {
-            System.err.println(field.getName() + "   " + field.getType().getSimpleName());
-        }
-        e.printStackTrace();
-    }
-
-    public static SearchEverywhereUI getUI() {
+    public static SearchEverywhereUI get() {
         return UI;
     }
 
@@ -89,8 +87,14 @@ public class EveryWhereSearch {
         return SUGGESTIONS_PANEL;
     }
 
+    /**
+     * 更新 SearchEverywhereUI 最下方广告栏中的信息
+     *
+     * @param message 文本信息
+     * @return 返回true表示更新成功
+     */
     public static boolean updateAdvertiser(String message) {
-        Advertiser advertiser = EveryWhereSearch.MYHINTLABEL;
+        Advertiser advertiser = IdeaUI.ADVERTISER;
         if (advertiser == null) {
             return false;
         }
@@ -105,13 +109,9 @@ public class EveryWhereSearch {
             myNextLabel.setText(null);
             myNextLabel.repaint();
             return true;
-        } catch (Throwable ignored) {
-            log.error(ignored.getMessage());
+        } catch (Throwable e) {
+            log.error(e.getMessage());
             return false;
         }
-    }
-
-    public static boolean clearAdvertiser() {
-        return updateAdvertiser("");
     }
 }

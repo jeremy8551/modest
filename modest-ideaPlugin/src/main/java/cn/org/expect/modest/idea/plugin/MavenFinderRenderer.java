@@ -3,6 +3,9 @@ package cn.org.expect.modest.idea.plugin;
 import java.awt.*;
 import javax.swing.*;
 
+import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
+import cn.org.expect.modest.idea.plugin.navigation.MavenFinderNavigationItem;
+import cn.org.expect.modest.idea.plugin.navigation.MavenFinderNavigationList;
 import com.intellij.ide.actions.SearchEverywherePsiRenderer;
 import com.intellij.util.TextWithIcon;
 
