@@ -3,7 +3,6 @@ package cn.org.expect.jdk;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -72,16 +71,4 @@ public class ReflectTest {
         Assert.assertEquals("n11", lc.getN1());
         Assert.assertEquals("n22", lc.getN2());
     }
-
-    // 测试修改常量值，JDK8之前可以使用，21之后不行
-    @Test
-    public void test5() {
-        int version = Settings.getJDKVersion();
-        if (version <= 8) {
-            System.out.println(JavaDialectFactory.get().getClass().getName());
-            ReflectTestObject lc = new ReflectTestObject();
-            JavaDialectFactory.get().setField(lc, "N.*", String.class, "new");
-        }
-    }
-
 }

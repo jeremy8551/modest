@@ -1,24 +1,14 @@
 package cn.org.expect.jdk;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.Character.UnicodeBlock;
-import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
-import java.lang.management.ThreadMXBean;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.SQLXML;
 import java.sql.Statement;
 import java.util.Date;
 import java.util.Properties;
 
-import cn.org.expect.util.IO;
-import cn.org.expect.util.JUL;
-
-public class JDK6 implements JavaDialect {
+public class JDK6 extends JDK5 {
 
     public int getNetworkTimeout(Connection conn) throws SQLException {
         return 0;
@@ -43,27 +33,8 @@ public class JDK6 implements JavaDialect {
         }
     }
 
-    public int getAvailableThreads() {
-        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-        ThreadInfo[] threads = threadMXBean.dumpAllThreads(false, false);
-        int thread = (Runtime.getRuntime().availableProcessors() * 2) - threads.length - 2;
-        return thread < 0 ? 0 : thread;
-    }
-
     public boolean canExecute(File file) {
         return file.canExecute();
-    }
-
-    public Object parseJdbcObject(Object obj) throws IOException, SQLException {
-        if (obj instanceof java.sql.SQLXML) {
-            SQLXML xml = (java.sql.SQLXML) obj;
-            StringBuilder buf = IO.read(xml.getCharacterStream(), new StringBuilder());
-            return buf.toString();
-        } else if (obj instanceof java.sql.RowId) {
-            return ((java.sql.RowId) obj).toString();
-        } else {
-            return null;
-        }
     }
 
     public boolean isStatementClosed(Statement statement) throws SQLException {
@@ -81,49 +52,4 @@ public class JDK6 implements JavaDialect {
     public Date getCreateTime(String filepath) {
         return null;
     }
-
-    public <E> void setField(Object obj, String fieldRegex, Class<E> fieldClass, E newValue) {
-        Field[] list = obj.getClass().getDeclaredFields();
-        for (Field field : list) {
-            String name = field.getName();
-            if (name.matches(fieldRegex) && field.getType().equals(fieldClass)) {
-                try {
-                    JUL.debug("change Class: " + obj.getClass().getName() + ", Field: " + name + ", Type: " + field.getType().getName());
-
-                    field.setAccessible(true);
-                    Field modifiers = Field.class.getDeclaredField("modifiers");
-                    modifiers.setAccessible(true);
-                    modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-                    field.set(obj, newValue);
-                } catch (Throwable e) {
-                    JUL.warn(obj.getClass().getName(), e);
-                }
-            }
-        }
-    }
-
-    public void setField(Object obj, Field field, Object value) {
-        try {
-            field.setAccessible(true);
-            Field modifiers = Field.class.getDeclaredField("modifiers");
-            modifiers.setAccessible(true);
-            modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-            field.set(obj, value);
-        } catch (Throwable e) {
-            throw new RuntimeException(e.getLocalizedMessage(), e);
-        }
-    }
-
-    public <E> Object getField(Object obj, Field field) {
-        try {
-            field.setAccessible(true);
-            Field modifiers = Field.class.getDeclaredField("modifiers");
-            modifiers.setAccessible(true);
-            modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-            return field.get(obj);
-        } catch (Throwable e) {
-            throw new RuntimeException(e.getLocalizedMessage(), e);
-        }
-    }
-
 }

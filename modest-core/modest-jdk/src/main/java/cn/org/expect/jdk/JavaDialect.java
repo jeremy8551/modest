@@ -95,16 +95,6 @@ public interface JavaDialect {
     /**
      * 修改实例对象中的静态字段值
      *
-     * @param obj        实例对象
-     * @param fieldRegex 匹配字段名的正则表达式
-     * @param fieldClass 字段类型
-     * @param newValue   新值
-     */
-    <E> void setField(Object obj, String fieldRegex, Class<E> fieldClass, E newValue);
-
-    /**
-     * 修改实例对象中的静态字段值
-     *
      * @param obj   实例对象
      * @param field 字段类型
      * @param value 新值
@@ -121,4 +111,13 @@ public interface JavaDialect {
      */
     <E> Object getField(Object obj, Field field);
 
+    /**
+     * 返回对象中某个属性值
+     *
+     * @param obj       对象
+     * @param fieldName 对象中属性信息
+     * @param <E>       属性值的类型
+     * @return 属性值
+     */
+    <E> Object getField(Object obj, String fieldName);
 }

@@ -10,8 +10,6 @@ import java.sql.Statement;
 import java.util.Date;
 import java.util.Properties;
 
-import cn.org.expect.util.JUL;
-
 public class JDK5 implements JavaDialect {
 
     public int getNetworkTimeout(Connection conn) throws SQLException {
@@ -24,10 +22,6 @@ public class JDK5 implements JavaDialect {
 
     public boolean canExecute(File file) {
         return false;
-    }
-
-    public Object parseJdbcObject(Object obj) throws Exception {
-        return null;
     }
 
     public boolean isStatementClosed(Statement statement) throws SQLException {
@@ -51,27 +45,6 @@ public class JDK5 implements JavaDialect {
 
     public Date getCreateTime(String filepath) {
         return null;
-    }
-
-    public <E> void setField(Object obj, String fieldRegex, Class<E> fieldClass, E newValue) {
-        Field[] list = obj.getClass().getDeclaredFields();
-        for (Field field : list) {
-            String name = field.getName();
-            if (name.matches(fieldRegex) && field.getType().equals(fieldClass)) {
-                try {
-                    JUL.debug("change Class: " + obj.getClass().getName() + ", Field: " + name + ", Type: " + field.getType().getName());
-
-                    field.setAccessible(true);
-                    Field modifiers = Field.class.getDeclaredField("modifiers");
-                    modifiers.setAccessible(true);
-                    modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-                    field.set(obj, newValue);
-//                    modifiers.setInt(field, field.getModifiers() & ~Modifier.FINAL); // 再把final修饰符给加回来
-                } catch (Throwable e) {
-                    JUL.warn(obj.getClass().getName(), e);
-                }
-            }
-        }
     }
 
     public void setField(Object obj, Field field, Object value) {
@@ -98,4 +71,18 @@ public class JDK5 implements JavaDialect {
         }
     }
 
+    public <E> Object getField(Object obj, String fieldName) {
+        Field field = null;
+        try {
+            field = obj.getClass().getDeclaredField(fieldName);
+        } catch (Throwable e) {
+            throw new RuntimeException(e.getLocalizedMessage(), e);
+        }
+
+        if (field == null) {
+            return null;
+        } else {
+            return this.getField(obj, field);
+        }
+    }
 }
