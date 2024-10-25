@@ -20,6 +20,8 @@ public class MavenFinderIcons {
     public static final Icon MAVEN_REPOSITORY_RIGHT = load("/META-INF/maven-repository-right.svg");
 
     public static final Icon MAVEN_REPOSITORY_BOTTOM = load("/META-INF/maven-repository-bottom.svg");
+    
+    public static final Icon MAVEN_REPOSITORY_BOTTOM_WAITING = load("/META-INF/maven-repository-bottom-waiting.svg");
 
     public static Icon load(String path) {
         return IconLoader.getIcon(path, MavenFinderIcons.class);

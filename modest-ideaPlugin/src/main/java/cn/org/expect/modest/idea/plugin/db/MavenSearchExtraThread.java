@@ -2,6 +2,7 @@ package cn.org.expect.modest.idea.plugin.db;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import cn.org.expect.modest.idea.plugin.MavenFinderIcons;
 import cn.org.expect.modest.idea.plugin.ui.IntelliJIdea;
 import cn.org.expect.modest.idea.plugin.ui.JListRenderer;
 import cn.org.expect.util.StringUtils;
@@ -37,7 +38,7 @@ public class MavenSearchExtraThread extends Thread {
     public void search(String groupId, String artifactId) {
         if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
             String message = "<html><span style='color:orange;'>Search " + groupId + ":" + artifactId + " in Maven Repository ..</span></html>";
-            IntelliJIdea.updateAdvertiser(message);
+            IntelliJIdea.updateAdvertiser(message, MavenFinderIcons.MAVEN_REPOSITORY_BOTTOM_WAITING);
 
             try {
                 this.queue.put(new String[]{groupId, artifactId});

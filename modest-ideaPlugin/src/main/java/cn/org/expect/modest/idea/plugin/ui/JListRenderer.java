@@ -50,7 +50,7 @@ public class JListRenderer {
         if (jlist == null) {
             log.warn("--->      MavenFinder renderer not have JList !");
             String message = "<html><span style='color:red;'>MavenFinder render fail: have not JList</span></html>";
-            IntelliJIdea.updateAdvertiser(message);
+            IntelliJIdea.updateAdvertiser(message, MavenFinderIcons.MAVEN_REPOSITORY_BOTTOM);
             return;
         }
 

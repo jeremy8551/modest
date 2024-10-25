@@ -2,6 +2,7 @@ package cn.org.expect.modest.idea.plugin.db;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
+import cn.org.expect.modest.idea.plugin.MavenFinderIcons;
 import cn.org.expect.modest.idea.plugin.ui.IntelliJIdea;
 import cn.org.expect.modest.idea.plugin.ui.JListRenderer;
 import cn.org.expect.util.Dates;
@@ -41,7 +42,7 @@ public class MavenSearchThread extends Thread {
     public void search(String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
             String message = "<html><span style='color:orange;'>Search " + pattern + " in Maven Repository ..</span></html>";
-            IntelliJIdea.updateAdvertiser(message);
+            IntelliJIdea.updateAdvertiser(message, MavenFinderIcons.MAVEN_REPOSITORY_BOTTOM_WAITING);
             IntelliJIdea.JLIST_SELECT_ITEM = null;
             this.add(pattern);
         }
