@@ -40,7 +40,7 @@ public class MavenSearchStatement {
         }
 
         log.warn("search Pattern: " + patternFinal);
-        MavenFinderResult result = MavenFinderDatabase.INSTANCE.select(patternFinal);
+        MavenFinderResult result = MavenFinderDB.INSTANCE.select(patternFinal);
         if (result == null) {
             List<MavenArtifact> list = null;
             try {
@@ -48,7 +48,7 @@ public class MavenSearchStatement {
                     String[] array = StringUtils.split(patternFinal, ':');
                     List<MavenArtifact> some = this.query.execute(array[0], array[1]);
                     if (some.size() > 1) {
-                        MavenFinderDatabase.INSTANCE.insert(array[0], array[1], some);
+                        MavenFinderDB.INSTANCE.insert(array[0], array[1], some);
                         MavenArtifact last = some.get(some.size() - 1);
                         list = new ArrayList<>();
                         list.add(last);
@@ -63,7 +63,7 @@ public class MavenSearchStatement {
             }
 
             if (list != null) {
-                result = MavenFinderDatabase.INSTANCE.insert(patternFinal, list);
+                result = MavenFinderDB.INSTANCE.insert(patternFinal, list);
             }
         } else {
             List<MavenArtifact> artifacts = result.getArtifacts();
@@ -91,7 +91,7 @@ public class MavenSearchStatement {
         artifactId = StringUtils.trimBlank(artifactId);
 
         log.warn("search groupId: " + groupId + ", artifactId: " + artifactId);
-        MavenFinderResult result = MavenFinderDatabase.INSTANCE.select(groupId, artifactId);
+        MavenFinderResult result = MavenFinderDB.INSTANCE.select(groupId, artifactId);
         if (result == null) {
             try {
                 this.groupId = groupId;
@@ -105,7 +105,7 @@ public class MavenSearchStatement {
                 }
 
                 if (list != null) {
-                    result = MavenFinderDatabase.INSTANCE.insert(groupId, artifactId, list);
+                    result = MavenFinderDB.INSTANCE.insert(groupId, artifactId, list);
                 }
             } finally {
                 this.groupId = "";

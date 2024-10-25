@@ -32,30 +32,33 @@ public class MavenFinderFactory implements SearchEverywhereContributorFactory<Ob
             IntelliJIdea.EDETOR_SELECT_TEXT = selectedText; // 编辑器中选中的文本
             if (StringUtils.isNotBlank(selectedText)) {
                 log.warn("--->      Selected text: " + selectedText);
-                MavenSearchThread.INSTANCE.search(MavenFinderPattern.parse(selectedText));
+//                MavenSearchThread.INSTANCE.search(MavenFinderPattern.parse(selectedText));
             }
         }
 
         // 启动线程
+        String threadName = "MavenFinderDetectedThread";
         Thread thread = new Thread(() -> {
-            log.warn("start MavenFinder Detected Thread ..");
+            log.warn("start " + threadName + " ..");
             IntelliJIdea.detect(event);
             log.warn("MavenFinder Detected end!");
+            IntelliJIdea.waitForIdea();
 
             SearchEverywhereUI ui = IntelliJIdea.get();
             String editorSelectText = IntelliJIdea.EDETOR_SELECT_TEXT;
             if (StringUtils.isNotBlank(editorSelectText)) {
-                try {
-                    ui.getSearchField().setText(MavenFinderPattern.parse(editorSelectText)); // 更新搜索内容
-                    if (MavenFinderPattern.isXML(editorSelectText)) {
-                        ui.switchToTab(contributor.getSearchProviderId()); // 选择标签页
-                        ui.repaint();
-                    }
-                } catch (Exception ignored) {
-                }
+                ui.getSearchField().setText(MavenFinderPattern.parse(editorSelectText)); // 更新搜索内容
+//                try {
+//                    if (MavenFinderPattern.isXML(editorSelectText)) {
+//                        ui.switchToTab(contributor.getSearchProviderId()); // 选择标签页
+//                        System.out.println("select Tab: " + ui.getSelectedTabID());
+//                    }
+//                } catch (Exception e) {
+//                    log.error(e.getLocalizedMessage(), e);
+//                }
             }
         });
-        thread.setName("MavenFinder Detected Thread");
+        thread.setName(threadName);
         thread.start();
 
         return contributor;

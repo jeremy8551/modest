@@ -7,9 +7,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
 
-public class MavenFinderDatabase {
+public class MavenFinderDB {
 
-    public final static MavenFinderDatabase INSTANCE = new MavenFinderDatabase();
+    public final static MavenFinderDB INSTANCE = new MavenFinderDB();
 
     /**
      * 模糊搜索词 pattern 与 MavenFinderResult 的映射
@@ -21,7 +21,7 @@ public class MavenFinderDatabase {
      */
     protected final Map<String, Map<String, MavenFinderResult>> extraMap;
 
-    private MavenFinderDatabase() {
+    private MavenFinderDB() {
         this.patternMap = new ConcurrentHashMap<String, MavenFinderResult>();
         this.extraMap = new ConcurrentHashMap<String, Map<String, MavenFinderResult>>();
     }

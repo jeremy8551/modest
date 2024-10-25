@@ -41,8 +41,7 @@ public class MavenSearchThread extends Thread {
      */
     public void search(String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
-            String message = "<html><span style='color:orange;'>Search " + pattern + " in Maven Repository ..</span></html>";
-            IntelliJIdea.updateAdvertiser(message, MavenFinderIcons.MAVEN_REPOSITORY_BOTTOM_WAITING);
+            IntelliJIdea.updateAdvertiser("<html><span style='color:orange;'>Search " + pattern + " in Maven Repository ..</span></html>", MavenFinderIcons.MAVEN_REPOSITORY_BOTTOM_WAITING);
             IntelliJIdea.JLIST_SELECT_ITEM = null;
             this.add(pattern);
         }
@@ -61,6 +60,7 @@ public class MavenSearchThread extends Thread {
         while (this.running) {
             try {
                 String pattern = this.queue.take();
+                IntelliJIdea.updateJListText("Search in Maven Repository ..");
 
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
                 Dates.sleep(400);
@@ -68,7 +68,18 @@ public class MavenSearchThread extends Thread {
                 // 查询
                 if (StringUtils.isNotBlank(pattern) && this.queue.isEmpty()) {
                     MavenFinderResult result = MavenSearchStatement.INSTANCE.query(pattern);
-                    JListRenderer.INSTANCE.execute(result);
+                    if (result == null) {
+                        String message = "Failed to send query request to Maven Repository!";
+                        IntelliJIdea.updateJListText(message);
+                        IntelliJIdea.updateAdvertiser(message, MavenFinderIcons.MAVEN_REPOSITORY_BOTTOM);
+                    } else if (result.size() == 0) {
+                        String message = "Nothing found.";
+                        IntelliJIdea.updateJListText(message);
+                        IntelliJIdea.updateAdvertiser(message, MavenFinderIcons.MAVEN_REPOSITORY_BOTTOM);
+                    } else {
+                        IntelliJIdea.clearJListText();
+                        JListRenderer.INSTANCE.execute(result);
+                    }
                 }
             } catch (Throwable e) {
                 log.error(e.getLocalizedMessage(), e);

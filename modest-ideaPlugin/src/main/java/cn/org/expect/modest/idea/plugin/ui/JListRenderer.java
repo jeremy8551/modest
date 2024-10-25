@@ -7,7 +7,7 @@ import javax.swing.*;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.modest.idea.plugin.MavenFinderContributor;
 import cn.org.expect.modest.idea.plugin.MavenFinderIcons;
-import cn.org.expect.modest.idea.plugin.db.MavenFinderDatabase;
+import cn.org.expect.modest.idea.plugin.db.MavenFinderDB;
 import cn.org.expect.modest.idea.plugin.db.MavenFinderResult;
 import cn.org.expect.modest.idea.plugin.db.MavenSearchStatement;
 import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
@@ -17,7 +17,6 @@ import cn.org.expect.modest.idea.plugin.navigation.NavigationItemComparator;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.ui.components.JBList;
 
 public class JListRenderer {
     private static final Logger log = Logger.getInstance(JListRenderer.class);
@@ -53,6 +52,13 @@ public class JListRenderer {
             IntelliJIdea.updateAdvertiser(message, MavenFinderIcons.MAVEN_REPOSITORY_BOTTOM);
             return;
         }
+
+//        Set<Thread> threads = Thread.getAllStackTraces().keySet();
+//        for (Thread thread : threads) {
+//            if (thread.getName().startsWith("AWT-EventQueue")) {
+//                System.out.println(thread.getName());
+//            }
+//        }
 
         ListModel model = jlist.getModel();
         if (!(model instanceof SearchListModel)) {
@@ -97,7 +103,7 @@ public class JListRenderer {
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
 
-                MavenFinderResult artifactList = MavenFinderDatabase.INSTANCE.select(groupId, artifactId);
+                MavenFinderResult artifactList = MavenFinderDB.INSTANCE.select(groupId, artifactId);
                 if (artifactList != null) {
                     item.setIcon(MavenFinderIcons.MAVEN_REPOSITORY_LEFT_HAS_QUERY);
                 }
@@ -123,11 +129,6 @@ public class JListRenderer {
             } catch (Throwable e) {
                 log.error(e.getLocalizedMessage(), e);
             }
-        }
-
-        if (size == 0 && jlist instanceof JBList) {
-            JBList jbList = (JBList) jlist;
-            jbList.setEmptyText("There are no matching maven artifact!");
         }
 
         // 选中某个记录

@@ -4,6 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import cn.org.expect.jdk.JavaDialectFactory;
+import cn.org.expect.modest.idea.plugin.MavenFinderContributor;
 import cn.org.expect.modest.idea.plugin.navigation.MavenFinderNavigationItem;
 import cn.org.expect.util.Dates;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
@@ -39,7 +40,7 @@ public class IntelliJIdea {
     /** 查询结果最下面的广告栏 */
     private static volatile Advertiser ADVERTISER;
 
-    private static volatile SearchListModel MYLISTMODEL;
+    private static volatile SearchListModel MYLIST_MODEL;
 
     private static volatile ProgressIndicator mySearchProgressIndicator;
 
@@ -69,7 +70,7 @@ public class IntelliJIdea {
         }
 
         try {
-            IntelliJIdea.MYLISTMODEL = JavaDialectFactory.get().getField(ui, "myListModel");
+            IntelliJIdea.MYLIST_MODEL = JavaDialectFactory.get().getField(ui, "myListModel");
         } catch (Exception e) {
             log.error(e.getLocalizedMessage(), e);
         }
@@ -107,14 +108,15 @@ public class IntelliJIdea {
         return SUGGESTIONS_PANEL;
     }
 
-    /**
-     * 更新 SearchEverywhereUI 最下方广告栏中的信息
-     *
-     * @param message 文本信息
-     * @return 返回true表示更新成功
-     */
-    public static boolean updateAdvertiser(String message) {
-        return updateAdvertiser(message, null);
+    public static boolean notMavenFinderTab() {
+        SearchEverywhereUI ui = IntelliJIdea.UI;
+        if (ui == null) {
+            return false;
+        }
+
+        // 如果搜索的标签页不是 MavenFinder，就不显示广告信息
+        String selectedTabID = ui.getSelectedTabID();
+        return !MavenFinderContributor.TABID.equals(selectedTabID);
     }
 
     /**
@@ -125,6 +127,10 @@ public class IntelliJIdea {
      * @return 返回true表示更新成功
      */
     public static boolean updateAdvertiser(String message, Icon icon) {
+        if (IntelliJIdea.notMavenFinderTab()) {
+            return false;
+        }
+
         Advertiser advertiser = IntelliJIdea.ADVERTISER;
         if (advertiser == null) {
             return false;
@@ -146,12 +152,66 @@ public class IntelliJIdea {
         }
     }
 
-    public static void updateEmptyList(String message) {
+    /**
+     * 设置 JList 显示的文本 <br>
+     * 不能使用 Idea 的渲染线程执行这个方法，需要有单独的线程
+     *
+     * @param message
+     */
+    public static void updateJListText(String message) {
+        if (IntelliJIdea.notMavenFinderTab()) {
+            return;
+        }
+
         JBList jlist = IntelliJIdea.JLIST;
         if (jlist != null) {
-            System.out.println("updateEmptyList() " + message);
             jlist.setEmptyText(message);
-            jlist.repaint();
         }
     }
+
+    public static void clearJListText() {
+        if (IntelliJIdea.notMavenFinderTab()) {
+            return;
+        }
+
+        JBList jlist = IntelliJIdea.JLIST;
+        if (jlist != null) {
+            jlist.disableEmptyText();
+        }
+    }
+
+    public static ProgressIndicator getProgressIndicator() {
+        SearchEverywhereUI ui = IntelliJIdea.UI;
+        if (ui != null) {
+            return JavaDialectFactory.get().getField(ui, "mySearchProgressIndicator");
+        }
+        return null;
+    }
+
+    public static void waitForIdea() {
+        ProgressIndicator progress = IntelliJIdea.getProgressIndicator();
+        if (progress != null) {
+            long startMillis = System.currentTimeMillis();
+            while (progress.isRunning() && System.currentTimeMillis() - startMillis >= 2000) {
+                Dates.sleep(100);
+            }
+        }
+    }
+
+    public static void clearJList() {
+        if (IntelliJIdea.notMavenFinderTab()) {
+            return;
+        }
+
+        JBList jlist = IntelliJIdea.JLIST;
+        if (jlist != null) {
+            ListModel model = jlist.getModel();
+            if (model instanceof SearchListModel) {
+                SearchListModel listModel = (SearchListModel) model;
+                System.out.println("clear " + listModel.getSize());
+                listModel.clear();
+            }
+        }
+    }
+
 }

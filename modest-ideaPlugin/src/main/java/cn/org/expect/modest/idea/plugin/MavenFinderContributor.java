@@ -3,7 +3,7 @@ package cn.org.expect.modest.idea.plugin;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.modest.idea.plugin.db.MavenFinderDatabase;
+import cn.org.expect.modest.idea.plugin.db.MavenFinderDB;
 import cn.org.expect.modest.idea.plugin.db.MavenSearchExtraThread;
 import cn.org.expect.modest.idea.plugin.db.MavenSearchStatement;
 import cn.org.expect.modest.idea.plugin.db.MavenSearchThread;
@@ -25,6 +25,9 @@ import org.jetbrains.annotations.NotNull;
 public class MavenFinderContributor extends AbstractGotoSEContributor {
     private static final Logger log = Logger.getInstance(MavenFinderContributor.class);
 
+    /** Idea搜索对话框的Tab页名 */
+    public final static String TABID = MavenFinderContributor.class.getSimpleName() + ".Tab";
+
     private final MavenFinderChooseContributor contributor;
 
     public MavenFinderContributor(AnActionEvent event) {
@@ -33,7 +36,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     }
 
     public String getSearchProviderId() {
-        return MavenFinderContributor.class.getSimpleName() + ".Tab";
+        return TABID;
     }
 
     @Override
@@ -62,7 +65,6 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     public String filterControlSymbols(String pattern) {
         if (pattern != null && pattern.length() > 0) {
             MavenSearchThread.INSTANCE.search(MavenFinderPattern.parse(pattern));
-            IntelliJIdea.updateEmptyList("Search ..");
         }
         return pattern;
     }
@@ -74,11 +76,10 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
         if (selectedObject instanceof MavenFinderNavigationItem) {
             MavenFinderNavigationItem item = (MavenFinderNavigationItem) selectedObject;
-
             MavenArtifact artifact = item.getArtifact();
-            log.warn("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
 
             // 保存选择记录
+            log.warn("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
             IntelliJIdea.JLIST_SELECT_ITEM = item;
 
             // 折叠或展开
@@ -87,7 +88,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
-                if (MavenFinderDatabase.INSTANCE.select(groupId, artifactId) == null) {
+                if (MavenFinderDB.INSTANCE.select(groupId, artifactId) == null) {
                     MavenSearchExtraThread.INSTANCE.search(groupId, artifactId);
                 }
 

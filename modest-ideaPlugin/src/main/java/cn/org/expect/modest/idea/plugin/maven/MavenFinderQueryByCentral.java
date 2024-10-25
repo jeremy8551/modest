@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
 import cn.org.expect.modest.idea.plugin.db.MavenFinderQuery;
+import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
 import com.intellij.openapi.diagnostic.Logger;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -45,17 +45,35 @@ public class MavenFinderQueryByCentral implements MavenFinderQuery {
         return list;
     }
 
-    protected List<MavenArtifact> send(String url, JsonParse parse) throws IOException {
+    public String sendURL(String url) throws IOException {
         OkHttpClient client = new OkHttpClient(); // 创建 OkHttpClient 实例
-        log.warn("send Request: " + url);
         Request request = new Request.Builder().url(url).header("User-Agent", "Mozilla/5.0").build(); // 创建 Request 实例
         Response response = client.newCall(request).execute(); // 发送请求并获取响应
-        String responseBody = response.body().string(); // 读取响应体
+        return response.body().string(); // 读取响应体
+    }
+
+    public String sendRequest(String url) {
+        log.warn("send Request: " + url);
+        Throwable throwable = null;
+        for (int i = 0; i < 3; i++) {
+            try {
+                return this.sendURL(url);
+            } catch (Throwable e) {
+                log.error("send request fail, url: " + url + "\nretry send request ..");
+                if (throwable == null) {
+                    throwable = e;
+                }
+            }
+        }
+        throw new RuntimeException("try 3 times send request, but fail!", throwable);
+    }
+
+    public List<MavenArtifact> send(String url, JsonParse parse) {
+        String responseBody = this.sendRequest(url);
         JSONObject json = new JSONObject(responseBody);
         JSONObject responseStr = json.getJSONObject("response");
         JSONArray docs = responseStr.getJSONArray("docs");
-
-        log.warn("send Response: " + response.code() + ", docs: " + docs.length() + ", responseBody: " + responseBody);
+        log.warn("send Response, find: " + docs.length() + ", responseBody: " + responseBody);
 
         List<MavenArtifact> list = new ArrayList<MavenArtifact>(docs.length());
         for (int i = 0; i < docs.length(); i++) {
