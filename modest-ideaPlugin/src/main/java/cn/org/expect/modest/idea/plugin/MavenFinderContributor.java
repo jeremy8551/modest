@@ -89,17 +89,14 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
                 if (MavenFinderDB.INSTANCE.select(groupId, artifactId) == null) {
-                    MavenSearchExtraThread.INSTANCE.search(groupId, artifactId);
+                    MavenSearchExtraThread.INSTANCE.search(groupId, artifactId); // 后台查询 maven 工件
                 }
-
-                JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
-                return false;
             } else { // 设置为：折叠
                 artifact.setFold(true);
-                JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
-                return false;
             }
         }
+
+        JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
         return false;
     }
 

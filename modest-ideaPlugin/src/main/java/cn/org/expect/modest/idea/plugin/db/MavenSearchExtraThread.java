@@ -42,8 +42,8 @@ public class MavenSearchExtraThread extends Thread {
 
             try {
                 this.queue.put(new String[]{groupId, artifactId});
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Throwable e) {
+                log.error(e.getLocalizedMessage(), e);
             }
         }
     }
@@ -53,12 +53,17 @@ public class MavenSearchExtraThread extends Thread {
         while (this.running) {
             try {
                 String[] array = this.queue.take();
-                MavenFinderResult result = MavenSearchStatement.INSTANCE.query(array[0], array[1]);
-                if (result != null && this.queue.isEmpty()) { // 如果没有其他任务，则重新渲染UI
-                    JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
+                String groupId = array[0];
+                String artifactId = array[1];
+
+                if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
+                    MavenFinderResult result = MavenSearchStatement.INSTANCE.query(groupId, artifactId);
+                    if (result != null && this.queue.isEmpty()) { // 如果没有其他任务，则重新渲染UI
+                        JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
+                    }
                 }
             } catch (Throwable e) {
-                e.printStackTrace();
+                log.error(e.getLocalizedMessage(), e);
             }
         }
     }

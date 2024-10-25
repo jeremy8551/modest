@@ -32,7 +32,6 @@ public class MavenFinderFactory implements SearchEverywhereContributorFactory<Ob
             IntelliJIdea.EDETOR_SELECT_TEXT = selectedText; // 编辑器中选中的文本
             if (StringUtils.isNotBlank(selectedText)) {
                 log.warn("--->      Selected text: " + selectedText);
-//                MavenSearchThread.INSTANCE.search(MavenFinderPattern.parse(selectedText));
             }
         }
 

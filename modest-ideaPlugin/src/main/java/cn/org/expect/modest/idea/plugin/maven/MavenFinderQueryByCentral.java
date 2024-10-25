@@ -59,7 +59,6 @@ public class MavenFinderQueryByCentral implements MavenFinderQuery {
             try {
                 return this.sendURL(url);
             } catch (Throwable e) {
-                log.error("send request fail, url: " + url + "\nretry send request ..");
                 if (throwable == null) {
                     throwable = e;
                 }
