@@ -4,10 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.org.expect.modest.idea.plugin.db.MavenFinderResult;
+import cn.org.expect.modest.idea.plugin.db.MavenSearchStatement;
 import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
 import cn.org.expect.modest.idea.plugin.navigation.MavenFinderNavigationItem;
-import cn.org.expect.modest.idea.plugin.query.MavenFinderResult;
-import cn.org.expect.modest.idea.plugin.query.MavenSearchStatement;
 import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
@@ -48,10 +48,8 @@ public class MavenFinderChooseContributor implements ChooseByNameContributor {
     public synchronized NavigationItem[] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
         MavenFinderNavigationItem item = this.map.get(name);
         if (item == null) {
-//            System.out.println("getItemsByName() blank result !" + name + ", pattern: " + pattern);
             return new NavigationItem[0];
         } else {
-//            System.out.println("getItemsByName() " + name + ", " + pattern);
             return new MavenFinderNavigationItem[]{item};
         }
     }

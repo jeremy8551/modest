@@ -1,9 +1,9 @@
-package cn.org.expect.modest.idea.plugin.query;
+package cn.org.expect.modest.idea.plugin.db;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-import cn.org.expect.modest.idea.plugin.IdeaUI;
-import cn.org.expect.modest.idea.plugin.MavenFinderRenderer;
+import cn.org.expect.modest.idea.plugin.ui.IntelliJIdea;
+import cn.org.expect.modest.idea.plugin.ui.JListRenderer;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.diagnostic.Logger;
@@ -41,8 +41,8 @@ public class MavenSearchThread extends Thread {
     public void search(String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
             String message = "<html><span style='color:orange;'>Search " + pattern + " in Maven Repository ..</span></html>";
-            IdeaUI.updateAdvertiser(message);
-            IdeaUI.JLIST_SELECT_TEXT = null;
+            IntelliJIdea.updateAdvertiser(message);
+            IntelliJIdea.JLIST_SELECT_ITEM = null;
             this.add(pattern);
         }
     }
@@ -51,7 +51,7 @@ public class MavenSearchThread extends Thread {
         try {
             this.queue.put(pattern);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage(), e);
         }
     }
 
@@ -64,12 +64,13 @@ public class MavenSearchThread extends Thread {
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
                 Dates.sleep(400);
 
+                // 查询
                 if (StringUtils.isNotBlank(pattern) && this.queue.isEmpty()) {
                     MavenFinderResult result = MavenSearchStatement.INSTANCE.query(pattern);
-                    MavenFinderRenderer.INSTANCE.execute(result);
+                    JListRenderer.INSTANCE.execute(result);
                 }
             } catch (Throwable e) {
-                e.printStackTrace();
+                log.error(e.getLocalizedMessage(), e);
             }
         }
     }

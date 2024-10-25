@@ -3,11 +3,14 @@ package cn.org.expect.modest.idea.plugin;
 import java.util.List;
 import javax.swing.*;
 
+import cn.org.expect.modest.idea.plugin.db.MavenFinderDatabase;
+import cn.org.expect.modest.idea.plugin.db.MavenSearchExtraThread;
+import cn.org.expect.modest.idea.plugin.db.MavenSearchStatement;
+import cn.org.expect.modest.idea.plugin.db.MavenSearchThread;
 import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
 import cn.org.expect.modest.idea.plugin.navigation.MavenFinderNavigationItem;
-import cn.org.expect.modest.idea.plugin.query.MavenSearchExtraThread;
-import cn.org.expect.modest.idea.plugin.query.MavenSearchStatement;
-import cn.org.expect.modest.idea.plugin.query.MavenSearchThread;
+import cn.org.expect.modest.idea.plugin.ui.IntelliJIdea;
+import cn.org.expect.modest.idea.plugin.ui.JListRenderer;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
@@ -58,7 +61,8 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     @Override
     public String filterControlSymbols(String pattern) {
         if (pattern != null && pattern.length() > 0) {
-            MavenSearchThread.INSTANCE.search(pattern);
+            MavenSearchThread.INSTANCE.search(MavenFinderPattern.parse(pattern));
+            IntelliJIdea.updateEmptyList("Search ..");
         }
         return pattern;
     }
@@ -75,21 +79,23 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
             log.warn("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
 
             // 保存选择记录
-            IdeaUI.JLIST_SELECT_TEXT = item.getPresentableText();
+            IntelliJIdea.JLIST_SELECT_ITEM = item;
+
+            // 折叠或展开
             if (artifact.isFold()) { // 设置为：展开
                 artifact.setFold(false);
 
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
-                if (MavenSearchStatement.INSTANCE.getResult(groupId, artifactId) == null) {
+                if (MavenFinderDatabase.INSTANCE.select(groupId, artifactId) == null) {
                     MavenSearchExtraThread.INSTANCE.search(groupId, artifactId);
                 }
 
-                MavenFinderRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
+                JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
                 return false;
             } else { // 设置为：折叠
                 artifact.setFold(true);
-                MavenFinderRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
+                JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
                 return false;
             }
         }

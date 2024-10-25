@@ -1,4 +1,4 @@
-package cn.org.expect.modest.idea.plugin.query;
+package cn.org.expect.modest.idea.plugin.db;
 
 import java.io.IOException;
 import java.util.List;

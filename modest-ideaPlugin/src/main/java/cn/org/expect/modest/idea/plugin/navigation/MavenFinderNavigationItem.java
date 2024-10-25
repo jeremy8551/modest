@@ -3,6 +3,7 @@ package cn.org.expect.modest.idea.plugin.navigation;
 import javax.swing.*;
 
 import cn.org.expect.modest.idea.plugin.MavenFinderIcons;
+import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.navigation.ItemPresentation;
@@ -20,7 +21,7 @@ public class MavenFinderNavigationItem implements NavigationItem, ItemPresentati
 
     public MavenFinderNavigationItem(MavenArtifact artifact) {
         this.id = NUMBER++;
-        this.artifact = artifact;
+        this.artifact = Ensure.notNull(artifact);
         this.icon = MavenFinderIcons.MAVEN_REPOSITORY_LEFT;
     }
 

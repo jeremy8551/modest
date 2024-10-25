@@ -6,7 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
-import cn.org.expect.modest.idea.plugin.query.MavenFinderQuery;
+import cn.org.expect.modest.idea.plugin.db.MavenFinderQuery;
 import com.intellij.openapi.diagnostic.Logger;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

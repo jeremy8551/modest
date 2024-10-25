@@ -6,6 +6,7 @@ import javax.swing.*;
 import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
 import cn.org.expect.modest.idea.plugin.navigation.MavenFinderNavigationItem;
 import cn.org.expect.modest.idea.plugin.navigation.MavenFinderNavigationList;
+import cn.org.expect.modest.idea.plugin.ui.JListRenderer;
 import com.intellij.ide.actions.SearchEverywherePsiRenderer;
 import com.intellij.util.TextWithIcon;
 
@@ -16,7 +17,7 @@ public class MavenFinderListCellRenderer extends SearchEverywherePsiRenderer {
     }
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        MavenFinderRenderer.INSTANCE.setList(list);
+        JListRenderer.INSTANCE.setList(list);
         return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
     }
 

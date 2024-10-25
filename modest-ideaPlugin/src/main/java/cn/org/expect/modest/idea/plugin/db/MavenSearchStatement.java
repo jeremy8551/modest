@@ -1,12 +1,11 @@
-package cn.org.expect.modest.idea.plugin.query;
+package cn.org.expect.modest.idea.plugin.db;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
 import cn.org.expect.modest.idea.plugin.MavenFinderPattern;
 import cn.org.expect.modest.idea.plugin.maven.MavenFinderQueryByCentral;
+import cn.org.expect.modest.idea.plugin.navigation.MavenArtifact;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.diagnostic.Logger;
 
@@ -15,16 +14,6 @@ public class MavenSearchStatement {
 
     /** 单例模式 */
     public final static MavenSearchStatement INSTANCE = new MavenSearchStatement();
-
-    /**
-     * 模糊搜索词 pattern 与 MavenFinderResult 的映射
-     */
-    protected final Map<String, MavenFinderResult> map;
-
-    /**
-     * groupid、artifactId 与 MavenFinderResult 的映射
-     */
-    protected final Map<String, MavenFinderResult> map1;
 
     /** 最近一次模糊搜索结果 */
     protected volatile MavenFinderResult last;
@@ -39,8 +28,6 @@ public class MavenSearchStatement {
     protected volatile String artifactId;
 
     protected MavenSearchStatement() {
-        this.map = new ConcurrentHashMap<String, MavenFinderResult>();
-        this.map1 = new ConcurrentHashMap<String, MavenFinderResult>();
         this.query = new MavenFinderQueryByCentral();
         this.groupId = "";
         this.artifactId = "";
@@ -53,18 +40,30 @@ public class MavenSearchStatement {
         }
 
         log.warn("search Pattern: " + patternFinal);
-        MavenFinderResult result = this.map.get(patternFinal);
+        MavenFinderResult result = MavenFinderDatabase.INSTANCE.select(patternFinal);
         if (result == null) {
             List<MavenArtifact> list = null;
             try {
-                list = this.query.execute(StringUtils.trimBlank(StringUtils.replaceAll(patternFinal, ".", "%2E")));
+                if (MavenFinderPattern.isExtraSearch(patternFinal)) {
+                    String[] array = StringUtils.split(patternFinal, ':');
+                    List<MavenArtifact> some = this.query.execute(array[0], array[1]);
+                    if (some.size() > 1) {
+                        MavenFinderDatabase.INSTANCE.insert(array[0], array[1], some);
+                        MavenArtifact last = some.get(some.size() - 1);
+                        list = new ArrayList<>();
+                        list.add(last);
+                    } else {
+                        list = some;
+                    }
+                } else {
+                    list = this.query.execute(StringUtils.trimBlank(StringUtils.replaceAll(patternFinal, ".", "%2E")));
+                }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error(e.getLocalizedMessage(), e);
             }
 
             if (list != null) {
-                result = new MavenFinderResult(patternFinal, list);
-                this.map.put(result.getPattern(), result);
+                result = MavenFinderDatabase.INSTANCE.insert(patternFinal, list);
             }
         } else {
             List<MavenArtifact> artifacts = result.getArtifacts();
@@ -88,9 +87,11 @@ public class MavenSearchStatement {
             return null;
         }
 
+        groupId = StringUtils.trimBlank(groupId);
+        artifactId = StringUtils.trimBlank(artifactId);
+
         log.warn("search groupId: " + groupId + ", artifactId: " + artifactId);
-        String key = this.toExtraSearchKey(groupId, artifactId);
-        MavenFinderResult result = this.map1.get(key);
+        MavenFinderResult result = MavenFinderDatabase.INSTANCE.select(groupId, artifactId);
         if (result == null) {
             try {
                 this.groupId = groupId;
@@ -98,14 +99,13 @@ public class MavenSearchStatement {
 
                 List<MavenArtifact> list = null;
                 try {
-                    list = this.query.execute(StringUtils.trimBlank(groupId), StringUtils.trimBlank(artifactId));
+                    list = this.query.execute(groupId, artifactId);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    log.error(e.getLocalizedMessage(), e);
                 }
 
                 if (list != null) {
-                    result = new MavenFinderResult(key, list);
-                    this.map1.put(result.getPattern(), result);
+                    result = MavenFinderDatabase.INSTANCE.insert(groupId, artifactId, list);
                 }
             } finally {
                 this.groupId = "";
@@ -129,7 +129,7 @@ public class MavenSearchStatement {
      * @param artifactId 工件名
      * @return 返回true表示正在查询
      */
-    public boolean isQuerying(String groupId, String artifactId) {
+    public boolean isExtraQuerying(String groupId, String artifactId) {
         return this.groupId.equals(groupId) && this.artifactId.equals(artifactId);
     }
 
@@ -140,19 +140,5 @@ public class MavenSearchStatement {
      */
     public MavenFinderResult last() {
         return this.last;
-    }
-
-    public MavenFinderResult getResult(String pattern) {
-        String patternFinal = MavenFinderPattern.parse(pattern);
-        return this.map.get(patternFinal);
-    }
-
-    public MavenFinderResult getResult(String groupId, String artifactId) {
-        String key = this.toExtraSearchKey(groupId, artifactId);
-        return this.map1.get(key);
-    }
-
-    protected String toExtraSearchKey(String groupId, String artifactId) {
-        return groupId + ":" + artifactId;
     }
 }

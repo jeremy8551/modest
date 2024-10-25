@@ -1,9 +1,9 @@
-package cn.org.expect.modest.idea.plugin.query;
+package cn.org.expect.modest.idea.plugin.db;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
-import cn.org.expect.modest.idea.plugin.IdeaUI;
-import cn.org.expect.modest.idea.plugin.MavenFinderRenderer;
+import cn.org.expect.modest.idea.plugin.ui.IntelliJIdea;
+import cn.org.expect.modest.idea.plugin.ui.JListRenderer;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.diagnostic.Logger;
 
@@ -37,7 +37,7 @@ public class MavenSearchExtraThread extends Thread {
     public void search(String groupId, String artifactId) {
         if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
             String message = "<html><span style='color:orange;'>Search " + groupId + ":" + artifactId + " in Maven Repository ..</span></html>";
-            IdeaUI.updateAdvertiser(message);
+            IntelliJIdea.updateAdvertiser(message);
 
             try {
                 this.queue.put(new String[]{groupId, artifactId});
@@ -54,7 +54,7 @@ public class MavenSearchExtraThread extends Thread {
                 String[] array = this.queue.take();
                 MavenFinderResult result = MavenSearchStatement.INSTANCE.query(array[0], array[1]);
                 if (result != null && this.queue.isEmpty()) { // 如果没有其他任务，则重新渲染UI
-                    MavenFinderRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
+                    JListRenderer.INSTANCE.execute(MavenSearchStatement.INSTANCE.last());
                 }
             } catch (Throwable e) {
                 e.printStackTrace();

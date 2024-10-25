@@ -1,15 +1,12 @@
 package cn.org.expect.modest.idea.plugin.navigation;
 
 import java.util.Date;
-import java.util.concurrent.atomic.AtomicLong;
 
 import cn.org.expect.util.Dates;
+import cn.org.expect.util.StringComparator;
 
 public class MavenArtifact {
 
-    private final static AtomicLong NUMBER = new AtomicLong(0);
-
-    private long id;
     private String artifact;
     private String groupId;
     private String version;
@@ -22,11 +19,10 @@ public class MavenArtifact {
     private volatile boolean fold;
 
     public MavenArtifact() {
-        this("", "", "", "", 0, 0);
+        this("", "", "", "", 0, -1);
     }
 
     public MavenArtifact(String groupId, String artifact, String version, String type, long timestamp, int versionCount) {
-        this.id = NUMBER.incrementAndGet();
         this.artifact = artifact;
         this.groupId = groupId;
         this.version = version;
@@ -80,12 +76,21 @@ public class MavenArtifact {
         this.fold = fold;
     }
 
-    public boolean equals(Object o) {
-        return o != null && o.getClass().equals(this.getClass()) && ((MavenArtifact) o).id == this.id;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof MavenArtifact) {
+            MavenArtifact artifact = (MavenArtifact) obj;
+            return StringComparator.compareTo(this.groupId, artifact.getGroupId()) == 0 //
+                    && StringComparator.compareTo(this.artifact, artifact.getArtifactId()) == 0 //
+                    && StringComparator.compareTo(this.version, artifact.getVersion()) == 0 //
+                    && StringComparator.compareTo(this.type, artifact.getType()) == 0 //
+                    ;
+        }
+        return false;
     }
 
     public String toString() {
-        return "id=" + this.id + ", " + this.groupId + ":" + this.artifact + ":" + this.version + ", time=" + Dates.format19(this.getTimestamp()) + ", " + this.getVersionCount();
+        return this.groupId + ":" + this.artifact + ":" + this.version + ", time=" + Dates.format19(this.getTimestamp()) + ", " + this.getVersionCount();
     }
 }
 
