@@ -95,7 +95,6 @@ public class JListRenderer {
             if (info instanceof MavenFinderFoundElementInfo) {
                 MavenFinderFoundElementInfo element = (MavenFinderFoundElementInfo) info;
                 MavenFinderNavigation item = element.getElement();
-                System.out.println("remove: " + item.getArtifact());
                 if (item != null) {
                     try {
                         listModel.removeElement(item, info.getContributor());
