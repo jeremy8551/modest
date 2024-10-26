@@ -72,27 +72,36 @@ public class JListRenderer {
             }
         }
 
-        this.removeElementInfo(listModel, this.getNavigationItemWrapper(listModel));
+        this.removeElementInfo(listModel);
         List<MavenFinderNavigation> navigations = this.toList(result);
         Iterator<MavenFinderNavigation> it = navigations.iterator();
-
-        for (int i = 0; i < listModel.getSize(); i++) {
+        int i = 0;
+        for (; i < listModel.getSize(); i++) {
             SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
             if (info instanceof MavenFinderFoundElementInfo) {
+                MavenFinderFoundElementInfo element = (MavenFinderFoundElementInfo) info;
                 if (it.hasNext()) { // 向 ListModel 添加记录
                     MavenFinderNavigation item = it.next();
-                    MavenFinderFoundElementInfo element = (MavenFinderFoundElementInfo) info;
                     element.setElement(item);
                     element.setContributor(this.contributor);
-                } else { // 从 ListModel 删除记录
-                    MavenFinderFoundElementInfo element = (MavenFinderFoundElementInfo) info;
-                    Object object = element.getElement();
-                    if (object != null) {
-                        try {
-                            listModel.removeElement(object, info.getContributor());
-                        } catch (Exception e) { // TODO 如果不能删除，则将导航记录清空，排序时放到最后
-                            element.setElement(null);
-                        }
+                } else {
+                    break;
+                }
+            }
+        }
+
+        for (int j = listModel.getSize() - 1; j >= i; j--) {
+            SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(j);
+            if (info instanceof MavenFinderFoundElementInfo) {
+                MavenFinderFoundElementInfo element = (MavenFinderFoundElementInfo) info;
+                MavenFinderNavigation item = element.getElement();
+                System.out.println("remove: " + item.getArtifact());
+                if (item != null) {
+                    try {
+                        listModel.removeElement(item, info.getContributor());
+                    } catch (Throwable e) { // TODO 如果不能删除，则将导航记录清空，排序时放到最后
+                        e.printStackTrace();
+                        element.setElement(null);
                     }
                 }
             }
@@ -101,11 +110,11 @@ public class JListRenderer {
         // 向 ListModel 添加记录
         if (it.hasNext()) {
             List<MavenFinderFoundElementInfo> list = new ArrayList<MavenFinderFoundElementInfo>(navigations.size());
-            while (it.hasNext()) {
+            do {
                 MavenFinderNavigation navigation = it.next();
                 MavenFinderFoundElementInfo info = new MavenFinderFoundElementInfo(navigation, this.contributor);
                 list.add(info);
-            }
+            } while (it.hasNext());
 
             try {
                 listModel.addElements(list);
@@ -128,22 +137,20 @@ public class JListRenderer {
         IntelliJIdea.updateAdvertiser(message, MavenFinderIcons.MAVEN_REPOSITORY_BOTTOM);
     }
 
-    protected List<SearchEverywhereFoundElementInfo> getNavigationItemWrapper(SearchListModel listModel) {
-        List<SearchEverywhereFoundElementInfo> list = new ArrayList<>();
+    protected void removeElementInfo(SearchListModel listModel) {
+        List<SearchEverywhereFoundElementInfo> list = new ArrayList<SearchEverywhereFoundElementInfo>();
         for (int i = 0; i < listModel.getSize(); i++) {
             SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
             if (info.getElement() instanceof MavenFinderNavigationItemWrapper navigation) {
                 list.add(info);
+                continue;
             }
         }
-        return list;
-    }
 
-    protected void removeElementInfo(SearchListModel listModel, List<SearchEverywhereFoundElementInfo> list) {
         for (SearchEverywhereFoundElementInfo info : list) {
             try {
                 listModel.removeElement(info.getElement(), info.getContributor());
-            } catch (Exception e) { // TODO 如果不能删除，则将导航记录清空，排序时放到最后
+            } catch (Throwable e) { // TODO 如果不能删除，则将导航记录清空，排序时放到最后
                 e.printStackTrace();
             }
         }

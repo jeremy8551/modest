@@ -11,22 +11,14 @@ public class MavenFinderFoundElementInfo extends SearchEverywhereFoundElementInf
     public final static int DEFAULT_PRIORITY = 50;
 
     protected int priority;
-    protected Object element;
+    protected MavenFinderNavigation element;
     protected SearchEverywhereContributor<?> contributor;
 
-    public MavenFinderFoundElementInfo(Object element, SearchEverywhereContributor<?> contributor) {
+    public MavenFinderFoundElementInfo(MavenFinderNavigation element, SearchEverywhereContributor<?> contributor) {
         super(element, MavenFinderFoundElementInfo.DEFAULT_PRIORITY, contributor);
         this.priority = MavenFinderFoundElementInfo.DEFAULT_PRIORITY;
         this.element = Ensure.notNull(element);
         this.contributor = Ensure.notNull(contributor);
-    }
-
-    public int getPriority() {
-        return this.priority;
-    }
-
-    public Object getElement() {
-        return this.element;
     }
 
     public void setPriority(int priority) {
@@ -39,6 +31,14 @@ public class MavenFinderFoundElementInfo extends SearchEverywhereFoundElementInf
 
     public void setContributor(SearchEverywhereContributor<?> contributor) {
         this.contributor = contributor;
+    }
+
+    public int getPriority() {
+        return this.priority;
+    }
+
+    public MavenFinderNavigation getElement() {
+        return this.element;
     }
 
     public SearchEverywhereContributor<?> getContributor() {
