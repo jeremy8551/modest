@@ -21,16 +21,8 @@ public class MavenSearchStatement {
     /** 远程调用组件 */
     protected final MavenFinderQuery query;
 
-    /** 正在精确查找的工件 */
-    protected volatile String groupId;
-
-    /** 正在精确查找的工件 */
-    protected volatile String artifactId;
-
     protected MavenSearchStatement() {
         this.query = new MavenFinderQueryByCentral();
-        this.groupId = "";
-        this.artifactId = "";
     }
 
     public synchronized MavenFinderResult query(String pattern) {
@@ -76,7 +68,7 @@ public class MavenSearchStatement {
             log.warn("search Pattern: " + patternFinal + ", result is null!");
         } else {
             this.last = result;
-            log.warn("search Pattern: " + patternFinal + ", Size: " + result.getArtifacts().size() + ", List: " + StringUtils.toString(result.getArtifacts()));
+            log.warn("search Pattern: " + patternFinal + ", Size: " + result.size() + ", List: " + StringUtils.toString(result.getArtifacts()));
         }
 
         return result;
@@ -93,23 +85,15 @@ public class MavenSearchStatement {
         log.warn("search groupId: " + groupId + ", artifactId: " + artifactId);
         MavenFinderResult result = MavenFinderDB.INSTANCE.select(groupId, artifactId);
         if (result == null) {
+            List<MavenArtifact> list = null;
             try {
-                this.groupId = groupId;
-                this.artifactId = artifactId;
+                list = this.query.execute(groupId, artifactId);
+            } catch (Exception e) {
+                log.error(e.getLocalizedMessage(), e);
+            }
 
-                List<MavenArtifact> list = null;
-                try {
-                    list = this.query.execute(groupId, artifactId);
-                } catch (Exception e) {
-                    log.error(e.getLocalizedMessage(), e);
-                }
-
-                if (list != null) {
-                    result = MavenFinderDB.INSTANCE.insert(groupId, artifactId, list);
-                }
-            } finally {
-                this.groupId = "";
-                this.artifactId = "";
+            if (list != null) {
+                result = MavenFinderDB.INSTANCE.insert(groupId, artifactId, list);
             }
         }
 
@@ -120,17 +104,6 @@ public class MavenSearchStatement {
         }
 
         return result;
-    }
-
-    /**
-     * 判断当前是否正在查询某个 Maven 工件
-     *
-     * @param groupId    域名
-     * @param artifactId 工件名
-     * @return 返回true表示正在查询
-     */
-    public boolean isExtraQuerying(String groupId, String artifactId) {
-        return this.groupId.equals(groupId) && this.artifactId.equals(artifactId);
     }
 
     /**

@@ -77,7 +77,7 @@ public class MavenSearchThread extends Thread {
                         IntelliJIdea.updateJListText(message);
                         IntelliJIdea.updateAdvertiser(message, MavenFinderIcons.MAVEN_REPOSITORY_BOTTOM);
                     } else {
-                        IntelliJIdea.clearJListText();
+                        IntelliJIdea.updateJListText("");
                         JListRenderer.INSTANCE.execute(result);
                     }
                 }

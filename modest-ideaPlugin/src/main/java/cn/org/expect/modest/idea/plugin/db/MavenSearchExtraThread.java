@@ -67,4 +67,22 @@ public class MavenSearchExtraThread extends Thread {
             }
         }
     }
+
+    /**
+     * 判断当前是否正在查询某个 Maven 工件
+     *
+     * @param groupId    域名
+     * @param artifactId 工件名
+     * @return 返回true表示正在查询
+     */
+    public boolean isExtraQuerying(String groupId, String artifactId) {
+        for (String[] array : this.queue) {
+            String g = array[0];
+            String a = array[1];
+            if (g.equals(groupId) && a.equals(artifactId)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

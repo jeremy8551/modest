@@ -35,8 +35,9 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
         this.contributor = new MavenFinderChooseContributor();
     }
 
+    @Override
     public String getSearchProviderId() {
-        return TABID;
+        return MavenFinderContributor.TABID;
     }
 
     @Override
@@ -46,7 +47,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
     @Override
     public void fetchElements(@NotNull String pattern, @NotNull ProgressIndicator progressIndicator, @NotNull Processor<? super Object> consumer) {
-//        System.out.println("fetchElements() " + pattern);
+        log.warn("fetchElements() " + pattern);
         super.fetchElements(pattern, progressIndicator, consumer);
     }
 
@@ -85,7 +86,6 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
             // 折叠或展开
             if (artifact.isFold()) { // 设置为：展开
                 artifact.setFold(false);
-
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
                 if (MavenFinderDB.INSTANCE.select(groupId, artifactId) == null) {
@@ -115,6 +115,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
     @Override
     public int getElementPriority(Object element, String searchPattern) {
+        System.out.println("getElementPriority() " + element.getClass().getName());
         return 50;
     }
 

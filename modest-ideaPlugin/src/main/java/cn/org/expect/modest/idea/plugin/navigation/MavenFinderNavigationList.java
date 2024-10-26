@@ -66,6 +66,10 @@ public class MavenFinderNavigationList implements NavigationItem, ItemPresentati
     }
 
     @Override
+    public void setIcon(Icon icon) {
+    }
+
+    @Override
     public Icon getIcon(boolean unused) {
         return null;
     }

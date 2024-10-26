@@ -169,17 +169,6 @@ public class IntelliJIdea {
         }
     }
 
-    public static void clearJListText() {
-        if (IntelliJIdea.notMavenFinderTab()) {
-            return;
-        }
-
-        JBList jlist = IntelliJIdea.JLIST;
-        if (jlist != null) {
-            jlist.disableEmptyText();
-        }
-    }
-
     public static ProgressIndicator getProgressIndicator() {
         SearchEverywhereUI ui = IntelliJIdea.UI;
         if (ui != null) {
