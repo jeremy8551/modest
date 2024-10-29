@@ -23,6 +23,9 @@ public class MessageFormatter {
     /** 占位符类型 */
     private Placeholder type;
 
+    /** 消息信息 */
+    private String message;
+
     /**
      * 占位符类型是：{}
      */
@@ -40,6 +43,46 @@ public class MessageFormatter {
             throw new NullPointerException();
         }
         this.type = type;
+    }
+
+    /**
+     * 占位符类型是：{}
+     *
+     * @param message 消息信息
+     */
+    public MessageFormatter(String message) {
+        this();
+        this.message = message;
+    }
+
+    /**
+     * 字符串格式化工具
+     *
+     * @param type    占位符类型
+     * @param message 消息信息
+     */
+    public MessageFormatter(Placeholder type, String message) {
+        this(type);
+        this.message = message;
+    }
+
+    /**
+     * 返回消息信息
+     *
+     * @return 字符串
+     */
+    public String getMessage() {
+        return this.message;
+    }
+
+    /**
+     * 将字符串中的占位符替换为数组中的元素
+     *
+     * @param args 数组
+     * @return 字符串
+     */
+    public String fill(Object... args) {
+        return this.format(this.message, args);
     }
 
     /**
@@ -70,6 +113,10 @@ public class MessageFormatter {
      * @return 字符串
      */
     private String format0(CharSequence message, Object[] args) {
+        if (args == null) {
+            args = new Object[0];
+        }
+
         StringBuilder buf = new StringBuilder(message.length());
         int length = message.length();
         boolean escape = false;
@@ -110,6 +157,10 @@ public class MessageFormatter {
      * @return 字符串
      */
     private String format1(CharSequence message, Object[] args) {
+        if (args == null) {
+            args = new Object[0];
+        }
+
         StringBuilder buf = new StringBuilder(message.length());
         int length = message.length();
         boolean escape = false;
@@ -205,20 +256,4 @@ public class MessageFormatter {
         }
         return -1;
     }
-
-    /**
-     * 将字符串中的占位符 {} 替换为数组元素
-     *
-     * @param message 字符串
-     * @param e       数组
-     * @return 字符串
-     */
-    public String format(CharSequence message, Throwable e) {
-        StringBuilder buf = new StringBuilder(message.length());
-        buf.append(message);
-        buf.append(FileUtils.lineSeparator);
-        buf.append(StringUtils.toString(e));
-        return buf.toString();
-    }
-
 }

@@ -17,12 +17,12 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <lang.findUsagesProvider implementationClass="cn.org.expect.modest.idea.plugin.provider.MavenFindUsagesProvider" language=""/>
-        <searchEverywhereContributor implementation="cn.org.expect.modest.idea.plugin.MavenFinderFactory"/>
+        <lang.findUsagesProvider implementationClass="cn.org.expect.intellijidea.plugin.maven.provider.MavenFindUsagesProvider" language=""/>
+        <searchEverywhereContributor implementation="cn.org.expect.intellijidea.plugin.maven.MavenFinderFactory"/>
     </extensions>
 
     <actions>
-        <action id="cn.org.expect.modest.idea.cn.org.expect.modest.idea.plugin.action.MavenFinderAnAction" class="cn.org.expect.modest.idea.plugin.action.MavenFinderAnAction" text="Maven Finder" description="excel file convert to other files">
+        <action id="cn.org.expect.modest.idea.cn.org.expect.intellijidea.plugin.maven.action.MavenFinderAnAction" class="cn.org.expect.intellijidea.plugin.maven.action.MavenFinderAnAction" text="Maven Finder" description="excel file convert to other files">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
     </actions>

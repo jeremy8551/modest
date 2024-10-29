@@ -1,5 +1,6 @@
 package cn.org.expect.modest.idea.plugin;
 
+import cn.org.expect.intellijidea.plugin.maven.MavenFinderPattern;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
