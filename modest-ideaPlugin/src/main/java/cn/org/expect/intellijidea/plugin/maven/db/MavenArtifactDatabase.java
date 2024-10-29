@@ -27,10 +27,6 @@ public class MavenArtifactDatabase {
     }
 
     public MavenArtifactSet insert(String pattern, List<MavenArtifact> list) {
-        if (list.isEmpty()) {
-            return null;
-        }
-
         MavenArtifactSet set = new MavenArtifactArrayList(list);
         this.patternMap.put(pattern, set);
         return set;

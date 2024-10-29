@@ -6,7 +6,6 @@ import java.util.List;
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifact;
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifactSet;
 import cn.org.expect.intellijidea.plugin.maven.MavenFinder;
-import cn.org.expect.intellijidea.plugin.maven.MavenFinderContext;
 import cn.org.expect.intellijidea.plugin.maven.MavenFinderIcon;
 import cn.org.expect.intellijidea.plugin.maven.MavenFinderMessage;
 import cn.org.expect.intellijidea.plugin.maven.MavenFinderPattern;
@@ -53,11 +52,13 @@ public class MavenRepositorySearchPattern extends MavenRepositorySearch<MavenRep
                 QueueElement take = this.queue.take();
                 String pattern = take.pattern;
                 MavenFinder mavenFinder = take.mavenFinder;
-                MavenFinderContext context = mavenFinder.getContext();
+
+                // 设置未返回结果时显示的内容与广告栏信息
                 mavenFinder.setReminderText(MavenFinderMessage.SEARCHING.getMessage());
+                mavenFinder.setAdvertiser(MavenFinderMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)), MavenFinderIcon.BOTTOM_WAITING);
 
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
-                Dates.sleep(context.getInputIntervalTime());
+                Dates.sleep(mavenFinder.getContext().getInputIntervalTime());
 
                 // 查询
                 if (this.queue.isEmpty()) {
@@ -72,7 +73,7 @@ public class MavenRepositorySearchPattern extends MavenRepositorySearch<MavenRep
                         mavenFinder.setReminderText(message);
                         mavenFinder.setAdvertiser(message, MavenFinderIcon.BOTTOM);
                     } else {
-                        context.setPatternSearchResult(result);
+                        mavenFinder.getContext().setPatternSearchResult(result);
                         mavenFinder.repaint(result);
                     }
                 }
@@ -90,19 +91,19 @@ public class MavenRepositorySearchPattern extends MavenRepositorySearch<MavenRep
 
         log.warn("search Pattern: " + patternFinal);
         MavenArtifactSet result = database.select(patternFinal);
-        if (result == null) {
+        if (result == null || result.size() == 0) {
             try {
                 List<MavenArtifact> list;
                 if (MavenFinderPattern.isExtraSearch(patternFinal)) {
                     String[] array = StringUtils.split(patternFinal, ':');
-                    List<MavenArtifact> some = this.getRepository().query(array[0], array[1]);
-                    if (some.size() >= 2) {
-                        database.insert(array[0], array[1], some);
-                        MavenArtifact last = some.get(some.size() - 1);
-                        list = new ArrayList<>();
+                    List<MavenArtifact> extraList = this.getRepository().query(array[0], array[1]);
+                    if (extraList.size() >= 2) {
+                        database.insert(array[0], array[1], extraList);
+                        MavenArtifact last = extraList.get(extraList.size() - 1);
+                        list = new ArrayList<MavenArtifact>();
                         list.add(last);
                     } else {
-                        list = some;
+                        list = extraList;
                     }
                 } else {
                     list = this.getRepository().query(StringUtils.trimBlank(StringUtils.replaceAll(patternFinal, ".", "%2E")));

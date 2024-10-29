@@ -20,7 +20,7 @@ public class MavenFinderNavigationItem implements NavigationItem, ItemPresentati
 
     private final long id;
 
-    private Icon icon;
+    private volatile Icon icon;
 
     public MavenFinderNavigationItem(MavenArtifact artifact) {
         this.id = NUMBER++;
