@@ -38,7 +38,7 @@ public class MavenArtifactDatabase {
 
     public MavenArtifactSet insert(String groupId, String artifactId, List<MavenArtifact> list) {
         MavenArtifactSet set = new MavenArtifactArrayList(list);
-        Map<String, MavenArtifactSet> group = this.extraMap.computeIfAbsent(groupId, k -> new HashMap<>());
+        Map<String, MavenArtifactSet> group = this.extraMap.computeIfAbsent(groupId, k -> new HashMap<String, MavenArtifactSet>());
         group.put(artifactId, set);
         return set;
     }
