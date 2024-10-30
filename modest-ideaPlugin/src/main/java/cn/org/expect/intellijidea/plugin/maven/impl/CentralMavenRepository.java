@@ -15,6 +15,7 @@ import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -49,14 +50,42 @@ public class CentralMavenRepository implements MavenRepository {
     @Override
     public List<MavenArtifact> query(String pattern) {
         this.notTerminate = true;
-        String url = "https://search.maven.org/solrsearch/select?q=" + pattern + "&rows=99&wt=json"; // 构建请求 URL
-        return this.send(url, this.pattern);
+        String url = "https://search.maven.org/solrsearch/select?q=" + pattern + "&rows=200&wt=json"; // 构建请求 URL
+        List<MavenArtifact> list = this.send(url, this.pattern);
+        list.sort(this.getComparator().reversed());
+        return list;
+    }
+
+    public @NotNull Comparator<MavenArtifact> getComparator() {
+        return (o1, o2) -> {
+            int vv = o1.getVersionCount() - o2.getVersionCount(); // 版本数
+            if (vv != 0) {
+                return vv;
+            }
+
+            int tv = o1.getTimestamp().compareTo(o2.getTimestamp()); // 最新发布
+            if (tv != 0) {
+                return tv;
+            }
+
+            int gv = o1.getGroupId().compareTo(o2.getGroupId());
+            if (gv != 0) {
+                return gv;
+            }
+
+            int av = o1.getArtifactId().compareTo(o2.getArtifactId());
+            if (av != 0) {
+                return av;
+            }
+
+            return 0;
+        };
     }
 
     @Override
     public List<MavenArtifact> query(String groupId, String artifactId) {
         this.notTerminate = true;
-        String url = "https://search.maven.org/solrsearch/select?q=g:" + groupId + "+AND+a:" + artifactId + "&core=gav&rows=99&wt=json"; // 构建请求 URL
+        String url = "https://search.maven.org/solrsearch/select?q=g:" + groupId + "+AND+a:" + artifactId + "&core=gav&rows=200&wt=json"; // 构建请求 URL
         List<MavenArtifact> list = this.send(url, this.extra);
         list.sort(REVERSED_COMPARATOR);
         return list;
@@ -113,22 +142,6 @@ public class CentralMavenRepository implements MavenRepository {
             MavenArtifact item = factory.build(doc);
             list.add(item);
         }
-
-        Comparator<MavenArtifact> comparator = (o1, o2) -> {
-            int gv = o1.getGroupId().compareTo(o2.getGroupId());
-            if (gv != 0) {
-                return gv;
-            }
-
-            int av = o1.getArtifactId().compareTo(o2.getArtifactId());
-            if (av != 0) {
-                return av;
-            }
-
-            return o1.getTimestamp().compareTo(o2.getTimestamp());
-        };
-
-        list.sort(comparator);
         return list;
     }
 

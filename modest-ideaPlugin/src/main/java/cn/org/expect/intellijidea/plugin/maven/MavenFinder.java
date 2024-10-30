@@ -8,9 +8,8 @@ import javax.swing.*;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderBlankItem;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderFoundElementInfo;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigation;
-import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationList;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
-import cn.org.expect.intellijidea.plugin.maven.navigation.NavigationItemComparator;
+import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationList;
 import cn.org.expect.intellijidea.plugin.maven.search.AsyncDatabaseSearch;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.util.Dates;
@@ -229,13 +228,13 @@ public class MavenFinder extends AsyncDatabaseSearch {
      */
     public synchronized void repaint(MavenArtifactSet result) {
         SearchListModel listModel = this.context.getJBListModel();
-        if (listModel.getClass().getSimpleName().equals("MixedSearchListModel")) {
-            try {
-                JavaDialectFactory.get().setField(listModel, "myElementsComparator", new NavigationItemComparator());
-            } catch (Throwable e) {
-                log.error(e.getLocalizedMessage(), e);
-            }
-        }
+//        if (listModel.getClass().getSimpleName().equals("MixedSearchListModel")) {
+//            try {
+//                JavaDialectFactory.get().setField(listModel, "myElementsComparator", new NavigationItemComparator());
+//            } catch (Throwable e) {
+//                log.error(e.getLocalizedMessage(), e);
+//            }
+//        }
 
         // 将查询结果转为导航记录
         java.util.List<MavenFinderNavigation> list = this.toNavigationList(result);
@@ -392,6 +391,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
                     try {
                         listModel.removeElement(item, info.getContributor());
                     } catch (Throwable e) { // 如果不能删除导航记录，则将导航记录清空
+                        element.setPriority(Integer.MIN_VALUE); // 将权重设置为最小，比 More 元素（Priority=0）小
                         element.setElement(null);
                     }
                 }
@@ -403,8 +403,8 @@ public class MavenFinder extends AsyncDatabaseSearch {
             java.util.List<MavenFinderFoundElementInfo> newList = new ArrayList<MavenFinderFoundElementInfo>(list.size());
             do {
                 MavenFinderNavigation navigation = it.next();
-                MavenFinderFoundElementInfo info = new MavenFinderFoundElementInfo(navigation, this.context.getContributor());
-                newList.add(info);
+                MavenFinderFoundElementInfo elementInfo = new MavenFinderFoundElementInfo(navigation, this.context.getContributor());
+                newList.add(elementInfo);
             } while (it.hasNext());
 
             try {

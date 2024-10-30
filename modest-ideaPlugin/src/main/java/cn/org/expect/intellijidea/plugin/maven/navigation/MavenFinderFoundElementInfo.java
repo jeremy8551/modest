@@ -1,6 +1,6 @@
 package cn.org.expect.intellijidea.plugin.maven.navigation;
 
-import cn.org.expect.util.Ensure;
+import cn.org.expect.jdk.JavaDialectFactory;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 
@@ -9,27 +9,33 @@ public class MavenFinderFoundElementInfo extends SearchEverywhereFoundElementInf
     /** 默认排序权重 */
     public final static int DEFAULT_PRIORITY = 50;
 
-    protected int priority;
-    protected MavenFinderNavigation element;
-    protected SearchEverywhereContributor<?> contributor;
+    public int priority;
+    public MavenFinderNavigation element;
+    public SearchEverywhereContributor<?> contributor;
 
     public MavenFinderFoundElementInfo(MavenFinderNavigation element, SearchEverywhereContributor<?> contributor) {
         super(element, MavenFinderFoundElementInfo.DEFAULT_PRIORITY, contributor);
-        this.priority = MavenFinderFoundElementInfo.DEFAULT_PRIORITY;
-        this.element = Ensure.notNull(element);
-        this.contributor = Ensure.notNull(contributor);
+        this.priority = super.getPriority();
+        this.element = (MavenFinderNavigation) super.getElement();
+        this.contributor = contributor;
     }
 
     public void setPriority(int priority) {
         this.priority = priority;
+        SearchEverywhereFoundElementInfo elementInfo = (SearchEverywhereFoundElementInfo) this;
+        JavaDialectFactory.get().setField(elementInfo, "priority", priority);
     }
 
     public void setElement(MavenFinderNavigation element) {
         this.element = element;
+        SearchEverywhereFoundElementInfo elementInfo = (SearchEverywhereFoundElementInfo) this;
+        JavaDialectFactory.get().setField(elementInfo, "element", element);
     }
 
     public void setContributor(SearchEverywhereContributor<?> contributor) {
         this.contributor = contributor;
+        SearchEverywhereFoundElementInfo elementInfo = (SearchEverywhereFoundElementInfo) this;
+        JavaDialectFactory.get().setField(elementInfo, "contributor", contributor);
     }
 
     public int getPriority() {
