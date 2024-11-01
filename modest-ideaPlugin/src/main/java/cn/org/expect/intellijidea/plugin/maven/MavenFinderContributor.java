@@ -81,7 +81,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
             // 保存选择记录
             log.info("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
-            this.mavenFinder.getContext().setSelectItem(item);
+            this.mavenFinder.getContext().setSelectList(item);
 
             // 折叠或展开
             if (artifact.isFold()) { // 设置为：展开

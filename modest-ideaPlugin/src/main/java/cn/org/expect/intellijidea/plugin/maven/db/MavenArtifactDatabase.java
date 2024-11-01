@@ -50,4 +50,13 @@ public class MavenArtifactDatabase {
         }
         return null;
     }
+
+    public MavenArtifactSet delete(String pattern) {
+        return this.patternMap.remove(pattern);
+    }
+
+    public void clear() {
+        this.patternMap.clear();
+        this.extraMap.clear();
+    }
 }

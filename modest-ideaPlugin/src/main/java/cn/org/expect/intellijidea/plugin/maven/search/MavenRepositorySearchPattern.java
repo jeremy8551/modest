@@ -30,7 +30,7 @@ public class MavenRepositorySearchPattern extends MavenRepositorySearch<MavenRep
         if (StringUtils.isNotBlank(pattern)) {
             String message = MavenFinderMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern));
             mavenFinder.setAdvertiser(message, MavenFinderIcon.BOTTOM_WAITING);
-            mavenFinder.getContext().setSelectItem(null);
+            mavenFinder.getContext().setSelectList(null);
             this.add(new QueueElement(mavenFinder, pattern));
         }
     }

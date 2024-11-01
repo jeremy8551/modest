@@ -3,6 +3,7 @@ package cn.org.expect.intellijidea.plugin.maven;
 import java.util.List;
 import javax.swing.*;
 
+import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationList;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
@@ -27,8 +28,11 @@ public class MavenFinderContext {
     /** IDea 编辑器中选中的文本 */
     private volatile String editorSelectText;
 
-    /** 查找结果中选中记录的文本 */
-    private volatile MavenFinderNavigationList JBListSelectItem;
+    /** 选中的导航记录 */
+    private volatile MavenFinderNavigationList selectNavigationList;
+
+    /** 选中的版本列表记录 */
+    private volatile MavenFinderNavigationItem selectNavigationItem;
 
     /** Idea查询对话框对象 */
     private volatile SearchEverywhereUI searchEverywhereUI;
@@ -120,8 +124,8 @@ public class MavenFinderContext {
      *
      * @return 导航栏
      */
-    public MavenFinderNavigationList getSelectItem() {
-        return this.JBListSelectItem;
+    public MavenFinderNavigationList getSelectList() {
+        return this.selectNavigationList;
     }
 
     /**
@@ -129,8 +133,26 @@ public class MavenFinderContext {
      *
      * @param JBListSelectItem 导航栏
      */
-    public void setSelectItem(MavenFinderNavigationList JBListSelectItem) {
-        this.JBListSelectItem = JBListSelectItem;
+    public void setSelectList(MavenFinderNavigationList JBListSelectItem) {
+        this.selectNavigationList = JBListSelectItem;
+    }
+
+    /**
+     * 返回选中的版本列表记录
+     *
+     * @return 版本列表记录
+     */
+    public MavenFinderNavigationItem getSelectItem() {
+        return selectNavigationItem;
+    }
+
+    /**
+     * 设置选中的版本列表记录
+     *
+     * @param selectNavigationItem 版本列表记录
+     */
+    public void setSelectItem(MavenFinderNavigationItem selectNavigationItem) {
+        this.selectNavigationItem = selectNavigationItem;
     }
 
     public SearchEverywhereUI getSearchEverywhereUI() {

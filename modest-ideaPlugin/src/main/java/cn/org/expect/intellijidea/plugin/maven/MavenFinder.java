@@ -1,6 +1,12 @@
 package cn.org.expect.intellijidea.plugin.maven;
 
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.*;
@@ -12,6 +18,7 @@ import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationI
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationList;
 import cn.org.expect.intellijidea.plugin.maven.search.AsyncDatabaseSearch;
 import cn.org.expect.jdk.JavaDialectFactory;
+import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
@@ -19,11 +26,15 @@ import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInf
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
+import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationType;
+import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.project.Project;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.Advertiser;
 
@@ -132,6 +143,169 @@ public class MavenFinder extends AsyncDatabaseSearch {
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         }
+    }
+
+    /**
+     * 添加右键，弹出菜单
+     */
+    public void addPopupMenu() {
+        JBList<Object> jList = this.getContext().getJBList();
+        if (jList == null) {
+            log.warn("add JPopupMenu fail: JList is null!");
+            return;
+        }
+
+        JMenuItem copyMaven = new JMenuItem("复制 Maven 依赖");
+        JMenuItem copyGradle = new JMenuItem("复制 Gradle 依赖");
+        JMenuItem clearCache = new JMenuItem("重新加载数据");
+        JMenuItem clearAll = new JMenuItem("清空全部缓存");
+
+        JPopupMenu popupMenu = new JPopupMenu();
+        popupMenu.add(copyMaven); // 将菜单项添加到弹出菜单中
+        popupMenu.add(copyGradle);
+        popupMenu.add(clearCache);
+        popupMenu.add(clearAll);
+
+        Project project = this.context.getActionEvent().getProject();
+
+        // 添加菜单项的操作
+        copyMaven.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                MavenFinderNavigationItem selectItem = context.getSelectItem();
+                if (selectItem == null) {
+                    log.warn("Not a selected Navigation Item!");
+                    return;
+                }
+
+                String text = "";
+                text += "<groupId>";
+                text += selectItem.getArtifact().getGroupId();
+                text += "</groupId>\n";
+                text += "<artifactId>";
+                text += selectItem.getArtifact().getArtifactId();
+                text += "</artifactId>\n";
+                text += "<version>";
+                text += selectItem.getArtifact().getVersion();
+                text += "</version>\n";
+
+                StringSelection selection = new StringSelection(text);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(selection, null);
+
+                // 显示通知
+                if (project != null) {
+                    Notification notification = new Notification(
+                            ClassUtils.getPackageName(MavenFinder.class, 3), // 通知组的ID
+                            "已复制 Maven 依赖",         // 通知标题
+                            text,                      // 通知内容
+                            NotificationType.INFORMATION  // 通知类型（信息、警告或错误）
+                    );
+                    Notifications.Bus.notify(notification, project);
+                }
+            }
+        });
+
+        copyGradle.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                MavenFinderNavigationItem selectItem = context.getSelectItem();
+                if (selectItem == null) {
+                    log.warn("Not a selected Navigation Item!");
+                    return;
+                }
+
+                String text = "";
+                text += "implementation '";
+                text += selectItem.getArtifact().getGroupId();
+                text += ":";
+                text += selectItem.getArtifact().getArtifactId();
+                text += ":";
+                text += selectItem.getArtifact().getVersion();
+                text += "'";
+
+                StringSelection selection = new StringSelection(text);
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(selection, null);
+
+                // 显示通知
+                if (project != null) {
+                    Notification notification = new Notification(
+                            ClassUtils.getPackageName(MavenFinder.class, 3), // 通知组的ID
+                            "已复制 Gradle 依赖", // 通知标题
+                            text, // 通知内容
+                            NotificationType.INFORMATION // 通知类型（信息、警告或错误）
+                    );
+                    Notifications.Bus.notify(notification, project);
+                }
+            }
+        });
+
+        clearCache.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String pattern = context.getSearchEverywhereUI().getSearchField().getText();
+                getDatabase().delete(pattern);
+                asyncSearch(MavenFinderPattern.parse(pattern));
+
+                // 显示通知
+                if (project != null) {
+                    Notification notification = new Notification(
+                            ClassUtils.getPackageName(MavenFinder.class, 3), // 通知组的ID
+                            "正在重新加载数据", // 通知标题
+                            "", // 通知内容
+                            NotificationType.INFORMATION // 通知类型（信息、警告或错误）
+                    );
+                    Notifications.Bus.notify(notification, project);
+                }
+            }
+        });
+
+        clearAll.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                getDatabase().clear();
+
+                // 显示通知
+                if (project != null) {
+                    Notification notification = new Notification(
+                            ClassUtils.getPackageName(MavenFinder.class, 3), // 通知组的ID
+                            "已清空所有缓存", // 通知标题
+                            "", // 通知内容
+                            NotificationType.INFORMATION // 通知类型（信息、警告或错误）
+                    );
+                    Notifications.Bus.notify(notification, project);
+                }
+            }
+        });
+
+        // 在鼠标位置显示弹出菜单
+        jList.addMouseListener(new MouseListener() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int selectedIndex = jList.getSelectedIndex();
+                Object selectedObject = jList.getModel().getElementAt(selectedIndex);
+                if (selectedObject instanceof MavenFinderNavigationItem) {
+                    context.setSelectItem((MavenFinderNavigationItem) selectedObject);
+                    int x = jList.getX() + 30;
+                    int y = jList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
+                    popupMenu.show(jList, x, y);
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
     }
 
     public boolean notMavenFinderTab() {
@@ -269,7 +443,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
      * @param listModel 组件的数据模型
      */
     protected void setSelection(JBList<Object> jbList, SearchListModel listModel) {
-        MavenFinderNavigationList selectedItem = this.context.getSelectItem();
+        MavenFinderNavigationList selectedItem = this.context.getSelectList();
         if (selectedItem != null) {
             int selectedIndex = -1;
             for (int i = listModel.getSize() - 1; i >= 0; i--) {
