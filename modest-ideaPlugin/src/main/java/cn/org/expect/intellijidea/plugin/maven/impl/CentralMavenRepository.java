@@ -51,6 +51,7 @@ public class CentralMavenRepository implements MavenRepository {
     public List<MavenArtifact> query(String pattern) {
         this.notTerminate = true;
         String url = "https://search.maven.org/solrsearch/select?q=" + pattern + "&rows=200&wt=json"; // 构建请求 URL
+        System.out.println(url);
         List<MavenArtifact> list = this.send(url, this.pattern);
         list.sort(this.getComparator().reversed());
         return list;
@@ -73,12 +74,7 @@ public class CentralMavenRepository implements MavenRepository {
                 return gv;
             }
 
-            int av = o1.getArtifactId().compareTo(o2.getArtifactId());
-            if (av != 0) {
-                return av;
-            }
-
-            return 0;
+            return o1.getArtifactId().compareTo(o2.getArtifactId());
         };
     }
 
@@ -86,6 +82,7 @@ public class CentralMavenRepository implements MavenRepository {
     public List<MavenArtifact> query(String groupId, String artifactId) {
         this.notTerminate = true;
         String url = "https://search.maven.org/solrsearch/select?q=g:" + groupId + "+AND+a:" + artifactId + "&core=gav&rows=200&wt=json"; // 构建请求 URL
+        System.out.println(url);
         List<MavenArtifact> list = this.send(url, this.extra);
         list.sort(REVERSED_COMPARATOR);
         return list;
