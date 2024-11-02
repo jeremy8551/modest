@@ -142,18 +142,6 @@ public class MavenFinder extends AsyncDatabaseSearch {
     }
 
     /**
-     * 添加右键，弹出菜单
-     */
-    public void addPopupMenu() {
-        JBList<Object> jList = this.getContext().getJBList();
-        if (jList == null) {
-            log.warn("add JPopupMenu fail: JList is null!");
-            return;
-        }
-
-    }
-
-    /**
      * 将参数文本信息复制到剪切板中
      *
      * @param text 文本信息
