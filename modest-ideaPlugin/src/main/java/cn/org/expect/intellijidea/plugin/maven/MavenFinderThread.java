@@ -27,7 +27,7 @@ public class MavenFinderThread extends Thread {
         // 读取 Idea 搜索功能中的组件信息
         this.mavenFinder.detectIdeaComponent(event);
         log.info(MavenFinderMessage.DETECTED_IDEA_UI_COMPONENT.fill(this.getName()));
-        this.mavenFinder.addPopupMenu();
+        new MavenFinderPopupMenu(this.mavenFinder);
 
         // 等待 idea 默认的搜索功能执行完毕
         this.mavenFinder.waitForSearchEverywhereUI(3000);

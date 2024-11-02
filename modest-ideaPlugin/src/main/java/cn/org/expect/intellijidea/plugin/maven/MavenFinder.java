@@ -3,10 +3,6 @@ package cn.org.expect.intellijidea.plugin.maven;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.*;
@@ -155,157 +151,44 @@ public class MavenFinder extends AsyncDatabaseSearch {
             return;
         }
 
-        JMenuItem copyMaven = new JMenuItem("复制 Maven 依赖");
-        JMenuItem copyGradle = new JMenuItem("复制 Gradle 依赖");
-        JMenuItem clearCache = new JMenuItem("重新加载数据");
-        JMenuItem clearAll = new JMenuItem("清空全部缓存");
+    }
 
-        JPopupMenu popupMenu = new JPopupMenu();
-        popupMenu.add(copyMaven); // 将菜单项添加到弹出菜单中
-        popupMenu.add(copyGradle);
-        popupMenu.add(clearCache);
-        popupMenu.add(clearAll);
+    /**
+     * 将参数文本信息复制到剪切板中
+     *
+     * @param text 文本信息
+     */
+    public void copyToClipboard(String text) {
+        StringSelection selection = new StringSelection(text);
+        Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+        clipboard.setContents(selection, null);
+    }
 
-        Project project = this.context.getActionEvent().getProject();
+    /**
+     * 推送通知
+     *
+     * @param title 通知标题
+     * @param text  通知内容
+     * @param type  通知类型，可以为null
+     */
+    public void sendMessage(String title, String text, NotificationType type) {
+        Project project = context.getActionEvent().getProject();
+        if (project != null) {
+            String groupId = ClassUtils.getPackageName(MavenFinder.class, 3);
 
-        // 添加菜单项的操作
-        copyMaven.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                MavenFinderNavigationItem selectItem = context.getSelectItem();
-                if (selectItem == null) {
-                    log.warn("Not a selected Navigation Item!");
-                    return;
-                }
-
-                String text = "";
-                text += "<groupId>";
-                text += selectItem.getArtifact().getGroupId();
-                text += "</groupId>\n";
-                text += "<artifactId>";
-                text += selectItem.getArtifact().getArtifactId();
-                text += "</artifactId>\n";
-                text += "<version>";
-                text += selectItem.getArtifact().getVersion();
-                text += "</version>\n";
-
-                StringSelection selection = new StringSelection(text);
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(selection, null);
-
-                // 显示通知
-                if (project != null) {
-                    Notification notification = new Notification(
-                            ClassUtils.getPackageName(MavenFinder.class, 3), // 通知组的ID
-                            "已复制 Maven 依赖",         // 通知标题
-                            text,                      // 通知内容
-                            NotificationType.INFORMATION  // 通知类型（信息、警告或错误）
-                    );
-                    Notifications.Bus.notify(notification, project);
-                }
-            }
-        });
-
-        copyGradle.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                MavenFinderNavigationItem selectItem = context.getSelectItem();
-                if (selectItem == null) {
-                    log.warn("Not a selected Navigation Item!");
-                    return;
-                }
-
-                String text = "";
-                text += "implementation '";
-                text += selectItem.getArtifact().getGroupId();
-                text += ":";
-                text += selectItem.getArtifact().getArtifactId();
-                text += ":";
-                text += selectItem.getArtifact().getVersion();
-                text += "'";
-
-                StringSelection selection = new StringSelection(text);
-                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                clipboard.setContents(selection, null);
-
-                // 显示通知
-                if (project != null) {
-                    Notification notification = new Notification(
-                            ClassUtils.getPackageName(MavenFinder.class, 3), // 通知组的ID
-                            "已复制 Gradle 依赖", // 通知标题
-                            text, // 通知内容
-                            NotificationType.INFORMATION // 通知类型（信息、警告或错误）
-                    );
-                    Notifications.Bus.notify(notification, project);
-                }
-            }
-        });
-
-        clearCache.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                String pattern = context.getSearchEverywhereUI().getSearchField().getText();
-                getDatabase().delete(pattern);
-                asyncSearch(MavenFinderPattern.parse(pattern));
-
-                // 显示通知
-                if (project != null) {
-                    Notification notification = new Notification(
-                            ClassUtils.getPackageName(MavenFinder.class, 3), // 通知组的ID
-                            "正在重新加载数据", // 通知标题
-                            "", // 通知内容
-                            NotificationType.INFORMATION // 通知类型（信息、警告或错误）
-                    );
-                    Notifications.Bus.notify(notification, project);
-                }
-            }
-        });
-
-        clearAll.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                getDatabase().clear();
-
-                // 显示通知
-                if (project != null) {
-                    Notification notification = new Notification(
-                            ClassUtils.getPackageName(MavenFinder.class, 3), // 通知组的ID
-                            "已清空所有缓存", // 通知标题
-                            "", // 通知内容
-                            NotificationType.INFORMATION // 通知类型（信息、警告或错误）
-                    );
-                    Notifications.Bus.notify(notification, project);
-                }
-            }
-        });
-
-        // 在鼠标位置显示弹出菜单
-        jList.addMouseListener(new MouseListener() {
-
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                int selectedIndex = jList.getSelectedIndex();
-                Object selectedObject = jList.getModel().getElementAt(selectedIndex);
-                if (selectedObject instanceof MavenFinderNavigationItem) {
-                    context.setSelectItem((MavenFinderNavigationItem) selectedObject);
-                    int x = jList.getX() + 30;
-                    int y = jList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
-                    popupMenu.show(jList, x, y);
-                }
+            if (type == null) {
+                type = NotificationType.INFORMATION;
             }
 
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
+            Notification notification = new Notification(
+                    groupId, // 通知组的ID
+                    title, // 通知标题
+                    text, // 通知内容
+                    type // 通知类型（信息、警告或错误）
+            );
 
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
+            Notifications.Bus.notify(notification, project);
+        }
     }
 
     public boolean notMavenFinderTab() {
