@@ -1,0 +1,403 @@
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 2,
+    "params": {
+      "q": "g:org.springframework.boot AND a:spring-boot",
+      "core": "gav",
+      "indent": "off",
+      "fl": "id,g,a,v,p,ec,timestamp,tags",
+      "start": "0",
+      "sort": "score desc,timestamp desc,g asc,a asc,v desc",
+      "rows": "20",
+      "wt": "json",
+      "version": "2.2"
+    }
+  },
+  "response": {
+    "numFound": 231,
+    "start": 0,
+    "docs": [
+      {
+        "id": "org.springframework.boot:spring-boot:3.3.5",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.3.5",
+        "p": "jar",
+        "timestamp": 1729776027000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.2.11",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.2.11",
+        "p": "jar",
+        "timestamp": 1729762889000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.3.4",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.3.4",
+        "p": "jar",
+        "timestamp": 1726743149000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.2.10",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.2.10",
+        "p": "jar",
+        "timestamp": 1726730895000,
+        "ec": [
+          ".module",
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.3.3",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.3.3",
+        "p": "jar",
+        "timestamp": 1724350849000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.2.9",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.2.9",
+        "p": "jar",
+        "timestamp": 1724341150000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.3.2",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.3.2",
+        "p": "jar",
+        "timestamp": 1721324954000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.2.8",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.2.8",
+        "p": "jar",
+        "timestamp": 1721315284000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.3.1",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.3.1",
+        "p": "jar",
+        "timestamp": 1718881412000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.2.7",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.2.7",
+        "p": "jar",
+        "timestamp": 1718873921000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.3.0",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.3.0",
+        "p": "jar",
+        "timestamp": 1716471229000,
+        "ec": [
+          ".module",
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.2.6",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.2.6",
+        "p": "jar",
+        "timestamp": 1716460145000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.1.12",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.1.12",
+        "p": "jar",
+        "timestamp": 1716452332000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.2.5",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.2.5",
+        "p": "jar",
+        "timestamp": 1713463079000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.1.11",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.1.11",
+        "p": "jar",
+        "timestamp": 1713449901000,
+        "ec": [
+          ".module",
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.2.4",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.2.4",
+        "p": "jar",
+        "timestamp": 1711018979000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.1.10",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.1.10",
+        "p": "jar",
+        "timestamp": 1711010805000,
+        "ec": [
+          ".module",
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.2.3",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.2.3",
+        "p": "jar",
+        "timestamp": 1708632201000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.1.9",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.1.9",
+        "p": "jar",
+        "timestamp": 1708602976000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      },
+      {
+        "id": "org.springframework.boot:spring-boot:3.2.2",
+        "g": "org.springframework.boot",
+        "a": "spring-boot",
+        "v": "3.2.2",
+        "p": "jar",
+        "timestamp": 1705691863000,
+        "ec": [
+          "-sources.jar",
+          ".module",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "spring",
+          "boot"
+        ]
+      }
+    ]
+  }
+}

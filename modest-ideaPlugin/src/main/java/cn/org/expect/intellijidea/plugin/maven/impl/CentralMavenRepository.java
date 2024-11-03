@@ -130,6 +130,8 @@ public class CentralMavenRepository implements MavenRepository {
 
         JSONObject json = new JSONObject(responseBody);
         JSONObject responseStr = json.getJSONObject("response");
+        int numFound = responseStr.getInt("numFound"); // 总记录数
+        int start = responseStr.getInt("start"); // 起始位置，从0开始
         JSONArray docs = responseStr.getJSONArray("docs");
         log.info("send Response, find: " + docs.length() + ", responseBody: " + responseBody);
 
@@ -139,6 +141,12 @@ public class CentralMavenRepository implements MavenRepository {
             MavenArtifact item = factory.build(doc);
             list.add(item);
         }
+
+        if (numFound > list.size()) {
+            int left = numFound - list.size();
+            
+        }
+
         return list;
     }
 
