@@ -23,19 +23,17 @@ public class MavenArtifactDatabase {
         this.extraMap = new ConcurrentHashMap<String, Map<String, MavenSearchResult>>();
     }
 
-    public MavenSearchResult insert(String pattern, MavenSearchResult resultSet) {
+    public void insert(String pattern, MavenSearchResult resultSet) {
         this.patternMap.put(pattern, resultSet);
-        return resultSet;
     }
 
     public MavenSearchResult select(String pattern) {
         return this.patternMap.get(pattern);
     }
 
-    public MavenSearchResult insert(String groupId, String artifactId, MavenSearchResult set) {
+    public void insert(String groupId, String artifactId, MavenSearchResult set) {
         Map<String, MavenSearchResult> group = this.extraMap.computeIfAbsent(groupId, k -> new HashMap<String, MavenSearchResult>());
         group.put(artifactId, set);
-        return set;
     }
 
     public MavenSearchResult select(String groupId, String artifactId) {
@@ -46,8 +44,8 @@ public class MavenArtifactDatabase {
         return null;
     }
 
-    public MavenSearchResult delete(String pattern) {
-        return this.patternMap.remove(pattern);
+    public void delete(String pattern) {
+        this.patternMap.remove(pattern);
     }
 
     public void clear() {

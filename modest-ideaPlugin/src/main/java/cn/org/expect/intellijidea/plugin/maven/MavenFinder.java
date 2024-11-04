@@ -319,7 +319,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
         }
 
         // 设置广告信息
-        log.warn("repaint: " + JBList.getClass().getSimpleName() + ", size: " + listModel.getSize());
+        log.warn("repaint: " + JBList.getClass().getSimpleName() + ", size: " + listModel.getSize() + ", " + JBList.getModel().getSize() + ", " + listModel.isResultsExpired());
         String message = MavenFinderMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
         this.setAdvertiser(message, MavenFinderIcon.BOTTOM);
     }

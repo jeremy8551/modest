@@ -106,8 +106,9 @@ public class MavenRepositorySearch extends AbstractMavenRepositorySearch<Object>
                         if (next != null) {
                             list.addAll(next.getList());
                             SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, next.getStart(), foundNumber);
-                            database.insert(pattern, newResult);
-                            mavenFinder.repaint();
+                            database.insert(pattern, newResult); // 保存到数据库
+                            mavenFinder.getContext().setPatternSearchResult(newResult); // 保存查询记录
+                            mavenFinder.repaint(newResult); // 重新渲染
                         }
                     }
                     continue;
@@ -135,7 +136,8 @@ public class MavenRepositorySearch extends AbstractMavenRepositorySearch<Object>
         try {
             result = this.getRepository().query(groupId, artifactId);
             if (result != null) {
-                return database.insert(groupId, artifactId, result);
+                database.insert(groupId, artifactId, result);
+                return result;
             } else {
                 return null;
             }

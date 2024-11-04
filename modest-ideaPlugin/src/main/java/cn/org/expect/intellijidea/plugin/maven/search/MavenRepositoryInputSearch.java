@@ -104,7 +104,8 @@ public class MavenRepositoryInputSearch extends AbstractMavenRepositorySearch<Pa
                     if (resultSet == null) {
                         return null;
                     } else {
-                        return database.insert(patternFinal, resultSet);
+                        database.insert(patternFinal, resultSet);
+                        return resultSet;
                     }
                 }
 
@@ -119,9 +120,11 @@ public class MavenRepositoryInputSearch extends AbstractMavenRepositorySearch<Pa
                     List<MavenArtifact> list = new ArrayList<MavenArtifact>();
                     list.add(last);
                     SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, 1, 1);
-                    return database.insert(patternFinal, newResult);
+                    database.insert(patternFinal, newResult);
+                    return newResult;
                 } else {
-                    return database.insert(patternFinal, extraResult);
+                    database.insert(patternFinal, extraResult);
+                    return extraResult;
                 }
             }
             return result;
