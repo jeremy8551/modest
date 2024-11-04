@@ -10,6 +10,7 @@ import cn.org.expect.intellijidea.plugin.maven.MavenFinderIcon;
 import cn.org.expect.intellijidea.plugin.maven.MavenFinderMessage;
 import cn.org.expect.intellijidea.plugin.maven.MavenFinderPattern;
 import cn.org.expect.intellijidea.plugin.maven.db.MavenArtifactDatabase;
+import cn.org.expect.intellijidea.plugin.maven.impl.MavenArtifactSetImpl;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
@@ -83,7 +84,7 @@ public class MavenRepositorySearchPattern extends MavenRepositorySearch<MavenRep
         }
     }
 
-    public MavenArtifactSet query(@NotNull MavenArtifactDatabase database, String pattern) {
+    private MavenArtifactSet query(@NotNull MavenArtifactDatabase database, String pattern) {
         String patternFinal = MavenFinderPattern.parse(pattern);
         if (StringUtils.isBlank(patternFinal)) {
             return null;
@@ -91,36 +92,44 @@ public class MavenRepositorySearchPattern extends MavenRepositorySearch<MavenRep
 
         log.warn("search Pattern: " + patternFinal);
         MavenArtifactSet result = database.select(patternFinal);
-        if (result == null || result.size() == 0) {
-            try {
-                List<MavenArtifact> list;
-                if (MavenFinderPattern.isExtraSearch(patternFinal)) {
-                    String[] array = StringUtils.split(patternFinal, ':');
-                    List<MavenArtifact> extraList = this.getRepository().query(array[0], array[1]);
-                    if (extraList.size() >= 2) {
-                        database.insert(array[0], array[1], extraList);
-                        MavenArtifact last = extraList.get(extraList.size() - 1);
-                        list = new ArrayList<MavenArtifact>();
-                        list.add(last);
-                    } else {
-                        list = extraList;
-                    }
-                } else {
-                    list = this.getRepository().query(StringUtils.trimBlank(StringUtils.replaceAll(patternFinal, ".", "%2E")));
+        try {
+            if (result == null || result.size() == 0) {
+                if (!MavenFinderPattern.isExtraSearch(patternFinal)) {
+                    MavenArtifactSet resultSet = this.getRepository().query(StringUtils.trimBlank(StringUtils.replaceAll(patternFinal, ".", "%2E")), 1);
+                    return database.insert(patternFinal, resultSet);
                 }
 
-                result = database.insert(patternFinal, list);
-            } catch (Throwable e) {
-                log.error(e.getLocalizedMessage(), e);
+                // 精确查询
+                String[] array = StringUtils.split(patternFinal, ':');
+                MavenArtifactSet extraSet = this.getRepository().query(array[0], array[1]);
+                if (extraSet.size() >= 2) {
+                    database.insert(array[0], array[1], extraSet);
+                    MavenArtifact last = extraSet.getList().get(0);
+                    List<MavenArtifact> list = new ArrayList<MavenArtifact>();
+                    list.add(last);
+                    MavenArtifactSetImpl newset = new MavenArtifactSetImpl(list, 1, 1);
+                    return database.insert(patternFinal, newset);
+                } else {
+                    return database.insert(patternFinal, extraSet);
+                }
             }
-        }
 
-        if (result == null) {
-            log.warn("search Pattern: " + patternFinal + ", result is null!");
-            return null;
-        } else {
-            log.warn("search Pattern: " + patternFinal + ", Size: " + result.size() + ", List: " + StringUtils.toString(result.getArtifacts()));
+            // 还有未加载的数据
+            if (result.getFoundNumber() > result.size()) {
+                int start = result.getStart();
+                List<MavenArtifact> list = result.getList();
+
+                MavenArtifactSet next = this.getRepository().query(StringUtils.trimBlank(StringUtils.replaceAll(patternFinal, ".", "%2E")), start);
+                list.addAll(next.getList());
+                MavenArtifactSetImpl newResult = new MavenArtifactSetImpl(list, next.size(), next.getFoundNumber());
+                database.insert(patternFinal, newResult);
+                return newResult;
+            }
+
             return result;
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+            return null;
         }
     }
 

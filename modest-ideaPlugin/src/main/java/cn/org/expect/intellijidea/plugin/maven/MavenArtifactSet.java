@@ -12,7 +12,21 @@ public interface MavenArtifactSet {
      *
      * @return 集合
      */
-    List<MavenArtifact> getArtifacts();
+    List<MavenArtifact> getList();
+
+    /**
+     * 下次查询的起始位置
+     *
+     * @return 位置信息，从1开始
+     */
+    int getStart();
+
+    /**
+     * 返回总记录数
+     *
+     * @return 总记录数
+     */
+    int getFoundNumber();
 
     /**
      * Maven 工件个数

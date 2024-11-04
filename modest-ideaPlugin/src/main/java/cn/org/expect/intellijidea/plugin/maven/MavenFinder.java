@@ -69,6 +69,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
      * @param pattern 字符串
      */
     public void asyncSearch(String pattern) {
+        this.context.setSearchPattern(pattern);
         this.getSearchPattern().search(this, pattern);
     }
 
@@ -287,6 +288,9 @@ public class MavenFinder extends AsyncDatabaseSearch {
         // 将导航记录合并到数据模型中
         this.mergeNavigation(listModel, list);
 
+        // 设置 more 按钮
+        listModel.setHasMore(this.context.getContributor(), result.getFoundNumber() > result.size());
+
         JBList<Object> jbList = this.context.getJBList();
         log.info("repaint " + jbList + ", size: " + jbList.getModel().getSize());
 
@@ -302,8 +306,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
         }
 
         // 设置广告信息
-        int size = (result == null) ? 0 : result.size();
-        String message = MavenFinderMessage.REMOTE_SEARCH_RESULT.fill(size);
+        String message = MavenFinderMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
         this.setAdvertiser(message, MavenFinderIcon.BOTTOM);
     }
 
@@ -353,7 +356,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
             return new ArrayList<MavenFinderNavigation>(0);
         }
 
-        java.util.List<MavenArtifact> artifacts = result.getArtifacts();
+        java.util.List<MavenArtifact> artifacts = result.getList();
         int size = artifacts.size();
         java.util.List<MavenFinderNavigation> list = new ArrayList<MavenFinderNavigation>(size);
         for (MavenArtifact artifact : artifacts) {
@@ -373,7 +376,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
             if (artifact.isUnfold()) {
                 if (exists) {
                     item.setIcon(MavenFinderIcon.LEFT_UNFOLD);
-                    for (MavenArtifact version : artifactList.getArtifacts()) {
+                    for (MavenArtifact version : artifactList.getList()) {
                         MavenFinderNavigationItem navigation = new MavenFinderNavigationItem(version);
                         if (this.getLocalMavenRepository().exists(version)) {
                             navigation.setIcon(MavenFinderIcon.RIGHT_LOCAL);

@@ -8,6 +8,7 @@ import javax.swing.*;
 
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
 import cn.org.expect.util.Ensure;
+import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.components.JBList;
 
@@ -34,7 +35,8 @@ public class MavenFinderPopupMenu {
         popupMenu.add(clearAll);
 
         MavenFinderContext context = this.mavenFinder.getContext();
-        JBList<Object> jbList = context.getJBList();
+        JBList<Object> JBList = context.getJBList();
+        SearchListModel searchListModel = context.getJBListModel();
 
         // 添加菜单项的操作
         copyMaven.addActionListener(new ActionListener() {
@@ -85,7 +87,7 @@ public class MavenFinderPopupMenu {
 
         clearCache.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String pattern = context.getSearchEverywhereUI().getSearchField().getText();
+                String pattern = context.getSearchPattern();
                 mavenFinder.getDatabase().delete(pattern);
                 mavenFinder.asyncSearch(MavenFinderPattern.parse(pattern));
                 mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), "正在重新加载数据", null);
@@ -100,18 +102,27 @@ public class MavenFinderPopupMenu {
         });
 
         // 监听鼠标事件
-        jbList.addMouseListener(new MouseListener() {
+        JBList.addMouseListener(new MouseListener() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) { // 左键点击
-                    int selectedIndex = jbList.getSelectedIndex();
-                    Object selectedObject = jbList.getModel().getElementAt(selectedIndex);
+                    int selectedIndex = JBList.getSelectedIndex();
+                    int size = searchListModel.getSize();
+
+                    // 点击 more 按钮
+                    if (selectedIndex == -1) {
+                        mavenFinder.getSearchPattern().search(mavenFinder, context.getSearchPattern());
+                        return;
+                    }
+
+                    Object selectedObject = searchListModel.getElementAt(selectedIndex);
                     if (selectedObject instanceof MavenFinderNavigationItem) {
                         context.setSelectItem((MavenFinderNavigationItem) selectedObject);
-                        int x = jbList.getX() + 30;
-                        int y = jbList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
-                        popupMenu.show(jbList, x, y); // 在鼠标位置显示弹出菜单
+                        int x = JBList.getX() + 30;
+                        int y = JBList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
+                        popupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
+                        return;
                     }
                 }
 

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifact;
-import cn.org.expect.intellijidea.plugin.maven.impl.JsonResultImpl;
+import cn.org.expect.intellijidea.plugin.maven.MavenArtifactSet;
 import cn.org.expect.intellijidea.plugin.maven.impl.MavenArtifactImpl;
-import cn.org.expect.intellijidea.plugin.maven.search.JsonResult;
+import cn.org.expect.intellijidea.plugin.maven.impl.MavenArtifactSetImpl;
 import com.intellij.openapi.diagnostic.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -27,7 +27,7 @@ public class PatternResultAnalysis {
         return new MavenArtifactImpl(groupId, artifactId, version, packaging, timestamp, -1);
     }
 
-    public JsonResult parse(String responseBody) {
+    public MavenArtifactSet parse(String responseBody) {
         JSONObject json = new JSONObject(responseBody);
         JSONObject response = json.getJSONObject("response");
         int numFound = response.getInt("numFound"); // 总记录数
@@ -41,6 +41,6 @@ public class PatternResultAnalysis {
             MavenArtifact item = this.build(doc);
             list.add(item);
         }
-        return new JsonResultImpl(numFound, start, list);
+        return new MavenArtifactSetImpl(list, start + list.size() + 1, numFound);
     }
 }

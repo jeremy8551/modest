@@ -1,13 +1,10 @@
 package cn.org.expect.intellijidea.plugin.maven.db;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import cn.org.expect.intellijidea.plugin.maven.MavenArtifact;
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifactSet;
-import cn.org.expect.intellijidea.plugin.maven.impl.MavenArtifactArrayList;
 
 public class MavenArtifactDatabase {
 
@@ -26,18 +23,16 @@ public class MavenArtifactDatabase {
         this.extraMap = new ConcurrentHashMap<String, Map<String, MavenArtifactSet>>();
     }
 
-    public MavenArtifactSet insert(String pattern, List<MavenArtifact> list) {
-        MavenArtifactSet set = new MavenArtifactArrayList(list);
-        this.patternMap.put(pattern, set);
-        return set;
+    public MavenArtifactSet insert(String pattern, MavenArtifactSet resultSet) {
+        this.patternMap.put(pattern, resultSet);
+        return resultSet;
     }
 
     public MavenArtifactSet select(String pattern) {
         return this.patternMap.get(pattern);
     }
 
-    public MavenArtifactSet insert(String groupId, String artifactId, List<MavenArtifact> list) {
-        MavenArtifactSet set = new MavenArtifactArrayList(list);
+    public MavenArtifactSet insert(String groupId, String artifactId, MavenArtifactSet set) {
         Map<String, MavenArtifactSet> group = this.extraMap.computeIfAbsent(groupId, k -> new HashMap<String, MavenArtifactSet>());
         group.put(artifactId, set);
         return set;

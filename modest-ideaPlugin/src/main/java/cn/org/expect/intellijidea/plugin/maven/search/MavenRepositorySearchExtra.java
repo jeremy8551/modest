@@ -1,8 +1,5 @@
 package cn.org.expect.intellijidea.plugin.maven.search;
 
-import java.util.List;
-
-import cn.org.expect.intellijidea.plugin.maven.MavenArtifact;
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifactSet;
 import cn.org.expect.intellijidea.plugin.maven.MavenFinder;
 import cn.org.expect.intellijidea.plugin.maven.MavenFinderIcon;
@@ -72,22 +69,16 @@ public class MavenRepositorySearchExtra extends MavenRepositorySearch<MavenRepos
         log.warn("search groupId: " + groupId + ", artifactId: " + artifactId);
         MavenArtifactSet result = database.select(groupId, artifactId);
         if (result == null) {
-            List<MavenArtifact> list = null;
             try {
-                list = this.getRepository().query(groupId, artifactId);
+                MavenArtifactSet list = this.getRepository().query(groupId, artifactId);
+                result = database.insert(groupId, artifactId, list);
             } catch (Exception e) {
                 log.error(e.getLocalizedMessage(), e);
-            }
-
-            if (list != null) {
-                result = database.insert(groupId, artifactId, list);
             }
         }
 
         if (result == null) {
             log.warn("search groupId: " + groupId + ", artifactId: " + artifactId + ", result is null!");
-        } else {
-            log.warn("search groupId: " + groupId + ", artifactId: " + artifactId + ", Size: " + result.getArtifacts().size() + ", List: " + StringUtils.toString(result.getArtifacts()));
         }
 
         return result;

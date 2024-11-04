@@ -1,7 +1,5 @@
 package cn.org.expect.intellijidea.plugin.maven;
 
-import java.util.List;
-
 import cn.org.expect.concurrent.Terminate;
 
 /**
@@ -20,10 +18,11 @@ public interface MavenRepository extends Terminate {
      * 模糊查询
      *
      * @param pattern 字符串
+     * @param start   起始记录位置，从1开始
      * @return 查询结果
      * @throws Exception 模糊查询发生错误
      */
-    List<MavenArtifact> query(String pattern) throws Exception;
+    MavenArtifactSet query(String pattern, int start) throws Exception;
 
     /**
      * 精确查询
@@ -33,7 +32,7 @@ public interface MavenRepository extends Terminate {
      * @return 查询结果
      * @throws Exception 精确查询发生错误
      */
-    List<MavenArtifact> query(String groupId, String artifactId) throws Exception;
+    MavenArtifactSet query(String groupId, String artifactId) throws Exception;
 
     /**
      * 终止查询

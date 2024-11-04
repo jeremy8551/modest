@@ -12,7 +12,7 @@ public class MavenFinderMessage {
 
     public final static MessageFormatter FAIL_SEND_REQUEST = new MessageFormatter("Failed to send query request to Maven Repository!");
 
-    public final static MessageFormatter REMOTE_SEARCH_RESULT = new MessageFormatter("Found {} matching Maven Artifact!");
+    public final static MessageFormatter REMOTE_SEARCH_RESULT = new MessageFormatter("Found: {}, Display: {}");
 
     public final static MessageFormatter NOTHING_FOUND = new MessageFormatter("Nothing found.");
 

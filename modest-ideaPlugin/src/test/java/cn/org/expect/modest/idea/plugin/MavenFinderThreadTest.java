@@ -10,11 +10,11 @@ public class MavenFinderThreadTest {
     @Test
     public void test() throws IOException {
         CentralRepository finder = new CentralRepository();
-        finder.query("icu.etl");
+        finder.query("icu.etl", 1);
     }
 
     public static void main(String[] args) throws IOException {
         CentralRepository finder = new CentralRepository();
-        finder.query("icu.etl");
+        finder.query("icu.etl", 1);
     }
 }

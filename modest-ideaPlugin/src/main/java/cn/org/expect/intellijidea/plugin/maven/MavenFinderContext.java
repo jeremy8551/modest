@@ -25,6 +25,9 @@ public class MavenFinderContext {
     /** 连续输入文本的间隔时间 */
     private long inputIntervalTime;
 
+    /** 最后一次执行模糊查询的文本 */
+    private volatile String searchPattern;
+
     /** IDea 编辑器中选中的文本 */
     private volatile String editorSelectText;
 
@@ -75,6 +78,24 @@ public class MavenFinderContext {
         this.contributor = contributor;
     }
 
+    /**
+     * 返回最后一次模糊查询的文本
+     *
+     * @return 文本信息
+     */
+    public String getSearchPattern() {
+        return searchPattern;
+    }
+
+    /**
+     * 设置最后一次模糊查询的文本
+     *
+     * @param searchPattern 文本信息
+     */
+    public void setSearchPattern(String searchPattern) {
+        this.searchPattern = searchPattern;
+    }
+
     public long getInputIntervalTime() {
         return this.inputIntervalTime;
     }
@@ -85,7 +106,7 @@ public class MavenFinderContext {
 
     public synchronized void setPatternSearchResult(MavenArtifactSet result) {
         Ensure.notNull(result);
-        List<MavenArtifact> list = result.getArtifacts();
+        List<MavenArtifact> list = result.getList();
         for (MavenArtifact artifact : list) {
             artifact.setFold(true);
         }

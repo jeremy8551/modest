@@ -22,7 +22,7 @@
         <maven.compiler.target>5</maven.compiler.target>
         <maven.plugin.version>3.5.2</maven.plugin.version> <!-- Maven插件版本 -->
         <skipTests>false</skipTests> <!-- true表示不执行单元测试及代码验证等插件 -->
-        <manifold.version>2024.1.34</manifold.version>
+        <manifold.version>2024.1.35</manifold.version>
     </properties>
 
     <!-- 子模块 -->

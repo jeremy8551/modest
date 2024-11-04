@@ -1,13 +1,13 @@
 package cn.org.expect.intellijidea.plugin.maven.central;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifact;
+import cn.org.expect.intellijidea.plugin.maven.MavenArtifactSet;
 import cn.org.expect.intellijidea.plugin.maven.MavenRepository;
-import cn.org.expect.intellijidea.plugin.maven.search.JsonResult;
+import cn.org.expect.intellijidea.plugin.maven.impl.MavenArtifactSetImpl;
 import com.intellij.openapi.diagnostic.Logger;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -40,40 +40,37 @@ public class CentralRepository implements MavenRepository {
     }
 
     @Override
-    public List<MavenArtifact> query(String pattern) {
+    public MavenArtifactSet query(String pattern, int start) {
         this.notTerminate = true;
-        String url = "https://search.maven.org/solrsearch/select?q=" + pattern + "&rows=200&wt=json"; // 构建请求 URL
-        List<MavenArtifact> list = this.send(url, this.pattern);
-        list.sort(PATTERN_RESULT_COMPARATOR.reversed());
-        return list;
+        String url = "https://search.maven.org/solrsearch/select?q=" + pattern + "&rows=200&wt=json&start=" + (start - 1); // 构建请求 URL
+        String responseBody = this.sendRequest(url);
+        MavenArtifactSet result = this.pattern.parse(responseBody);
+        result.getList().sort(PATTERN_RESULT_COMPARATOR.reversed());
+        return result;
     }
 
     @Override
-    public List<MavenArtifact> query(String groupId, String artifactId) {
+    public MavenArtifactSet query(String groupId, String artifactId) {
         this.notTerminate = true;
         String url = "https://search.maven.org/solrsearch/select?q=g:" + groupId + "+AND+a:" + artifactId + "&core=gav&rows=200&wt=json"; // 构建请求 URL
-        List<MavenArtifact> list = this.send(url, this.extra);
-        list.sort(EXTRA_RESULT_COMPARATOR);
-        return list;
-    }
-
-    public List<MavenArtifact> send(String url, PatternResultAnalysis analysis) {
         String responseBody = this.sendRequest(url);
-        JsonResult result = analysis.parse(responseBody);
+        MavenArtifactSet result = this.extra.parse(responseBody);
+        List<MavenArtifact> list = result.getList();
 
-        List<MavenArtifact> list = new ArrayList<MavenArtifact>(10);
-        list.addAll(result.getList());
-
-        if (result.getNumFound() > result.getList().size()) {
-            int begin = result.getStart() + result.getList().size(); // 起始位置
+        int start = result.size(); // 起始位置
+        if (result.getFoundNumber() > start) {
             do {
-                responseBody = this.sendRequest(url + "&start=" + begin);
-                result = analysis.parse(responseBody);
-                begin += result.getList().size();
-                list.addAll(result.getList());
-            } while (this.notTerminate && result.getNumFound() - begin > 0);
+                responseBody = this.sendRequest(url + "&start=" + start);
+                MavenArtifactSet next = this.extra.parse(responseBody);
+                list.addAll(next.getList());
+                start += next.size();
+            } while (this.notTerminate && result.getFoundNumber() > start);
+            list.sort(EXTRA_RESULT_COMPARATOR);
+            return new MavenArtifactSetImpl(list, 1, result.getFoundNumber());
+        } else {
+            list.sort(EXTRA_RESULT_COMPARATOR);
+            return result;
         }
-        return list;
     }
 
     public String sendRequest(String url) {
