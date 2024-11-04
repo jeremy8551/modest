@@ -5,7 +5,6 @@ import javax.swing.*;
 
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigation;
 import com.intellij.ide.actions.SearchEverywherePsiRenderer;
-import com.intellij.ui.components.JBList;
 import com.intellij.util.TextWithIcon;
 
 public class MavenFinderListCellRenderer extends SearchEverywherePsiRenderer {
@@ -18,9 +17,6 @@ public class MavenFinderListCellRenderer extends SearchEverywherePsiRenderer {
     }
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        if (list instanceof JBList) {
-            this.mavenFinder.getContext().setJBList((JBList<Object>) list);
-        }
         return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
     }
 
