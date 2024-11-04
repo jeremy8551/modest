@@ -199,10 +199,6 @@ public class MavenFinder extends AsyncDatabaseSearch {
      * @param text 文本信息
      */
     public void setSearchFieldText(String text) {
-        if (this.notMavenFinderTab()) {
-            return;
-        }
-
         context.getSearchEverywhereUI().getSearchField().setText(text);
     }
 
