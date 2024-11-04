@@ -426,7 +426,8 @@ public class MavenFinder extends AsyncDatabaseSearch {
             if (info.getElement() instanceof MavenFinderBlankItem) {
                 try {
                     listModel.removeElement(info.getElement(), info.getContributor());
-                } catch (Throwable ignored) { // 如果不能删除，则将导航记录清空，排序时放到最后
+                } catch (Throwable e) { // 如果不能删除，则将导航记录清空，排序时放到最后
+                    log.error(e.getLocalizedMessage(), e);
                 }
             }
         }
@@ -458,6 +459,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
                     try {
                         listModel.removeElement(item, info.getContributor());
                     } catch (Throwable e) { // 如果不能删除导航记录，则将导航记录清空
+                        log.error(e.getLocalizedMessage(), e);
                         element.setPriority(Integer.MIN_VALUE); // 将权重设置为最小，比 More 元素（Priority=0）小
                         element.setElement(null);
                     }
