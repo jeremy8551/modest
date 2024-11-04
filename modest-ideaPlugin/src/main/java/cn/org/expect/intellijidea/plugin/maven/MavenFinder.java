@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import javax.swing.*;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
 
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderBlankItem;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderFoundElementInfo;
@@ -117,22 +115,6 @@ public class MavenFinder extends AsyncDatabaseSearch {
         try {
             SearchListModel listModel = JavaDialectFactory.get().getField(ui, "myListModel");
             context.setJBListModel(listModel);
-
-            listModel.addListDataListener(new ListDataListener() {
-
-                @Override
-                public void intervalAdded(ListDataEvent e) {
-                }
-
-                @Override
-                public void intervalRemoved(ListDataEvent e) {
-//                    System.out.println(e.getType() + ", " + e.getSource().getClass().getName() + ", " + e.getIndex0() + " - " + e.getIndex1());
-                }
-
-                @Override
-                public void contentsChanged(ListDataEvent e) {
-                }
-            });
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         }
@@ -394,10 +376,6 @@ public class MavenFinder extends AsyncDatabaseSearch {
      * @return 导航记录的集合
      */
     protected java.util.List<MavenFinderNavigation> toNavigationList(MavenSearchResult result) {
-        if (result == null) {
-            return new ArrayList<MavenFinderNavigation>(0);
-        }
-
         java.util.List<MavenArtifact> list = result.getList();
         int size = list.size();
         java.util.List<MavenFinderNavigation> newList = new ArrayList<MavenFinderNavigation>(size);

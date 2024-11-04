@@ -74,17 +74,19 @@ public class MavenRepositorySearch extends AbstractMavenRepositorySearch<Object>
                     MavenFinder mavenFinder = element.getMavenFinder();
 
                     this.searching = element;
-                    try {
-                        if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
-                            MavenSearchResult result = this.searchExtra(mavenFinder.getDatabase(), groupId, artifactId);
-                            if (result != null) {
-                                mavenFinder.repaint();
-                            }
+                    if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
+                        MavenSearchResult result;
+                        try {
+                            result = this.searchExtra(mavenFinder.getDatabase(), groupId, artifactId);
+                        } finally {
+                            this.searching = null;
                         }
-                        continue;
-                    } finally {
-                        this.searching = null;
+
+                        if (result != null) {
+                            mavenFinder.repaint();
+                        }
                     }
+                    continue;
                 }
 
                 // more 按钮的模糊查询操作
