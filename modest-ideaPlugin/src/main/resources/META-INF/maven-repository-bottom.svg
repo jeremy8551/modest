@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 20 20">
+    <!-- <circle cx="10" cy="10" r="9" fill="#fffdfc" /> -->
     <circle cx="10" cy="10" r="9" stroke="orange" stroke-width="1" fill="none" />
     <text x="10" y="11" font-size="12" fill="orange" text-anchor="middle" font-family="Arial" dy=".3em">i</text>
 </svg>
