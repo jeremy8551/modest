@@ -5,7 +5,7 @@ import java.awt.event.MouseListener;
 import javax.swing.*;
 
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
-import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationList;
+import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationCatalog;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.diagnostic.Logger;
@@ -107,7 +107,7 @@ public class MavenFinderPopupMenu {
                     }
 
                     Object selectedObject = listModel.getElementAt(selectedIndex);
-                    if (selectedObject instanceof MavenFinderNavigationList) {
+                    if (selectedObject instanceof MavenFinderNavigationCatalog) {
                         if (itemPopupMenu.isVisible()) {
                             itemPopupMenu.setVisible(false);
                         }
@@ -131,7 +131,7 @@ public class MavenFinderPopupMenu {
                     }
 
                     Object selectedObject = listModel.getElementAt(selectedIndex);
-                    if (selectedObject instanceof MavenFinderNavigationList) {
+                    if (selectedObject instanceof MavenFinderNavigationCatalog) {
                         int x = JBList.getX() + 30;
                         int y = JBList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
                         itemPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单

@@ -10,8 +10,8 @@ import javax.swing.*;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderBlankItem;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderFoundElementInfo;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigation;
+import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationCatalog;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
-import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationList;
 import cn.org.expect.intellijidea.plugin.maven.search.AsyncDatabaseSearch;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.util.ClassUtils;
@@ -278,6 +278,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
             return;
         }
 
+        JBList<Object> JBList = this.context.getJBList();
         SearchListModel listModel = this.context.getJBListModel();
 
 //        if (listModel.getClass().getSimpleName().equals("MixedSearchListModel")) {
@@ -297,21 +298,19 @@ public class MavenFinder extends AsyncDatabaseSearch {
         // 设置 more 按钮
         listModel.setHasMore(this.context.getContributor(), result.getFoundNumber() > result.size());
 
-        JBList<Object> jbList = this.context.getJBList();
-        log.info("repaint " + jbList + ", size: " + jbList.getModel().getSize());
-
         // 选中记录
-        this.setSelection(jbList, listModel);
+        this.setSelection(JBList, listModel);
 
         // 渲染 JBList
         try {
-            jbList.repaint();
-            jbList.revalidate();
+            JBList.repaint();
+            JBList.revalidate();
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         }
 
         // 设置广告信息
+        log.warn("repaint: " + JBList.getClass().getSimpleName() + ", size: " + listModel.getSize());
         String message = MavenFinderMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
         this.setAdvertiser(message, MavenFinderIcon.BOTTOM);
     }
@@ -323,13 +322,13 @@ public class MavenFinder extends AsyncDatabaseSearch {
      * @param listModel 组件的数据模型
      */
     protected void setSelection(JBList<Object> jbList, SearchListModel listModel) {
-        MavenFinderNavigationList selectedItem = this.context.getSelectList();
+        MavenFinderNavigationCatalog selectedItem = this.context.getSelectCatalog();
         if (selectedItem != null) {
             int selectedIndex = -1;
             for (int i = listModel.getSize() - 1; i >= 0; i--) {
                 Object object = listModel.getElementAt(i);
-                if (object instanceof MavenFinderNavigationList) {
-                    MavenFinderNavigationList item = (MavenFinderNavigationList) object;
+                if (object instanceof MavenFinderNavigationCatalog) {
+                    MavenFinderNavigationCatalog item = (MavenFinderNavigationCatalog) object;
                     if (selectedItem.getArtifact().equals(item.getArtifact()) && item.getArtifact().isUnfold()) {
                         selectedIndex = i;
 
@@ -362,42 +361,41 @@ public class MavenFinder extends AsyncDatabaseSearch {
             return new ArrayList<MavenFinderNavigation>(0);
         }
 
-        java.util.List<MavenArtifact> artifacts = result.getList();
-        int size = artifacts.size();
-        java.util.List<MavenFinderNavigation> list = new ArrayList<MavenFinderNavigation>(size);
-        for (MavenArtifact artifact : artifacts) {
-            MavenFinderNavigationList item = new MavenFinderNavigationList(artifact);
-            list.add(item);
+        java.util.List<MavenArtifact> list = result.getList();
+        int size = list.size();
+        java.util.List<MavenFinderNavigation> newList = new ArrayList<MavenFinderNavigation>(size);
+        for (MavenArtifact artifact : list) {
+            MavenFinderNavigationCatalog catalog = new MavenFinderNavigationCatalog(artifact);
+            newList.add(catalog);
 
             String groupId = artifact.getGroupId();
             String artifactId = artifact.getArtifactId();
 
-            MavenSearchResult artifactList = this.getDatabase().select(groupId, artifactId);
-            boolean exists = artifactList != null;
-            if (exists) {
-                item.setIcon(MavenFinderIcon.LEFT_HAS_QUERY);
+            MavenSearchResult versionResult = this.getDatabase().select(groupId, artifactId);
+            if (versionResult != null) {
+                catalog.setIcon(MavenFinderIcon.LEFT_HAS_QUERY);
             }
 
             // 如果当前是展开状态
             if (artifact.isUnfold()) {
-                if (exists) {
-                    item.setIcon(MavenFinderIcon.LEFT_UNFOLD);
-                    for (MavenArtifact version : artifactList.getList()) {
+                if (versionResult != null) {
+                    catalog.setIcon(MavenFinderIcon.LEFT_UNFOLD);
+                    for (MavenArtifact version : versionResult.getList()) {
                         MavenFinderNavigationItem navigation = new MavenFinderNavigationItem(version);
                         if (this.getLocalMavenRepository().exists(version)) {
                             navigation.setIcon(MavenFinderIcon.RIGHT_LOCAL);
                         }
-                        list.add(navigation);
+                        newList.add(navigation);
                     }
                 }
             }
 
             // 判断是否正在查询详细信息
             if (this.getSearch().isSearching(groupId, artifactId)) {
-                item.setIcon(MavenFinderIcon.LEFT_WAITING);
+                catalog.setIcon(MavenFinderIcon.LEFT_WAITING);
             }
         }
-        return list;
+        return newList;
     }
 
     /**

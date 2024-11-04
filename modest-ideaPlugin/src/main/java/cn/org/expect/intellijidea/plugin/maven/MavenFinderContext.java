@@ -3,8 +3,8 @@ package cn.org.expect.intellijidea.plugin.maven;
 import java.util.List;
 import javax.swing.*;
 
+import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationCatalog;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
-import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationList;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
@@ -32,7 +32,7 @@ public class MavenFinderContext {
     private volatile String editorSelectText;
 
     /** 选中的导航记录 */
-    private volatile MavenFinderNavigationList selectNavigationList;
+    private volatile MavenFinderNavigationCatalog selectNavigationList;
 
     /** 选中的版本列表记录 */
     private volatile MavenFinderNavigationItem selectNavigationItem;
@@ -145,7 +145,7 @@ public class MavenFinderContext {
      *
      * @return 导航栏
      */
-    public MavenFinderNavigationList getSelectList() {
+    public MavenFinderNavigationCatalog getSelectCatalog() {
         return this.selectNavigationList;
     }
 
@@ -154,7 +154,7 @@ public class MavenFinderContext {
      *
      * @param JBListSelectItem 导航栏
      */
-    public void setSelectList(MavenFinderNavigationList JBListSelectItem) {
+    public void setSelectCatalog(MavenFinderNavigationCatalog JBListSelectItem) {
         this.selectNavigationList = JBListSelectItem;
     }
 

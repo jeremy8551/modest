@@ -34,7 +34,7 @@ public class MavenRepositoryInputSearch extends AbstractMavenRepositorySearch<Pa
         if (StringUtils.isNotBlank(pattern)) {
             String message = MavenFinderMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern));
             mavenFinder.setAdvertiser(message, MavenFinderIcon.BOTTOM_WAITING);
-            mavenFinder.getContext().setSelectList(null);
+            mavenFinder.getContext().setSelectCatalog(null);
             this.add(new PatternElement(mavenFinder, pattern));
         }
     }

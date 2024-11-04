@@ -3,7 +3,7 @@ package cn.org.expect.intellijidea.plugin.maven;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationList;
+import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationCatalog;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
@@ -70,11 +70,11 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
         // 禁用来源的处理逻辑：自动打开 url
         // super.processSelectedItem(selectedObject, modifiers, searchText);
 
-        if (selectedObject instanceof MavenFinderNavigationList) {
-            MavenFinderNavigationList item = (MavenFinderNavigationList) selectedObject;
-            this.mavenFinder.getContext().setSelectList(item); // 保存选择记录
+        if (selectedObject instanceof MavenFinderNavigationCatalog) {
+            MavenFinderNavigationCatalog catalog = (MavenFinderNavigationCatalog) selectedObject;
+            this.mavenFinder.getContext().setSelectCatalog(catalog); // 保存选择记录
 
-            MavenArtifact artifact = item.getArtifact();
+            MavenArtifact artifact = catalog.getArtifact();
             log.warn("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
 
             // 折叠或展开
@@ -83,7 +83,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
                 if (this.mavenFinder.getDatabase().select(groupId, artifactId) == null) {
-                    item.setIcon(MavenFinderIcon.LEFT_WAITING); // 更改为：等待图标
+                    catalog.setIcon(MavenFinderIcon.LEFT_WAITING); // 更改为：等待图标
                     this.mavenFinder.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
                 } else {
                     this.mavenFinder.repaint();

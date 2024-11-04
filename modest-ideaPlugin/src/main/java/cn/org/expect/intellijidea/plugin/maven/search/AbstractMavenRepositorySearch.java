@@ -1,6 +1,7 @@
 package cn.org.expect.intellijidea.plugin.maven.search;
 
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedTransferQueue;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenRepository;
 import cn.org.expect.util.Ensure;
@@ -16,13 +17,16 @@ public class AbstractMavenRepositorySearch<T> extends Thread {
     protected volatile boolean notTerminate;
 
     /** 远程调用组件 */
-    protected final LinkedBlockingQueue<T> queue;
+    protected final BlockingQueue<T> queue;
+
+    /** 正在搜索的任务 */
+    protected volatile ExtraElement searching;
 
     /**
      * 构造方法
      */
     public AbstractMavenRepositorySearch() {
-        this.queue = new LinkedBlockingQueue<T>(10);
+        this.queue = new LinkedTransferQueue<>();
         this.notTerminate = true;
     }
 

@@ -73,13 +73,18 @@ public class MavenRepositorySearch extends AbstractMavenRepositorySearch<Object>
                     String artifactId = element.getArtifactId();
                     MavenFinder mavenFinder = element.getMavenFinder();
 
-                    if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
-                        MavenSearchResult result = this.searchExtra(mavenFinder.getDatabase(), groupId, artifactId);
-                        if (result != null) {
-                            mavenFinder.repaint();
+                    this.searching = element;
+                    try {
+                        if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
+                            MavenSearchResult result = this.searchExtra(mavenFinder.getDatabase(), groupId, artifactId);
+                            if (result != null) {
+                                mavenFinder.repaint();
+                            }
                         }
+                        continue;
+                    } finally {
+                        this.searching = null;
                     }
-                    continue;
                 }
 
                 // more 按钮的模糊查询操作
@@ -88,7 +93,7 @@ public class MavenRepositorySearch extends AbstractMavenRepositorySearch<Object>
                     MavenFinder mavenFinder = element.getMavenFinder();
                     String pattern = element.getPattern();
                     MavenArtifactDatabase database = mavenFinder.getDatabase();
-                    
+
                     MavenSearchResult result = database.select(pattern);
                     if (result != null && result.getFoundNumber() > result.size()) { // 还有未加载的数据
                         int start = result.getStart();
@@ -154,6 +159,8 @@ public class MavenRepositorySearch extends AbstractMavenRepositorySearch<Object>
                 }
             }
         }
-        return false;
+
+        ExtraElement element = this.searching;
+        return element != null && groupId.equals(element.getGroupId()) && artifactId.equals(element.getArtifactId());
     }
 }
