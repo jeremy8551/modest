@@ -35,7 +35,7 @@ public class MavenFinderThread extends Thread {
         // 复制编辑器中选中的内容到搜索栏
         String editorSelectText = context.getEditorSelectText();
         if (StringUtils.isNotBlank(editorSelectText)) {
-            context.getSearchEverywhereUI().getSearchField().setText(MavenFinderPattern.parse(editorSelectText)); // 更新搜索内容
+            this.mavenFinder.setSearchFieldText(MavenFinderPattern.parse(editorSelectText));
 //                try {
 //                    if (MavenFinderPattern.isXML(editorSelectText)) {
 //                        ideaSearchUI.switchToTab(contributor.getSearchProviderId()); // 选择标签页

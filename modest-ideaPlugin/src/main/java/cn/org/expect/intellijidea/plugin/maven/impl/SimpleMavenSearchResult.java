@@ -1,5 +1,6 @@
 package cn.org.expect.intellijidea.plugin.maven.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifact;
@@ -15,6 +16,10 @@ public class SimpleMavenSearchResult implements MavenSearchResult {
 
     /** 总记录数 */
     private final int totalRecord;
+
+    public SimpleMavenSearchResult() {
+        this(new ArrayList<>(0), 0, 0);
+    }
 
     public SimpleMavenSearchResult(List<MavenArtifact> list, int start, int totalRecord) {
         this.list = Ensure.notNull(list);

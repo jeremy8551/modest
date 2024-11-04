@@ -4,6 +4,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.*;
 
+import cn.org.expect.intellijidea.plugin.maven.impl.SimpleMavenSearchResult;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationCatalog;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
 import cn.org.expect.util.Ensure;
@@ -29,7 +30,7 @@ public class MavenFinderPopupMenu {
         listPopupMenu.add(copyGradle);
 
         JPopupMenu itemPopupMenu = new JPopupMenu();
-        JMenuItem clearCache = new JMenuItem("重新加载数据");
+        JMenuItem clearCache = new JMenuItem("重新查询");
         JMenuItem clearAll = new JMenuItem("清空全部缓存");
         itemPopupMenu.add(clearCache);
         itemPopupMenu.add(clearAll);
@@ -90,6 +91,10 @@ public class MavenFinderPopupMenu {
 
         clearAll.addActionListener(e -> {
             mavenFinder.getDatabase().clear();
+            mavenFinder.repaint(new SimpleMavenSearchResult()); // 刷新一个空结果
+            mavenFinder.setReminderText("");
+            mavenFinder.setAdvertiser("", null);
+            mavenFinder.setSearchFieldText("");
             mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), "已清空所有缓存", null);
         });
 
@@ -100,21 +105,15 @@ public class MavenFinderPopupMenu {
             public void mouseClicked(MouseEvent e) {
                 // 左键点击
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    // 点击 more 按钮
-                    if (JBList.getSelectedIndex() == -1) {
-                        log.warn("Click More button ..");
-                        mavenFinder.getSearch().searchMore(mavenFinder, context.getSearchPattern());
-                        return;
-                    }
 
                     // 根据点击位置，获得对应的导航记录
-                    int selectedIndex = JBList.locationToIndex(e.getPoint());
-                    if (selectedIndex == -1) {
+                    int index = JBList.locationToIndex(e.getPoint());
+                    if (index == -1) {
                         return;
                     }
 
                     // 点击目录
-                    Object selectedObject = listModel.getElementAt(selectedIndex);
+                    Object selectedObject = listModel.getElementAt(index);
                     if (selectedObject instanceof MavenFinderNavigationCatalog) {
                         if (itemPopupMenu.isVisible()) {
                             itemPopupMenu.setVisible(false);
@@ -126,7 +125,7 @@ public class MavenFinderPopupMenu {
                     if (selectedObject instanceof MavenFinderNavigationItem) {
                         context.setSelectItem((MavenFinderNavigationItem) selectedObject);
                         int x = JBList.getX() + 30;
-                        int y = JBList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
+                        int y = JBList.getCellBounds(0, index).height; // JList 中第一行到选中行之间的高度
                         listPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
                         return;
                     }
@@ -134,13 +133,13 @@ public class MavenFinderPopupMenu {
 
                 // 右键点击
                 if (e.getButton() == MouseEvent.BUTTON3) {
-                    int selectedIndex = JBList.locationToIndex(e.getPoint());
-                    if (selectedIndex == -1) {
+                    int index = JBList.locationToIndex(e.getPoint());
+                    if (index == -1) {
                         return;
                     }
 
                     // 点击目录
-                    Object selectedObject = listModel.getElementAt(selectedIndex);
+                    Object selectedObject = listModel.getElementAt(index);
                     if (selectedObject instanceof MavenFinderNavigationCatalog) {
                         itemPopupMenu.show(JBList, e.getX(), e.getY()); // 在鼠标位置显示弹出菜单
                         return;
@@ -158,6 +157,14 @@ public class MavenFinderPopupMenu {
 
             @Override
             public void mousePressed(MouseEvent e) {
+                int selectedIndex = JBList.getSelectedIndex();
+                if (selectedIndex != -1) {
+                    Object selectedObject = listModel.getElementAt(selectedIndex);
+                    if (selectedObject != null && selectedObject.getClass().equals(Object.class)) { // 点击 more 按钮
+                        log.warn("Click More Button: " + selectedObject.getClass().getName());
+                        mavenFinder.getSearch().searchMore(mavenFinder, context.getSearchPattern());
+                    }
+                }
             }
 
             @Override

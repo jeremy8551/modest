@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import javax.swing.*;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderBlankItem;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderFoundElementInfo;
@@ -115,6 +117,22 @@ public class MavenFinder extends AsyncDatabaseSearch {
         try {
             SearchListModel listModel = JavaDialectFactory.get().getField(ui, "myListModel");
             context.setJBListModel(listModel);
+
+            listModel.addListDataListener(new ListDataListener() {
+
+                @Override
+                public void intervalAdded(ListDataEvent e) {
+                }
+
+                @Override
+                public void intervalRemoved(ListDataEvent e) {
+//                    System.out.println(e.getType() + ", " + e.getSource().getClass().getName() + ", " + e.getIndex0() + " - " + e.getIndex1());
+                }
+
+                @Override
+                public void contentsChanged(ListDataEvent e) {
+                }
+            });
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         }
@@ -191,6 +209,19 @@ public class MavenFinder extends AsyncDatabaseSearch {
         // 如果搜索的标签页不是 MavenFinder，就不显示广告信息
         String selectedTabID = everywhereUI.getSelectedTabID();
         return !this.context.getContributor().getSearchProviderId().equals(selectedTabID);
+    }
+
+    /**
+     * 设置搜索输入框中的文本
+     *
+     * @param text 文本信息
+     */
+    public void setSearchFieldText(String text) {
+        if (this.notMavenFinderTab()) {
+            return;
+        }
+
+        context.getSearchEverywhereUI().getSearchField().setText(text);
     }
 
     /**
@@ -295,7 +326,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
 
         // 设置 more 按钮
         listModel.setHasMore(this.context.getContributor(), result.getFoundNumber() > result.size());
-//        listModel.freezeElements();
+        listModel.freezeElements();
 
         // 渲染 JBList
         try {
