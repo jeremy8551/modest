@@ -142,9 +142,7 @@ public class MavenFinderPopupMenu {
                     // 点击目录
                     Object selectedObject = listModel.getElementAt(selectedIndex);
                     if (selectedObject instanceof MavenFinderNavigationCatalog) {
-                        int x = JBList.getX() + 30;
-                        int y = JBList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
-                        itemPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
+                        itemPopupMenu.show(JBList, e.getX(), e.getY()); // 在鼠标位置显示弹出菜单
                         return;
                     }
 
