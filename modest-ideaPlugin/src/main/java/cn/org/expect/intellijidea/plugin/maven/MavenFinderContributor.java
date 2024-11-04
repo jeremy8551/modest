@@ -48,7 +48,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
     @Override
     public @NotNull ListCellRenderer<Object> getElementsRenderer() {
-        return new MavenFinderListCellRenderer(this);
+        return new MavenFinderListCellRenderer(this, this.mavenFinder);
     }
 
     /**

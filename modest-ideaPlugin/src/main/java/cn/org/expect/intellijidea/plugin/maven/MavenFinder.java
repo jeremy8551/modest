@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import javax.swing.*;
 
@@ -12,6 +13,7 @@ import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderFoundElemen
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigation;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationCatalog;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
+import cn.org.expect.intellijidea.plugin.maven.navigation.NavigationItemComparator;
 import cn.org.expect.intellijidea.plugin.maven.search.AsyncDatabaseSearch;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.util.ClassUtils;
@@ -280,14 +282,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
 
         JBList<Object> JBList = this.context.getJBList();
         SearchListModel listModel = this.context.getJBListModel();
-
-//        if (listModel.getClass().getSimpleName().equals("MixedSearchListModel")) {
-//            try {
-//                JavaDialectFactory.get().setField(listModel, "myElementsComparator", new NavigationItemComparator());
-//            } catch (Throwable e) {
-//                log.error(e.getLocalizedMessage(), e);
-//            }
-//        }
+        listModel.clearMoreItems(); // 一定要先删除 more 按钮
 
         // 将查询结果转为导航记录
         java.util.List<MavenFinderNavigation> list = this.toNavigationList(result);
@@ -295,11 +290,12 @@ public class MavenFinder extends AsyncDatabaseSearch {
         // 将导航记录合并到数据模型中
         this.mergeNavigation(listModel, list);
 
-        // 设置 more 按钮
-        listModel.setHasMore(this.context.getContributor(), result.getFoundNumber() > result.size());
-
         // 选中记录
         this.setSelection(JBList, listModel);
+
+        // 设置 more 按钮
+        listModel.setHasMore(this.context.getContributor(), result.getFoundNumber() > result.size());
+//        listModel.freezeElements();
 
         // 渲染 JBList
         try {
@@ -313,6 +309,16 @@ public class MavenFinder extends AsyncDatabaseSearch {
         log.warn("repaint: " + JBList.getClass().getSimpleName() + ", size: " + listModel.getSize());
         String message = MavenFinderMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
         this.setAdvertiser(message, MavenFinderIcon.BOTTOM);
+    }
+
+    private void updateComparator(SearchListModel listModel, Comparator comparator) {
+        if (listModel.getClass().getSimpleName().equals("MixedSearchListModel")) {
+            try {
+                JavaDialectFactory.get().setField(listModel, "myElementsComparator", comparator);
+            } catch (Throwable e) {
+                log.error(e.getLocalizedMessage(), e);
+            }
+        }
     }
 
     /**
@@ -459,10 +465,13 @@ public class MavenFinder extends AsyncDatabaseSearch {
                 newList.add(elementInfo);
             } while (it.hasNext());
 
+            this.updateComparator(listModel, new NavigationItemComparator());
             try {
                 listModel.addElements(newList);
             } catch (Throwable e) {
                 log.error(e.getLocalizedMessage(), e);
+            } finally {
+                this.updateComparator(listModel, SearchEverywhereFoundElementInfo.COMPARATOR.reversed());
             }
         }
     }

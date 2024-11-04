@@ -102,7 +102,7 @@ public class MavenFinderPopupMenu {
                 if (e.getButton() == MouseEvent.BUTTON1) {
                     // 点击 more 按钮
                     if (JBList.getSelectedIndex() == -1) {
-                        log.warn("Click more button ..");
+                        log.warn("Click More button ..");
                         mavenFinder.getSearch().searchMore(mavenFinder, context.getSearchPattern());
                         return;
                     }
