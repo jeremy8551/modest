@@ -145,6 +145,15 @@ public class MavenFinder extends AsyncDatabaseSearch {
     }
 
     /**
+     * 自动选择选项卡
+     */
+    public void switchToTab() {
+        AnActionEvent event = this.context.getActionEvent();
+        SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
+        manager.setSelectedTabID(this.context.getContributor().getSearchProviderId()); // 选择标签页
+    }
+
+    /**
      * 将参数文本信息复制到剪切板中
      *
      * @param text 文本信息
