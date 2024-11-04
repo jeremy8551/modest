@@ -4,8 +4,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import javax.swing.*;
 
-import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationCatalog;
+import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.diagnostic.Logger;
@@ -100,12 +100,20 @@ public class MavenFinderPopupMenu {
             public void mouseClicked(MouseEvent e) {
                 // 左键点击
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    int selectedIndex = JBList.locationToIndex(e.getPoint());
-                    if (selectedIndex == -1) { // 点击 more 按钮
+                    // 点击 more 按钮
+                    if (JBList.getSelectedIndex() == -1) {
+                        log.warn("Click more button ..");
                         mavenFinder.getSearch().searchMore(mavenFinder, context.getSearchPattern());
                         return;
                     }
 
+                    // 根据点击位置，获得对应的导航记录
+                    int selectedIndex = JBList.locationToIndex(e.getPoint());
+                    if (selectedIndex == -1) {
+                        return;
+                    }
+
+                    // 点击目录
                     Object selectedObject = listModel.getElementAt(selectedIndex);
                     if (selectedObject instanceof MavenFinderNavigationCatalog) {
                         if (itemPopupMenu.isVisible()) {
@@ -114,6 +122,7 @@ public class MavenFinderPopupMenu {
                         return;
                     }
 
+                    // 点击版本
                     if (selectedObject instanceof MavenFinderNavigationItem) {
                         context.setSelectItem((MavenFinderNavigationItem) selectedObject);
                         int x = JBList.getX() + 30;
@@ -130,6 +139,7 @@ public class MavenFinderPopupMenu {
                         return;
                     }
 
+                    // 点击目录
                     Object selectedObject = listModel.getElementAt(selectedIndex);
                     if (selectedObject instanceof MavenFinderNavigationCatalog) {
                         int x = JBList.getX() + 30;
@@ -138,6 +148,7 @@ public class MavenFinderPopupMenu {
                         return;
                     }
 
+                    // 点击版本
                     if (selectedObject instanceof MavenFinderNavigationItem) {
                         if (listPopupMenu.isVisible()) {
                             listPopupMenu.setVisible(false);
