@@ -37,13 +37,6 @@ public class MavenFinderThread extends Thread {
         String editorSelectText = context.getEditorSelectText();
         if (StringUtils.isNotBlank(editorSelectText)) {
             this.mavenFinder.setSearchFieldText(MavenFinderPattern.parse(editorSelectText));
-            try {
-                if (MavenFinderPattern.isXML(editorSelectText)) {
-                    mavenFinder.switchToTab();
-                }
-            } catch (Exception e) {
-                log.error(e.getLocalizedMessage(), e);
-            }
         }
 
         log.warn(MavenFinderMessage.DETECTED_IDEA_UI_COMPONENT.fill(this.getName()));
