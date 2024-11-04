@@ -191,7 +191,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
     }
 
     /**
-     * 更新 SearchEverywhereUI 最下方广告栏中的信息
+     * 更新搜索结果下方：广告栏中的信息
      *
      * @param message 文本信息
      * @param icon    图标

@@ -34,6 +34,7 @@ public class MavenFinderPopupMenu {
         popupMenu.add(clearAll);
 
         MavenFinderContext context = this.mavenFinder.getContext();
+        JBList<Object> jbList = context.getJBList();
 
         // 添加菜单项的操作
         copyMaven.addActionListener(new ActionListener() {
@@ -99,18 +100,25 @@ public class MavenFinderPopupMenu {
         });
 
         // 监听鼠标事件
-        JBList<Object> jbList = context.getJBList();
         jbList.addMouseListener(new MouseListener() {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                int selectedIndex = jbList.getSelectedIndex();
-                Object selectedObject = jbList.getModel().getElementAt(selectedIndex);
-                if (selectedObject instanceof MavenFinderNavigationItem) {
-                    context.setSelectItem((MavenFinderNavigationItem) selectedObject);
-                    int x = jbList.getX() + 30;
-                    int y = jbList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
-                    popupMenu.show(jbList, x, y); // 在鼠标位置显示弹出菜单
+                if (e.getButton() == MouseEvent.BUTTON1) { // 左键点击
+                    int selectedIndex = jbList.getSelectedIndex();
+                    Object selectedObject = jbList.getModel().getElementAt(selectedIndex);
+                    if (selectedObject instanceof MavenFinderNavigationItem) {
+                        context.setSelectItem((MavenFinderNavigationItem) selectedObject);
+                        int x = jbList.getX() + 30;
+                        int y = jbList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
+                        popupMenu.show(jbList, x, y); // 在鼠标位置显示弹出菜单
+                    }
+                }
+
+                if (e.getButton() == MouseEvent.BUTTON3) { // 右键点击
+                    if (popupMenu.isVisible()) {
+                        popupMenu.setVisible(false);
+                    }
                 }
             }
 

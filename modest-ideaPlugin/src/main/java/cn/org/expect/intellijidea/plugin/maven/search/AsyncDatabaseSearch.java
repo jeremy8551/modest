@@ -2,8 +2,8 @@ package cn.org.expect.intellijidea.plugin.maven.search;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenRepository;
 import cn.org.expect.intellijidea.plugin.maven.db.MavenArtifactDatabase;
-import cn.org.expect.intellijidea.plugin.maven.impl.CentralMavenRepository;
-import cn.org.expect.intellijidea.plugin.maven.impl.LocalMavenRepository;
+import cn.org.expect.intellijidea.plugin.maven.central.CentralRepository;
+import cn.org.expect.intellijidea.plugin.maven.local.LocalMavenRepository;
 import org.jetbrains.annotations.NotNull;
 
 public class AsyncDatabaseSearch {
@@ -20,7 +20,7 @@ public class AsyncDatabaseSearch {
     private volatile static MavenArtifactDatabase database;
 
     public AsyncDatabaseSearch() {
-        this.mavenRepository = new CentralMavenRepository();
+        this.mavenRepository = new CentralRepository();
         this.localMavenRepository = new LocalMavenRepository();
     }
 

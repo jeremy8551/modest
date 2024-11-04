@@ -1,15 +1,14 @@
-package cn.org.expect.intellijidea.plugin.maven.search;
+package cn.org.expect.intellijidea.plugin.maven.central;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifact;
 import cn.org.expect.intellijidea.plugin.maven.impl.MavenArtifactImpl;
 import org.json.JSONObject;
 
 /**
- * 用于解析模糊查询返回的 Json 字符串
+ * 用于解析精确查询返回的 Json 字符串
  */
-public class MavenArtifactExtraFactory implements MavenArtifactFactory {
+public class ExtraResultAnalysis extends PatternResultAnalysis {
 
-    @Override
     public MavenArtifact build(JSONObject json) {
         String groupId = json.getString("g");
         String artifactId = json.getString("a");

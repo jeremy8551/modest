@@ -1,4 +1,4 @@
-package cn.org.expect.intellijidea.plugin.maven.impl;
+package cn.org.expect.intellijidea.plugin.maven.local;
 
 import java.io.File;
 import java.util.List;
