@@ -72,11 +72,10 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
         if (selectedObject instanceof MavenFinderNavigationList) {
             MavenFinderNavigationList item = (MavenFinderNavigationList) selectedObject;
-            MavenArtifact artifact = item.getArtifact();
+            this.mavenFinder.getContext().setSelectList(item); // 保存选择记录
 
-            // 保存选择记录
-            log.info("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
-            this.mavenFinder.getContext().setSelectList(item);
+            MavenArtifact artifact = item.getArtifact();
+            log.warn("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
 
             // 折叠或展开
             if (artifact.isFold()) { // 设置为：展开
@@ -84,13 +83,15 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
                 if (this.mavenFinder.getDatabase().select(groupId, artifactId) == null) {
+                    item.setIcon(MavenFinderIcon.LEFT_WAITING); // 更改为：等待图标
                     this.mavenFinder.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
+                } else {
+                    this.mavenFinder.repaint();
                 }
             } else { // 设置为：折叠
                 artifact.setFold(true);
+                this.mavenFinder.repaint();
             }
-
-            this.mavenFinder.repaint();
             return false;
         }
 
