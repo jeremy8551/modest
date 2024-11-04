@@ -70,7 +70,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
      */
     public void asyncSearch(String pattern) {
         this.context.setSearchPattern(pattern);
-        this.getSearchPattern().search(this, pattern);
+        this.getInputSearch().search(this, pattern);
     }
 
     /**
@@ -80,7 +80,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
      * @param artifactId 工件名
      */
     public void asyncSearch(String groupId, String artifactId) {
-        this.getSearchExtra().search(this, groupId, artifactId);
+        this.getSearch().searchExtra(this, groupId, artifactId);
     }
 
     /**
@@ -263,7 +263,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
      * 使用最新的查询结果，渲染 UI 界面
      */
     public synchronized void repaint() {
-        MavenArtifactSet result = this.context.getPatternSearchResult();
+        MavenSearchResult result = this.context.getPatternSearchResult();
         this.repaint(result);
     }
 
@@ -272,8 +272,14 @@ public class MavenFinder extends AsyncDatabaseSearch {
      *
      * @param result 查询结果
      */
-    public synchronized void repaint(MavenArtifactSet result) {
+    public synchronized void repaint(MavenSearchResult result) {
+        if (result == null) {
+            log.warn("repaint fail, result is null!");
+            return;
+        }
+
         SearchListModel listModel = this.context.getJBListModel();
+
 //        if (listModel.getClass().getSimpleName().equals("MixedSearchListModel")) {
 //            try {
 //                JavaDialectFactory.get().setField(listModel, "myElementsComparator", new NavigationItemComparator());
@@ -351,7 +357,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
      * @param result 查询结果
      * @return 导航记录的集合
      */
-    protected java.util.List<MavenFinderNavigation> toNavigationList(MavenArtifactSet result) {
+    protected java.util.List<MavenFinderNavigation> toNavigationList(MavenSearchResult result) {
         if (result == null) {
             return new ArrayList<MavenFinderNavigation>(0);
         }
@@ -366,7 +372,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
             String groupId = artifact.getGroupId();
             String artifactId = artifact.getArtifactId();
 
-            MavenArtifactSet artifactList = this.getDatabase().select(groupId, artifactId);
+            MavenSearchResult artifactList = this.getDatabase().select(groupId, artifactId);
             boolean exists = artifactList != null;
             if (exists) {
                 item.setIcon(MavenFinderIcon.LEFT_HAS_QUERY);
@@ -387,7 +393,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
             }
 
             // 判断是否正在查询详细信息
-            if (this.getSearchExtra().isExtraQuerying(groupId, artifactId)) {
+            if (this.getSearch().isSearching(groupId, artifactId)) {
                 item.setIcon(MavenFinderIcon.LEFT_WAITING);
             }
         }

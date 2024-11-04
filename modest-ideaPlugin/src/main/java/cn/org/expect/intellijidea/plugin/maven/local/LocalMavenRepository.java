@@ -3,7 +3,7 @@ package cn.org.expect.intellijidea.plugin.maven.local;
 import java.io.File;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifact;
-import cn.org.expect.intellijidea.plugin.maven.MavenArtifactSet;
+import cn.org.expect.intellijidea.plugin.maven.MavenSearchResult;
 import cn.org.expect.intellijidea.plugin.maven.MavenRepository;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.Settings;
@@ -34,12 +34,12 @@ public class LocalMavenRepository implements MavenRepository {
     }
 
     @Override
-    public MavenArtifactSet query(String pattern, int start) throws Exception {
+    public MavenSearchResult query(String pattern, int start) throws Exception {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public MavenArtifactSet query(String groupId, String artifactId) throws Exception {
+    public MavenSearchResult query(String groupId, String artifactId) throws Exception {
         throw new UnsupportedOperationException();
     }
 

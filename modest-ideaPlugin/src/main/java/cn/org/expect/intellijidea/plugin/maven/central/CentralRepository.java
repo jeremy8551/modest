@@ -5,9 +5,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifact;
-import cn.org.expect.intellijidea.plugin.maven.MavenArtifactSet;
+import cn.org.expect.intellijidea.plugin.maven.MavenSearchResult;
 import cn.org.expect.intellijidea.plugin.maven.MavenRepository;
-import cn.org.expect.intellijidea.plugin.maven.impl.MavenArtifactSetImpl;
+import cn.org.expect.intellijidea.plugin.maven.impl.SimpleMavenSearchResult;
+import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.diagnostic.Logger;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -40,33 +41,46 @@ public class CentralRepository implements MavenRepository {
     }
 
     @Override
-    public MavenArtifactSet query(String pattern, int start) {
+    public MavenSearchResult query(String pattern, int start) {
         this.notTerminate = true;
         String url = "https://search.maven.org/solrsearch/select?q=" + pattern + "&rows=200&wt=json&start=" + (start - 1); // 构建请求 URL
         String responseBody = this.sendRequest(url);
-        MavenArtifactSet result = this.pattern.parse(responseBody);
+
+        if (StringUtils.isBlank(responseBody) || !this.notTerminate) {
+            return null;
+        }
+
+        MavenSearchResult result = this.pattern.parse(responseBody);
         result.getList().sort(PATTERN_RESULT_COMPARATOR.reversed());
         return result;
     }
 
     @Override
-    public MavenArtifactSet query(String groupId, String artifactId) {
+    public MavenSearchResult query(String groupId, String artifactId) {
         this.notTerminate = true;
         String url = "https://search.maven.org/solrsearch/select?q=g:" + groupId + "+AND+a:" + artifactId + "&core=gav&rows=200&wt=json"; // 构建请求 URL
         String responseBody = this.sendRequest(url);
-        MavenArtifactSet result = this.extra.parse(responseBody);
+        if (!this.notTerminate) {
+            return null;
+        }
+
+        MavenSearchResult result = this.extra.parse(responseBody);
         List<MavenArtifact> list = result.getList();
 
         int start = result.size(); // 起始位置
         if (result.getFoundNumber() > start) {
             do {
                 responseBody = this.sendRequest(url + "&start=" + start);
-                MavenArtifactSet next = this.extra.parse(responseBody);
+                if (!this.notTerminate) {
+                    break;
+                }
+
+                MavenSearchResult next = this.extra.parse(responseBody);
                 list.addAll(next.getList());
-                start += next.size();
+                start = next.getStart();
             } while (this.notTerminate && result.getFoundNumber() > start);
             list.sort(EXTRA_RESULT_COMPARATOR);
-            return new MavenArtifactSetImpl(list, 1, result.getFoundNumber());
+            return new SimpleMavenSearchResult(list, start, result.getFoundNumber());
         } else {
             list.sort(EXTRA_RESULT_COMPARATOR);
             return result;

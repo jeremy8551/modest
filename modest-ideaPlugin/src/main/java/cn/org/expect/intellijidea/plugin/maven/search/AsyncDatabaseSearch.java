@@ -1,8 +1,8 @@
 package cn.org.expect.intellijidea.plugin.maven.search;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenRepository;
-import cn.org.expect.intellijidea.plugin.maven.db.MavenArtifactDatabase;
 import cn.org.expect.intellijidea.plugin.maven.central.CentralRepository;
+import cn.org.expect.intellijidea.plugin.maven.db.MavenArtifactDatabase;
 import cn.org.expect.intellijidea.plugin.maven.local.LocalMavenRepository;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,11 +13,11 @@ public class AsyncDatabaseSearch {
 
     private final LocalMavenRepository localMavenRepository;
 
-    private volatile static MavenRepositorySearchPattern searchPattern;
+    private volatile static MavenRepositoryInputSearch INPUT_SEARCH;
 
-    private volatile static MavenRepositorySearchExtra searchExtra;
+    private volatile static MavenRepositorySearch SEARCH;
 
-    private volatile static MavenArtifactDatabase database;
+    private volatile static MavenArtifactDatabase DATABASE;
 
     public AsyncDatabaseSearch() {
         this.mavenRepository = new CentralRepository();
@@ -47,19 +47,19 @@ public class AsyncDatabaseSearch {
      *
      * @return 模糊查询工具
      */
-    public @NotNull MavenRepositorySearchPattern getSearchPattern() {
-        if (searchPattern == null) {
-            synchronized (MavenRepositorySearchPattern.class) {
-                if (searchPattern == null) {
-                    searchPattern = new MavenRepositorySearchPattern();
-                    searchPattern.setMavenRepository(this.mavenRepository);
-                    searchPattern.setDaemon(true);
-                    searchPattern.setName(MavenRepositorySearchPattern.class.getSimpleName());
-                    searchPattern.start();
+    public @NotNull MavenRepositoryInputSearch getInputSearch() {
+        if (INPUT_SEARCH == null) {
+            synchronized (MavenRepositoryInputSearch.class) {
+                if (INPUT_SEARCH == null) {
+                    INPUT_SEARCH = new MavenRepositoryInputSearch();
+                    INPUT_SEARCH.setRepository(this.mavenRepository);
+                    INPUT_SEARCH.setDaemon(true);
+                    INPUT_SEARCH.setName(MavenRepositoryInputSearch.class.getSimpleName());
+                    INPUT_SEARCH.start();
                 }
             }
         }
-        return searchPattern;
+        return INPUT_SEARCH;
     }
 
     /**
@@ -67,19 +67,19 @@ public class AsyncDatabaseSearch {
      *
      * @return 精确查询工具
      */
-    public @NotNull MavenRepositorySearchExtra getSearchExtra() {
-        if (searchExtra == null) {
-            synchronized (MavenRepositorySearchExtra.class) {
-                if (searchExtra == null) {
-                    searchExtra = new MavenRepositorySearchExtra();
-                    searchExtra.setMavenRepository(this.mavenRepository);
-                    searchExtra.setDaemon(true);
-                    searchExtra.setName(MavenRepositorySearchExtra.class.getSimpleName());
-                    searchExtra.start();
+    public @NotNull MavenRepositorySearch getSearch() {
+        if (SEARCH == null) {
+            synchronized (MavenRepositorySearch.class) {
+                if (SEARCH == null) {
+                    SEARCH = new MavenRepositorySearch();
+                    SEARCH.setRepository(this.mavenRepository);
+                    SEARCH.setDaemon(true);
+                    SEARCH.setName(MavenRepositorySearch.class.getSimpleName());
+                    SEARCH.start();
                 }
             }
         }
-        return searchExtra;
+        return SEARCH;
     }
 
     /**
@@ -88,13 +88,13 @@ public class AsyncDatabaseSearch {
      * @return 数据库对象
      */
     public @NotNull MavenArtifactDatabase getDatabase() {
-        if (database == null) {
+        if (DATABASE == null) {
             synchronized (MavenArtifactDatabase.class) {
-                if (database == null) {
-                    database = new MavenArtifactDatabase();
+                if (DATABASE == null) {
+                    DATABASE = new MavenArtifactDatabase();
                 }
             }
         }
-        return database;
+        return DATABASE;
     }
 }

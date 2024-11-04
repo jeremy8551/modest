@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Maven 工件集合
  */
-public interface MavenArtifactSet {
+public interface MavenSearchResult {
 
     /**
      * Maven 工件列表

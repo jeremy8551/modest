@@ -4,49 +4,49 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import cn.org.expect.intellijidea.plugin.maven.MavenArtifactSet;
+import cn.org.expect.intellijidea.plugin.maven.MavenSearchResult;
 
 public class MavenArtifactDatabase {
 
     /**
      * 模糊搜索词 pattern 与 MavenFinderResult 的映射
      */
-    protected final Map<String, MavenArtifactSet> patternMap;
+    protected final Map<String, MavenSearchResult> patternMap;
 
     /**
      * groupid、artifactId 与 MavenFinderResult 的映射
      */
-    protected final Map<String, Map<String, MavenArtifactSet>> extraMap;
+    protected final Map<String, Map<String, MavenSearchResult>> extraMap;
 
     public MavenArtifactDatabase() {
-        this.patternMap = new ConcurrentHashMap<String, MavenArtifactSet>();
-        this.extraMap = new ConcurrentHashMap<String, Map<String, MavenArtifactSet>>();
+        this.patternMap = new ConcurrentHashMap<String, MavenSearchResult>();
+        this.extraMap = new ConcurrentHashMap<String, Map<String, MavenSearchResult>>();
     }
 
-    public MavenArtifactSet insert(String pattern, MavenArtifactSet resultSet) {
+    public MavenSearchResult insert(String pattern, MavenSearchResult resultSet) {
         this.patternMap.put(pattern, resultSet);
         return resultSet;
     }
 
-    public MavenArtifactSet select(String pattern) {
+    public MavenSearchResult select(String pattern) {
         return this.patternMap.get(pattern);
     }
 
-    public MavenArtifactSet insert(String groupId, String artifactId, MavenArtifactSet set) {
-        Map<String, MavenArtifactSet> group = this.extraMap.computeIfAbsent(groupId, k -> new HashMap<String, MavenArtifactSet>());
+    public MavenSearchResult insert(String groupId, String artifactId, MavenSearchResult set) {
+        Map<String, MavenSearchResult> group = this.extraMap.computeIfAbsent(groupId, k -> new HashMap<String, MavenSearchResult>());
         group.put(artifactId, set);
         return set;
     }
 
-    public MavenArtifactSet select(String groupId, String artifactId) {
-        Map<String, MavenArtifactSet> map = this.extraMap.get(groupId);
+    public MavenSearchResult select(String groupId, String artifactId) {
+        Map<String, MavenSearchResult> map = this.extraMap.get(groupId);
         if (map != null) {
             return map.get(artifactId);
         }
         return null;
     }
 
-    public MavenArtifactSet delete(String pattern) {
+    public MavenSearchResult delete(String pattern) {
         return this.patternMap.remove(pattern);
     }
 

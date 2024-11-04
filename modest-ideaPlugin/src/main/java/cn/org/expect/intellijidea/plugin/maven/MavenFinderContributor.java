@@ -3,7 +3,6 @@ package cn.org.expect.intellijidea.plugin.maven;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderBlankItem;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationList;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
@@ -70,10 +69,6 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
     public boolean processSelectedItem(Object selectedObject, int modifiers, String searchText) {
         // 禁用来源的处理逻辑：自动打开 url
         // super.processSelectedItem(selectedObject, modifiers, searchText);
-
-        if (selectedObject instanceof MavenFinderBlankItem) {
-            return false;
-        }
 
         if (selectedObject instanceof MavenFinderNavigationList) {
             MavenFinderNavigationList item = (MavenFinderNavigationList) selectedObject;

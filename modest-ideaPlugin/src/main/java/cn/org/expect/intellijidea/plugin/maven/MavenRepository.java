@@ -22,7 +22,7 @@ public interface MavenRepository extends Terminate {
      * @return 查询结果
      * @throws Exception 模糊查询发生错误
      */
-    MavenArtifactSet query(String pattern, int start) throws Exception;
+    MavenSearchResult query(String pattern, int start) throws Exception;
 
     /**
      * 精确查询
@@ -32,7 +32,7 @@ public interface MavenRepository extends Terminate {
      * @return 查询结果
      * @throws Exception 精确查询发生错误
      */
-    MavenArtifactSet query(String groupId, String artifactId) throws Exception;
+    MavenSearchResult query(String groupId, String artifactId) throws Exception;
 
     /**
      * 终止查询

@@ -59,7 +59,7 @@ public class MavenFinderContext {
     private volatile ProgressIndicator progressIndicator;
 
     /** 最近一次模糊搜索结果 */
-    private volatile MavenArtifactSet mavenFinderResult;
+    private volatile MavenSearchResult mavenFinderResult;
 
     public MavenFinderContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
@@ -104,7 +104,7 @@ public class MavenFinderContext {
         this.inputIntervalTime = continueInputIntervalTime;
     }
 
-    public synchronized void setPatternSearchResult(MavenArtifactSet result) {
+    public synchronized void setPatternSearchResult(MavenSearchResult result) {
         Ensure.notNull(result);
         List<MavenArtifact> list = result.getList();
         for (MavenArtifact artifact : list) {
@@ -118,7 +118,7 @@ public class MavenFinderContext {
      *
      * @return 查询结果
      */
-    public MavenArtifactSet getPatternSearchResult() {
+    public MavenSearchResult getPatternSearchResult() {
         return this.mavenFinderResult;
     }
 
