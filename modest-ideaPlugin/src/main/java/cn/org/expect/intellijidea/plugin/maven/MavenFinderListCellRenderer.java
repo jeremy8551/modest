@@ -8,9 +8,16 @@ import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationI
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.SearchEverywherePsiRenderer;
+import com.intellij.ide.util.PSIRenderingUtils;
+import com.intellij.openapi.editor.markup.TextAttributes;
+import com.intellij.ui.ColoredListCellRenderer;
+import com.intellij.ui.JBColor;
+import com.intellij.ui.SimpleTextAttributes;
+import com.intellij.util.IconUtil;
 import com.intellij.util.TextWithIcon;
 import com.intellij.util.ui.NamedColorUtil;
 import com.intellij.util.ui.UIUtil;
+import org.jetbrains.annotations.NotNull;
 
 public class MavenFinderListCellRenderer extends SearchEverywherePsiRenderer {
 
@@ -24,32 +31,36 @@ public class MavenFinderListCellRenderer extends SearchEverywherePsiRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         if (value instanceof MavenFinderNavigationItem) {
             MavenFinderNavigationItem item = (MavenFinderNavigationItem) value;
+            TextWithIcon itemLocation = item.getRightLabel();
 
             this.removeAll();
-            this.myRightComponentWidth = 0;
 
-            ListCellRenderer<Object> leftRenderer = createLeftRenderer(list, value);
-            Component result = leftRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            String leftText = StringUtils.trimBlank(item.getPresentableText());
+            String middleText = StringUtils.left(Dates.format19(item.getArtifact().getTimestamp()), 16);
 
-            JLabel left = new JLabel("", null, SwingConstants.LEFT);
+            Component leftComponent = new CellRenderer(leftText, SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            Component middleComponent = new CellRenderer(middleText, SimpleTextAttributes.STYLE_SMALLER, JBColor.GRAY).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+
+            JPanel left = new JPanel();
             left.setLayout(new BoxLayout(left, BoxLayout.Y_AXIS)); // 设置布局为 FlowLayout
             left.add(Box.createVerticalGlue());
-            left.add(result, 0);
+            left.add(leftComponent, 0);
             left.add(Box.createVerticalGlue());
             left.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, UIUtil.getListCellHPadding()));
-            left.setHorizontalTextPosition(SwingConstants.RIGHT);
             left.setForeground(isSelected ? NamedColorUtil.getListSelectionForeground(true) : NamedColorUtil.getInactiveTextColor());
-            left.setPreferredSize(new Dimension(200, left.getHeight()));
+            left.setPreferredSize(new Dimension(150, left.getHeight()));
             this.add(left, BorderLayout.WEST);
 
-            JLabel middle = new JLabel(StringUtils.left(Dates.format19(item.getArtifact().getTimestamp()), 16), null, SwingConstants.LEFT);
-            middle.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
-            middle.setHorizontalTextPosition(SwingConstants.RIGHT);
+            JPanel middle = new JPanel();
+            middle.setLayout(new BoxLayout(middle, BoxLayout.Y_AXIS)); // 设置布局为 FlowLayout
+            middle.add(Box.createVerticalGlue());
+            middle.add(middleComponent, 0);
+            middle.add(Box.createVerticalGlue());
+            middle.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, UIUtil.getListCellHPadding()));
             middle.setForeground(isSelected ? NamedColorUtil.getListSelectionForeground(true) : NamedColorUtil.getInactiveTextColor());
-            middle.setPreferredSize(new Dimension(200, middle.getHeight()));
+            middle.setPreferredSize(new Dimension(150, middle.getHeight()));
             this.add(middle, BorderLayout.CENTER);
 
-            TextWithIcon itemLocation = getItemLocation(item);
             JLabel right = new JLabel(itemLocation.getText(), itemLocation.getIcon(), SwingConstants.RIGHT);
             right.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, UIUtil.getListCellHPadding()));
             right.setHorizontalTextPosition(SwingConstants.LEFT);
@@ -57,13 +68,12 @@ public class MavenFinderListCellRenderer extends SearchEverywherePsiRenderer {
             right.setPreferredSize(new Dimension(200, right.getHeight()));
             this.add(right, BorderLayout.EAST);
 
-            myRightComponentWidth = right.getPreferredSize().width;
-            myRightComponentWidth += middle.getPreferredSize().width;
-
-            Color color = isSelected ? UIUtil.getListSelectionBackground(true) : left.getBackground();
-            this.setBackground(color);
+            this.myRightComponentWidth = right.getPreferredSize().width;
+            this.myRightComponentWidth += middle.getPreferredSize().width;
 
 //            System.out.println(item.getPresentableText() + ", " + result.getClass().getName() + ", " + left.getPreferredSize().width + ", " + middle.getPreferredSize().width + ", " + right.getPreferredSize().width);
+            Color color = isSelected ? UIUtil.getListSelectionBackground(true) : left.getBackground();
+            this.setBackground(color);
             left.setBackground(color);
             right.setBackground(color);
             middle.setBackground(color);
@@ -85,6 +95,51 @@ public class MavenFinderListCellRenderer extends SearchEverywherePsiRenderer {
             return navigation.getRightLabel();
         } else {
             return super.getItemLocation(value);
+        }
+    }
+
+    public static class CellRenderer extends ColoredListCellRenderer<Object> {
+
+        private String text;
+
+        private Icon icon;
+
+        private int style;
+
+        private Color fgColor;
+
+        public CellRenderer(String text, int style, Color fgColor) {
+            this.text = text;
+            this.icon = null;
+            this.style = style;
+            this.fgColor = fgColor;
+        }
+
+        public CellRenderer(String text, int style, Color fgColor, Icon icon) {
+            this.text = text;
+            this.icon = icon;
+            this.style = style;
+            this.fgColor = fgColor;
+        }
+
+        @Override
+        protected void customizeCellRenderer(@NotNull JList<?> list, Object value, int index, boolean selected, boolean hasFocus) {
+            SimpleTextAttributes simple = null;
+
+            TextAttributes attributes = PSIRenderingUtils.getNavigationItemAttributesStatic(value);
+            if (attributes != null) {
+                simple = SimpleTextAttributes.fromTextAttributes(attributes);
+            }
+
+            if (simple == null) {
+            }
+
+            // this.append(locationString, new SimpleTextAttributes(SimpleTextAttributes.STYLE_PLAIN, JBColor.GRAY));
+            this.append(this.text, new SimpleTextAttributes(this.style, this.fgColor));
+            this.setIcon(this.icon == null ? IconUtil.getEmptyIcon(false) : this.icon);
+
+            Color bgColor = UIUtil.getListBackground();
+            this.setBackground(selected ? UIUtil.getListSelectionBackground(true) : bgColor);
         }
     }
 }

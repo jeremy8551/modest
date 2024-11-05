@@ -4,7 +4,6 @@ import javax.swing.*;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifact;
 import cn.org.expect.intellijidea.plugin.maven.MavenFinderIcon;
-import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.navigation.ItemPresentation;
@@ -38,7 +37,7 @@ public class MavenFinderNavigationItem implements NavigationItem, ItemPresentati
 
     @Override
     public TextWithIcon getRightLabel() {
-        return new TextWithIcon(Dates.format19(this.artifact.getTimestamp()) + " ", this.icon);
+        return new TextWithIcon("", this.icon);
     }
 
     public ItemPresentation getPresentation() {
