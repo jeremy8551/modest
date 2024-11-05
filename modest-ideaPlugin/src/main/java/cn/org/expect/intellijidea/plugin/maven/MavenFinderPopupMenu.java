@@ -138,14 +138,11 @@ public class MavenFinderPopupMenu {
                         return;
                     }
 
-                    // 点击目录
-                    Object selectedObject = listModel.getElementAt(index);
-                    if (selectedObject instanceof MavenFinderNavigationCatalog) {
-                        itemPopupMenu.show(JBList, e.getX(), e.getY()); // 在鼠标位置显示弹出菜单
-                        return;
-                    }
+                    // 在鼠标位置显示弹出菜单
+                    itemPopupMenu.show(JBList, e.getX(), e.getY());
 
                     // 点击版本
+                    Object selectedObject = listModel.getElementAt(index);
                     if (selectedObject instanceof MavenFinderNavigationItem) {
                         if (listPopupMenu.isVisible()) {
                             listPopupMenu.setVisible(false);
