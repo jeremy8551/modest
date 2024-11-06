@@ -2,11 +2,18 @@ package cn.org.expect.intellijidea.plugin.maven;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.intellijidea.plugin.maven.impl.SimpleMavenSearchResult;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
 import cn.org.expect.util.Ensure;
+import cn.org.expect.util.FileUtils;
+import cn.org.expect.util.NetUtils;
+import cn.org.expect.util.StringUtils;
+import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.components.JBList;
@@ -23,14 +30,17 @@ public class MavenFinderPopupMenu {
 
     protected void init() {
         JPopupMenu listPopupMenu = new JPopupMenu();
-        JMenuItem copyMaven = new JMenuItem("复制 Maven 依赖");
-        JMenuItem copyGradle = new JMenuItem("复制 Gradle 依赖");
+        JMenuItem copyMaven = new JMenuItem("Copy Maven dependency");
+        JMenuItem copyGradle = new JMenuItem("Copy Gradle dependency");
+        JMenuItem openInBrowser = new JMenuItem("Open in Browser");
+        JMenuItem openFileSystem = new JMenuItem("Open in FileSystem");
         listPopupMenu.add(copyMaven); // 将菜单项添加到弹出菜单中
         listPopupMenu.add(copyGradle);
+        listPopupMenu.add(openInBrowser);
 
         JPopupMenu itemPopupMenu = new JPopupMenu();
-        JMenuItem clearCache = new JMenuItem("重新查询");
-        JMenuItem clearAll = new JMenuItem("清空全部缓存");
+        JMenuItem clearCache = new JMenuItem("Refresh the query");
+        JMenuItem clearAll = new JMenuItem("Clear all cache");
         itemPopupMenu.add(clearCache);
         itemPopupMenu.add(clearAll);
 
@@ -58,7 +68,7 @@ public class MavenFinderPopupMenu {
             text += "</version>\n";
 
             mavenFinder.copyToClipboard(text);
-            mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), "已复制 Maven 依赖", null);
+            mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), copyMaven.getText(), null);
         });
 
         copyGradle.addActionListener(e -> {
@@ -78,14 +88,48 @@ public class MavenFinderPopupMenu {
             text += "'";
 
             mavenFinder.copyToClipboard(text);
-            mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), "已复制 Gradle 依赖", null);
+            mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), copyGradle.getText(), null);
+        });
+
+        openInBrowser.addActionListener(e -> {
+            MavenFinderNavigationItem selectItem = context.getSelectItem();
+            if (selectItem == null) {
+                log.warn("Not a selected Navigation Item!");
+                return;
+            }
+
+            MavenArtifact artifact = selectItem.getArtifact();
+            List<String> list = new ArrayList<>();
+            list.add(mavenFinder.getMavenRepository().getAddress());
+            StringUtils.split(artifact.getGroupId(), '.', list);
+            list.add(artifact.getArtifactId());
+            list.add(artifact.getVersion());
+            String url = NetUtils.joinUri(list.toArray(new String[0]));
+            BrowserUtil.browse(url);
+        });
+
+        openFileSystem.addActionListener(e -> {
+            MavenFinderNavigationItem selectItem = context.getSelectItem();
+            if (selectItem == null) {
+                log.warn("Not a selected Navigation Item!");
+                return;
+            }
+
+            MavenArtifact artifact = selectItem.getArtifact();
+            List<String> list = new ArrayList<>();
+            list.add(mavenFinder.getLocalMavenRepository().getAddress());
+            StringUtils.split(artifact.getGroupId(), '.', list);
+            list.add(artifact.getArtifactId());
+            list.add(artifact.getVersion());
+            String filepath = FileUtils.joinPath(list.toArray(new String[0]));
+            BrowserUtil.browse(new File(filepath));
         });
 
         clearCache.addActionListener(e -> {
             String pattern = context.getSearchPattern();
             mavenFinder.getDatabase().delete(pattern);
             mavenFinder.asyncSearch(MavenFinderPattern.parse(pattern));
-            mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), "正在重新加载数据", null);
+            mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), clearCache.getText(), null);
         });
 
         clearAll.addActionListener(e -> {
@@ -94,7 +138,7 @@ public class MavenFinderPopupMenu {
             mavenFinder.setReminderText("");
             mavenFinder.setAdvertiser("", null);
             mavenFinder.setSearchFieldText("");
-            mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), "已清空所有缓存", null);
+            mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), clearAll.getText(), null);
         });
 
         // 监听鼠标事件
@@ -114,9 +158,16 @@ public class MavenFinderPopupMenu {
                     // 点击版本
                     Object selectedObject = listModel.getElementAt(index);
                     if (selectedObject instanceof MavenFinderNavigationItem) {
-                        context.setSelectItem((MavenFinderNavigationItem) selectedObject);
+                        MavenFinderNavigationItem item = (MavenFinderNavigationItem) selectedObject;
+                        context.setSelectItem(item);
                         int x = JBList.getX() + 30;
                         int y = JBList.getCellBounds(0, index).height; // JList 中第一行到选中行之间的高度
+
+                        if (mavenFinder.getLocalMavenRepository().exists(item.getArtifact())) {
+                            listPopupMenu.add(openFileSystem);
+                        } else {
+                            listPopupMenu.remove(openFileSystem);
+                        }
                         listPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
                         return;
                     }

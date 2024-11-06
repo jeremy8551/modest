@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenSearchResult;
+import cn.org.expect.util.StringUtils;
 
 public class MavenArtifactDatabase {
 
@@ -45,7 +46,9 @@ public class MavenArtifactDatabase {
     }
 
     public void delete(String pattern) {
-        this.patternMap.remove(pattern);
+        if (StringUtils.isNotBlank(pattern)) {
+            this.patternMap.remove(pattern);
+        }
     }
 
     public void clear() {

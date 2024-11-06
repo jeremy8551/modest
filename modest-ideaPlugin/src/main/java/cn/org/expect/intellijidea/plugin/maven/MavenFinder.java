@@ -161,7 +161,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
     }
 
     /**
-     * 将参数文本信息复制到剪切板中
+     * 将文本信息复制到剪切板中
      *
      * @param text 文本信息
      */

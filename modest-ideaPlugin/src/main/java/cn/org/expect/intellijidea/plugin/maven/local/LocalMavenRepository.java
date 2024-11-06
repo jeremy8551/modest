@@ -1,12 +1,15 @@
 package cn.org.expect.intellijidea.plugin.maven.local;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifact;
-import cn.org.expect.intellijidea.plugin.maven.MavenSearchResult;
 import cn.org.expect.intellijidea.plugin.maven.MavenRepository;
+import cn.org.expect.intellijidea.plugin.maven.MavenSearchResult;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.Settings;
+import cn.org.expect.util.StringUtils;
 
 public class LocalMavenRepository implements MavenRepository {
 
@@ -45,15 +48,16 @@ public class LocalMavenRepository implements MavenRepository {
 
     public boolean exists(MavenArtifact artifact) {
         if (this.repository.exists() && this.repository.isDirectory()) {
-            String groupId = artifact.getGroupId();
-            String artifactId = artifact.getArtifactId();
-            String version = artifact.getVersion();
+            List<String> list = new ArrayList<>();
+            list.add(this.repository.getAbsolutePath());
+            StringUtils.split(artifact.getGroupId(), '.', list);
+            list.add(artifact.getArtifactId());
+            list.add(artifact.getVersion());
 
-            String str = groupId + "." + artifactId;
-            String filepath = FileUtils.joinPath(this.repository.getAbsolutePath(), str.replace('.', File.separatorChar), version);
+            String filepath = FileUtils.joinPath(list.toArray(new String[0]));
             File artifactDir = new File(filepath);
             if (artifactDir.exists() && artifactDir.isDirectory()) {
-                File[] files = artifactDir.listFiles((dir, name) -> name.endsWith("-" + version + ".jar"));
+                File[] files = artifactDir.listFiles((dir, name) -> name.equalsIgnoreCase(artifact.getArtifactId() + "-" + artifact.getVersion() + ".jar"));
                 return files != null && files.length > 0;
             }
         }
