@@ -230,7 +230,7 @@ public class MavenFinderPopupMenu {
                 @Override
                 public void mousePressed(MouseEvent e) {
                     // 右键点击
-                    if (e.getButton() == MouseEvent.BUTTON1) {
+                    if (e.isPopupTrigger()) {
                         int x = searchField.getX();
                         int y = searchField.getY() - 30;
                         itemPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
