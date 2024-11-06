@@ -22,12 +22,21 @@
     </extensions>
 
     <actions>
-        <!-- 创建一个新的组来包含这两个自定义的 AnAction -->
+        <!-- 打开本地Maven仓库 -->
         <action id="MavenFinderOpenLocalMavenRepository" class="cn.org.expect.intellijidea.plugin.maven.action.MavenFinderOpenLocalMavenRepository" text="Maven Local Repository" description="打开 Maven 本地仓库">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
         </action>
+
+        <!-- 删除本地仓库中 *.lastUpdated 文件 -->
         <action id="MavenFinderDeleteLastUpdated" class="cn.org.expect.intellijidea.plugin.maven.action.MavenFinderDeleteLastUpdated" text="Maven Clean *.lastUpdated" description="删除 Maven 本地仓库中的 *.lastUpdated 文件">
-            <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="MavenFinderOpenLocalMavenRepository"/>
         </action>
+
+        <!-- 绘制菜单 -->
+        <group popup="false" id="MavenFinder" text="MavenFinder">
+            <separator/> <!--分隔符-->
+            <reference ref="MavenFinderOpenLocalMavenRepository"/>
+            <reference ref="MavenFinderDeleteLastUpdated"/>
+            <separator/> <!--分隔符-->
+            <add-to-group group-id="ToolsMenu" anchor="first"/>
+        </group>
     </actions>
 </idea-plugin>
