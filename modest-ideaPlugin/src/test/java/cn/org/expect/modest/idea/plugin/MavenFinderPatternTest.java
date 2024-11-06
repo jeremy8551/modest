@@ -11,8 +11,8 @@ public class MavenFinderPatternTest {
         Assertions.assertEquals("", MavenFinderPattern.parse(""));
         Assertions.assertEquals("1", MavenFinderPattern.parse("1"));
         Assertions.assertEquals("ab", MavenFinderPattern.parse("ab"));
-        Assertions.assertEquals("a", MavenFinderPattern.parse("<artifactId>a"));
-        Assertions.assertEquals("a", MavenFinderPattern.parse("a</artifactId>"));
+        Assertions.assertEquals("<artifactId>a", MavenFinderPattern.parse("<artifactId>a"));
+        Assertions.assertEquals("a</artifactId>", MavenFinderPattern.parse("a</artifactId>"));
         Assertions.assertEquals("a", MavenFinderPattern.parse("<artifactId>a</artifactId>"));
         Assertions.assertEquals("org.test", MavenFinderPattern.parse("<artifactId>org.test</artifactId>"));
         Assertions.assertEquals("org.test", MavenFinderPattern.parse("<artifactId> org.test </artifactId>"));
