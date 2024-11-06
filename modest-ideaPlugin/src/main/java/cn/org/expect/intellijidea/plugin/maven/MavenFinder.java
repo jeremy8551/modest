@@ -142,6 +142,13 @@ public class MavenFinder extends AsyncDatabaseSearch {
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         }
+
+        try {
+            JTextField searchField = context.getSearchEverywhereUI().getSearchField();
+            context.setSearchField(searchField);
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
     }
 
     /**

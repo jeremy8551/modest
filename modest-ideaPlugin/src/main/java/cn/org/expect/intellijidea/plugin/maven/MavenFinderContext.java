@@ -61,6 +61,9 @@ public class MavenFinderContext {
     /** 最近一次模糊搜索结果 */
     private volatile MavenSearchResult mavenFinderResult;
 
+    /** 搜索输入框 */
+    private JTextField searchField;
+
     public MavenFinderContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
         this.inputIntervalTime = 300;
@@ -230,5 +233,13 @@ public class MavenFinderContext {
 
     public void setProgressIndicator(ProgressIndicator progressIndicator) {
         this.progressIndicator = progressIndicator;
+    }
+
+    public JTextField getSearchField() {
+        return searchField;
+    }
+
+    public void setSearchField(JTextField searchField) {
+        this.searchField = searchField;
     }
 }

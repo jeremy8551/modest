@@ -5,7 +5,6 @@ import java.awt.event.MouseListener;
 import javax.swing.*;
 
 import cn.org.expect.intellijidea.plugin.maven.impl.SimpleMavenSearchResult;
-import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationCatalog;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
@@ -112,16 +111,8 @@ public class MavenFinderPopupMenu {
                         return;
                     }
 
-                    // 点击目录
-                    Object selectedObject = listModel.getElementAt(index);
-                    if (selectedObject instanceof MavenFinderNavigationCatalog) {
-                        if (itemPopupMenu.isVisible()) {
-                            itemPopupMenu.setVisible(false);
-                        }
-                        return;
-                    }
-
                     // 点击版本
+                    Object selectedObject = listModel.getElementAt(index);
                     if (selectedObject instanceof MavenFinderNavigationItem) {
                         context.setSelectItem((MavenFinderNavigationItem) selectedObject);
                         int x = JBList.getX() + 30;
@@ -137,9 +128,6 @@ public class MavenFinderPopupMenu {
                     if (index == -1) {
                         return;
                     }
-
-                    // 在鼠标位置显示弹出菜单
-                    itemPopupMenu.show(JBList, e.getX(), e.getY());
 
                     // 点击版本
                     Object selectedObject = listModel.getElementAt(index);
@@ -176,5 +164,34 @@ public class MavenFinderPopupMenu {
             public void mouseExited(MouseEvent e) {
             }
         });
+
+        JTextField searchField = context.getSearchField();
+        if (searchField != null) {
+            searchField.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    // 右键点击
+                    if (e.isPopupTrigger()) {
+                        itemPopupMenu.show(JBList, e.getX(), e.getY()); // 在鼠标位置显示弹出菜单
+                    }
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                }
+            });
+        }
     }
 }
