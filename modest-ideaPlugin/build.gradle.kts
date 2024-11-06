@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "cn.org.expect"
-version = "1.0-SNAPSHOT"
+version = "1.0.0"
 
 // 顶层结构
 repositories {
