@@ -41,10 +41,8 @@ public class MavenFinderPopupMenu {
         JPopupMenu itemPopupMenu = new JPopupMenu();
         JMenuItem clearCache = new JMenuItem("Refresh the query");
         JMenuItem clearAll = new JMenuItem("Clear all cache");
-        JMenuItem openLocalMavenRepository = new JMenuItem("Open Local MavenRepository");
         itemPopupMenu.add(clearCache);
         itemPopupMenu.add(clearAll);
-        itemPopupMenu.add(openLocalMavenRepository);
 
         MavenFinderContext context = this.mavenFinder.getContext();
         JBList<Object> JBList = context.getJBList();
@@ -129,15 +127,6 @@ public class MavenFinderPopupMenu {
             list.add(artifact.getArtifactId());
             list.add(artifact.getVersion());
             BrowserUtil.browse(new File(FileUtils.joinPath(list.toArray(new String[0]))));
-        });
-
-        openLocalMavenRepository.addActionListener(e -> {
-            String filepath = mavenFinder.getLocalMavenRepository().getAddress();
-            if (StringUtils.isBlank(filepath)) {
-                return;
-            }
-
-            BrowserUtil.browse(new File(filepath));
         });
 
         clearCache.addActionListener(e -> {
@@ -241,8 +230,10 @@ public class MavenFinderPopupMenu {
                 @Override
                 public void mousePressed(MouseEvent e) {
                     // 右键点击
-                    if (e.isPopupTrigger()) {
-                        itemPopupMenu.show(JBList, e.getX(), e.getY()); // 在鼠标位置显示弹出菜单
+                    if (e.getButton() == MouseEvent.BUTTON1) {
+                        int x = searchField.getX();
+                        int y = searchField.getY() - 30;
+                        itemPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
                     }
                 }
 
