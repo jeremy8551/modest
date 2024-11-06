@@ -41,8 +41,10 @@ public class MavenFinderPopupMenu {
         JPopupMenu itemPopupMenu = new JPopupMenu();
         JMenuItem clearCache = new JMenuItem("Refresh the query");
         JMenuItem clearAll = new JMenuItem("Clear all cache");
+        JMenuItem openLocalMavenRepository = new JMenuItem("Open Local MavenRepository");
         itemPopupMenu.add(clearCache);
         itemPopupMenu.add(clearAll);
+        itemPopupMenu.add(openLocalMavenRepository);
 
         MavenFinderContext context = this.mavenFinder.getContext();
         JBList<Object> JBList = context.getJBList();
@@ -68,7 +70,7 @@ public class MavenFinderPopupMenu {
             text += "</version>\n";
 
             mavenFinder.copyToClipboard(text);
-            mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), copyMaven.getText(), null);
+            mavenFinder.sendNotification(copyMaven.getText());
         });
 
         copyGradle.addActionListener(e -> {
@@ -88,7 +90,7 @@ public class MavenFinderPopupMenu {
             text += "'";
 
             mavenFinder.copyToClipboard(text);
-            mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), copyGradle.getText(), null);
+            mavenFinder.sendNotification(copyGradle.getText());
         });
 
         openInBrowser.addActionListener(e -> {
@@ -109,6 +111,11 @@ public class MavenFinderPopupMenu {
         });
 
         openFileSystem.addActionListener(e -> {
+            String filepath = mavenFinder.getLocalMavenRepository().getAddress();
+            if (StringUtils.isBlank(filepath)) {
+                return;
+            }
+
             MavenFinderNavigationItem selectItem = context.getSelectItem();
             if (selectItem == null) {
                 log.warn("Not a selected Navigation Item!");
@@ -117,11 +124,19 @@ public class MavenFinderPopupMenu {
 
             MavenArtifact artifact = selectItem.getArtifact();
             List<String> list = new ArrayList<>();
-            list.add(mavenFinder.getLocalMavenRepository().getAddress());
+            list.add(filepath);
             StringUtils.split(artifact.getGroupId(), '.', list);
             list.add(artifact.getArtifactId());
             list.add(artifact.getVersion());
-            String filepath = FileUtils.joinPath(list.toArray(new String[0]));
+            BrowserUtil.browse(new File(FileUtils.joinPath(list.toArray(new String[0]))));
+        });
+
+        openLocalMavenRepository.addActionListener(e -> {
+            String filepath = mavenFinder.getLocalMavenRepository().getAddress();
+            if (StringUtils.isBlank(filepath)) {
+                return;
+            }
+
             BrowserUtil.browse(new File(filepath));
         });
 
@@ -129,7 +144,7 @@ public class MavenFinderPopupMenu {
             String pattern = context.getSearchPattern();
             mavenFinder.getDatabase().delete(pattern);
             mavenFinder.asyncSearch(MavenFinderPattern.parse(pattern));
-            mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), clearCache.getText(), null);
+            mavenFinder.sendNotification(clearCache.getText());
         });
 
         clearAll.addActionListener(e -> {
@@ -138,7 +153,7 @@ public class MavenFinderPopupMenu {
             mavenFinder.setReminderText("");
             mavenFinder.setAdvertiser("", null);
             mavenFinder.setSearchFieldText("");
-            mavenFinder.sendMessage(MavenFinder.class.getSimpleName(), clearAll.getText(), null);
+            mavenFinder.sendNotification(clearAll.getText());
         });
 
         // 监听鼠标事件

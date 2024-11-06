@@ -1,14 +1,14 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
-    <id>cn.org.expect.modest-ideaPlugin</id>
+    <id>cn.org.expect.maven-modest</id>
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>Modest-ideaPlugin</name>
+    <name>maven-modest</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor email="support@yourcompany.com" url="https://www.yourcompany.com">YourCompany</vendor>
+    <vendor email="jeremy8551@qq.com" url="https://www.yourcompany.com">Jeremy8551</vendor>
 
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
@@ -17,13 +17,17 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <lang.findUsagesProvider implementationClass="cn.org.expect.intellijidea.plugin.maven.provider.MavenFindUsagesProvider" language=""/>
+        <!--        <lang.findUsagesProvider implementationClass="cn.org.expect.intellijidea.plugin.maven.provider.MavenFindUsagesProvider" language=""/>-->
         <searchEverywhereContributor implementation="cn.org.expect.intellijidea.plugin.maven.MavenFinderFactory"/>
     </extensions>
 
     <actions>
-        <action id="cn.org.expect.modest.idea.cn.org.expect.intellijidea.plugin.maven.action.MavenFinderAnAction" class="cn.org.expect.intellijidea.plugin.maven.action.MavenFinderAnAction" text="Maven Finder" description="excel file convert to other files">
+        <!-- 创建一个新的组来包含这两个自定义的 AnAction -->
+        <action id="MavenFinderOpenLocalMavenRepository" class="cn.org.expect.intellijidea.plugin.maven.action.MavenFinderOpenLocalMavenRepository" text="Maven Local Repository" description="打开 Maven 本地仓库">
             <add-to-group group-id="ToolsMenu" anchor="first"/>
+        </action>
+        <action id="MavenFinderDeleteLastUpdated" class="cn.org.expect.intellijidea.plugin.maven.action.MavenFinderDeleteLastUpdated" text="Maven Clean *.lastUpdated" description="删除 Maven 本地仓库中的 *.lastUpdated 文件">
+            <add-to-group group-id="ToolsMenu" anchor="after" relative-to-action="MavenFinderOpenLocalMavenRepository"/>
         </action>
     </actions>
 </idea-plugin>

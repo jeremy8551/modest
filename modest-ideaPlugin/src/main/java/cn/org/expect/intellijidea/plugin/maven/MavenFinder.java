@@ -3,6 +3,7 @@ package cn.org.expect.intellijidea.plugin.maven;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -19,22 +20,28 @@ import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
+import cn.org.expect.util.MessageFormatter;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.notification.Notification;
+import com.intellij.notification.NotificationAction;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.LocalFileSystem;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.Advertiser;
+import org.jetbrains.annotations.NotNull;
 
 public class MavenFinder extends AsyncDatabaseSearch {
     private static final Logger log = Logger.getInstance(MavenFinder.class);
@@ -172,30 +179,58 @@ public class MavenFinder extends AsyncDatabaseSearch {
     }
 
     /**
-     * 推送通知
+     * 推送正常通知
      *
-     * @param title 通知标题
-     * @param text  通知内容
-     * @param type  通知类型，可以为null
+     * @param text 通知内容
      */
-    public void sendMessage(String title, String text, NotificationType type) {
+    public void sendNotification(String text, Object... array) {
+        this.sendMessage(new MessageFormatter(text).fill(array), NotificationType.INFORMATION);
+    }
+
+    /**
+     * 推送错误通知
+     *
+     * @param text 通知内容
+     */
+    public void sendErrorNotification(String text, Object... array) {
+        this.sendMessage(new MessageFormatter(text).fill(array), NotificationType.ERROR);
+    }
+
+    protected void sendMessage(String text, NotificationType type) {
         Project project = context.getActionEvent().getProject();
         if (project != null) {
-            String groupId = ClassUtils.getPackageName(MavenFinder.class, 3);
-
-            if (type == null) {
-                type = NotificationType.INFORMATION;
-            }
-
-            Notification notification = new Notification(
-                    groupId, // 通知组的ID
-                    title, // 通知标题
-                    text, // 通知内容
-                    type // 通知类型（信息、警告或错误）
-            );
-
+            Notification notification = new Notification(ClassUtils.getPackageName(MavenFinder.class, 3), this.getName(), text, type);
             Notifications.Bus.notify(notification, project);
         }
+    }
+
+    public void sendNotification(String text, File file) {
+        Project project = context.getActionEvent().getProject();
+        if (project != null) {
+            Notification notification = new Notification(ClassUtils.getPackageName(MavenFinder.class, 3), this.getName(), text, NotificationType.INFORMATION);
+            notification.addAction(new NotificationAction("Open File") {
+                
+                @Override
+                public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
+                    if (file.exists()) {
+                        VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(file);
+                        if (virtualFile != null) {
+                            FileEditorManager.getInstance(project).openFile(virtualFile, true); // 使用 IDE 的文件编辑器打开文件
+                        }
+                    }
+                }
+            });
+            Notifications.Bus.notify(notification, project);
+        }
+    }
+
+    /**
+     * 返回插件名
+     *
+     * @return 插件名
+     */
+    public @NotNull String getName() {
+        return this.getClass().getSimpleName();
     }
 
     public boolean notMavenFinderTab() {
