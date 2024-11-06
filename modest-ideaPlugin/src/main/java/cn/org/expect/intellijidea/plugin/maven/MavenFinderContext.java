@@ -46,12 +46,6 @@ public class MavenFinderContext {
     /** JBList 数据模型 */
     private volatile SearchListModel JBListModel;
 
-    /** 查询结果中的列表所在的滚动组件 */
-    private volatile JScrollPane scrollPane;
-
-    /** 滚动组件所在的面板 */
-    private volatile JPanel suggestionsPanel;
-
     /** 查询结果最下面的广告栏 */
     private volatile Advertiser advertiser;
 
@@ -193,22 +187,6 @@ public class MavenFinderContext {
 
     public void setJBList(JBList<Object> jbList) {
         this.JBList = jbList;
-    }
-
-    public JScrollPane getScrollPane() {
-        return this.scrollPane;
-    }
-
-    public void setScrollPane(JScrollPane scrollPane) {
-        this.scrollPane = scrollPane;
-    }
-
-    public JPanel getSuggestionsPanel() {
-        return suggestionsPanel;
-    }
-
-    public void setSuggestionsPanel(JPanel suggestionsPanel) {
-        this.suggestionsPanel = suggestionsPanel;
     }
 
     public Advertiser getAdvertiser() {

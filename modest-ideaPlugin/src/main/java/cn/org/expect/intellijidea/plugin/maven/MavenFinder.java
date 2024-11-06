@@ -135,16 +135,6 @@ public class MavenFinder extends AsyncDatabaseSearch {
         }
 
         try {
-            JPanel jpanel = JavaDialectFactory.get().getField(ui, "suggestionsPanel");
-            context.setSuggestionsPanel(jpanel);
-
-            JScrollPane scrollPane = (JScrollPane) ((BorderLayout) jpanel.getLayout()).getLayoutComponent(jpanel, BorderLayout.CENTER);
-            context.setScrollPane(scrollPane);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-
-        try {
             Advertiser advertiser = JavaDialectFactory.get().getField(ui, "myHintLabel");
             context.setAdvertiser(advertiser);
         } catch (Throwable e) {
