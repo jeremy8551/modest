@@ -6,19 +6,18 @@
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
     <name>Mavens</name>
-
     <category>Build Tools</category>
 
     <description>
         <![CDATA[
-      Provides Maven Repository Search support.
+      <p>Provide search in Central Maven Repository.</p>
       The following features are available:
         <ul>
-        <li>Online query Maven Central Repository.</li>
-        <li>Clean Local Repository *.lastUpdated.</li>
-        <li>Open Local Repository.</li>
-        <li>Navigate the query results to Central Repository.</li>
-        <li>Navigate the query results to Local Repository.</li>
+        <li>Online search artifact in Maven Central Repository.</li>
+        <li>Clean “*.lastUpdated” in Local Repository.</li>
+        <li>Open local repository directory.</li>
+        <li>Navigate the search result to Central Repository.</li>
+        <li>Navigate the search result to Local Repository.</li>
         </ul>
       ]]>
     </description>
