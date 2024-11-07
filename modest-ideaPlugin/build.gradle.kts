@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("org.jetbrains.intellij") version "1.17.3"
+    id("org.jetbrains.intellij") version "1.17.4"
 }
 
 group = "cn.org.expect"
@@ -11,6 +11,7 @@ repositories {
     mavenLocal()
     maven("https://maven.aliyun.com/nexus/content/repositories/central/")
     mavenCentral()
+    maven("https://plugins.jetbrains.com/maven")
 }
 
 dependencies {
@@ -22,16 +23,15 @@ dependencies {
     testImplementation("org.junit.platform:junit-platform-launcher:1.10.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0")
     testImplementation("org.junit.vintage:junit-vintage-engine:5.10.0")
-//    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
 }
 
-
 // 顶层结构
 tasks.jar.configure {
+    archiveBaseName.set("modest-maven") // 设置 artifactId
     duplicatesStrategy = org.gradle.api.file.DuplicatesStrategy.INCLUDE
     from(configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) })
 }
@@ -41,8 +41,7 @@ tasks.jar.configure {
 intellij {
     version.set("2023.2.6")
     type.set("IC") // Target IDE Platform
-
-    plugins.set(listOf(/* Plugin Dependencies */))
+    plugins.set(listOf("maven"))
 }
 
 tasks {

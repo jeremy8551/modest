@@ -1,9 +1,11 @@
 package cn.org.expect.intellijidea.plugin.maven.search;
 
+import cn.org.expect.intellijidea.plugin.maven.MavenFinderContext;
 import cn.org.expect.intellijidea.plugin.maven.MavenRepository;
 import cn.org.expect.intellijidea.plugin.maven.central.CentralRepository;
 import cn.org.expect.intellijidea.plugin.maven.db.MavenArtifactDatabase;
-import cn.org.expect.intellijidea.plugin.maven.local.LocalMavenRepository;
+import cn.org.expect.intellijidea.plugin.maven.local.LocalRepository;
+import cn.org.expect.intellijidea.plugin.maven.local.LocalRepositoryConfig;
 import org.jetbrains.annotations.NotNull;
 
 public class AsyncDatabaseSearch {
@@ -11,7 +13,7 @@ public class AsyncDatabaseSearch {
     /** 远程调用组件 */
     private final MavenRepository mavenRepository;
 
-    private final LocalMavenRepository localMavenRepository;
+    private final LocalRepository localMavenRepository;
 
     private volatile static MavenRepositoryInputSearch INPUT_SEARCH;
 
@@ -19,9 +21,10 @@ public class AsyncDatabaseSearch {
 
     private volatile static MavenArtifactDatabase DATABASE;
 
-    public AsyncDatabaseSearch() {
+    public AsyncDatabaseSearch(MavenFinderContext context) {
+        LocalRepositoryConfig config = LocalRepositoryConfig.getInstance(context.getActionEvent());
+        this.localMavenRepository = new LocalRepository(config);
         this.mavenRepository = new CentralRepository();
-        this.localMavenRepository = new LocalMavenRepository();
     }
 
     /**
@@ -38,7 +41,7 @@ public class AsyncDatabaseSearch {
      *
      * @return 本地 Maven 仓库信息
      */
-    public LocalMavenRepository getLocalMavenRepository() {
+    public LocalRepository getLocalMavenRepository() {
         return localMavenRepository;
     }
 

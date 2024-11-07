@@ -7,33 +7,22 @@ import java.util.List;
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifact;
 import cn.org.expect.intellijidea.plugin.maven.MavenRepository;
 import cn.org.expect.intellijidea.plugin.maven.MavenSearchResult;
+import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
-import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 
-public class LocalMavenRepository implements MavenRepository {
+public class LocalRepository implements MavenRepository {
 
-    private String mavenHomePath;
+    private LocalRepositoryConfig config;
 
-    private File userSettingFile;
-
-    private File m2;
-
-    private File repository;
-
-    private boolean useMavenConfig;
-
-    public LocalMavenRepository() {
-        this.mavenHomePath = "";
-        this.m2 = new File(Settings.getUserHome(), ".m2");
-        this.repository = new File(this.m2, "repository");
-        this.userSettingFile = new File(this.m2, "settings.xml");
-        this.useMavenConfig = false;
+    public LocalRepository(LocalRepositoryConfig config) {
+        this.config = Ensure.notNull(config);
     }
 
     @Override
     public String getAddress() {
-        return this.repository.getAbsolutePath();
+        File file = this.config.getRepository();
+        return file == null ? "" : file.getAbsolutePath();
     }
 
     @Override
@@ -47,9 +36,10 @@ public class LocalMavenRepository implements MavenRepository {
     }
 
     public boolean exists(MavenArtifact artifact) {
-        if (this.repository.exists() && this.repository.isDirectory()) {
+        File repository = this.config.getRepository();
+        if (repository != null && repository.exists() && repository.isDirectory()) {
             List<String> list = new ArrayList<>();
-            list.add(this.repository.getAbsolutePath());
+            list.add(repository.getAbsolutePath());
             StringUtils.split(artifact.getGroupId(), '.', list);
             list.add(artifact.getArtifactId());
             list.add(artifact.getVersion());
@@ -71,6 +61,5 @@ public class LocalMavenRepository implements MavenRepository {
 
     @Override
     public void terminate() {
-
     }
 }

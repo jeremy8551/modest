@@ -5,4 +5,4 @@ pluginManagement {
     }
 }
 
-rootProject.name = "modest-ideaPlugin"
+rootProject.name = "Mavens"

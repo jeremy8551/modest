@@ -5,14 +5,15 @@ import java.io.OutputStreamWriter;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenFinder;
 import cn.org.expect.intellijidea.plugin.maven.MavenFinderContext;
+import cn.org.expect.intellijidea.plugin.maven.local.LocalRepositoryConfig;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.MessageFormatter;
-import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.diagnostic.Logger;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 删除 Maven 本地仓库中的 *.lastUpdated 文件
@@ -27,20 +28,19 @@ public class MavenFinderDeleteLastUpdated extends AnAction {
     private int success;
 
     @Override
-    public void actionPerformed(AnActionEvent event) {
+    public void actionPerformed(@NotNull AnActionEvent event) {
         this.find = 0;
         this.success = 0;
 
         MavenFinderContext context = new MavenFinderContext(event);
         MavenFinder mavenFinder = new MavenFinder(context);
-        String filepath = mavenFinder.getLocalMavenRepository().getAddress();
-        if (StringUtils.isBlank(filepath)) {
+        File repository = LocalRepositoryConfig.getInstance(event).getRepository();
+        if (repository == null) {
             mavenFinder.sendErrorNotification("Cannot find Maven local repository!");
             return;
         }
 
         synchronized (MavenFinderDeleteLastUpdated.class) {
-            File repository = new File(filepath);
             File logfile = FileUtils.createTempFile("clean_last_updated.log");
 
             OutputStreamWriter out = null;
@@ -59,7 +59,11 @@ public class MavenFinderDeleteLastUpdated extends AnAction {
             }
 
             String message = new MessageFormatter("Found {}, Delete {}").fill(this.find, this.success);
-            mavenFinder.sendNotification(message, logfile);
+            if (this.success > 0) {
+                mavenFinder.sendNotification(message, "View Log File", logfile);
+            } else {
+                mavenFinder.sendNotification(message);
+            }
         }
     }
 

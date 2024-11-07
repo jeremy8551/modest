@@ -49,7 +49,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
     private final MavenFinderContext context;
 
     public MavenFinder(MavenFinderContext context) {
-        super();
+        super(context);
         this.context = Ensure.notNull(context);
     }
 
@@ -195,11 +195,11 @@ public class MavenFinder extends AsyncDatabaseSearch {
         }
     }
 
-    public void sendNotification(String text, File file) {
+    public void sendNotification(String text, String actionName, File file) {
         Project project = context.getActionEvent().getProject();
         if (project != null) {
             Notification notification = new Notification(ClassUtils.getPackageName(MavenFinder.class, 3), this.getName(), text, NotificationType.INFORMATION);
-            notification.addAction(new NotificationAction("Open File") {
+            notification.addAction(new NotificationAction(actionName) {
 
                 @Override
                 public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {

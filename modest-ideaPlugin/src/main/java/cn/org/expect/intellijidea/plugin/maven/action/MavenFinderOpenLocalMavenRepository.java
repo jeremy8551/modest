@@ -4,10 +4,11 @@ import java.io.File;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenFinder;
 import cn.org.expect.intellijidea.plugin.maven.MavenFinderContext;
-import cn.org.expect.util.StringUtils;
+import cn.org.expect.intellijidea.plugin.maven.local.LocalRepositoryConfig;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * 打开 Maven 本地仓库
@@ -15,15 +16,16 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 public class MavenFinderOpenLocalMavenRepository extends AnAction {
 
     @Override
-    public void actionPerformed(AnActionEvent e) {
-        MavenFinderContext context = new MavenFinderContext(e);
+    public void actionPerformed(@NotNull AnActionEvent event) {
+        MavenFinderContext context = new MavenFinderContext(event);
         MavenFinder mavenFinder = new MavenFinder(context);
-        String filepath = mavenFinder.getLocalMavenRepository().getAddress();
-        if (StringUtils.isBlank(filepath)) {
+        File repository = LocalRepositoryConfig.getInstance(event).getRepository();
+        if (repository == null) {
             mavenFinder.sendErrorNotification("Cannot find Maven local repository!");
             return;
         }
 
-        BrowserUtil.browse(new File(filepath).getParentFile());
+        mavenFinder.sendNotification(repository.getAbsolutePath());
+        BrowserUtil.browse(repository.getParentFile());
     }
 }
