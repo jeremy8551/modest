@@ -13,7 +13,7 @@ import cn.org.expect.util.StringUtils;
 
 public class LocalRepository implements MavenRepository {
 
-    private LocalRepositoryConfig config;
+    private final LocalRepositoryConfig config;
 
     public LocalRepository(LocalRepositoryConfig config) {
         this.config = Ensure.notNull(config);
