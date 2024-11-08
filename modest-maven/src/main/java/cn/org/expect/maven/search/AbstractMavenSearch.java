@@ -7,7 +7,7 @@ import cn.org.expect.maven.repository.local.LocalRepositoryConfig;
 import cn.org.expect.maven.search.db.MavenArtifactDatabase;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class AbstractSearch {
+public abstract class AbstractMavenSearch {
 
     /** 远程 Maven 仓库接口 */
     private final MavenRepository remoteRepository;
@@ -24,7 +24,7 @@ public abstract class AbstractSearch {
     /** 数据库 */
     private volatile static MavenArtifactDatabase DATABASE;
 
-    public AbstractSearch(LocalRepositoryConfig config) {
+    public AbstractMavenSearch(LocalRepositoryConfig config) {
         this.localRepository = new LocalRepository(config);
         this.remoteRepository = new CentralRepository();
     }

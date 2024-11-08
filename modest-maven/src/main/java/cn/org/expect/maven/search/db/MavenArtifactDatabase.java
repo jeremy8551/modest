@@ -10,12 +10,12 @@ import cn.org.expect.util.StringUtils;
 public class MavenArtifactDatabase {
 
     /**
-     * 模糊搜索词 pattern 与 MavenFinderResult 的映射
+     * 模糊搜索词 pattern 与 {@linkplain MavenSearchResult} 的映射
      */
     protected final Map<String, MavenSearchResult> patternMap;
 
     /**
-     * groupid、artifactId 与 MavenFinderResult 的映射
+     * groupid、artifactId 与 {@linkplain MavenSearchResult} 的映射
      */
     protected final Map<String, Map<String, MavenSearchResult>> extraMap;
 

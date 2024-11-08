@@ -2,7 +2,8 @@ package cn.org.expect.maven.search;
 
 import cn.org.expect.maven.repository.MavenSearchResult;
 
-public interface SearchContext {
+public interface MavenSearchContext {
+    
     /**
      * 返回最后一次模糊查询的文本
      *
@@ -21,12 +22,12 @@ public interface SearchContext {
 
     void setInputIntervalTime(long continueInputIntervalTime);
 
-    void setPatternSearchResult(MavenSearchResult result);
+    void setMavenSearchResult(MavenSearchResult result);
 
     /**
      * 返回上一次查询结果
      *
      * @return 查询结果
      */
-    MavenSearchResult getPatternSearchResult();
+    MavenSearchResult getMavenSearchResult();
 }

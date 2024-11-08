@@ -11,6 +11,7 @@ import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
+import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.maven.search.MavenUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
@@ -24,10 +25,10 @@ import com.intellij.ui.components.JBList;
 public class NavigationPopupMenu {
     private static final Logger log = Logger.getInstance(NavigationPopupMenu.class);
 
-    private final MavenPlugin mavenFinder;
+    private final MavenSearchPlugin plugin;
 
-    public NavigationPopupMenu(MavenPlugin mavenFinder) {
-        this.mavenFinder = Ensure.notNull(mavenFinder);
+    public NavigationPopupMenu(MavenSearchPlugin plugin) {
+        this.plugin = Ensure.notNull(plugin);
         this.init();
     }
 
@@ -47,7 +48,7 @@ public class NavigationPopupMenu {
         itemPopupMenu.add(repeat);
         itemPopupMenu.add(clearCache);
 
-        MavenPluginContext context = this.mavenFinder.getContext();
+        MavenPluginContext context = this.plugin.getContext();
         JBList<Object> JBList = context.getJBList();
         SearchListModel listModel = context.getJBListModel();
 
@@ -70,8 +71,8 @@ public class NavigationPopupMenu {
             text += selectItem.getArtifact().getVersion();
             text += "</version>\n";
 
-            mavenFinder.copyToClipboard(text);
-            mavenFinder.sendNotification(copyMaven.getText());
+            plugin.copyToClipboard(text);
+            plugin.sendNotification(MavenSearchNotification.NORMAL, copyMaven.getText());
         });
 
         copyGradle.addActionListener(e -> {
@@ -90,8 +91,8 @@ public class NavigationPopupMenu {
             text += selectItem.getArtifact().getVersion();
             text += "'";
 
-            mavenFinder.copyToClipboard(text);
-            mavenFinder.sendNotification(copyGradle.getText());
+            plugin.copyToClipboard(text);
+            plugin.sendNotification(MavenSearchNotification.NORMAL, copyGradle.getText());
         });
 
         openInBrowser.addActionListener(e -> {
@@ -103,7 +104,7 @@ public class NavigationPopupMenu {
 
             MavenArtifact artifact = selectItem.getArtifact();
             List<String> list = new ArrayList<>();
-            list.add(mavenFinder.getRemoteRepository().getAddress());
+            list.add(plugin.getRemoteRepository().getAddress());
             StringUtils.split(artifact.getGroupId(), '.', list);
             list.add(artifact.getArtifactId());
             list.add(artifact.getVersion());
@@ -112,7 +113,7 @@ public class NavigationPopupMenu {
         });
 
         openFileSystem.addActionListener(e -> {
-            String filepath = mavenFinder.getLocalRepository().getAddress();
+            String filepath = plugin.getLocalRepository().getAddress();
             if (StringUtils.isBlank(filepath)) {
                 return;
             }
@@ -135,20 +136,20 @@ public class NavigationPopupMenu {
         // 重新执行查询
         repeat.addActionListener(e -> {
             String pattern = context.getSearchPattern();
-            mavenFinder.getDatabase().delete(pattern);
-            mavenFinder.asyncSearch(MavenUtils.parse(pattern));
-            mavenFinder.sendNotification(repeat.getText());
+            plugin.getDatabase().delete(pattern);
+            plugin.asyncSearch(MavenUtils.parse(pattern));
+            plugin.sendNotification(MavenSearchNotification.NORMAL, repeat.getText());
         });
 
         // 清空所有缓存
         clearCache.addActionListener(e -> {
-            mavenFinder.getDatabase().clear();
-            mavenFinder.repaint(new SimpleMavenSearchResult()); // 刷新一个空结果
-            mavenFinder.setReminderText("");
-            mavenFinder.setAdvertiser("", null);
-            mavenFinder.setSearchFieldText("");
-            mavenFinder.getContext().setNavigationResultSet(null);
-            mavenFinder.sendNotification(clearCache.getText());
+            plugin.getDatabase().clear();
+            plugin.repaint(new SimpleMavenSearchResult()); // 刷新一个空结果
+            plugin.setWaitingText("");
+            plugin.setRunningText(null, "");
+            plugin.setSearchText("");
+            plugin.getContext().setNavigationResultSet(null);
+            plugin.sendNotification(MavenSearchNotification.NORMAL, clearCache.getText());
         });
 
         // 监听鼠标事件
@@ -173,7 +174,7 @@ public class NavigationPopupMenu {
                         int x = JBList.getX() + 30;
                         int y = JBList.getCellBounds(0, index).height; // JList 中第一行到选中行之间的高度
 
-                        if (mavenFinder.getLocalRepository().exists(item.getArtifact())) {
+                        if (plugin.getLocalRepository().exists(item.getArtifact())) {
                             listPopupMenu.add(openFileSystem);
                         } else {
                             listPopupMenu.remove(openFileSystem);
@@ -203,17 +204,17 @@ public class NavigationPopupMenu {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                if (mavenFinder.notMavenFinderTab()) {
+                if (plugin.notMavenSearchTab()) {
                     return;
                 }
 
                 int selectedIndex = JBList.getSelectedIndex();
                 if (selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) { // 点击 more 按钮
                     String pattern = context.getSearchPattern();
-                    MavenSearchResult result = mavenFinder.getDatabase().select(pattern);
+                    MavenSearchResult result = plugin.getDatabase().select(pattern);
                     if (result != null && listModel.getFoundElementsInfo().size() >= result.size()) { // 判断是否满足插叙更多记录的条件
                         log.warn("Click More Button ..");
-                        mavenFinder.getServiceSearch().searchMore(mavenFinder, pattern);
+                        plugin.getServiceSearch().searchMore(plugin, pattern);
                     }
                 }
             }

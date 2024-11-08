@@ -20,11 +20,11 @@ import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationList;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationResultSet;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.search.AbstractSearch;
-import cn.org.expect.maven.search.AdvertiserType;
+import cn.org.expect.maven.search.AbstractMavenSearch;
+import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenMessage;
-import cn.org.expect.maven.search.SearchOperation;
-import cn.org.expect.util.ClassUtils;
+import cn.org.expect.maven.search.MavenSearch;
+import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.MessageFormatter;
@@ -50,12 +50,12 @@ import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.Advertiser;
 import org.jetbrains.annotations.NotNull;
 
-public class MavenPlugin extends AbstractSearch implements SearchOperation {
-    private static final Logger log = Logger.getInstance(MavenPlugin.class);
+public class MavenSearchPlugin extends AbstractMavenSearch implements MavenSearch {
+    private static final Logger log = Logger.getInstance(MavenSearchPlugin.class);
 
     private final MavenPluginContext context;
 
-    public MavenPlugin(MavenPluginContext context) {
+    public MavenSearchPlugin(MavenPluginContext context) {
         super(RepositoryConfigFactory.getInstance(context.getActionEvent()));
         this.context = Ensure.notNull(context);
     }
@@ -161,28 +161,22 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
     }
 
     @Override
-    public void sendNotification(String text, Object... array) {
-        this.sendMessage(new MessageFormatter(text).fill(array), NotificationType.INFORMATION);
-    }
-
-    @Override
-    public void sendErrorNotification(String text, Object... array) {
-        this.sendMessage(new MessageFormatter(text).fill(array), NotificationType.ERROR);
-    }
-
-    protected void sendMessage(String text, NotificationType type) {
+    public void sendNotification(MavenSearchNotification type, String text, Object... array) {
+        String message = new MessageFormatter(text).fill(array);
+        NotificationType notificationType = IdeaUtils.toNotification(type);
         Project project = context.getActionEvent().getProject();
         if (project != null) {
-            Notification notification = new Notification(ClassUtils.getPackageName(MavenPlugin.class, 3), this.getName(), text, type);
+            Notification notification = new Notification(this.getGroupId(), this.getName(), message, notificationType);
             Notifications.Bus.notify(notification, project);
         }
     }
 
     @Override
-    public void sendNotification(String text, String actionName, File file) {
+    public void sendNotification(MavenSearchNotification type, String text, String actionName, File file) {
         Project project = context.getActionEvent().getProject();
         if (project != null) {
-            Notification notification = new Notification(ClassUtils.getPackageName(MavenPlugin.class, 3), this.getName(), text, NotificationType.INFORMATION);
+            NotificationType notificationType = IdeaUtils.toNotification(type);
+            Notification notification = new Notification(this.getGroupId(), this.getName(), text, notificationType);
             notification.addAction(new NotificationAction(actionName) {
 
                 @Override
@@ -199,38 +193,42 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
         }
     }
 
+    private String getGroupId() {
+        return MavenSearchPlugin.class.getPackage().getName();
+    }
+
     /**
      * 返回插件名
      *
      * @return 插件名
      */
     public @NotNull String getName() {
-        return this.getClass().getSimpleName();
+        return "Maven+";
     }
 
     /**
-     * 判断当前标签页是否是 MavenFinder
+     * 判断当前标签页是否满足条件
      *
      * @return 返回true表示标签页不符合 false表示符合
      */
-    public boolean notMavenFinderTab() {
-        SearchEverywhereUI everywhereUI = this.context.getSearchEverywhereUI();
-        if (everywhereUI == null) {
+    public boolean notMavenSearchTab() {
+        SearchEverywhereUI ui = this.context.getSearchEverywhereUI();
+        if (ui == null) {
             return false;
         }
 
-        String selectedTabID = everywhereUI.getSelectedTabID();
+        String selectedTabID = ui.getSelectedTabID();
         return !this.context.getContributor().getSearchProviderId().equals(selectedTabID);
     }
 
     @Override
-    public void setSearchFieldText(String text) {
+    public void setSearchText(String text) {
         context.getSearchEverywhereUI().getSearchField().setText(text);
     }
 
     @Override
-    public void setAdvertiser(String message, AdvertiserType type) {
-        if (this.notMavenFinderTab()) {
+    public void setRunningText(MavenSearchAdvertiser type, String message) {
+        if (this.notMavenSearchTab()) {
             return;
         }
 
@@ -274,8 +272,8 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
     }
 
     @Override
-    public void setReminderText(String message) {
-        if (this.notMavenFinderTab()) {
+    public void setWaitingText(String message) {
+        if (this.notMavenSearchTab()) {
             return;
         }
 
@@ -302,7 +300,7 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
 
     @Override
     public synchronized void repaint() {
-        MavenSearchResult result = this.context.getPatternSearchResult();
+        MavenSearchResult result = this.context.getMavenSearchResult();
         this.repaint(result);
     }
 
@@ -341,7 +339,7 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
         // 设置广告信息
         log.warn("repaint: " + JBList.getClass().getSimpleName() + ", size: " + listModel.getSize() + ", " + JBList.getModel().getSize() + ", " + listModel.isResultsExpired());
         String message = MavenMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
-        this.setAdvertiser(message, AdvertiserType.NORMAL);
+        this.setRunningText(MavenSearchAdvertiser.NORMAL, message);
     }
 
     @Override
@@ -354,7 +352,7 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
         // 设置广告信息
         log.warn("rebuild, size: " + resultSet.size());
         String message = MavenMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
-        this.setAdvertiser(message, AdvertiserType.NORMAL);
+        this.setRunningText(MavenSearchAdvertiser.NORMAL, message);
 
         this.context.getContributor().rebuildList();
     }

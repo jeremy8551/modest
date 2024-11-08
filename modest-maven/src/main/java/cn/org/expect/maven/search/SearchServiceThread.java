@@ -20,16 +20,16 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
     /**
      * 执行 more 按钮对应的模糊查询
      *
-     * @param mavenFinder Maven工具
-     * @param pattern     字符串
+     * @param search  Maven工具
+     * @param pattern 字符串
      */
-    public void searchMore(SearchOperation mavenFinder, String pattern) {
+    public void searchMore(MavenSearch search, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
             String message = MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern));
-            mavenFinder.setAdvertiser(message, AdvertiserType.RUNNING);
+            search.setRunningText(MavenSearchAdvertiser.RUNNING, message);
 
             try {
-                this.queue.put(new MoreElement(mavenFinder, pattern));
+                this.queue.put(new MoreElement(search, pattern));
             } catch (Throwable e) {
                 log.error(e.getLocalizedMessage(), e);
             }
@@ -39,17 +39,17 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
     /**
      * 执行精确查询
      *
-     * @param mavenFinder 搜索对象
-     * @param groupId     域名
-     * @param artifactId  工件名
+     * @param search     搜索接口
+     * @param groupId    域名
+     * @param artifactId 工件名
      */
-    public void searchExtra(SearchOperation mavenFinder, String groupId, String artifactId) {
+    public void searchExtra(MavenSearch search, String groupId, String artifactId) {
         if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
             String message = MavenMessage.SEARCHING_EXTRA.fill(groupId, artifactId);
-            mavenFinder.setAdvertiser(message, AdvertiserType.RUNNING);
+            search.setRunningText(MavenSearchAdvertiser.RUNNING, message);
 
             try {
-                this.queue.put(new ExtraElement(mavenFinder, groupId, artifactId));
+                this.queue.put(new ExtraElement(search, groupId, artifactId));
             } catch (Throwable e) {
                 log.error(e.getLocalizedMessage(), e);
             }
@@ -57,7 +57,7 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
     }
 
     public void run() {
-        log.warn("start MavenFinder Search Extra Thread ..");
+        log.warn("start " + SearchServiceThread.class.getSimpleName() + " ..");
         while (this.notTerminate) {
             try {
                 Object object = this.queue.take();
@@ -67,19 +67,19 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
                     ExtraElement element = (ExtraElement) object;
                     String groupId = element.getGroupId();
                     String artifactId = element.getArtifactId();
-                    SearchOperation mavenFinder = element.getMavenFinder();
+                    MavenSearch search = element.getSearch();
 
                     this.searching = element;
                     if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
                         MavenSearchResult result;
                         try {
-                            result = this.searchExtra(mavenFinder.getDatabase(), groupId, artifactId);
+                            result = this.searchExtra(search.getDatabase(), groupId, artifactId);
                         } finally {
                             this.searching = null;
                         }
 
                         if (result != null) {
-                            mavenFinder.repaint();
+                            search.repaint();
                         }
                     }
                     continue;
@@ -88,9 +88,9 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
                 // more 按钮的模糊查询操作
                 if (object instanceof MoreElement) {
                     MoreElement element = (MoreElement) object;
-                    SearchOperation mavenFinder = element.getOperation();
+                    MavenSearch search = element.getSearch();
                     String pattern = element.getPattern();
-                    MavenArtifactDatabase database = mavenFinder.getDatabase();
+                    MavenArtifactDatabase database = search.getDatabase();
 
                     MavenSearchResult result = database.select(pattern);
                     if (result != null && result.getFoundNumber() > result.size()) { // 还有未加载的数据
@@ -103,8 +103,8 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
                             list.addAll(next.getList());
                             SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, next.getStart(), foundNumber);
                             database.insert(pattern, newResult); // 保存到数据库
-                            mavenFinder.getContext().setPatternSearchResult(newResult); // 保存查询记录
-                            mavenFinder.repaintMore(newResult); // 重新渲染
+                            search.getContext().setMavenSearchResult(newResult); // 保存查询记录
+                            search.repaintMore(newResult); // 重新渲染
                         }
                     }
                     continue;

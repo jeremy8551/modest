@@ -33,10 +33,10 @@ public abstract class AbstractSearchThread<T> extends Thread {
     /**
      * 设置 Maven 仓库
      *
-     * @param mavenRepository Maven仓库
+     * @param repository Maven仓库
      */
-    public void setRepository(MavenRepository mavenRepository) {
-        this.mavenRepository = Ensure.notNull(mavenRepository);
+    public void setRepository(MavenRepository repository) {
+        this.mavenRepository = Ensure.notNull(repository);
     }
 
     /**

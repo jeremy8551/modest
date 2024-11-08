@@ -9,13 +9,13 @@ public class MavenPluginFactory implements SearchEverywhereContributorFactory<Ob
 
     public @NotNull SearchEverywhereContributor<Object> createContributor(@NotNull AnActionEvent event) {
         MavenPluginContext context = new MavenPluginContext(event);
-        MavenPlugin mavenFinder = new MavenPlugin(context);
+        MavenSearchPlugin plugin = new MavenSearchPlugin(context);
 
         // 保存编辑器中选中的文本
-        context.setEditorSelectText(mavenFinder.getEditorSelectText());
+        context.setEditorSelectText(plugin.getEditorSelectText());
 
         // 启动线程
-        new MavenPluginThread(mavenFinder).start();
-        return mavenFinder.getContributor();
+        new MavenPluginThread(plugin).start();
+        return plugin.getContributor();
     }
 }

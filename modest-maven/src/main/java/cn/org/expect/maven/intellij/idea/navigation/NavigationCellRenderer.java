@@ -4,9 +4,7 @@ import java.awt.*;
 import javax.swing.*;
 
 import cn.org.expect.maven.intellij.idea.MavenPluginContributor;
-import cn.org.expect.maven.search.SearchOperation;
 import cn.org.expect.util.Dates;
-import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.SearchEverywherePsiRenderer;
 import com.intellij.ui.JBColor;
@@ -17,11 +15,8 @@ import com.intellij.util.ui.UIUtil;
 
 public class NavigationCellRenderer extends SearchEverywherePsiRenderer {
 
-    private SearchOperation mavenFinder;
-
-    public NavigationCellRenderer(MavenPluginContributor contributor, SearchOperation mavenFinder) {
+    public NavigationCellRenderer(MavenPluginContributor contributor) {
         super(contributor);
-        this.mavenFinder = Ensure.notNull(mavenFinder);
     }
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {

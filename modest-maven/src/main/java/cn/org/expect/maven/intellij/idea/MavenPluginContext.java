@@ -8,7 +8,7 @@ import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationResultSet;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.search.SearchContext;
+import cn.org.expect.maven.search.MavenSearchContext;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
@@ -17,7 +17,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.Advertiser;
 
-public class MavenPluginContext implements SearchContext {
+public class MavenPluginContext implements MavenSearchContext {
 
     /** 事件 */
     private final AnActionEvent event;
@@ -56,7 +56,7 @@ public class MavenPluginContext implements SearchContext {
     private volatile ProgressIndicator progressIndicator;
 
     /** 最近一次模糊搜索结果 */
-    private volatile MavenSearchResult mavenFinderResult;
+    private volatile MavenSearchResult mavenSearchResult;
 
     /** 搜索输入框 */
     private volatile JTextField searchField;
@@ -102,18 +102,18 @@ public class MavenPluginContext implements SearchContext {
     }
 
     @Override
-    public synchronized void setPatternSearchResult(MavenSearchResult result) {
+    public synchronized void setMavenSearchResult(MavenSearchResult result) {
         Ensure.notNull(result);
         List<MavenArtifact> list = result.getList();
         for (MavenArtifact artifact : list) {
             artifact.setFold(true);
         }
-        this.mavenFinderResult = result;
+        this.mavenSearchResult = result;
     }
 
     @Override
-    public MavenSearchResult getPatternSearchResult() {
-        return this.mavenFinderResult;
+    public MavenSearchResult getMavenSearchResult() {
+        return this.mavenSearchResult;
     }
 
     /**

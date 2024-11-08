@@ -3,10 +3,11 @@ package cn.org.expect.maven.intellij.idea.action;
 import java.io.File;
 import java.io.OutputStreamWriter;
 
-import cn.org.expect.maven.intellij.idea.MavenPlugin;
 import cn.org.expect.maven.intellij.idea.MavenPluginContext;
-import cn.org.expect.maven.search.SearchOperation;
+import cn.org.expect.maven.intellij.idea.MavenSearchPlugin;
 import cn.org.expect.maven.intellij.idea.RepositoryConfigFactory;
+import cn.org.expect.maven.search.MavenSearch;
+import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
@@ -34,10 +35,10 @@ public class CleanRepositoryLastUpdated extends AnAction {
         this.success = 0;
 
         MavenPluginContext context = new MavenPluginContext(event);
-        SearchOperation mavenFinder = new MavenPlugin(context);
+        MavenSearch search = new MavenSearchPlugin(context);
         File repository = RepositoryConfigFactory.getInstance(event).getRepository();
         if (repository == null) {
-            mavenFinder.sendErrorNotification("Cannot find Maven local repository!");
+            search.sendNotification(MavenSearchNotification.ERROR, "Cannot find Maven local repository!");
             return;
         }
 
@@ -61,9 +62,9 @@ public class CleanRepositoryLastUpdated extends AnAction {
 
             String message = new MessageFormatter("Found {}, Delete {}").fill(this.find, this.success);
             if (this.success > 0) {
-                mavenFinder.sendNotification(message, "View Log File", logfile);
+                search.sendNotification(MavenSearchNotification.NORMAL, message, "View Log File", logfile);
             } else {
-                mavenFinder.sendNotification(message);
+                search.sendNotification(MavenSearchNotification.NORMAL, message);
             }
         }
     }

@@ -23,13 +23,13 @@ public class SearchInputThread extends AbstractSearchThread<PatternElement> {
     /**
      * 执行模糊搜索
      *
-     * @param mavenFinder Maven工具
-     * @param pattern     字符串
+     * @param search  搜索接口
+     * @param pattern 字符串
      */
-    public void search(SearchOperation mavenFinder, String pattern) {
+    public void search(MavenSearch search, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
-            mavenFinder.setAdvertiser(MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)), AdvertiserType.RUNNING);
-            this.add(new PatternElement(mavenFinder, pattern));
+            search.setRunningText(MavenSearchAdvertiser.RUNNING, MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
+            this.add(new PatternElement(search, pattern));
         }
     }
 
@@ -44,37 +44,37 @@ public class SearchInputThread extends AbstractSearchThread<PatternElement> {
     }
 
     public void run() {
-        log.warn("start MavenFinder Search Thread ..");
+        log.warn("start " + SearchInputThread.class.getSimpleName() + " ..");
         while (this.notTerminate) {
             try {
                 PatternElement take = this.queue.take();
                 String pattern = take.getPattern();
-                SearchOperation mavenFinder = take.getOperation();
+                MavenSearch search = take.getSearch();
 
                 // 设置未返回结果时显示的内容与广告栏信息
-                mavenFinder.setReminderText(MavenMessage.SEARCHING.getMessage());
-                mavenFinder.setAdvertiser(MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)), AdvertiserType.RUNNING);
+                search.setWaitingText(MavenMessage.SEARCHING.getMessage());
+                search.setRunningText(MavenSearchAdvertiser.RUNNING, MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
 
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
-                Dates.sleep(mavenFinder.getContext().getInputIntervalTime());
+                Dates.sleep(search.getContext().getInputIntervalTime());
 
                 // 查询
                 if (this.queue.isEmpty()) {
-                    MavenArtifactDatabase database = mavenFinder.getDatabase();
+                    MavenArtifactDatabase database = search.getDatabase();
                     MavenSearchResult result = this.query(database, pattern);
                     if (!this.notTerminate) {
                         continue;
                     } else if (result == null) {
                         String message = MavenMessage.FAIL_SEND_REQUEST.getMessage();
-                        mavenFinder.setReminderText(message);
-                        mavenFinder.setAdvertiser(message, AdvertiserType.ERROR);
+                        search.setWaitingText(message);
+                        search.setRunningText(MavenSearchAdvertiser.ERROR, message);
                     } else if (result.size() == 0) {
                         String message = MavenMessage.NOTHING_FOUND.getMessage();
-                        mavenFinder.setReminderText(message);
-                        mavenFinder.setAdvertiser(message, AdvertiserType.NORMAL);
+                        search.setWaitingText(message);
+                        search.setRunningText(MavenSearchAdvertiser.NORMAL, message);
                     } else {
-                        mavenFinder.getContext().setPatternSearchResult(result);
-                        mavenFinder.repaint(result);
+                        search.getContext().setMavenSearchResult(result);
+                        search.repaint(result);
                     }
                 }
             } catch (Throwable e) {

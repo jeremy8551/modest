@@ -27,16 +27,16 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
 
     private final MavenPluginChooseContributor contributor;
 
-    private final MavenPlugin mavenFinder;
+    private final MavenSearchPlugin plugin;
 
     private Runnable rebuildList;
 
     private final Alarm rebuildListAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD, this);
 
-    public MavenPluginContributor(MavenPlugin mavenFinder) {
-        super(mavenFinder.getContext().getActionEvent());
-        this.contributor = new MavenPluginChooseContributor(mavenFinder);
-        this.mavenFinder = mavenFinder;
+    public MavenPluginContributor(MavenSearchPlugin plugin) {
+        super(plugin.getContext().getActionEvent());
+        this.contributor = new MavenPluginChooseContributor(plugin);
+        this.plugin = plugin;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
 
     @Override
     public @NotNull ListCellRenderer<Object> getElementsRenderer() {
-        return new NavigationCellRenderer(this, this.mavenFinder);
+        return new NavigationCellRenderer(this);
     }
 
     /**
@@ -69,7 +69,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
     @Override
     public @NotNull String filterControlSymbols(String pattern) {
         if (pattern != null && pattern.length() > 0) {
-            this.mavenFinder.asyncSearch(MavenUtils.parse(pattern));
+            this.plugin.asyncSearch(MavenUtils.parse(pattern));
         }
         return pattern;
     }
@@ -81,7 +81,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
 
         if (selectedObject instanceof SearchNavigation) {
             SearchNavigation catalog = (SearchNavigation) selectedObject;
-            this.mavenFinder.getContext().setSelectedNavigation(catalog); // 保存选择记录
+            this.plugin.getContext().setSelectedNavigation(catalog); // 保存选择记录
 
             MavenArtifact artifact = catalog.getArtifact();
             log.warn("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
@@ -91,15 +91,15 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
                 artifact.setFold(false);
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
-                if (this.mavenFinder.getDatabase().select(groupId, artifactId) == null) {
+                if (this.plugin.getDatabase().select(groupId, artifactId) == null) {
                     catalog.setLeftIcon(MavenPluginIcon.LEFT_WAITING); // 更改为：等待图标
-                    this.mavenFinder.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
+                    this.plugin.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
                 } else {
-                    this.mavenFinder.repaint();
+                    this.plugin.repaint();
                 }
             } else { // 设置为：折叠
                 artifact.setFold(true);
-                this.mavenFinder.repaint();
+                this.plugin.repaint();
             }
             return false;
         }
@@ -138,7 +138,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
      */
     @Override
     public String getAdvertisement() {
-        return this.mavenFinder.getRemoteRepository().getAddress();
+        return this.plugin.getRemoteRepository().getAddress();
     }
 
     @Override

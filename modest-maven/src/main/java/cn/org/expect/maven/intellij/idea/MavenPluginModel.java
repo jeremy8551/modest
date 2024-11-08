@@ -49,7 +49,7 @@ public class MavenPluginModel extends FilteringGotoByModel<Object> {
 
     @Override
     public String getCheckBoxName() {
-        return "MavenFinderBox";
+        return MavenSearchPlugin.class.getSimpleName() + "CheckBox";
     }
 
     @Override

@@ -10,10 +10,10 @@ import com.intellij.openapi.project.Project;
 
 public class MavenPluginChooseContributor implements ChooseByNameContributor {
 
-    private final MavenPlugin mavenFinder;
+    private final MavenSearchPlugin plugin;
 
-    public MavenPluginChooseContributor(MavenPlugin mavenFinder) {
-        this.mavenFinder = Ensure.notNull(mavenFinder);
+    public MavenPluginChooseContributor(MavenSearchPlugin plugin) {
+        this.plugin = Ensure.notNull(plugin);
     }
 
     /**
@@ -25,7 +25,7 @@ public class MavenPluginChooseContributor implements ChooseByNameContributor {
      * @return 在搜索结果 ALL 选项卡中显示的记录
      */
     public synchronized String[] getNames(Project project, boolean includeNonProjectItems) {
-        SearchNavigationResultSet resultSet = this.mavenFinder.getContext().getNavigationResultSet();
+        SearchNavigationResultSet resultSet = this.plugin.getContext().getNavigationResultSet();
         if (resultSet != null) {
             return resultSet.getNames();
         } else {
@@ -34,7 +34,7 @@ public class MavenPluginChooseContributor implements ChooseByNameContributor {
     }
 
     public synchronized NavigationItem[] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
-        SearchNavigationResultSet resultSet = this.mavenFinder.getContext().getNavigationResultSet();
+        SearchNavigationResultSet resultSet = this.plugin.getContext().getNavigationResultSet();
         SearchNavigationList list = resultSet.getItems(name);
         if (list != null) {
             return list.toArray();
