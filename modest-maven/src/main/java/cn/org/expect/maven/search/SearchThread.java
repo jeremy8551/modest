@@ -25,7 +25,7 @@ public class SearchThread extends AbstractSearchThread<Object> {
      * @param mavenFinder Maven工具
      * @param pattern     字符串
      */
-    public void searchMore(MavenSearch mavenFinder, String pattern) {
+    public void searchMore(SearchOperation mavenFinder, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
             String message = MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern));
             mavenFinder.setAdvertiser(message, MavenPluginIcon.BOTTOM_WAITING);
@@ -45,7 +45,7 @@ public class SearchThread extends AbstractSearchThread<Object> {
      * @param groupId     域名
      * @param artifactId  工件名
      */
-    public void searchExtra(MavenSearch mavenFinder, String groupId, String artifactId) {
+    public void searchExtra(SearchOperation mavenFinder, String groupId, String artifactId) {
         if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
             String message = MavenMessage.SEARCHING_EXTRA.fill(groupId, artifactId);
             mavenFinder.setAdvertiser(message, MavenPluginIcon.BOTTOM_WAITING);
@@ -69,7 +69,7 @@ public class SearchThread extends AbstractSearchThread<Object> {
                     ExtraElement element = (ExtraElement) object;
                     String groupId = element.getGroupId();
                     String artifactId = element.getArtifactId();
-                    MavenSearch mavenFinder = element.getMavenFinder();
+                    SearchOperation mavenFinder = element.getMavenFinder();
 
                     this.searching = element;
                     if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
@@ -90,7 +90,7 @@ public class SearchThread extends AbstractSearchThread<Object> {
                 // more 按钮的模糊查询操作
                 if (object instanceof MoreElement) {
                     MoreElement element = (MoreElement) object;
-                    MavenSearch mavenFinder = element.getMavenFinder();
+                    SearchOperation mavenFinder = element.getMavenFinder();
                     String pattern = element.getPattern();
                     MavenArtifactDatabase database = mavenFinder.getDatabase();
 

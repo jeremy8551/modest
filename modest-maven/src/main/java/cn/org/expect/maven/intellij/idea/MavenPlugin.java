@@ -1,4 +1,4 @@
-package cn.org.expect.maven.search;
+package cn.org.expect.maven.intellij.idea;
 
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -11,9 +11,6 @@ import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.jdk.JavaDialectFactory;
-import cn.org.expect.maven.intellij.idea.MavenPluginChooseContributor;
-import cn.org.expect.maven.intellij.idea.MavenPluginContributor;
-import cn.org.expect.maven.intellij.idea.MavenPluginIcon;
 import cn.org.expect.maven.intellij.idea.navigation.MavenFoundElementInfo;
 import cn.org.expect.maven.intellij.idea.navigation.MavenFoundElementInfoComparator;
 import cn.org.expect.maven.intellij.idea.navigation.MavenSearchNavigation;
@@ -23,6 +20,9 @@ import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationList;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationResultSet;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.search.AbstractSearch;
+import cn.org.expect.maven.search.MavenMessage;
+import cn.org.expect.maven.search.SearchOperation;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
@@ -49,22 +49,18 @@ import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.Advertiser;
 import org.jetbrains.annotations.NotNull;
 
-public class MavenSearch extends AbstractSearch {
-    private static final Logger log = Logger.getInstance(MavenSearch.class);
+public class MavenPlugin extends AbstractSearch implements SearchOperation {
+    private static final Logger log = Logger.getInstance(MavenPlugin.class);
 
-    private final MavenContext context;
+    private final MavenPluginContext context;
 
-    public MavenSearch(MavenContext context) {
+    public MavenPlugin(MavenPluginContext context) {
         super(context);
         this.context = Ensure.notNull(context);
     }
 
-    /**
-     * 返回上下文信息
-     *
-     * @return 上下文信息
-     */
-    public MavenContext getContext() {
+    @Override
+    public MavenPluginContext getContext() {
         return context;
     }
 
@@ -79,22 +75,14 @@ public class MavenSearch extends AbstractSearch {
         return contributor;
     }
 
-    /**
-     * 多线程执行模糊搜索
-     *
-     * @param pattern 字符串
-     */
+    @Override
     public void asyncSearch(String pattern) {
         this.context.setSearchPattern(pattern);
+        this.context.setSelectedNavigation(null);
         this.getInputSearch().search(this, pattern);
     }
 
-    /**
-     * 多线程执行精确搜索
-     *
-     * @param groupId    域名
-     * @param artifactId 工件名
-     */
+    @Override
     public void asyncSearch(String groupId, String artifactId) {
         this.getSearch().searchExtra(this, groupId, artifactId);
     }
@@ -115,7 +103,7 @@ public class MavenSearch extends AbstractSearch {
             }
         }
 
-        MavenContext context = this.context;
+        MavenPluginContext context = this.context;
         SearchEverywhereUI ui = manager.getCurrentlyShownUI();
         context.setSearchEverywhereUI(ui);
 
@@ -164,31 +152,19 @@ public class MavenSearch extends AbstractSearch {
         manager.setSelectedTabID(this.context.getContributor().getSearchProviderId()); // 选择标签页
     }
 
-    /**
-     * 将文本信息复制到剪切板中
-     *
-     * @param text 文本信息
-     */
+    @Override
     public void copyToClipboard(String text) {
         StringSelection selection = new StringSelection(text);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, null);
     }
 
-    /**
-     * 推送正常通知
-     *
-     * @param text 通知内容
-     */
+    @Override
     public void sendNotification(String text, Object... array) {
         this.sendMessage(new MessageFormatter(text).fill(array), NotificationType.INFORMATION);
     }
 
-    /**
-     * 推送错误通知
-     *
-     * @param text 通知内容
-     */
+    @Override
     public void sendErrorNotification(String text, Object... array) {
         this.sendMessage(new MessageFormatter(text).fill(array), NotificationType.ERROR);
     }
@@ -196,15 +172,16 @@ public class MavenSearch extends AbstractSearch {
     protected void sendMessage(String text, NotificationType type) {
         Project project = context.getActionEvent().getProject();
         if (project != null) {
-            Notification notification = new Notification(ClassUtils.getPackageName(MavenSearch.class, 3), this.getName(), text, type);
+            Notification notification = new Notification(ClassUtils.getPackageName(MavenPlugin.class, 3), this.getName(), text, type);
             Notifications.Bus.notify(notification, project);
         }
     }
 
+    @Override
     public void sendNotification(String text, String actionName, File file) {
         Project project = context.getActionEvent().getProject();
         if (project != null) {
-            Notification notification = new Notification(ClassUtils.getPackageName(MavenSearch.class, 3), this.getName(), text, NotificationType.INFORMATION);
+            Notification notification = new Notification(ClassUtils.getPackageName(MavenPlugin.class, 3), this.getName(), text, NotificationType.INFORMATION);
             notification.addAction(new NotificationAction(actionName) {
 
                 @Override
@@ -245,21 +222,12 @@ public class MavenSearch extends AbstractSearch {
         return !this.context.getContributor().getSearchProviderId().equals(selectedTabID);
     }
 
-    /**
-     * 设置搜索输入框中的文本
-     *
-     * @param text 文本信息
-     */
+    @Override
     public void setSearchFieldText(String text) {
         context.getSearchEverywhereUI().getSearchField().setText(text);
     }
 
-    /**
-     * 更新搜索结果下方：广告栏中的信息
-     *
-     * @param message 文本信息
-     * @param icon    图标
-     */
+    @Override
     public void setAdvertiser(String message, Icon icon) {
         if (this.notMavenFinderTab()) {
             return;
@@ -290,12 +258,7 @@ public class MavenSearch extends AbstractSearch {
         }
     }
 
-    /**
-     * 设置提醒文本 <br>
-     * 不能使用 Idea 的渲染线程执行这个方法，需要有单独的线程
-     *
-     * @param message 文本信息
-     */
+    @Override
     public void setReminderText(String message) {
         if (this.notMavenFinderTab()) {
             return;
@@ -322,19 +285,13 @@ public class MavenSearch extends AbstractSearch {
         }
     }
 
-    /**
-     * 使用最新的查询结果，渲染 UI 界面
-     */
+    @Override
     public synchronized void repaint() {
         MavenSearchResult result = this.context.getPatternSearchResult();
         this.repaint(result);
     }
 
-    /**
-     * 使用参数指定的查询结果，渲染 UI 界面
-     *
-     * @param result 查询结果
-     */
+    @Override
     public synchronized void repaint(MavenSearchResult result) {
         if (result == null) {
             log.warn("repaint fail, result is null!");
@@ -372,11 +329,7 @@ public class MavenSearch extends AbstractSearch {
         this.setAdvertiser(message, MavenPluginIcon.BOTTOM);
     }
 
-    /**
-     * 使用参数指定的查询结果，渲染 UI 界面
-     *
-     * @param result 查询结果
-     */
+    @Override
     public synchronized void repaintMore(MavenSearchResult result) {
         Ensure.notNull(result);
 
@@ -408,7 +361,7 @@ public class MavenSearch extends AbstractSearch {
      * @param listModel 组件的数据模型
      */
     protected void setSelection(JBList<Object> jbList, SearchListModel listModel) {
-        SearchNavigation selectedItem = this.context.getSelectCatalog();
+        SearchNavigation selectedItem = this.context.getSelectedNavigation();
         if (selectedItem != null) {
             int selectedIndex = -1;
             for (int i = listModel.getSize() - 1; i >= 0; i--) {

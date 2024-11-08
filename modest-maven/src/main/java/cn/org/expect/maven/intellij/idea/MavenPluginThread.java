@@ -1,9 +1,8 @@
 package cn.org.expect.maven.intellij.idea;
 
-import cn.org.expect.maven.search.MavenSearch;
-import cn.org.expect.maven.search.MavenContext;
 import cn.org.expect.maven.search.MavenMessage;
 import cn.org.expect.maven.search.MavenUtils;
+import cn.org.expect.maven.search.SearchOperation;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -12,9 +11,9 @@ import com.intellij.openapi.diagnostic.Logger;
 public class MavenPluginThread extends Thread {
     private static final Logger log = Logger.getInstance(MavenPluginThread.class);
 
-    private final MavenSearch mavenFinder;
+    private final MavenPlugin mavenFinder;
 
-    public MavenPluginThread(MavenSearch mavenFinder) {
+    public MavenPluginThread(SearchOperation mavenFinder) {
         super();
         this.setName(MavenPluginThread.class.getSimpleName());
         this.mavenFinder = Ensure.notNull(mavenFinder);
@@ -25,7 +24,7 @@ public class MavenPluginThread extends Thread {
         log.warn(MavenMessage.START_THREAD.fill(this.getName()));
 
         // 上下文信息
-        MavenContext context = this.mavenFinder.getContext();
+        MavenPluginContext context = this.mavenFinder.getContext();
         AnActionEvent event = context.getActionEvent();
 
         // 读取 Idea 搜索功能中的组件信息

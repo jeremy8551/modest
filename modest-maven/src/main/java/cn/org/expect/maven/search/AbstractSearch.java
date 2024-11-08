@@ -1,5 +1,6 @@
 package cn.org.expect.maven.search;
 
+import cn.org.expect.maven.intellij.idea.MavenPluginContext;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.central.CentralRepository;
 import cn.org.expect.maven.repository.local.LocalRepository;
@@ -20,7 +21,7 @@ public abstract class AbstractSearch {
 
     private volatile static MavenArtifactDatabase DATABASE;
 
-    public AbstractSearch(MavenContext context) {
+    public AbstractSearch(MavenPluginContext context) {
         LocalRepositoryConfig config = LocalRepositoryConfig.getInstance(context.getActionEvent());
         this.localMavenRepository = new LocalRepository(config);
         this.mavenRepository = new CentralRepository();

@@ -3,8 +3,8 @@ package cn.org.expect.maven.intellij.idea.navigation;
 import java.awt.*;
 import javax.swing.*;
 
-import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.intellij.idea.MavenPluginContributor;
+import cn.org.expect.maven.search.SearchOperation;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
@@ -17,9 +17,9 @@ import com.intellij.util.ui.UIUtil;
 
 public class NavigationCellRenderer extends SearchEverywherePsiRenderer {
 
-    private MavenSearch mavenFinder;
+    private SearchOperation mavenFinder;
 
-    public NavigationCellRenderer(MavenPluginContributor contributor, MavenSearch mavenFinder) {
+    public NavigationCellRenderer(MavenPluginContributor contributor, SearchOperation mavenFinder) {
         super(contributor);
         this.mavenFinder = Ensure.notNull(mavenFinder);
     }

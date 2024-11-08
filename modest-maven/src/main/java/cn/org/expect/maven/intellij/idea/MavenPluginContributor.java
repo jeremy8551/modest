@@ -3,7 +3,6 @@ package cn.org.expect.maven.intellij.idea;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.search.MavenUtils;
 import cn.org.expect.maven.intellij.idea.navigation.NavigationCellRenderer;
@@ -28,13 +27,13 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
 
     private final MavenPluginChooseContributor contributor;
 
-    private final MavenSearch mavenFinder;
+    private final MavenPlugin mavenFinder;
 
     private Runnable rebuildList;
 
     private final Alarm rebuildListAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD, this);
 
-    public MavenPluginContributor(MavenSearch mavenFinder) {
+    public MavenPluginContributor(MavenPlugin mavenFinder) {
         super(mavenFinder.getContext().getActionEvent());
         this.contributor = new MavenPluginChooseContributor(mavenFinder);
         this.mavenFinder = mavenFinder;
@@ -82,7 +81,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
 
         if (selectedObject instanceof SearchNavigation) {
             SearchNavigation catalog = (SearchNavigation) selectedObject;
-            this.mavenFinder.getContext().setSelectCatalog(catalog); // 保存选择记录
+            this.mavenFinder.getContext().setSelectedNavigation(catalog); // 保存选择记录
 
             MavenArtifact artifact = catalog.getArtifact();
             log.warn("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());

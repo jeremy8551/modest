@@ -7,13 +7,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.search.MavenContext;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenUtils;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
+import cn.org.expect.maven.search.SearchOperation;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.NetUtils;
@@ -26,9 +25,9 @@ import com.intellij.ui.components.JBList;
 public class NavigationPopupMenu {
     private static final Logger log = Logger.getInstance(NavigationPopupMenu.class);
 
-    private final MavenSearch mavenFinder;
+    private final MavenPlugin mavenFinder;
 
-    public NavigationPopupMenu(MavenSearch mavenFinder) {
+    public NavigationPopupMenu(SearchOperation mavenFinder) {
         this.mavenFinder = Ensure.notNull(mavenFinder);
         this.init();
     }
@@ -49,7 +48,7 @@ public class NavigationPopupMenu {
         itemPopupMenu.add(repeat);
         itemPopupMenu.add(clearCache);
 
-        MavenContext context = this.mavenFinder.getContext();
+        MavenPluginContext context = this.mavenFinder.getContext();
         JBList<Object> JBList = context.getJBList();
         SearchListModel listModel = context.getJBListModel();
 

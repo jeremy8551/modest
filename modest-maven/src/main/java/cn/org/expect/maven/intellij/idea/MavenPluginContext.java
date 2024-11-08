@@ -1,4 +1,4 @@
-package cn.org.expect.maven.search;
+package cn.org.expect.maven.intellij.idea;
 
 import java.util.List;
 import javax.swing.*;
@@ -6,9 +6,9 @@ import javax.swing.*;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigation;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationResultSet;
-import cn.org.expect.maven.intellij.idea.MavenPluginContributor;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.search.SearchContext;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
@@ -17,7 +17,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.Advertiser;
 
-public class MavenContext {
+public class MavenPluginContext implements SearchContext {
 
     /** 事件 */
     private final AnActionEvent event;
@@ -35,7 +35,7 @@ public class MavenContext {
     private volatile String editorSelectText;
 
     /** 选中的导航记录 */
-    private volatile SearchNavigation selectNavigationList;
+    private volatile SearchNavigation selectedNavigation;
 
     /** 选中的版本列表记录 */
     private volatile SearchNavigationItem selectNavigationItem;
@@ -64,7 +64,7 @@ public class MavenContext {
     /** 导航记录结果集 */
     private volatile SearchNavigationResultSet navigationResultSet;
 
-    public MavenContext(AnActionEvent event) {
+    public MavenPluginContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
         this.inputIntervalTime = 300;
     }
@@ -81,32 +81,27 @@ public class MavenContext {
         this.contributor = contributor;
     }
 
-    /**
-     * 返回最后一次模糊查询的文本
-     *
-     * @return 文本信息
-     */
+    @Override
     public String getSearchPattern() {
         return searchPattern;
     }
 
-    /**
-     * 设置最后一次模糊查询的文本
-     *
-     * @param searchPattern 文本信息
-     */
+    @Override
     public void setSearchPattern(String searchPattern) {
         this.searchPattern = searchPattern;
     }
 
+    @Override
     public long getInputIntervalTime() {
         return this.inputIntervalTime;
     }
 
+    @Override
     public void setInputIntervalTime(long continueInputIntervalTime) {
         this.inputIntervalTime = continueInputIntervalTime;
     }
 
+    @Override
     public synchronized void setPatternSearchResult(MavenSearchResult result) {
         Ensure.notNull(result);
         List<MavenArtifact> list = result.getList();
@@ -116,11 +111,7 @@ public class MavenContext {
         this.mavenFinderResult = result;
     }
 
-    /**
-     * 返回上一次查询结果
-     *
-     * @return 查询结果
-     */
+    @Override
     public MavenSearchResult getPatternSearchResult() {
         return this.mavenFinderResult;
     }
@@ -148,17 +139,17 @@ public class MavenContext {
      *
      * @return 导航栏
      */
-    public SearchNavigation getSelectCatalog() {
-        return this.selectNavigationList;
+    public SearchNavigation getSelectedNavigation() {
+        return this.selectedNavigation;
     }
 
     /**
      * 设置选中的导航栏
      *
-     * @param JBListSelectItem 导航栏
+     * @param navigation 导航栏
      */
-    public void setSelectCatalog(SearchNavigation JBListSelectItem) {
-        this.selectNavigationList = JBListSelectItem;
+    public void setSelectedNavigation(SearchNavigation navigation) {
+        this.selectedNavigation = navigation;
     }
 
     /**
@@ -227,10 +218,12 @@ public class MavenContext {
         this.searchField = searchField;
     }
 
+    @Override
     public SearchNavigationResultSet getNavigationResultSet() {
         return navigationResultSet;
     }
 
+    @Override
     public void setNavigationResultSet(SearchNavigationResultSet navigationResultSet) {
         this.navigationResultSet = navigationResultSet;
     }

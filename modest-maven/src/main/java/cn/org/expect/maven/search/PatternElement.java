@@ -1,19 +1,20 @@
 package cn.org.expect.maven.search;
 
 public class PatternElement {
-    private MavenSearch mavenFinder;
+    
+    private SearchOperation mavenFinder;
     private String pattern;
 
-    public PatternElement(MavenSearch mavenFinder, String pattern) {
+    public PatternElement(SearchOperation mavenFinder, String pattern) {
         this.mavenFinder = mavenFinder;
         this.pattern = pattern;
     }
 
-    public MavenSearch getMavenFinder() {
+    public SearchOperation getMavenFinder() {
         return mavenFinder;
     }
 
-    public void setMavenFinder(MavenSearch mavenFinder) {
+    public void setMavenFinder(SearchOperation mavenFinder) {
         this.mavenFinder = mavenFinder;
     }
 

@@ -27,11 +27,10 @@ public class InputSearchThread extends AbstractSearchThread<PatternElement> {
      * @param mavenFinder Maven工具
      * @param pattern     字符串
      */
-    public void search(MavenSearch mavenFinder, String pattern) {
+    public void search(SearchOperation mavenFinder, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
             String message = MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern));
             mavenFinder.setAdvertiser(message, MavenPluginIcon.BOTTOM_WAITING);
-            mavenFinder.getContext().setSelectCatalog(null);
             this.add(new PatternElement(mavenFinder, pattern));
         }
     }
@@ -52,7 +51,7 @@ public class InputSearchThread extends AbstractSearchThread<PatternElement> {
             try {
                 PatternElement take = this.queue.take();
                 String pattern = take.getPattern();
-                MavenSearch mavenFinder = take.getMavenFinder();
+                SearchOperation mavenFinder = take.getMavenFinder();
 
                 // 设置未返回结果时显示的内容与广告栏信息
                 mavenFinder.setReminderText(MavenMessage.SEARCHING.getMessage());

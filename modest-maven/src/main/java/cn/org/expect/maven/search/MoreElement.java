@@ -2,7 +2,7 @@ package cn.org.expect.maven.search;
 
 public class MoreElement extends PatternElement {
 
-    public MoreElement(MavenSearch mavenFinder, String pattern) {
+    public MoreElement(SearchOperation mavenFinder, String pattern) {
         super(mavenFinder, pattern);
     }
 }

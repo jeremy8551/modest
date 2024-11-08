@@ -1,9 +1,9 @@
 package cn.org.expect.maven.intellij.idea;
 
-import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.intellij.idea.navigation.EmptySearchNavigation;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationList;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationResultSet;
+import cn.org.expect.maven.search.SearchOperation;
 import cn.org.expect.util.Ensure;
 import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
@@ -11,9 +11,9 @@ import com.intellij.openapi.project.Project;
 
 public class MavenPluginChooseContributor implements ChooseByNameContributor {
 
-    private final MavenSearch mavenFinder;
+    private final SearchOperation mavenFinder;
 
-    public MavenPluginChooseContributor(MavenSearch mavenFinder) {
+    public MavenPluginChooseContributor(SearchOperation mavenFinder) {
         this.mavenFinder = Ensure.notNull(mavenFinder);
     }
 
