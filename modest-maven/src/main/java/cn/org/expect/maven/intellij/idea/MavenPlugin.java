@@ -21,6 +21,7 @@ import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationResultSet;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.AbstractSearch;
+import cn.org.expect.maven.search.AdvertiserType;
 import cn.org.expect.maven.search.MavenMessage;
 import cn.org.expect.maven.search.SearchOperation;
 import cn.org.expect.util.ClassUtils;
@@ -228,7 +229,7 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
     }
 
     @Override
-    public void setAdvertiser(String message, Icon icon) {
+    public void setAdvertiser(String message, AdvertiserType type) {
         if (this.notMavenFinderTab()) {
             return;
         }
@@ -238,15 +239,29 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
             return;
         }
 
-        if (icon == MavenPluginIcon.BOTTOM || icon == MavenPluginIcon.BOTTOM_WAITING) {
-            message = "<html><span style='color:orange;'>" + message + "</span></html>";
-        } else if (icon == MavenPluginIcon.BOTTOM_ERROR) {
-            message = "<html><span style='color:red;'>" + message + "</span></html>";
+        String fontColor = "orange";
+        Icon icon;
+        switch (type) {
+            case NORMAL:
+                icon = MavenPluginIcon.BOTTOM;
+                break;
+
+            case RUNNING:
+                icon = MavenPluginIcon.BOTTOM_WAITING;
+                break;
+
+            case ERROR:
+                icon = MavenPluginIcon.BOTTOM_ERROR;
+                fontColor = "red";
+                break;
+
+            default:
+                icon = null;
         }
 
         try {
             JLabel myTextPanel = JavaDialectFactory.get().getField(advertiser, "myTextPanel");
-            myTextPanel.setText(message);
+            myTextPanel.setText(new MessageFormatter("<html><span style='color:{};'>{}</span></html>").fill(fontColor, message));
             myTextPanel.setIcon(icon);
             myTextPanel.repaint();
 
@@ -326,7 +341,7 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
         // 设置广告信息
         log.warn("repaint: " + JBList.getClass().getSimpleName() + ", size: " + listModel.getSize() + ", " + JBList.getModel().getSize() + ", " + listModel.isResultsExpired());
         String message = MavenMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
-        this.setAdvertiser(message, MavenPluginIcon.BOTTOM);
+        this.setAdvertiser(message, AdvertiserType.NORMAL);
     }
 
     @Override
@@ -339,7 +354,7 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
         // 设置广告信息
         log.warn("rebuild, size: " + resultSet.size());
         String message = MavenMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
-        this.setAdvertiser(message, MavenPluginIcon.BOTTOM);
+        this.setAdvertiser(message, AdvertiserType.NORMAL);
 
         this.context.getContributor().rebuildList();
     }

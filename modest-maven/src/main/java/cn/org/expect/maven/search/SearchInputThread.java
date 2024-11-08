@@ -3,7 +3,6 @@ package cn.org.expect.maven.search;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.maven.intellij.idea.MavenPluginIcon;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
@@ -29,7 +28,7 @@ public class SearchInputThread extends AbstractSearchThread<PatternElement> {
      */
     public void search(SearchOperation mavenFinder, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
-            mavenFinder.setAdvertiser(MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)), MavenPluginIcon.BOTTOM_WAITING);
+            mavenFinder.setAdvertiser(MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)), AdvertiserType.RUNNING);
             this.add(new PatternElement(mavenFinder, pattern));
         }
     }
@@ -54,7 +53,7 @@ public class SearchInputThread extends AbstractSearchThread<PatternElement> {
 
                 // 设置未返回结果时显示的内容与广告栏信息
                 mavenFinder.setReminderText(MavenMessage.SEARCHING.getMessage());
-                mavenFinder.setAdvertiser(MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)), MavenPluginIcon.BOTTOM_WAITING);
+                mavenFinder.setAdvertiser(MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)), AdvertiserType.RUNNING);
 
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
                 Dates.sleep(mavenFinder.getContext().getInputIntervalTime());
@@ -68,11 +67,11 @@ public class SearchInputThread extends AbstractSearchThread<PatternElement> {
                     } else if (result == null) {
                         String message = MavenMessage.FAIL_SEND_REQUEST.getMessage();
                         mavenFinder.setReminderText(message);
-                        mavenFinder.setAdvertiser(message, MavenPluginIcon.BOTTOM_ERROR);
+                        mavenFinder.setAdvertiser(message, AdvertiserType.ERROR);
                     } else if (result.size() == 0) {
                         String message = MavenMessage.NOTHING_FOUND.getMessage();
                         mavenFinder.setReminderText(message);
-                        mavenFinder.setAdvertiser(message, MavenPluginIcon.BOTTOM);
+                        mavenFinder.setAdvertiser(message, AdvertiserType.NORMAL);
                     } else {
                         mavenFinder.getContext().setPatternSearchResult(result);
                         mavenFinder.repaint(result);

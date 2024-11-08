@@ -1,7 +1,6 @@
 package cn.org.expect.maven.search;
 
 import java.io.File;
-import javax.swing.*;
 
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenSearchResult;
@@ -73,9 +72,9 @@ public interface SearchOperation {
      * 更新搜索结果下方：广告栏中的信息
      *
      * @param message 文本信息
-     * @param icon    图标
+     * @param type    图标
      */
-    void setAdvertiser(String message, Icon icon);
+    void setAdvertiser(String message, AdvertiserType type);
 
     /**
      * 设置提醒文本 <br>

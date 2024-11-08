@@ -2,7 +2,6 @@ package cn.org.expect.maven.search;
 
 import java.util.List;
 
-import cn.org.expect.maven.intellij.idea.MavenPluginIcon;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
@@ -27,7 +26,7 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
     public void searchMore(SearchOperation mavenFinder, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
             String message = MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern));
-            mavenFinder.setAdvertiser(message, MavenPluginIcon.BOTTOM_WAITING);
+            mavenFinder.setAdvertiser(message, AdvertiserType.RUNNING);
 
             try {
                 this.queue.put(new MoreElement(mavenFinder, pattern));
@@ -47,7 +46,7 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
     public void searchExtra(SearchOperation mavenFinder, String groupId, String artifactId) {
         if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
             String message = MavenMessage.SEARCHING_EXTRA.fill(groupId, artifactId);
-            mavenFinder.setAdvertiser(message, MavenPluginIcon.BOTTOM_WAITING);
+            mavenFinder.setAdvertiser(message, AdvertiserType.RUNNING);
 
             try {
                 this.queue.put(new ExtraElement(mavenFinder, groupId, artifactId));
