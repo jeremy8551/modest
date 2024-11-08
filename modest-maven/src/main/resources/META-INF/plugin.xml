@@ -30,14 +30,14 @@
     <depends>com.intellij.modules.platform</depends>
     <depends>com.intellij.properties</depends>
     <depends>org.jetbrains.idea.reposearch</depends>
-    <depends>org.jetbrains.idea.maven</depends>
+    <depends optional="true" config-file="plugin-maven.xml">org.jetbrains.idea.maven</depends>
     <depends>org.jetbrains.idea.maven.model</depends>
     <depends>org.jetbrains.idea.maven.server.api</depends>
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <!--        <lang.findUsagesProvider implementationClass="cn.org.expect.intellijidea.plugin.maven.provider.MavenFindUsagesProvider" language=""/>-->
+        <!--<lang.findUsagesProvider implementationClass="cn.org.expect.intellijidea.plugin.maven.provider.MavenFindUsagesProvider" language=""/>-->
         <searchEverywhereContributor implementation="cn.org.expect.intellijidea.plugin.maven.MavenFinderFactory"/>
     </extensions>
 
