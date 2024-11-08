@@ -3,12 +3,13 @@ package cn.org.expect.maven.search;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.util.Ensure;
-import com.intellij.openapi.diagnostic.Logger;
 
 public abstract class AbstractSearchThread<T> extends Thread {
-    protected static final Logger log = Logger.getInstance(AbstractSearchThread.class);
+    protected final static Log log = LogFactory.getLog(AbstractSearchThread.class);
 
     /** Maven仓库 */
     private MavenRepository mavenRepository;

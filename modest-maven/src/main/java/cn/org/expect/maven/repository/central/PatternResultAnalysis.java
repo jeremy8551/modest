@@ -3,11 +3,12 @@ package cn.org.expect.maven.repository.central;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
-import com.intellij.openapi.diagnostic.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,7 +16,7 @@ import org.json.JSONObject;
  * 用于解析模糊查询返回的 Json 字符串
  */
 public class PatternResultAnalysis {
-    protected static final Logger log = Logger.getInstance(PatternResultAnalysis.class);
+    protected final static Log log = LogFactory.getLog(PatternResultAnalysis.class);
 
     public MavenArtifact build(JSONObject json) {
         String groupId = json.getString("g");
@@ -38,7 +39,7 @@ public class PatternResultAnalysis {
         int start = response.getInt("start"); // 起始位置，从0开始
         JSONArray docs = response.getJSONArray("docs");
 
-        log.warn("send Response, find: " + numFound + ", return " + docs.length() + ", response: " + responseBody);
+        log.debug("send Response, find: " + numFound + ", return " + docs.length() + ", response: " + responseBody);
         List<MavenArtifact> list = new ArrayList<MavenArtifact>(docs.length());
         for (int i = 0; i < docs.length(); i++) {
             JSONObject doc = docs.getJSONObject(i);

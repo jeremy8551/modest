@@ -3,6 +3,8 @@ package cn.org.expect.maven.intellij.idea.action;
 import java.io.File;
 import java.io.OutputStreamWriter;
 
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.intellij.idea.MavenPluginContext;
 import cn.org.expect.maven.intellij.idea.MavenSearchPlugin;
 import cn.org.expect.maven.intellij.idea.RepositoryConfigFactory;
@@ -14,14 +16,13 @@ import cn.org.expect.util.IO;
 import cn.org.expect.util.MessageFormatter;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.diagnostic.Logger;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * 删除 Maven 本地仓库中的 *.lastUpdated 文件
  */
 public class CleanRepositoryLastUpdated extends AnAction {
-    private static final Logger log = Logger.getInstance(CleanRepositoryLastUpdated.class);
+    private final static Log log = LogFactory.getLog(CleanRepositoryLastUpdated.class);
 
     /** 找到的文件数量 */
     private int find;

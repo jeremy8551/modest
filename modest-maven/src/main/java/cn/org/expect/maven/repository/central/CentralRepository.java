@@ -4,12 +4,13 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.MavenRepository;
+import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.util.StringUtils;
-import com.intellij.openapi.diagnostic.Logger;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -19,7 +20,7 @@ import okhttp3.Response;
  * 中央仓库
  */
 public class CentralRepository implements MavenRepository {
-    private static final Logger log = Logger.getInstance(CentralRepository.class);
+    protected final static Log log = LogFactory.getLog(CentralRepository.class);
 
     protected ExtraResultAnalysis pattern;
 
@@ -108,7 +109,7 @@ public class CentralRepository implements MavenRepository {
     }
 
     public synchronized String sendURL(String url) throws IOException {
-        log.warn("send URL: " + url);
+        log.info("send URL: " + url);
         try {
             OkHttpClient client = new OkHttpClient(); // 创建 OkHttpClient 实例
             Request request = new Request.Builder().url(url).header("User-Agent", "Mozilla/5.0").build(); // 创建 Request 实例

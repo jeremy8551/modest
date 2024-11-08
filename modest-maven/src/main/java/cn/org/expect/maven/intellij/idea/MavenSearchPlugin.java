@@ -11,6 +11,8 @@ import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.jdk.JavaDialectFactory;
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.intellij.idea.navigation.MavenFoundElementInfo;
 import cn.org.expect.maven.intellij.idea.navigation.MavenFoundElementInfoComparator;
 import cn.org.expect.maven.intellij.idea.navigation.MavenSearchNavigation;
@@ -38,7 +40,6 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.progress.ProgressIndicator;
@@ -50,7 +51,7 @@ import com.intellij.util.ui.Advertiser;
 import org.jetbrains.annotations.NotNull;
 
 public class MavenSearchPlugin extends AbstractMavenSearch {
-    private static final Logger log = Logger.getInstance(MavenSearchPlugin.class);
+    private final static Log log = LogFactory.getLog(MavenSearchPlugin.class);
 
     private final MavenPluginContext context;
 
@@ -336,7 +337,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
         }
 
         // 设置广告信息
-        log.warn("repaint: " + JBList.getClass().getSimpleName() + ", size: " + listModel.getSize() + ", " + JBList.getModel().getSize() + ", " + listModel.isResultsExpired());
+        log.info("repaint: " + JBList.getClass().getSimpleName() + ", size: " + listModel.getSize() + ", " + JBList.getModel().getSize() + ", " + listModel.isResultsExpired());
         String message = MavenSearchMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
         this.setRunningText(MavenSearchAdvertiser.NORMAL, message);
     }
@@ -349,7 +350,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
         this.context.setNavigationResultSet(resultSet);
 
         // 设置广告信息
-        log.warn("rebuild, size: " + resultSet.size());
+        log.info("rebuild, size: " + resultSet.size());
         String message = MavenSearchMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
         this.setRunningText(MavenSearchAdvertiser.NORMAL, message);
 
@@ -575,7 +576,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
         if (editor != null) {
             String selectedText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
             if (StringUtils.isNotBlank(selectedText)) {
-                log.warn("--->      Selected text: " + selectedText);
+                log.info("--->      Selected text: " + selectedText);
                 return selectedText;
             }
         }

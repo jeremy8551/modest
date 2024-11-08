@@ -2,15 +2,16 @@ package cn.org.expect.maven.intellij.idea;
 
 import java.io.File;
 
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.local.LocalRepositoryConfig;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.Settings;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.diagnostic.Logger;
 
 public class RepositoryConfigFactory implements LocalRepositoryConfig {
-    private static final Logger log = Logger.getInstance(RepositoryConfigFactory.class);
+    private final static Log log = LogFactory.getLog(RepositoryConfigFactory.class);
 
     private static volatile File REPOSITORY;
 

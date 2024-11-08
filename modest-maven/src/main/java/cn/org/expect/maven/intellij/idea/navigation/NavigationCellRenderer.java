@@ -62,7 +62,6 @@ public class NavigationCellRenderer extends SearchEverywherePsiRenderer {
             this.myRightComponentWidth = right.getPreferredSize().width;
             this.myRightComponentWidth += middle.getPreferredSize().width;
 
-//            System.out.println(item.getPresentableText() + ", " + result.getClass().getName() + ", " + left.getPreferredSize().width + ", " + middle.getPreferredSize().width + ", " + right.getPreferredSize().width);
             Color color = isSelected ? UIUtil.getListSelectionBackground(true) : left.getBackground();
             this.setBackground(color);
             left.setBackground(color);

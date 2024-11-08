@@ -15,16 +15,16 @@ public class SimpleMavenSearchResult implements MavenSearchResult {
     private final int start;
 
     /** 总记录数 */
-    private final int totalRecord;
+    private final int foundNumber;
 
     public SimpleMavenSearchResult() {
         this(new ArrayList<>(0), 0, 0);
     }
 
-    public SimpleMavenSearchResult(List<MavenArtifact> list, int start, int totalRecord) {
+    public SimpleMavenSearchResult(List<MavenArtifact> list, int start, int foundNumber) {
         this.list = Ensure.notNull(list);
         this.start = start;
-        this.totalRecord = totalRecord;
+        this.foundNumber = foundNumber;
     }
 
     public List<MavenArtifact> getList() {
@@ -36,7 +36,7 @@ public class SimpleMavenSearchResult implements MavenSearchResult {
     }
 
     public int getFoundNumber() {
-        return totalRecord;
+        return foundNumber;
     }
 
     public int size() {

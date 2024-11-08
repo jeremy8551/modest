@@ -3,16 +3,17 @@ package cn.org.expect.maven.intellij.idea;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.search.MavenSearchUtils;
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.intellij.idea.navigation.NavigationCellRenderer;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigation;
+import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.search.MavenSearchUtils;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.Alarm;
@@ -23,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
  * Idea 搜索的贡献者
  */
 public class MavenPluginContributor extends AbstractGotoSEContributor {
-    private static final Logger log = Logger.getInstance(MavenPluginContributor.class);
+    private final static Log log = LogFactory.getLog(MavenPluginContributor.class);
 
     private final MavenPluginChooseContributor contributor;
 
@@ -51,7 +52,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
 
     @Override
     public void fetchElements(@NotNull String pattern, @NotNull ProgressIndicator progressIndicator, @NotNull Processor<? super Object> consumer) {
-        System.out.println("fetchElements() " + pattern);
+        log.info("fetchElements() " + pattern);
         super.fetchElements(pattern, progressIndicator, consumer);
     }
 
@@ -80,11 +81,11 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
         // super.processSelectedItem(selectedObject, modifiers, searchText);
 
         if (selectedObject instanceof SearchNavigation) {
-            SearchNavigation catalog = (SearchNavigation) selectedObject;
-            this.plugin.getContext().setSelectedNavigation(catalog); // 保存选择记录
+            SearchNavigation navigation = (SearchNavigation) selectedObject;
+            this.plugin.getContext().setSelectedNavigation(navigation); // 保存选择记录
 
-            MavenArtifact artifact = catalog.getArtifact();
-            log.warn("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
+            MavenArtifact artifact = navigation.getArtifact();
+            log.info("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
 
             // 折叠或展开
             if (artifact.isFold()) { // 设置为：展开
@@ -92,7 +93,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
                 if (this.plugin.getDatabase().select(groupId, artifactId) == null) {
-                    catalog.setLeftIcon(MavenPluginIcon.LEFT_WAITING); // 更改为：等待图标
+                    navigation.setLeftIcon(MavenPluginIcon.LEFT_WAITING); // 更改为：等待图标
                     this.plugin.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
                 } else {
                     this.plugin.repaint();
@@ -116,13 +117,13 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
      */
     @Override
     public Object getDataForItem(Object element, String dataId) {
-        System.out.println("getDataForItem " + element + ", " + dataId);
+        log.info("getDataForItem " + element + ", " + dataId);
         return super.getDataForItem(element, dataId);
     }
 
     @Override
     public int getElementPriority(Object element, String searchPattern) {
-        System.out.println("getElementPriority() " + element.getClass().getName());
+        log.info("getElementPriority() " + element.getClass().getName());
         return 50;
     }
 
@@ -205,7 +206,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
     @Override
     public List<AnAction> getActions(@NotNull Runnable onChanged) {
         this.rebuildList = Ensure.notNull(onChanged);
-        System.out.println("getActions() " + onChanged);
+        log.info("getActions() " + onChanged);
         return super.getActions(onChanged);
     }
 

@@ -3,6 +3,8 @@ package cn.org.expect.maven.search;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
@@ -14,6 +16,7 @@ import cn.org.expect.util.StringUtils;
  * 监听并执行：用户输入的模糊查询
  */
 public class SearchInputThread extends AbstractSearchThread<SearchElementPattern> {
+    protected final static Log log = LogFactory.getLog(SearchInputThread.class);
 
     public SearchInputThread() {
         super();
@@ -43,7 +46,7 @@ public class SearchInputThread extends AbstractSearchThread<SearchElementPattern
     }
 
     public void run() {
-        log.warn("start " + SearchInputThread.class.getSimpleName() + " ..");
+        log.info("start " + SearchInputThread.class.getSimpleName() + " ..");
         while (this.notTerminate) {
             try {
                 SearchElementPattern take = this.queue.take();
@@ -88,7 +91,7 @@ public class SearchInputThread extends AbstractSearchThread<SearchElementPattern
             return null;
         }
 
-        log.warn("search Pattern: " + patternFinal);
+        log.info("search Pattern: " + patternFinal);
         MavenSearchResult result = database.select(patternFinal);
         try {
             if (result == null || result.size() == 0) {

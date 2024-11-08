@@ -57,7 +57,7 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
     }
 
     public void run() {
-        log.warn("start " + SearchServiceThread.class.getSimpleName() + " ..");
+        log.info("start " + SearchServiceThread.class.getSimpleName() + " ..");
         while (this.notTerminate) {
             try {
                 Object object = this.queue.take();
@@ -123,7 +123,7 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
         groupId = StringUtils.trimBlank(groupId);
         artifactId = StringUtils.trimBlank(artifactId);
 
-        log.warn("search groupId: " + groupId + ", artifactId: " + artifactId);
+        log.info("search groupId: " + groupId + ", artifactId: " + artifactId);
         MavenSearchResult result = database.select(groupId, artifactId);
         if (result != null) {
             return result;

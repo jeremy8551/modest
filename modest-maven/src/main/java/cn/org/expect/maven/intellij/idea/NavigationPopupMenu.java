@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
@@ -19,11 +21,10 @@ import cn.org.expect.util.NetUtils;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.ui.components.JBList;
 
 public class NavigationPopupMenu {
-    private static final Logger log = Logger.getInstance(NavigationPopupMenu.class);
+    private final static Log log = LogFactory.getLog(NavigationPopupMenu.class);
 
     private final MavenSearchPlugin plugin;
 
@@ -213,7 +214,7 @@ public class NavigationPopupMenu {
                     String pattern = context.getSearchText();
                     MavenSearchResult result = plugin.getDatabase().select(pattern);
                     if (result != null && listModel.getFoundElementsInfo().size() >= result.size()) { // 判断是否满足插叙更多记录的条件
-                        log.warn("Click More Button ..");
+                        log.info("Click More Button ..");
                         plugin.getServiceSearch().searchMore(plugin, pattern);
                     }
                 }

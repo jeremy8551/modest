@@ -1,14 +1,15 @@
 package cn.org.expect.maven.intellij.idea;
 
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.diagnostic.Logger;
 
 public class MavenPluginThread extends Thread {
-    private static final Logger log = Logger.getInstance(MavenPluginThread.class);
+    private final static Log log = LogFactory.getLog(MavenPluginThread.class);
 
     private final MavenSearchPlugin plugin;
 
@@ -20,7 +21,7 @@ public class MavenPluginThread extends Thread {
 
     @Override
     public void run() {
-        log.warn(MavenSearchMessage.START_THREAD.fill(this.getName()));
+        log.info(MavenSearchMessage.START_THREAD.fill(this.getName()));
 
         // 上下文信息
         MavenPluginContext context = this.plugin.getContext();
@@ -41,6 +42,6 @@ public class MavenPluginThread extends Thread {
             this.plugin.setSearchText(MavenSearchUtils.parse(editorSelectText));
         }
 
-        log.warn(MavenSearchMessage.DETECTED_IDEA_UI_COMPONENT.fill(this.getName()));
+        log.info(MavenSearchMessage.DETECTED_IDEA_UI_COMPONENT.fill(this.getName()));
     }
 }
