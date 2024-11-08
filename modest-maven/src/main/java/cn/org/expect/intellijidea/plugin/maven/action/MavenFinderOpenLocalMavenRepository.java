@@ -26,6 +26,6 @@ public class MavenFinderOpenLocalMavenRepository extends AnAction {
         }
 
         mavenFinder.sendNotification(repository.getAbsolutePath());
-        BrowserUtil.browse(repository.getParentFile());
+        BrowserUtil.browse(repository);
     }
 }
