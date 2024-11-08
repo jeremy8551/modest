@@ -4,7 +4,8 @@ import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.central.CentralRepository;
 import cn.org.expect.maven.repository.local.LocalRepository;
 import cn.org.expect.maven.repository.local.LocalRepositoryConfig;
-import cn.org.expect.maven.search.db.MavenArtifactDatabase;
+import cn.org.expect.maven.search.db.MavenSearchDatabase;
+import cn.org.expect.maven.search.db.MavenSearchDatabaseImpl;
 
 public abstract class AbstractMavenSearch implements MavenSearch {
 
@@ -21,7 +22,7 @@ public abstract class AbstractMavenSearch implements MavenSearch {
     private volatile static SearchServiceThread SEARCH;
 
     /** 数据库 */
-    private volatile static MavenArtifactDatabase DATABASE;
+    private volatile static MavenSearchDatabaseImpl DATABASE;
 
     public AbstractMavenSearch(LocalRepositoryConfig config) {
         this.localRepository = new LocalRepository(config);
@@ -91,11 +92,11 @@ public abstract class AbstractMavenSearch implements MavenSearch {
      *
      * @return 数据库对象
      */
-    public MavenArtifactDatabase getDatabase() {
+    public MavenSearchDatabase getDatabase() {
         if (DATABASE == null) {
-            synchronized (MavenArtifactDatabase.class) {
+            synchronized (MavenSearchDatabaseImpl.class) {
                 if (DATABASE == null) {
-                    DATABASE = new MavenArtifactDatabase();
+                    DATABASE = new MavenSearchDatabaseImpl(this.localRepository);
                 }
             }
         }

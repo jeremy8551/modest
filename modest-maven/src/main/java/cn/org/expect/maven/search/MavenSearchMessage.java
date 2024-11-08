@@ -2,7 +2,7 @@ package cn.org.expect.maven.search;
 
 import cn.org.expect.util.MessageFormatter;
 
-public class MavenMessage {
+public class MavenSearchMessage {
 
     public final static MessageFormatter SEARCHING = new MessageFormatter("Search in Maven Repository ..");
 

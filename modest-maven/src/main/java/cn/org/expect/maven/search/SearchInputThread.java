@@ -6,7 +6,7 @@ import java.util.List;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
-import cn.org.expect.maven.search.db.MavenArtifactDatabase;
+import cn.org.expect.maven.search.db.MavenSearchDatabase;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 
@@ -27,7 +27,7 @@ public class SearchInputThread extends AbstractSearchThread<SearchElementPattern
      */
     public void search(MavenSearch search, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
-            search.setRunningText(MavenSearchAdvertiser.RUNNING, MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
+            search.setRunningText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
             this.add(new SearchElementPattern(search, pattern));
         }
     }
@@ -51,28 +51,28 @@ public class SearchInputThread extends AbstractSearchThread<SearchElementPattern
                 MavenSearch search = take.getSearch();
 
                 // 设置未返回结果时显示的内容与广告栏信息
-                search.setWaitingText(MavenMessage.SEARCHING.getMessage());
-                search.setRunningText(MavenSearchAdvertiser.RUNNING, MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
+                search.setWaitingText(MavenSearchMessage.SEARCHING.getMessage());
+                search.setRunningText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
 
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
                 Dates.sleep(search.getContext().getInputIntervalTime());
 
                 // 查询
                 if (this.queue.isEmpty()) {
-                    MavenArtifactDatabase database = search.getDatabase();
+                    MavenSearchDatabase database = search.getDatabase();
                     MavenSearchResult result = this.query(database, pattern);
                     if (!this.notTerminate) {
                         continue;
                     } else if (result == null) {
-                        String message = MavenMessage.FAIL_SEND_REQUEST.getMessage();
+                        String message = MavenSearchMessage.FAIL_SEND_REQUEST.getMessage();
                         search.setWaitingText(message);
                         search.setRunningText(MavenSearchAdvertiser.ERROR, message);
                     } else if (result.size() == 0) {
-                        String message = MavenMessage.NOTHING_FOUND.getMessage();
+                        String message = MavenSearchMessage.NOTHING_FOUND.getMessage();
                         search.setWaitingText(message);
                         search.setRunningText(MavenSearchAdvertiser.NORMAL, message);
                     } else {
-                        search.getContext().setMavenSearchResult(result);
+                        search.getContext().setSearchResult(result);
                         search.repaint(result);
                     }
                 }
@@ -82,7 +82,7 @@ public class SearchInputThread extends AbstractSearchThread<SearchElementPattern
         }
     }
 
-    private MavenSearchResult query(MavenArtifactDatabase database, String pattern) {
+    private MavenSearchResult query(MavenSearchDatabase database, String pattern) {
         String patternFinal = MavenSearchUtils.parse(pattern);
         if (StringUtils.isBlank(patternFinal)) {
             return null;

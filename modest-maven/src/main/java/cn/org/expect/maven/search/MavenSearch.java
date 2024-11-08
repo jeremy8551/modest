@@ -4,7 +4,7 @@ import java.io.File;
 
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.search.db.MavenArtifactDatabase;
+import cn.org.expect.maven.search.db.MavenSearchDatabase;
 
 public interface MavenSearch {
 
@@ -115,5 +115,5 @@ public interface MavenSearch {
      *
      * @return 数据库对象
      */
-    MavenArtifactDatabase getDatabase();
+    MavenSearchDatabase getDatabase();
 }

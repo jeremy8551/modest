@@ -21,8 +21,8 @@ import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationResultSet;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.AbstractMavenSearch;
-import cn.org.expect.maven.search.MavenMessage;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
+import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
@@ -299,7 +299,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
 
     @Override
     public synchronized void repaint() {
-        MavenSearchResult result = this.context.getMavenSearchResult();
+        MavenSearchResult result = this.context.getSearchResult();
         this.repaint(result);
     }
 
@@ -337,7 +337,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
 
         // 设置广告信息
         log.warn("repaint: " + JBList.getClass().getSimpleName() + ", size: " + listModel.getSize() + ", " + JBList.getModel().getSize() + ", " + listModel.isResultsExpired());
-        String message = MavenMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
+        String message = MavenSearchMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
         this.setRunningText(MavenSearchAdvertiser.NORMAL, message);
     }
 
@@ -350,7 +350,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
 
         // 设置广告信息
         log.warn("rebuild, size: " + resultSet.size());
-        String message = MavenMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
+        String message = MavenSearchMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
         this.setRunningText(MavenSearchAdvertiser.NORMAL, message);
 
         this.context.getContributor().rebuildList();

@@ -1,6 +1,6 @@
 package cn.org.expect.maven.intellij.idea;
 
-import cn.org.expect.maven.search.MavenMessage;
+import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
@@ -20,7 +20,7 @@ public class MavenPluginThread extends Thread {
 
     @Override
     public void run() {
-        log.warn(MavenMessage.START_THREAD.fill(this.getName()));
+        log.warn(MavenSearchMessage.START_THREAD.fill(this.getName()));
 
         // 上下文信息
         MavenPluginContext context = this.plugin.getContext();
@@ -41,6 +41,6 @@ public class MavenPluginThread extends Thread {
             this.plugin.setSearchText(MavenSearchUtils.parse(editorSelectText));
         }
 
-        log.warn(MavenMessage.DETECTED_IDEA_UI_COMPONENT.fill(this.getName()));
+        log.warn(MavenSearchMessage.DETECTED_IDEA_UI_COMPONENT.fill(this.getName()));
     }
 }

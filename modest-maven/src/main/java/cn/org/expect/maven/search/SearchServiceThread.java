@@ -5,7 +5,7 @@ import java.util.List;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
-import cn.org.expect.maven.search.db.MavenArtifactDatabase;
+import cn.org.expect.maven.search.db.MavenSearchDatabase;
 import cn.org.expect.util.StringUtils;
 
 /**
@@ -25,7 +25,7 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
      */
     public void searchMore(MavenSearch search, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
-            String message = MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern));
+            String message = MavenSearchMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern));
             search.setRunningText(MavenSearchAdvertiser.RUNNING, message);
 
             try {
@@ -45,7 +45,7 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
      */
     public void searchExtra(MavenSearch search, String groupId, String artifactId) {
         if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
-            String message = MavenMessage.SEARCHING_EXTRA.fill(groupId, artifactId);
+            String message = MavenSearchMessage.SEARCHING_EXTRA.fill(groupId, artifactId);
             search.setRunningText(MavenSearchAdvertiser.RUNNING, message);
 
             try {
@@ -90,7 +90,7 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
                     SearchElementMore element = (SearchElementMore) object;
                     MavenSearch search = element.getSearch();
                     String pattern = element.getPattern();
-                    MavenArtifactDatabase database = search.getDatabase();
+                    MavenSearchDatabase database = search.getDatabase();
 
                     MavenSearchResult result = database.select(pattern);
                     if (result != null && result.getFoundNumber() > result.size()) { // 还有未加载的数据
@@ -103,7 +103,7 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
                             list.addAll(next.getList());
                             SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, next.getStart(), foundNumber);
                             database.insert(pattern, newResult); // 保存到数据库
-                            search.getContext().setMavenSearchResult(newResult); // 保存查询记录
+                            search.getContext().setSearchResult(newResult); // 保存查询记录
                             search.repaintMore(newResult); // 重新渲染
                         }
                     }
@@ -115,7 +115,7 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
         }
     }
 
-    private MavenSearchResult searchExtra(MavenArtifactDatabase database, String groupId, String artifactId) {
+    private MavenSearchResult searchExtra(MavenSearchDatabase database, String groupId, String artifactId) {
         if (StringUtils.isBlank(groupId) || StringUtils.isBlank(artifactId)) {
             return null;
         }

@@ -102,7 +102,7 @@ public class MavenPluginContext implements MavenSearchContext {
     }
 
     @Override
-    public synchronized void setMavenSearchResult(MavenSearchResult result) {
+    public synchronized void setSearchResult(MavenSearchResult result) {
         Ensure.notNull(result);
         List<MavenArtifact> list = result.getList();
         for (MavenArtifact artifact : list) {
@@ -112,7 +112,7 @@ public class MavenPluginContext implements MavenSearchContext {
     }
 
     @Override
-    public MavenSearchResult getMavenSearchResult() {
+    public MavenSearchResult getSearchResult() {
         return this.mavenSearchResult;
     }
 

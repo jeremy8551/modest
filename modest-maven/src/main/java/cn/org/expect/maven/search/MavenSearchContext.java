@@ -37,12 +37,12 @@ public interface MavenSearchContext {
      *
      * @param result 搜索结果
      */
-    void setMavenSearchResult(MavenSearchResult result);
+    void setSearchResult(MavenSearchResult result);
 
     /**
      * 返回上一次保存的搜索结果
      *
      * @return 搜索结果
      */
-    MavenSearchResult getMavenSearchResult();
+    MavenSearchResult getSearchResult();
 }

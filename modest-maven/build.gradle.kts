@@ -20,6 +20,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("org.json:json:20210307")
     implementation("com.google.code.gson:gson:2.8.8")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.12.7.1")
     testImplementation("org.junit.platform:junit-platform-launcher:1.10.0")
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0")
     testImplementation("org.junit.vintage:junit-vintage-engine:5.10.0")
