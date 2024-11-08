@@ -43,18 +43,18 @@
 
     <actions>
         <!-- 打开本地Maven仓库 -->
-        <action id="MavenFinderOpenLocalMavenRepository" class="cn.org.expect.maven.intellij.idea.action.OpenLocalRepository" text="Maven Local Repository" description="打开 Maven 本地仓库">
+        <action id="OpenLocalRepository" class="cn.org.expect.maven.intellij.idea.action.OpenLocalRepository" text="Maven Local Repository" description="打开 Maven 本地仓库">
         </action>
 
         <!-- 删除本地仓库中 *.lastUpdated 文件 -->
-        <action id="MavenFinderDeleteLastUpdated" class="cn.org.expect.maven.intellij.idea.action.CleanRepositoryLastUpdated" text="Maven Clean *.lastUpdated" description="删除 Maven 本地仓库中的 *.lastUpdated 文件">
+        <action id="CleanRepositoryLastUpdated" class="cn.org.expect.maven.intellij.idea.action.CleanRepositoryLastUpdated" text="Maven Clean *.lastUpdated" description="删除 Maven 本地仓库中的 *.lastUpdated 文件">
         </action>
 
         <!-- 绘制菜单 -->
         <group popup="false" id="MavenFinder" text="MavenFinder">
             <separator/> <!--分隔符-->
-            <reference ref="MavenFinderOpenLocalMavenRepository"/>
-            <reference ref="MavenFinderDeleteLastUpdated"/>
+            <reference ref="OpenLocalRepository"/>
+            <reference ref="CleanRepositoryLastUpdated"/>
             <separator/> <!--分隔符-->
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </group>
