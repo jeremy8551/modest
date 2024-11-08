@@ -214,7 +214,9 @@ public class NavigationPopupMenu {
                     String pattern = context.getSearchText();
                     MavenSearchResult result = plugin.getDatabase().select(pattern);
                     if (result != null && listModel.getFoundElementsInfo().size() >= result.size()) { // 判断是否满足插叙更多记录的条件
-                        log.info("Click More Button ..");
+                        if (log.isDebugEnabled()) {
+                            log.debug("Click More Button ..");
+                        }
                         plugin.getServiceSearch().searchMore(plugin, pattern);
                     }
                 }

@@ -123,7 +123,10 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
         groupId = StringUtils.trimBlank(groupId);
         artifactId = StringUtils.trimBlank(artifactId);
 
-        log.info("search groupId: " + groupId + ", artifactId: " + artifactId);
+        if (log.isDebugEnabled()) {
+            log.debug("search groupId: " + groupId + ", artifactId: " + artifactId);
+        }
+
         MavenSearchResult result = database.select(groupId, artifactId);
         if (result != null) {
             return result;

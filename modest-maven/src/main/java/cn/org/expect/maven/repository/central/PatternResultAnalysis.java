@@ -39,7 +39,10 @@ public class PatternResultAnalysis {
         int start = response.getInt("start"); // 起始位置，从0开始
         JSONArray docs = response.getJSONArray("docs");
 
-        log.debug("send Response, find: " + numFound + ", return " + docs.length() + ", response: " + responseBody);
+        if (log.isDebugEnabled()) {
+            log.debug("send Response, find: " + numFound + ", return " + docs.length() + ", response: " + responseBody);
+        }
+        
         List<MavenArtifact> list = new ArrayList<MavenArtifact>(docs.length());
         for (int i = 0; i < docs.length(); i++) {
             JSONObject doc = docs.getJSONObject(i);

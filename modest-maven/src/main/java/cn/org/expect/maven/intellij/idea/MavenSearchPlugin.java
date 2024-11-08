@@ -337,7 +337,10 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
         }
 
         // 设置广告信息
-        log.info("repaint: " + JBList.getClass().getSimpleName() + ", size: " + listModel.getSize() + ", " + JBList.getModel().getSize() + ", " + listModel.isResultsExpired());
+        if (log.isDebugEnabled()) {
+            log.debug("repaint: " + JBList.getClass().getSimpleName() + ", size: " + listModel.getSize() + ", " + JBList.getModel().getSize() + ", " + listModel.isResultsExpired());
+        }
+
         String message = MavenSearchMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
         this.setRunningText(MavenSearchAdvertiser.NORMAL, message);
     }
@@ -350,7 +353,10 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
         this.context.setNavigationResultSet(resultSet);
 
         // 设置广告信息
-        log.info("rebuild, size: " + resultSet.size());
+        if (log.isDebugEnabled()) {
+            log.debug("rebuild, size: " + resultSet.size());
+        }
+
         String message = MavenSearchMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
         this.setRunningText(MavenSearchAdvertiser.NORMAL, message);
 
@@ -576,7 +582,9 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
         if (editor != null) {
             String selectedText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
             if (StringUtils.isNotBlank(selectedText)) {
-                log.info("--->      Selected text: " + selectedText);
+                if (log.isDebugEnabled()) {
+                    log.debug("--->      Selected text: " + selectedText);
+                }
                 return selectedText;
             }
         }

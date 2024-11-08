@@ -109,7 +109,10 @@ public class CentralRepository implements MavenRepository {
     }
 
     public synchronized String sendURL(String url) throws IOException {
-        log.info("send URL: " + url);
+        if (log.isDebugEnabled()) {
+            log.debug("send URL: " + url);
+        }
+
         try {
             OkHttpClient client = new OkHttpClient(); // 创建 OkHttpClient 实例
             Request request = new Request.Builder().url(url).header("User-Agent", "Mozilla/5.0").build(); // 创建 Request 实例

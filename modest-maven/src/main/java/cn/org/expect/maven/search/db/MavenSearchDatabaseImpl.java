@@ -96,12 +96,18 @@ public class MavenSearchDatabaseImpl implements MavenSearchDatabase {
             if (FileUtils.createDirectory(dir)) {
                 File file1 = new File(dir, "patternMap.json");
                 String map1 = mapper.writeValueAsString(this.patternMap);
-                log.info("save: ", file1.getAbsolutePath());
+
+                if (log.isDebugEnabled()) {
+                    log.debug("save: {}", file1.getAbsolutePath());
+                }
                 FileUtils.write(file1, CharsetName.UTF_8, false, map1);
 
                 File file2 = new File(dir, "extraMap.json");
                 String map2 = mapper.writeValueAsString(this.extraMap);
-                log.info("save: ", file2.getAbsolutePath());
+                
+                if (log.isDebugEnabled()) {
+                    log.debug("save: {}", file2.getAbsolutePath());
+                }
                 FileUtils.write(file2, CharsetName.UTF_8, false, map2);
             }
         }
@@ -117,17 +123,25 @@ public class MavenSearchDatabaseImpl implements MavenSearchDatabase {
                     if (file1.exists() && file1.isFile()) {
                         String jsonStr = FileUtils.readline(file1, CharsetName.UTF_8, 0);
                         this.parse1(jsonStr);
+
+                        if (log.isDebugEnabled()) {
+                            log.debug("load {}, size: {}", file1.getAbsolutePath(), this.patternMap.size());
+                        }
                     }
 
                     File file2 = new File(dir, "extraMap.json");
                     if (file2.exists() && file2.isFile()) {
                         String jsonStr = FileUtils.readline(file2, CharsetName.UTF_8, 0);
                         this.parse2(jsonStr);
+
+                        if (log.isDebugEnabled()) {
+                            log.debug("load {}, size: {}", file2.getAbsolutePath(), this.extraMap.size());
+                        }
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
         }
     }
 
@@ -163,8 +177,6 @@ public class MavenSearchDatabaseImpl implements MavenSearchDatabase {
                 groupMap.put(aid, new SimpleMavenSearchResult(list, start, foundNumber));
             }
         }
-
-        log.info("load extraMap size: {}", this.extraMap.size());
     }
 
     private void parse1(String jsonStr) {
@@ -193,15 +205,13 @@ public class MavenSearchDatabaseImpl implements MavenSearchDatabase {
 
             this.patternMap.put(pattern, new SimpleMavenSearchResult(list, start, foundNumber));
         }
-
-        log.info("load patternMap size: {}", this.patternMap.size());
     }
 
     public void store() {
         try {
             this.save();
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
         }
     }
 }

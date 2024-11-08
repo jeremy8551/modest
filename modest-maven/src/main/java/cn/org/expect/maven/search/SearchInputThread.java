@@ -91,7 +91,10 @@ public class SearchInputThread extends AbstractSearchThread<SearchElementPattern
             return null;
         }
 
-        log.info("search Pattern: " + patternFinal);
+        if (log.isDebugEnabled()) {
+            log.debug("search Pattern: " + patternFinal);
+        }
+
         MavenSearchResult result = database.select(patternFinal);
         try {
             if (result == null || result.size() == 0) {

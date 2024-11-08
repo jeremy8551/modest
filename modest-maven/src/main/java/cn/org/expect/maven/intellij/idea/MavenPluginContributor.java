@@ -52,7 +52,10 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
 
     @Override
     public void fetchElements(@NotNull String pattern, @NotNull ProgressIndicator progressIndicator, @NotNull Processor<? super Object> consumer) {
-        log.info("fetchElements() " + pattern);
+        if (log.isDebugEnabled()) {
+            log.debug("fetchElements() " + pattern);
+        }
+
         super.fetchElements(pattern, progressIndicator, consumer);
     }
 
@@ -85,7 +88,10 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
             this.plugin.getContext().setSelectedNavigation(navigation); // 保存选择记录
 
             MavenArtifact artifact = navigation.getArtifact();
-            log.info("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
+
+            if (log.isDebugEnabled()) {
+                log.debug("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
+            }
 
             // 折叠或展开
             if (artifact.isFold()) { // 设置为：展开
@@ -117,13 +123,18 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
      */
     @Override
     public Object getDataForItem(Object element, String dataId) {
-        log.info("getDataForItem " + element + ", " + dataId);
+        if (log.isDebugEnabled()) {
+            log.debug("getDataForItem " + element + ", " + dataId);
+        }
+
         return super.getDataForItem(element, dataId);
     }
 
     @Override
     public int getElementPriority(Object element, String searchPattern) {
-        log.info("getElementPriority() " + element.getClass().getName());
+        if (log.isDebugEnabled()) {
+            log.debug("getElementPriority() " + element.getClass().getName());
+        }
         return 50;
     }
 
@@ -205,8 +216,11 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
 
     @Override
     public List<AnAction> getActions(@NotNull Runnable onChanged) {
+        if (log.isDebugEnabled()) {
+            log.debug("getActions() " + onChanged);
+        }
+
         this.rebuildList = Ensure.notNull(onChanged);
-        log.info("getActions() " + onChanged);
         return super.getActions(onChanged);
     }
 
