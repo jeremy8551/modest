@@ -1,11 +1,11 @@
 package cn.org.expect.maven.search;
 
-public class PatternElement {
+public class SearchElementPattern {
 
     private final MavenSearch search;
     private final String pattern;
 
-    public PatternElement(MavenSearch search, String pattern) {
+    public SearchElementPattern(MavenSearch search, String pattern) {
         this.search = search;
         this.pattern = pattern;
     }

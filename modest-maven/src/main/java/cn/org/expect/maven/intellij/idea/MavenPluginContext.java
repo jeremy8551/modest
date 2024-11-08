@@ -82,12 +82,12 @@ public class MavenPluginContext implements MavenSearchContext {
     }
 
     @Override
-    public String getSearchPattern() {
+    public String getSearchText() {
         return searchPattern;
     }
 
     @Override
-    public void setSearchPattern(String searchPattern) {
+    public void setSearchText(String searchPattern) {
         this.searchPattern = searchPattern;
     }
 

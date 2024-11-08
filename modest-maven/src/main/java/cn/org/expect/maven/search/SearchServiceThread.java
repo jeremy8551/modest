@@ -29,7 +29,7 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
             search.setRunningText(MavenSearchAdvertiser.RUNNING, message);
 
             try {
-                this.queue.put(new MoreElement(search, pattern));
+                this.queue.put(new SearchElementMore(search, pattern));
             } catch (Throwable e) {
                 log.error(e.getLocalizedMessage(), e);
             }
@@ -49,7 +49,7 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
             search.setRunningText(MavenSearchAdvertiser.RUNNING, message);
 
             try {
-                this.queue.put(new ExtraElement(search, groupId, artifactId));
+                this.queue.put(new SearchElementExtra(search, groupId, artifactId));
             } catch (Throwable e) {
                 log.error(e.getLocalizedMessage(), e);
             }
@@ -63,8 +63,8 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
                 Object object = this.queue.take();
 
                 // 精确查询
-                if (object instanceof ExtraElement) {
-                    ExtraElement element = (ExtraElement) object;
+                if (object instanceof SearchElementExtra) {
+                    SearchElementExtra element = (SearchElementExtra) object;
                     String groupId = element.getGroupId();
                     String artifactId = element.getArtifactId();
                     MavenSearch search = element.getSearch();
@@ -86,8 +86,8 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
                 }
 
                 // more 按钮的模糊查询操作
-                if (object instanceof MoreElement) {
-                    MoreElement element = (MoreElement) object;
+                if (object instanceof SearchElementMore) {
+                    SearchElementMore element = (SearchElementMore) object;
                     MavenSearch search = element.getSearch();
                     String pattern = element.getPattern();
                     MavenArtifactDatabase database = search.getDatabase();
@@ -152,15 +152,15 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
      */
     public boolean isSearching(String groupId, String artifactId) {
         for (Object object : this.queue) {
-            if (object instanceof ExtraElement) {
-                ExtraElement element = (ExtraElement) object;
+            if (object instanceof SearchElementExtra) {
+                SearchElementExtra element = (SearchElementExtra) object;
                 if (groupId.equals(element.getGroupId()) && artifactId.equals(element.getArtifactId())) {
                     return true;
                 }
             }
         }
 
-        ExtraElement element = this.searching;
+        SearchElementExtra element = this.searching;
         return element != null && groupId.equals(element.getGroupId()) && artifactId.equals(element.getArtifactId());
     }
 }

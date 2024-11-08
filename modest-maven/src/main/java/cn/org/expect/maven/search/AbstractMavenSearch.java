@@ -5,9 +5,8 @@ import cn.org.expect.maven.repository.central.CentralRepository;
 import cn.org.expect.maven.repository.local.LocalRepository;
 import cn.org.expect.maven.repository.local.LocalRepositoryConfig;
 import cn.org.expect.maven.search.db.MavenArtifactDatabase;
-import org.jetbrains.annotations.NotNull;
 
-public abstract class AbstractMavenSearch {
+public abstract class AbstractMavenSearch implements MavenSearch {
 
     /** 远程 Maven 仓库接口 */
     private final MavenRepository remoteRepository;
@@ -52,7 +51,7 @@ public abstract class AbstractMavenSearch {
      *
      * @return 模糊查询工具
      */
-    public @NotNull SearchInputThread getInputSearch() {
+    public SearchInputThread getInputSearch() {
         if (INPUT_SEARCH == null) {
             synchronized (SearchInputThread.class) {
                 if (INPUT_SEARCH == null) {
@@ -72,7 +71,7 @@ public abstract class AbstractMavenSearch {
      *
      * @return 精确查询工具
      */
-    public @NotNull SearchServiceThread getServiceSearch() {
+    public SearchServiceThread getServiceSearch() {
         if (SEARCH == null) {
             synchronized (SearchServiceThread.class) {
                 if (SEARCH == null) {
@@ -92,7 +91,7 @@ public abstract class AbstractMavenSearch {
      *
      * @return 数据库对象
      */
-    public @NotNull MavenArtifactDatabase getDatabase() {
+    public MavenArtifactDatabase getDatabase() {
         if (DATABASE == null) {
             synchronized (MavenArtifactDatabase.class) {
                 if (DATABASE == null) {

@@ -9,12 +9,11 @@ import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.maven.search.db.MavenArtifactDatabase;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * 监听并执行：用户输入的模糊查询
  */
-public class SearchInputThread extends AbstractSearchThread<PatternElement> {
+public class SearchInputThread extends AbstractSearchThread<SearchElementPattern> {
 
     public SearchInputThread() {
         super();
@@ -29,11 +28,11 @@ public class SearchInputThread extends AbstractSearchThread<PatternElement> {
     public void search(MavenSearch search, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
             search.setRunningText(MavenSearchAdvertiser.RUNNING, MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
-            this.add(new PatternElement(search, pattern));
+            this.add(new SearchElementPattern(search, pattern));
         }
     }
 
-    private void add(PatternElement pattern) {
+    private void add(SearchElementPattern pattern) {
         this.getRepository().terminate();
 
         try {
@@ -47,7 +46,7 @@ public class SearchInputThread extends AbstractSearchThread<PatternElement> {
         log.warn("start " + SearchInputThread.class.getSimpleName() + " ..");
         while (this.notTerminate) {
             try {
-                PatternElement take = this.queue.take();
+                SearchElementPattern take = this.queue.take();
                 String pattern = take.getPattern();
                 MavenSearch search = take.getSearch();
 
@@ -83,8 +82,8 @@ public class SearchInputThread extends AbstractSearchThread<PatternElement> {
         }
     }
 
-    private MavenSearchResult query(@NotNull MavenArtifactDatabase database, String pattern) {
-        String patternFinal = MavenUtils.parse(pattern);
+    private MavenSearchResult query(MavenArtifactDatabase database, String pattern) {
+        String patternFinal = MavenSearchUtils.parse(pattern);
         if (StringUtils.isBlank(patternFinal)) {
             return null;
         }
@@ -93,7 +92,7 @@ public class SearchInputThread extends AbstractSearchThread<PatternElement> {
         MavenSearchResult result = database.select(patternFinal);
         try {
             if (result == null || result.size() == 0) {
-                if (!MavenUtils.isExtraSearch(patternFinal)) {
+                if (!MavenSearchUtils.isExtraSearch(patternFinal)) {
                     MavenSearchResult resultSet = this.getRepository().query(StringUtils.trimBlank(StringUtils.replaceAll(patternFinal, ".", "%2E")), 1);
                     if (resultSet == null) {
                         return null;

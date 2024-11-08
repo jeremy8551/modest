@@ -4,7 +4,7 @@ import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.search.MavenUtils;
+import cn.org.expect.maven.search.MavenSearchUtils;
 import cn.org.expect.maven.intellij.idea.navigation.NavigationCellRenderer;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigation;
 import cn.org.expect.util.Ensure;
@@ -69,7 +69,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
     @Override
     public @NotNull String filterControlSymbols(String pattern) {
         if (pattern != null && pattern.length() > 0) {
-            this.plugin.asyncSearch(MavenUtils.parse(pattern));
+            this.plugin.asyncSearch(MavenSearchUtils.parse(pattern));
         }
         return pattern;
     }

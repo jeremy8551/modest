@@ -1,7 +1,7 @@
 package cn.org.expect.maven.intellij.idea;
 
 import cn.org.expect.maven.search.MavenMessage;
-import cn.org.expect.maven.search.MavenUtils;
+import cn.org.expect.maven.search.MavenSearchUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -38,7 +38,7 @@ public class MavenPluginThread extends Thread {
         // 复制编辑器中选中的内容到搜索栏
         String editorSelectText = context.getEditorSelectText();
         if (StringUtils.isNotBlank(editorSelectText)) {
-            this.plugin.setSearchText(MavenUtils.parse(editorSelectText));
+            this.plugin.setSearchText(MavenSearchUtils.parse(editorSelectText));
         }
 
         log.warn(MavenMessage.DETECTED_IDEA_UI_COMPONENT.fill(this.getName()));

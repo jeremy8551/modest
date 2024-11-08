@@ -20,7 +20,7 @@ public abstract class AbstractSearchThread<T> extends Thread {
     protected final BlockingQueue<T> queue;
 
     /** 正在搜索的任务 */
-    protected volatile ExtraElement searching;
+    protected volatile SearchElementExtra searching;
 
     /**
      * 构造方法

@@ -12,7 +12,7 @@ import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchNotification;
-import cn.org.expect.maven.search.MavenUtils;
+import cn.org.expect.maven.search.MavenSearchUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.NetUtils;
@@ -135,9 +135,9 @@ public class NavigationPopupMenu {
 
         // 重新执行查询
         repeat.addActionListener(e -> {
-            String pattern = context.getSearchPattern();
+            String pattern = context.getSearchText();
             plugin.getDatabase().delete(pattern);
-            plugin.asyncSearch(MavenUtils.parse(pattern));
+            plugin.asyncSearch(MavenSearchUtils.parse(pattern));
             plugin.sendNotification(MavenSearchNotification.NORMAL, repeat.getText());
         });
 
@@ -210,7 +210,7 @@ public class NavigationPopupMenu {
 
                 int selectedIndex = JBList.getSelectedIndex();
                 if (selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) { // 点击 more 按钮
-                    String pattern = context.getSearchPattern();
+                    String pattern = context.getSearchText();
                     MavenSearchResult result = plugin.getDatabase().select(pattern);
                     if (result != null && listModel.getFoundElementsInfo().size() >= result.size()) { // 判断是否满足插叙更多记录的条件
                         log.warn("Click More Button ..");

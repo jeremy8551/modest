@@ -21,9 +21,8 @@ import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationResultSet;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.AbstractMavenSearch;
-import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenMessage;
-import cn.org.expect.maven.search.MavenSearch;
+import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
@@ -50,7 +49,7 @@ import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.Advertiser;
 import org.jetbrains.annotations.NotNull;
 
-public class MavenSearchPlugin extends AbstractMavenSearch implements MavenSearch {
+public class MavenSearchPlugin extends AbstractMavenSearch {
     private static final Logger log = Logger.getInstance(MavenSearchPlugin.class);
 
     private final MavenPluginContext context;
@@ -78,7 +77,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements MavenSearc
 
     @Override
     public void asyncSearch(String pattern) {
-        this.context.setSearchPattern(pattern);
+        this.context.setSearchText(pattern);
         this.context.setSelectedNavigation(null);
         this.getInputSearch().search(this, pattern);
     }

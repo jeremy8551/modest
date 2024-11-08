@@ -5,7 +5,7 @@ import java.util.List;
 
 import cn.org.expect.util.StringUtils;
 
-public class MavenUtils {
+public class MavenSearchUtils {
 
     public static String parse(String pattern) {
         if (pattern == null) {
