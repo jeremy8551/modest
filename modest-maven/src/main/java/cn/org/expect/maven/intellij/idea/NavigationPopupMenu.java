@@ -7,12 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
+import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.search.MavenUtils;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
-import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
-import cn.org.expect.maven.search.SearchOperation;
+import cn.org.expect.maven.search.MavenUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.NetUtils;
@@ -27,7 +26,7 @@ public class NavigationPopupMenu {
 
     private final MavenPlugin mavenFinder;
 
-    public NavigationPopupMenu(SearchOperation mavenFinder) {
+    public NavigationPopupMenu(MavenPlugin mavenFinder) {
         this.mavenFinder = Ensure.notNull(mavenFinder);
         this.init();
     }

@@ -2,7 +2,6 @@ package cn.org.expect.maven.intellij.idea;
 
 import cn.org.expect.maven.search.MavenMessage;
 import cn.org.expect.maven.search.MavenUtils;
-import cn.org.expect.maven.search.SearchOperation;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -13,7 +12,7 @@ public class MavenPluginThread extends Thread {
 
     private final MavenPlugin mavenFinder;
 
-    public MavenPluginThread(SearchOperation mavenFinder) {
+    public MavenPluginThread(MavenPlugin mavenFinder) {
         super();
         this.setName(MavenPluginThread.class.getSimpleName());
         this.mavenFinder = Ensure.notNull(mavenFinder);
