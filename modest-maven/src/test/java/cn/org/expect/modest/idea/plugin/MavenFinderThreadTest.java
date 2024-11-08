@@ -2,7 +2,7 @@ package cn.org.expect.modest.idea.plugin;
 
 import java.io.IOException;
 
-import cn.org.expect.intellijidea.plugin.maven.central.CentralRepository;
+import cn.org.expect.maven.repository.central.CentralRepository;
 import org.junit.jupiter.api.Test;
 
 public class MavenFinderThreadTest {
