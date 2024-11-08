@@ -103,7 +103,7 @@ public class NavigationPopupMenu {
 
             MavenArtifact artifact = selectItem.getArtifact();
             List<String> list = new ArrayList<>();
-            list.add(mavenFinder.getMavenRepository().getAddress());
+            list.add(mavenFinder.getRemoteRepository().getAddress());
             StringUtils.split(artifact.getGroupId(), '.', list);
             list.add(artifact.getArtifactId());
             list.add(artifact.getVersion());
@@ -112,7 +112,7 @@ public class NavigationPopupMenu {
         });
 
         openFileSystem.addActionListener(e -> {
-            String filepath = mavenFinder.getLocalMavenRepository().getAddress();
+            String filepath = mavenFinder.getLocalRepository().getAddress();
             if (StringUtils.isBlank(filepath)) {
                 return;
             }
@@ -173,7 +173,7 @@ public class NavigationPopupMenu {
                         int x = JBList.getX() + 30;
                         int y = JBList.getCellBounds(0, index).height; // JList 中第一行到选中行之间的高度
 
-                        if (mavenFinder.getLocalMavenRepository().exists(item.getArtifact())) {
+                        if (mavenFinder.getLocalRepository().exists(item.getArtifact())) {
                             listPopupMenu.add(openFileSystem);
                         } else {
                             listPopupMenu.remove(openFileSystem);
@@ -213,7 +213,7 @@ public class NavigationPopupMenu {
                     MavenSearchResult result = mavenFinder.getDatabase().select(pattern);
                     if (result != null && listModel.getFoundElementsInfo().size() >= result.size()) { // 判断是否满足插叙更多记录的条件
                         log.warn("Click More Button ..");
-                        mavenFinder.getSearch().searchMore(mavenFinder, pattern);
+                        mavenFinder.getServiceSearch().searchMore(mavenFinder, pattern);
                     }
                 }
             }

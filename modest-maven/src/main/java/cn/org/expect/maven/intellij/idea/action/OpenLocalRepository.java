@@ -5,7 +5,7 @@ import java.io.File;
 import cn.org.expect.maven.intellij.idea.MavenPlugin;
 import cn.org.expect.maven.intellij.idea.MavenPluginContext;
 import cn.org.expect.maven.search.SearchOperation;
-import cn.org.expect.maven.repository.local.LocalRepositoryConfig;
+import cn.org.expect.maven.intellij.idea.RepositoryConfigFactory;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -20,7 +20,7 @@ public class OpenLocalRepository extends AnAction {
     public void actionPerformed(@NotNull AnActionEvent event) {
         MavenPluginContext context = new MavenPluginContext(event);
         SearchOperation mavenFinder = new MavenPlugin(context);
-        File repository = LocalRepositoryConfig.getInstance(event).getRepository();
+        File repository = RepositoryConfigFactory.getInstance(event).getRepository();
         if (repository == null) {
             mavenFinder.sendErrorNotification("Cannot find Maven local repository!");
             return;

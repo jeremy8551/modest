@@ -7,7 +7,6 @@ import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.local.LocalRepository;
 import cn.org.expect.maven.search.db.MavenArtifactDatabase;
-import org.jetbrains.annotations.NotNull;
 
 public interface SearchOperation {
 
@@ -110,36 +109,33 @@ public interface SearchOperation {
      *
      * @return Maven 仓库信息
      */
-    MavenRepository getMavenRepository();
+    MavenRepository getRemoteRepository();
 
     /**
      * 返回本地 Maven 仓库信息
      *
      * @return 本地 Maven 仓库信息
      */
-    LocalRepository getLocalMavenRepository();
+    LocalRepository getLocalRepository();
 
     /**
      * 返回模糊查询工具
      *
      * @return 模糊查询工具
      */
-    @NotNull
-    InputSearchThread getInputSearch();
+    SearchInputThread getInputSearch();
 
     /**
      * 返回精确查询工具
      *
      * @return 精确查询工具
      */
-    @NotNull
-    SearchThread getSearch();
+    SearchServiceThread getServiceSearch();
 
     /**
      * 返回数据库对象
      *
      * @return 数据库对象
      */
-    @NotNull
     MavenArtifactDatabase getDatabase();
 }

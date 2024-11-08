@@ -15,22 +15,21 @@ import org.jetbrains.annotations.NotNull;
 /**
  * 监听并执行：用户输入的模糊查询
  */
-public class InputSearchThread extends AbstractSearchThread<PatternElement> {
+public class SearchInputThread extends AbstractSearchThread<PatternElement> {
 
-    public InputSearchThread() {
+    public SearchInputThread() {
         super();
     }
 
     /**
-     * 添加搜索任务
+     * 执行模糊搜索
      *
      * @param mavenFinder Maven工具
      * @param pattern     字符串
      */
     public void search(SearchOperation mavenFinder, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
-            String message = MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern));
-            mavenFinder.setAdvertiser(message, MavenPluginIcon.BOTTOM_WAITING);
+            mavenFinder.setAdvertiser(MavenMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)), MavenPluginIcon.BOTTOM_WAITING);
             this.add(new PatternElement(mavenFinder, pattern));
         }
     }
@@ -51,7 +50,7 @@ public class InputSearchThread extends AbstractSearchThread<PatternElement> {
             try {
                 PatternElement take = this.queue.take();
                 String pattern = take.getPattern();
-                SearchOperation mavenFinder = take.getMavenFinder();
+                SearchOperation mavenFinder = take.getOperation();
 
                 // 设置未返回结果时显示的内容与广告栏信息
                 mavenFinder.setReminderText(MavenMessage.SEARCHING.getMessage());

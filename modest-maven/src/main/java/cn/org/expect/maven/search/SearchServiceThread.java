@@ -8,14 +8,13 @@ import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.maven.search.db.MavenArtifactDatabase;
 import cn.org.expect.util.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * 立即执行模糊查询与精确查询
  */
-public class SearchThread extends AbstractSearchThread<Object> {
+public class SearchServiceThread extends AbstractSearchThread<Object> {
 
-    public SearchThread() {
+    public SearchServiceThread() {
         super();
     }
 
@@ -90,7 +89,7 @@ public class SearchThread extends AbstractSearchThread<Object> {
                 // more 按钮的模糊查询操作
                 if (object instanceof MoreElement) {
                     MoreElement element = (MoreElement) object;
-                    SearchOperation mavenFinder = element.getMavenFinder();
+                    SearchOperation mavenFinder = element.getOperation();
                     String pattern = element.getPattern();
                     MavenArtifactDatabase database = mavenFinder.getDatabase();
 
@@ -117,7 +116,7 @@ public class SearchThread extends AbstractSearchThread<Object> {
         }
     }
 
-    private MavenSearchResult searchExtra(@NotNull MavenArtifactDatabase database, String groupId, String artifactId) {
+    private MavenSearchResult searchExtra(MavenArtifactDatabase database, String groupId, String artifactId) {
         if (StringUtils.isBlank(groupId) || StringUtils.isBlank(artifactId)) {
             return null;
         }

@@ -1,6 +1,5 @@
 package cn.org.expect.maven.search;
 
-import cn.org.expect.maven.intellij.idea.MavenPluginContext;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.central.CentralRepository;
 import cn.org.expect.maven.repository.local.LocalRepository;
@@ -10,21 +9,24 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractSearch {
 
-    /** 远程调用组件 */
-    private final MavenRepository mavenRepository;
+    /** 远程 Maven 仓库接口 */
+    private final MavenRepository remoteRepository;
 
-    private final LocalRepository localMavenRepository;
+    /** 本地 Maven 仓库接口 */
+    private final LocalRepository localRepository;
 
-    private volatile static InputSearchThread INPUT_SEARCH;
+    /** 用来搜索用户输入的文本 */
+    private volatile static SearchInputThread INPUT_SEARCH;
 
-    private volatile static SearchThread SEARCH;
+    /** 后台搜索线程 */
+    private volatile static SearchServiceThread SEARCH;
 
+    /** 数据库 */
     private volatile static MavenArtifactDatabase DATABASE;
 
-    public AbstractSearch(MavenPluginContext context) {
-        LocalRepositoryConfig config = LocalRepositoryConfig.getInstance(context.getActionEvent());
-        this.localMavenRepository = new LocalRepository(config);
-        this.mavenRepository = new CentralRepository();
+    public AbstractSearch(LocalRepositoryConfig config) {
+        this.localRepository = new LocalRepository(config);
+        this.remoteRepository = new CentralRepository();
     }
 
     /**
@@ -32,8 +34,8 @@ public abstract class AbstractSearch {
      *
      * @return Maven 仓库信息
      */
-    public MavenRepository getMavenRepository() {
-        return mavenRepository;
+    public MavenRepository getRemoteRepository() {
+        return remoteRepository;
     }
 
     /**
@@ -41,8 +43,8 @@ public abstract class AbstractSearch {
      *
      * @return 本地 Maven 仓库信息
      */
-    public LocalRepository getLocalMavenRepository() {
-        return localMavenRepository;
+    public LocalRepository getLocalRepository() {
+        return localRepository;
     }
 
     /**
@@ -50,14 +52,14 @@ public abstract class AbstractSearch {
      *
      * @return 模糊查询工具
      */
-    public @NotNull InputSearchThread getInputSearch() {
+    public @NotNull SearchInputThread getInputSearch() {
         if (INPUT_SEARCH == null) {
-            synchronized (InputSearchThread.class) {
+            synchronized (SearchInputThread.class) {
                 if (INPUT_SEARCH == null) {
-                    INPUT_SEARCH = new InputSearchThread();
-                    INPUT_SEARCH.setRepository(this.mavenRepository);
+                    INPUT_SEARCH = new SearchInputThread();
+                    INPUT_SEARCH.setRepository(this.remoteRepository);
                     INPUT_SEARCH.setDaemon(true);
-                    INPUT_SEARCH.setName(InputSearchThread.class.getSimpleName());
+                    INPUT_SEARCH.setName(SearchInputThread.class.getSimpleName());
                     INPUT_SEARCH.start();
                 }
             }
@@ -70,14 +72,14 @@ public abstract class AbstractSearch {
      *
      * @return 精确查询工具
      */
-    public @NotNull SearchThread getSearch() {
+    public @NotNull SearchServiceThread getServiceSearch() {
         if (SEARCH == null) {
-            synchronized (SearchThread.class) {
+            synchronized (SearchServiceThread.class) {
                 if (SEARCH == null) {
-                    SEARCH = new SearchThread();
-                    SEARCH.setRepository(this.mavenRepository);
+                    SEARCH = new SearchServiceThread();
+                    SEARCH.setRepository(this.remoteRepository);
                     SEARCH.setDaemon(true);
-                    SEARCH.setName(SearchThread.class.getSimpleName());
+                    SEARCH.setName(SearchServiceThread.class.getSimpleName());
                     SEARCH.start();
                 }
             }

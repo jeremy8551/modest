@@ -138,7 +138,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
      */
     @Override
     public String getAdvertisement() {
-        return this.mavenFinder.getMavenRepository().getAddress();
+        return this.mavenFinder.getRemoteRepository().getAddress();
     }
 
     @Override

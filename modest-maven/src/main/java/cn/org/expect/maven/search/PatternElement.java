@@ -1,7 +1,7 @@
 package cn.org.expect.maven.search;
 
 public class PatternElement {
-    
+
     private SearchOperation mavenFinder;
     private String pattern;
 
@@ -10,7 +10,7 @@ public class PatternElement {
         this.pattern = pattern;
     }
 
-    public SearchOperation getMavenFinder() {
+    public SearchOperation getOperation() {
         return mavenFinder;
     }
 

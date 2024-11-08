@@ -218,12 +218,10 @@ public class MavenPluginContext implements SearchContext {
         this.searchField = searchField;
     }
 
-    @Override
     public SearchNavigationResultSet getNavigationResultSet() {
         return navigationResultSet;
     }
 
-    @Override
     public void setNavigationResultSet(SearchNavigationResultSet navigationResultSet) {
         this.navigationResultSet = navigationResultSet;
     }

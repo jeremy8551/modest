@@ -55,7 +55,7 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
     private final MavenPluginContext context;
 
     public MavenPlugin(MavenPluginContext context) {
-        super(context);
+        super(RepositoryConfigFactory.getInstance(context.getActionEvent()));
         this.context = Ensure.notNull(context);
     }
 
@@ -84,7 +84,7 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
 
     @Override
     public void asyncSearch(String groupId, String artifactId) {
-        this.getSearch().searchExtra(this, groupId, artifactId);
+        this.getServiceSearch().searchExtra(this, groupId, artifactId);
     }
 
     /**
@@ -417,7 +417,7 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
                     catalog.setLeftIcon(MavenPluginIcon.LEFT_UNFOLD);
                     for (MavenArtifact version : versionResult.getList()) {
                         SearchNavigationItem navigation = new SearchNavigationItem(version);
-                        if (this.getLocalMavenRepository().exists(version)) {
+                        if (this.getLocalRepository().exists(version)) {
                             navigation.setLeftIcon(MavenPluginIcon.RIGHT_LOCAL);
                         }
                         newList.add(navigation);
@@ -426,7 +426,7 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
             }
 
             // 判断是否正在查询详细信息
-            if (this.getSearch().isSearching(groupId, artifactId)) {
+            if (this.getServiceSearch().isSearching(groupId, artifactId)) {
                 catalog.setLeftIcon(MavenPluginIcon.LEFT_WAITING);
             }
         }
@@ -460,7 +460,7 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
                     catalog.setLeftIcon(MavenPluginIcon.LEFT_UNFOLD);
                     for (MavenArtifact version : versionResult.getList()) {
                         SearchNavigationItem item = new SearchNavigationItem(version);
-                        if (this.getLocalMavenRepository().exists(version)) {
+                        if (this.getLocalRepository().exists(version)) {
                             item.setLeftIcon(MavenPluginIcon.RIGHT_LOCAL);
                         }
                         itemList.add(item);
@@ -469,7 +469,7 @@ public class MavenPlugin extends AbstractSearch implements SearchOperation {
             }
 
             // 判断是否正在查询详细信息
-            if (this.getSearch().isSearching(groupId, artifactId)) {
+            if (this.getServiceSearch().isSearching(groupId, artifactId)) {
                 catalog.setLeftIcon(MavenPluginIcon.LEFT_WAITING);
             }
 

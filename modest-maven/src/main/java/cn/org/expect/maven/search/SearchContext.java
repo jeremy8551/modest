@@ -1,6 +1,5 @@
 package cn.org.expect.maven.search;
 
-import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationResultSet;
 import cn.org.expect.maven.repository.MavenSearchResult;
 
 public interface SearchContext {
@@ -30,8 +29,4 @@ public interface SearchContext {
      * @return 查询结果
      */
     MavenSearchResult getPatternSearchResult();
-
-    SearchNavigationResultSet getNavigationResultSet();
-
-    void setNavigationResultSet(SearchNavigationResultSet navigationResultSet);
 }

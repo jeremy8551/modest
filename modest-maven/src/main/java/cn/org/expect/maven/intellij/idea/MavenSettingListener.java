@@ -2,7 +2,6 @@ package cn.org.expect.maven.intellij.idea;
 
 import java.io.File;
 
-import cn.org.expect.maven.repository.local.LocalRepositoryConfig;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.Disposable;
@@ -70,7 +69,7 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
             }
 
             if (StringUtils.isNotBlank(filepath)) {
-                LocalRepositoryConfig.setRepository(new File(filepath)); // 获取 Maven 本地仓库路径
+                RepositoryConfigFactory.setRepository(new File(filepath)); // 获取 Maven 本地仓库路径
             }
 
             return manager;

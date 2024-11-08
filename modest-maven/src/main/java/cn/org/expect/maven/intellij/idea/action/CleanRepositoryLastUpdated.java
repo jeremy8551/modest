@@ -6,7 +6,7 @@ import java.io.OutputStreamWriter;
 import cn.org.expect.maven.intellij.idea.MavenPlugin;
 import cn.org.expect.maven.intellij.idea.MavenPluginContext;
 import cn.org.expect.maven.search.SearchOperation;
-import cn.org.expect.maven.repository.local.LocalRepositoryConfig;
+import cn.org.expect.maven.intellij.idea.RepositoryConfigFactory;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
@@ -35,7 +35,7 @@ public class CleanRepositoryLastUpdated extends AnAction {
 
         MavenPluginContext context = new MavenPluginContext(event);
         SearchOperation mavenFinder = new MavenPlugin(context);
-        File repository = LocalRepositoryConfig.getInstance(event).getRepository();
+        File repository = RepositoryConfigFactory.getInstance(event).getRepository();
         if (repository == null) {
             mavenFinder.sendErrorNotification("Cannot find Maven local repository!");
             return;
