@@ -8,6 +8,7 @@ import cn.org.expect.util.StringComparator;
 
 public class MavenArtifactImpl implements MavenArtifact {
 
+    private String name;
     private String artifact;
     private String groupId;
     private String version;
@@ -30,11 +31,17 @@ public class MavenArtifactImpl implements MavenArtifact {
         this.timestamp = timestamp;
         this.versionCount = versionCount;
         this.fold = true;
+        this.name = groupId + ":" + artifact + ":" + version;
     }
 
     @Override
     public String getArtifactId() {
         return artifact;
+    }
+
+    @Override
+    public String getName() {
+        return this.name;
     }
 
     @Override

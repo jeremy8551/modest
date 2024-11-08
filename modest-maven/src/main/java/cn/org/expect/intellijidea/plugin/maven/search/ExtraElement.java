@@ -3,9 +3,9 @@ package cn.org.expect.intellijidea.plugin.maven.search;
 import cn.org.expect.intellijidea.plugin.maven.MavenFinder;
 
 public class ExtraElement {
-    private MavenFinder mavenFinder;
-    private String groupId;
-    private String artifactId;
+    private final MavenFinder mavenFinder;
+    private final String groupId;
+    private final String artifactId;
 
     public ExtraElement(MavenFinder mavenFinder, String groupId, String artifactId) {
         this.mavenFinder = mavenFinder;

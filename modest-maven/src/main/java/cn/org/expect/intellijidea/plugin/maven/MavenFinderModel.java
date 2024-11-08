@@ -1,7 +1,7 @@
 package cn.org.expect.intellijidea.plugin.maven;
 
-import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigation;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderBlankItem;
+import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigation;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
@@ -15,11 +15,7 @@ public class MavenFinderModel extends FilteringGotoByModel<Object> {
 
     @Override
     protected NavigationItem filterValueFor(NavigationItem item) {
-        if (item instanceof MavenFinderBlankItem) {
-            return null;
-        } else {
-            return item instanceof MavenFinderNavigation ? item : null;
-        }
+        return null;
     }
 
     @Override
@@ -27,11 +23,14 @@ public class MavenFinderModel extends FilteringGotoByModel<Object> {
         return super.useMiddleMatching();
     }
 
-//    @Override
-//    protected boolean acceptItem(NavigationItem item) {
-//        NavigationItem filterValue = this.filterValueFor(item);
-//        return filterValue != null;
-//    }
+    @Override
+    protected boolean acceptItem(NavigationItem item) {
+        if (item instanceof MavenFinderBlankItem) {
+            return false;
+        } else {
+            return item instanceof MavenFinderNavigation;
+        }
+    }
 
     @Override
     public String getPromptText() {
@@ -64,12 +63,16 @@ public class MavenFinderModel extends FilteringGotoByModel<Object> {
 
     @Override
     public String[] getSeparators() {
-        return new String[0];
+        return new String[]{":"};
     }
 
     @Override
     public String getFullName(Object element) {
-        return ((NavigationItem) element).getName();
+        if (element instanceof NavigationItem) {
+            return ((NavigationItem) element).getName();
+        }
+
+        throw new UnsupportedOperationException(element == null ? "" : element.toString());
     }
 
     @Override

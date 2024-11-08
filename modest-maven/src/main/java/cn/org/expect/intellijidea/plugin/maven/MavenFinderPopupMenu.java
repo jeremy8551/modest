@@ -39,10 +39,10 @@ public class MavenFinderPopupMenu {
         listPopupMenu.add(openInBrowser);
 
         JPopupMenu itemPopupMenu = new JPopupMenu();
-        JMenuItem clearCache = new JMenuItem("Refresh the query");
-        JMenuItem clearAll = new JMenuItem("Clear all cache");
+        JMenuItem repeat = new JMenuItem("Refresh the query");
+        JMenuItem clearCache = new JMenuItem("Clear all cache");
+        itemPopupMenu.add(repeat);
         itemPopupMenu.add(clearCache);
-        itemPopupMenu.add(clearAll);
 
         MavenFinderContext context = this.mavenFinder.getContext();
         JBList<Object> JBList = context.getJBList();
@@ -129,20 +129,23 @@ public class MavenFinderPopupMenu {
             BrowserUtil.browse(new File(FileUtils.joinPath(list.toArray(new String[0]))));
         });
 
-        clearCache.addActionListener(e -> {
+        // 重新执行查询
+        repeat.addActionListener(e -> {
             String pattern = context.getSearchPattern();
             mavenFinder.getDatabase().delete(pattern);
             mavenFinder.asyncSearch(MavenFinderPattern.parse(pattern));
-            mavenFinder.sendNotification(clearCache.getText());
+            mavenFinder.sendNotification(repeat.getText());
         });
 
-        clearAll.addActionListener(e -> {
+        // 清空所有缓存
+        clearCache.addActionListener(e -> {
             mavenFinder.getDatabase().clear();
             mavenFinder.repaint(new SimpleMavenSearchResult()); // 刷新一个空结果
             mavenFinder.setReminderText("");
             mavenFinder.setAdvertiser("", null);
             mavenFinder.setSearchFieldText("");
-            mavenFinder.sendNotification(clearAll.getText());
+            mavenFinder.getContext().setNavigationResultSet(null);
+            mavenFinder.sendNotification(clearCache.getText());
         });
 
         // 监听鼠标事件
@@ -160,9 +163,9 @@ public class MavenFinderPopupMenu {
                     }
 
                     // 点击版本
-                    Object selectedObject = listModel.getElementAt(index);
-                    if (selectedObject instanceof MavenFinderNavigationItem) {
-                        MavenFinderNavigationItem item = (MavenFinderNavigationItem) selectedObject;
+                    Object selected = listModel.getElementAt(index);
+                    if (selected instanceof MavenFinderNavigationItem) {
+                        MavenFinderNavigationItem item = (MavenFinderNavigationItem) selected;
                         context.setSelectItem(item);
                         int x = JBList.getX() + 30;
                         int y = JBList.getCellBounds(0, index).height; // JList 中第一行到选中行之间的高度
@@ -185,8 +188,8 @@ public class MavenFinderPopupMenu {
                     }
 
                     // 点击版本
-                    Object selectedObject = listModel.getElementAt(index);
-                    if (selectedObject instanceof MavenFinderNavigationItem) {
+                    Object selected = listModel.getElementAt(index);
+                    if (selected instanceof MavenFinderNavigationItem) {
                         if (listPopupMenu.isVisible()) {
                             listPopupMenu.setVisible(false);
                         }
@@ -197,12 +200,17 @@ public class MavenFinderPopupMenu {
 
             @Override
             public void mousePressed(MouseEvent e) {
+                if (mavenFinder.notMavenFinderTab()) {
+                    return;
+                }
+
                 int selectedIndex = JBList.getSelectedIndex();
-                if (selectedIndex != -1) {
-                    Object selectedObject = listModel.getElementAt(selectedIndex);
-                    if (selectedObject != null && selectedObject.getClass().equals(Object.class)) { // 点击 more 按钮
-                        log.warn("Click More Button: " + selectedObject.getClass().getName());
-                        mavenFinder.getSearch().searchMore(mavenFinder, context.getSearchPattern());
+                if (selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) { // 点击 more 按钮
+                    String pattern = context.getSearchPattern();
+                    MavenSearchResult result = mavenFinder.getDatabase().select(pattern);
+                    if (result != null && listModel.getFoundElementsInfo().size() >= result.size()) { // 判断是否满足插叙更多记录的条件
+                        log.warn("Click More Button ..");
+                        mavenFinder.getSearch().searchMore(mavenFinder, pattern);
                     }
                 }
             }

@@ -3,19 +3,20 @@ package cn.org.expect.intellijidea.plugin.maven.navigation;
 import javax.swing.*;
 
 import cn.org.expect.intellijidea.plugin.maven.MavenArtifact;
+import com.intellij.navigation.NavigationItem;
 import com.intellij.util.TextWithIcon;
 
 /**
  * 查询结果导航结果中每条记录的接口
  */
-public interface MavenFinderNavigation {
+public interface MavenFinderNavigation extends NavigationItem {
 
     /**
      * 设置导航记录左侧的图标
      *
      * @param icon 图标
      */
-    void setIcon(Icon icon);
+    void setLeftIcon(Icon icon);
 
     /**
      * 返回 Maven 工件信息
@@ -29,5 +30,12 @@ public interface MavenFinderNavigation {
      *
      * @return 图标与文本
      */
-    TextWithIcon getRightLabel();
+    TextWithIcon getRightIcon();
+
+    /**
+     * 返回唯一编号
+     *
+     * @return 整数
+     */
+    long getId();
 }

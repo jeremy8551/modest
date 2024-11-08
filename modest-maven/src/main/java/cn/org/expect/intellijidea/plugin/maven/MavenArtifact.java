@@ -8,6 +8,13 @@ import java.util.Date;
 public interface MavenArtifact {
 
     /**
+     * 返回 groupId:artifactId:version
+     *
+     * @return 字符串
+     */
+    String getName();
+
+    /**
      * 返回域名
      *
      * @return 域名

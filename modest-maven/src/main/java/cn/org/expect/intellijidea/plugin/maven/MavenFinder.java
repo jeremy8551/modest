@@ -7,13 +7,15 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderBlankItem;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderFoundElementInfo;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigation;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationCatalog;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
+import cn.org.expect.intellijidea.plugin.maven.navigation.MavenNavigationList;
+import cn.org.expect.intellijidea.plugin.maven.navigation.MavenNavigationResultSet;
 import cn.org.expect.intellijidea.plugin.maven.navigation.NavigationItemComparator;
 import cn.org.expect.intellijidea.plugin.maven.search.AsyncDatabaseSearch;
 import cn.org.expect.jdk.JavaDialectFactory;
@@ -224,13 +226,17 @@ public class MavenFinder extends AsyncDatabaseSearch {
         return this.getClass().getSimpleName();
     }
 
+    /**
+     * 判断当前标签页是否是 MavenFinder
+     *
+     * @return 返回true表示标签页不符合 false表示符合
+     */
     public boolean notMavenFinderTab() {
         SearchEverywhereUI everywhereUI = this.context.getSearchEverywhereUI();
         if (everywhereUI == null) {
             return false;
         }
 
-        // 如果搜索的标签页不是 MavenFinder，就不显示广告信息
         String selectedTabID = everywhereUI.getSelectedTabID();
         return !this.context.getContributor().getSearchProviderId().equals(selectedTabID);
     }
@@ -362,6 +368,25 @@ public class MavenFinder extends AsyncDatabaseSearch {
         this.setAdvertiser(message, MavenFinderIcon.BOTTOM);
     }
 
+    /**
+     * 使用参数指定的查询结果，渲染 UI 界面
+     *
+     * @param result 查询结果
+     */
+    public synchronized void repaintMore(MavenSearchResult result) {
+        Ensure.notNull(result);
+
+        MavenNavigationResultSet resultSet = this.toNavigationResultSet(result);
+        this.context.setNavigationResultSet(resultSet);
+
+        // 设置广告信息
+        log.warn("rebuild, size: " + resultSet.size());
+        String message = MavenFinderMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
+        this.setAdvertiser(message, MavenFinderIcon.BOTTOM);
+
+        this.context.getContributor().rebuildList();
+    }
+
     private void updateComparator(SearchListModel listModel, Comparator comparator) {
         if (listModel.getClass().getSimpleName().equals("MixedSearchListModel")) {
             try {
@@ -392,7 +417,7 @@ public class MavenFinder extends AsyncDatabaseSearch {
                         // 设置左侧等待图标
                         MavenArtifact artifact = selectedItem.getArtifact();
                         if (artifact.isUnfold() && this.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId()) == null) {
-                            item.setIcon(MavenFinderIcon.LEFT_WAITING);
+                            item.setLeftIcon(MavenFinderIcon.LEFT_WAITING);
                         }
                         break;
                     }
@@ -426,17 +451,17 @@ public class MavenFinder extends AsyncDatabaseSearch {
 
             MavenSearchResult versionResult = this.getDatabase().select(groupId, artifactId);
             if (versionResult != null) {
-                catalog.setIcon(MavenFinderIcon.LEFT_HAS_QUERY);
+                catalog.setLeftIcon(MavenFinderIcon.LEFT_HAS_QUERY);
             }
 
             // 如果当前是展开状态
             if (artifact.isUnfold()) {
                 if (versionResult != null) {
-                    catalog.setIcon(MavenFinderIcon.LEFT_UNFOLD);
+                    catalog.setLeftIcon(MavenFinderIcon.LEFT_UNFOLD);
                     for (MavenArtifact version : versionResult.getList()) {
                         MavenFinderNavigationItem navigation = new MavenFinderNavigationItem(version);
                         if (this.getLocalMavenRepository().exists(version)) {
-                            navigation.setIcon(MavenFinderIcon.RIGHT_LOCAL);
+                            navigation.setLeftIcon(MavenFinderIcon.RIGHT_LOCAL);
                         }
                         newList.add(navigation);
                     }
@@ -445,10 +470,56 @@ public class MavenFinder extends AsyncDatabaseSearch {
 
             // 判断是否正在查询详细信息
             if (this.getSearch().isSearching(groupId, artifactId)) {
-                catalog.setIcon(MavenFinderIcon.LEFT_WAITING);
+                catalog.setLeftIcon(MavenFinderIcon.LEFT_WAITING);
             }
         }
         return newList;
+    }
+
+    /**
+     * 将查询结果转为导航记录，目标是提供给 {@link MavenFinderChooseContributor} 使用
+     *
+     * @param result 查询结果
+     * @return 导航记录
+     */
+    protected MavenNavigationResultSet toNavigationResultSet(MavenSearchResult result) {
+        java.util.List<MavenArtifact> list = result.getList();
+        java.util.List<MavenNavigationList> newList = new ArrayList<MavenNavigationList>(list.size());
+        for (MavenArtifact artifact : list) {
+            MavenFinderNavigationCatalog catalog = new MavenFinderNavigationCatalog(artifact);
+            List<MavenFinderNavigationItem> itemList = new ArrayList<>();
+
+            String groupId = artifact.getGroupId();
+            String artifactId = artifact.getArtifactId();
+
+            MavenSearchResult versionResult = this.getDatabase().select(groupId, artifactId);
+            if (versionResult != null) {
+                catalog.setLeftIcon(MavenFinderIcon.LEFT_HAS_QUERY);
+            }
+
+            // 如果当前是展开状态
+            if (artifact.isUnfold()) {
+                if (versionResult != null) {
+                    catalog.setLeftIcon(MavenFinderIcon.LEFT_UNFOLD);
+                    for (MavenArtifact version : versionResult.getList()) {
+                        MavenFinderNavigationItem item = new MavenFinderNavigationItem(version);
+                        if (this.getLocalMavenRepository().exists(version)) {
+                            item.setLeftIcon(MavenFinderIcon.RIGHT_LOCAL);
+                        }
+                        itemList.add(item);
+                    }
+                }
+            }
+
+            // 判断是否正在查询详细信息
+            if (this.getSearch().isSearching(groupId, artifactId)) {
+                catalog.setLeftIcon(MavenFinderIcon.LEFT_WAITING);
+            }
+
+            newList.add(new MavenNavigationList(catalog, itemList));
+        }
+
+        return new MavenNavigationResultSet(newList);
     }
 
     /**
@@ -461,9 +532,11 @@ public class MavenFinder extends AsyncDatabaseSearch {
         // 删除（自动添加的）导航记录
         for (int i = listModel.getSize() - 1; i >= 0; i--) {
             SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
-            if (info.getElement() instanceof MavenFinderBlankItem) {
+            Object element = info.getElement();
+
+            if (!(info instanceof MavenFinderFoundElementInfo) && element instanceof MavenFinderNavigation) {
                 try {
-                    listModel.removeElement(info.getElement(), info.getContributor());
+                    listModel.removeElement(element, info.getContributor());
                 } catch (Throwable e) { // 如果不能删除，则将导航记录清空，排序时放到最后
                     log.error(e.getLocalizedMessage(), e);
                 }

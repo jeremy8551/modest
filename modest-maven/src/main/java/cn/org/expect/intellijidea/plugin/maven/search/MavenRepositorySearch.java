@@ -108,7 +108,7 @@ public class MavenRepositorySearch extends AbstractMavenRepositorySearch<Object>
                             SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, next.getStart(), foundNumber);
                             database.insert(pattern, newResult); // 保存到数据库
                             mavenFinder.getContext().setPatternSearchResult(newResult); // 保存查询记录
-                            mavenFinder.repaint(newResult); // 重新渲染
+                            mavenFinder.repaintMore(newResult); // 重新渲染
                         }
                     }
                     continue;

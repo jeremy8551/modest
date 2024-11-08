@@ -1,13 +1,19 @@
 package cn.org.expect.intellijidea.plugin.maven;
 
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderBlankItem;
+import cn.org.expect.intellijidea.plugin.maven.navigation.MavenNavigationList;
+import cn.org.expect.intellijidea.plugin.maven.navigation.MavenNavigationResultSet;
+import cn.org.expect.util.Ensure;
 import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
 
 public class MavenFinderChooseContributor implements ChooseByNameContributor {
 
-    public MavenFinderChooseContributor() {
+    private final MavenFinder mavenFinder;
+
+    public MavenFinderChooseContributor(MavenFinder mavenFinder) {
+        this.mavenFinder = Ensure.notNull(mavenFinder);
     }
 
     /**
@@ -19,10 +25,21 @@ public class MavenFinderChooseContributor implements ChooseByNameContributor {
      * @return 在搜索结果 ALL 选项卡中显示的记录
      */
     public synchronized String[] getNames(Project project, boolean includeNonProjectItems) {
-        return new String[]{""};
+        MavenNavigationResultSet resultSet = this.mavenFinder.getContext().getNavigationResultSet();
+        if (resultSet != null) {
+            return resultSet.getNames();
+        } else {
+            return new String[]{""};
+        }
     }
 
     public synchronized NavigationItem[] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
-        return new NavigationItem[]{new MavenFinderBlankItem()};
+        MavenNavigationResultSet resultSet = this.mavenFinder.getContext().getNavigationResultSet();
+        MavenNavigationList list = resultSet.getItems(name);
+        if (list != null) {
+            return list.toArray();
+        } else {
+            return new NavigationItem[]{new MavenFinderBlankItem()};
+        }
     }
 }

@@ -5,8 +5,8 @@ import javax.swing.*;
 
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationCatalog;
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationItem;
+import cn.org.expect.intellijidea.plugin.maven.navigation.MavenNavigationResultSet;
 import cn.org.expect.util.Ensure;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -20,7 +20,7 @@ public class MavenFinderContext {
     private final AnActionEvent event;
 
     /** 搜素贡献者 */
-    private volatile SearchEverywhereContributor<?> contributor;
+    private volatile MavenFinderContributor contributor;
 
     /** 连续输入文本的间隔时间 */
     private long inputIntervalTime;
@@ -56,7 +56,10 @@ public class MavenFinderContext {
     private volatile MavenSearchResult mavenFinderResult;
 
     /** 搜索输入框 */
-    private JTextField searchField;
+    private volatile JTextField searchField;
+
+    /** 导航记录结果集 */
+    private volatile MavenNavigationResultSet navigationResultSet;
 
     public MavenFinderContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
@@ -67,11 +70,11 @@ public class MavenFinderContext {
         return this.event;
     }
 
-    public SearchEverywhereContributor<?> getContributor() {
+    public MavenFinderContributor getContributor() {
         return this.contributor;
     }
 
-    public void setContributor(SearchEverywhereContributor<?> contributor) {
+    public void setContributor(MavenFinderContributor contributor) {
         this.contributor = contributor;
     }
 
@@ -219,5 +222,13 @@ public class MavenFinderContext {
 
     public void setSearchField(JTextField searchField) {
         this.searchField = searchField;
+    }
+
+    public MavenNavigationResultSet getNavigationResultSet() {
+        return navigationResultSet;
+    }
+
+    public void setNavigationResultSet(MavenNavigationResultSet navigationResultSet) {
+        this.navigationResultSet = navigationResultSet;
     }
 }

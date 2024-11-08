@@ -31,7 +31,7 @@ public class MavenFinderListCellRenderer extends SearchEverywherePsiRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         if (value instanceof MavenFinderNavigationItem) {
             MavenFinderNavigationItem item = (MavenFinderNavigationItem) value;
-            TextWithIcon itemLocation = item.getRightLabel();
+            TextWithIcon itemLocation = item.getRightIcon();
 
             this.removeAll();
 
@@ -92,7 +92,7 @@ public class MavenFinderListCellRenderer extends SearchEverywherePsiRenderer {
     public TextWithIcon getItemLocation(Object value) {
         if (value instanceof MavenFinderNavigation) {
             MavenFinderNavigation navigation = (MavenFinderNavigation) value;
-            return navigation.getRightLabel();
+            return navigation.getRightIcon();
         } else {
             return super.getItemLocation(value);
         }

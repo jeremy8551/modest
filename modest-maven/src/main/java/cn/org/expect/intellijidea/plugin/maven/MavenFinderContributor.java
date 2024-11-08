@@ -4,6 +4,7 @@ import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.intellijidea.plugin.maven.navigation.MavenFinderNavigationCatalog;
+import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
@@ -11,6 +12,7 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
+import com.intellij.util.Alarm;
 import com.intellij.util.Processor;
 import org.jetbrains.annotations.NotNull;
 
@@ -24,9 +26,13 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
     private final MavenFinder mavenFinder;
 
+    private Runnable rebuildList;
+
+    private final Alarm rebuildListAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD, this);
+
     public MavenFinderContributor(MavenFinder mavenFinder) {
         super(mavenFinder.getContext().getActionEvent());
-        this.contributor = new MavenFinderChooseContributor();
+        this.contributor = new MavenFinderChooseContributor(mavenFinder);
         this.mavenFinder = mavenFinder;
     }
 
@@ -83,7 +89,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
                 if (this.mavenFinder.getDatabase().select(groupId, artifactId) == null) {
-                    catalog.setIcon(MavenFinderIcon.LEFT_WAITING); // 更改为：等待图标
+                    catalog.setLeftIcon(MavenFinderIcon.LEFT_WAITING); // 更改为：等待图标
                     this.mavenFinder.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
                 } else {
                     this.mavenFinder.repaint();
@@ -107,7 +113,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
      */
     @Override
     public Object getDataForItem(Object element, String dataId) {
-//        System.out.println("getDataForItem " + element + ", " + dataId);
+        System.out.println("getDataForItem " + element + ", " + dataId);
         return super.getDataForItem(element, dataId);
     }
 
@@ -165,7 +171,7 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
      */
     @Override
     public String getGroupName() {
-        return "Repository";
+        return "Maven";
     }
 
     /**
@@ -195,11 +201,22 @@ public class MavenFinderContributor extends AbstractGotoSEContributor {
 
     @Override
     public List<AnAction> getActions(@NotNull Runnable onChanged) {
+        this.rebuildList = Ensure.notNull(onChanged);
+        System.out.println("getActions() " + onChanged);
         return super.getActions(onChanged);
     }
 
     @Override
     public void dispose() {
         super.dispose();
+    }
+
+    /**
+     * 重新JList列表
+     */
+    public void rebuildList() {
+        if (!this.rebuildListAlarm.isDisposed() && this.rebuildListAlarm.getActiveRequestCount() == 0) {
+            this.rebuildListAlarm.addRequest(() -> this.rebuildList.run(), 100);
+        }
     }
 }
