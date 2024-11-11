@@ -30,7 +30,6 @@ import cn.org.expect.util.Ensure;
 import cn.org.expect.util.MessageFormatter;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.notification.Notification;
@@ -84,15 +83,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
     @Override
     public void asyncSearch(String groupId, String artifactId) {
         this.getServiceSearch().searchExtra(this, groupId, artifactId);
-    }
-
-    /**
-     * 自动选择选项卡
-     */
-    public void switchToTab() {
-        AnActionEvent event = this.context.getActionEvent();
-        SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
-        manager.setSelectedTabID(this.context.getContributor().getSearchProviderId()); // 选择标签页
     }
 
     @Override
@@ -333,6 +323,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
                 jbList.clearSelection();
             } else {
                 jbList.setSelectedIndex(selectedIndex);
+                jbList.ensureIndexIsVisible(selectedIndex);
             }
         }
     }
