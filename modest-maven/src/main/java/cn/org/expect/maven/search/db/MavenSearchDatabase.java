@@ -1,7 +1,6 @@
 package cn.org.expect.maven.search.db;
 
 import cn.org.expect.maven.repository.MavenSearchResult;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 /**
  * 数据库接口
@@ -53,11 +52,4 @@ public interface MavenSearchDatabase {
      * 删除所有数据
      */
     void clear();
-
-    /**
-     * 持久化数据
-     *
-     * @throws Exception 发生错误
-     */
-    void save() throws JsonProcessingException, Exception;
 }

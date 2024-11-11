@@ -1,29 +1,32 @@
 package cn.org.expect.maven.intellij.idea.navigation;
 
-import javax.swing.*;
+import java.util.List;
 
-import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.intellij.idea.MavenPluginIcon;
-import com.intellij.util.TextWithIcon;
+import cn.org.expect.util.Ensure;
+import com.intellij.navigation.NavigationItem;
 
-public class SearchNavigation extends AbstractSearchNavigation {
+public class SearchNavigation {
 
-    public SearchNavigation(MavenArtifact artifact) {
-        super(artifact, MavenPluginIcon.LEFT_FOLD);
+    private final SearchNavigationHead navigation;
+
+    private final List<SearchNavigationItem> items;
+
+    public SearchNavigation(SearchNavigationHead navigation, List<SearchNavigationItem> list) {
+        this.navigation = Ensure.notNull(navigation);
+        this.items = Ensure.notNull(list);
     }
 
-    @Override
-    public TextWithIcon getRightIcon() {
-        return new TextWithIcon(this.artifact.getType() + " ", MavenPluginIcon.RIGHT);
+    public SearchNavigationHead getHeader() {
+        return this.navigation;
     }
 
-    @Override
-    public String getLocationString() {
-        return this.artifact.getGroupId();
-    }
-
-    @Override
-    public Icon getIcon(boolean unused) {
-        return this.icon;
+    public NavigationItem[] getItems() {
+        NavigationItem[] array = new NavigationItem[items.size() + 1];
+        int i = 0;
+        array[i++] = this.navigation;
+        for (SearchNavigationItem item : this.items) {
+            array[i++] = item;
+        }
+        return array;
     }
 }

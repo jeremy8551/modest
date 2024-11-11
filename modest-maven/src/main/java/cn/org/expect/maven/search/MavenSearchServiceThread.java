@@ -11,9 +11,9 @@ import cn.org.expect.util.StringUtils;
 /**
  * 立即执行模糊查询与精确查询
  */
-public class SearchServiceThread extends AbstractSearchThread<Object> {
+public class MavenSearchServiceThread extends AbstractSearchThread<Object> {
 
-    public SearchServiceThread() {
+    public MavenSearchServiceThread() {
         super();
     }
 
@@ -57,7 +57,8 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
     }
 
     public void run() {
-        log.info("start " + SearchServiceThread.class.getSimpleName() + " ..");
+        String name = MavenSearchServiceThread.class.getSimpleName();
+        log.info(MavenSearchMessage.START_THREAD.fill(name));
         while (this.notTerminate) {
             try {
                 Object object = this.queue.take();
@@ -68,6 +69,10 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
                     String groupId = element.getGroupId();
                     String artifactId = element.getArtifactId();
                     MavenSearch search = element.getSearch();
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("{} search groupId: {}, artifactId: {} ..", name, groupId, artifactId);
+                    }
 
                     this.searching = element;
                     if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
@@ -90,8 +95,12 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
                     SearchElementMore element = (SearchElementMore) object;
                     MavenSearch search = element.getSearch();
                     String pattern = element.getPattern();
-                    MavenSearchDatabase database = search.getDatabase();
 
+                    if (log.isDebugEnabled()) {
+                        log.debug("{} search more: {}", name, pattern);
+                    }
+
+                    MavenSearchDatabase database = search.getDatabase();
                     MavenSearchResult result = database.select(pattern);
                     if (result != null && result.getFoundNumber() > result.size()) { // 还有未加载的数据
                         int start = result.getStart();
@@ -122,10 +131,6 @@ public class SearchServiceThread extends AbstractSearchThread<Object> {
 
         groupId = StringUtils.trimBlank(groupId);
         artifactId = StringUtils.trimBlank(artifactId);
-
-        if (log.isDebugEnabled()) {
-            log.debug("search groupId: " + groupId + ", artifactId: " + artifactId);
-        }
 
         MavenSearchResult result = database.select(groupId, artifactId);
         if (result != null) {

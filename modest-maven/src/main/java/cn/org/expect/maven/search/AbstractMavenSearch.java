@@ -16,10 +16,10 @@ public abstract class AbstractMavenSearch implements MavenSearch {
     private final LocalRepository localRepository;
 
     /** 用来搜索用户输入的文本 */
-    private volatile static SearchInputThread INPUT_SEARCH;
+    private volatile static MavenSearchInputThread INPUT_SEARCH;
 
     /** 后台搜索线程 */
-    private volatile static SearchServiceThread SEARCH;
+    private volatile static MavenSearchServiceThread SEARCH;
 
     /** 数据库 */
     private volatile static MavenSearchDatabaseImpl DATABASE;
@@ -52,14 +52,14 @@ public abstract class AbstractMavenSearch implements MavenSearch {
      *
      * @return 模糊查询工具
      */
-    public SearchInputThread getInputSearch() {
+    public MavenSearchInputThread getInputSearch() {
         if (INPUT_SEARCH == null) {
-            synchronized (SearchInputThread.class) {
+            synchronized (MavenSearchInputThread.class) {
                 if (INPUT_SEARCH == null) {
-                    INPUT_SEARCH = new SearchInputThread();
+                    INPUT_SEARCH = new MavenSearchInputThread();
                     INPUT_SEARCH.setRepository(this.remoteRepository);
                     INPUT_SEARCH.setDaemon(true);
-                    INPUT_SEARCH.setName(SearchInputThread.class.getSimpleName());
+                    INPUT_SEARCH.setName(MavenSearchInputThread.class.getSimpleName());
                     INPUT_SEARCH.start();
                 }
             }
@@ -72,14 +72,14 @@ public abstract class AbstractMavenSearch implements MavenSearch {
      *
      * @return 精确查询工具
      */
-    public SearchServiceThread getServiceSearch() {
+    public MavenSearchServiceThread getServiceSearch() {
         if (SEARCH == null) {
-            synchronized (SearchServiceThread.class) {
+            synchronized (MavenSearchServiceThread.class) {
                 if (SEARCH == null) {
-                    SEARCH = new SearchServiceThread();
+                    SEARCH = new MavenSearchServiceThread();
                     SEARCH.setRepository(this.remoteRepository);
                     SEARCH.setDaemon(true);
-                    SEARCH.setName(SearchServiceThread.class.getSimpleName());
+                    SEARCH.setName(MavenSearchServiceThread.class.getSimpleName());
                     SEARCH.start();
                 }
             }

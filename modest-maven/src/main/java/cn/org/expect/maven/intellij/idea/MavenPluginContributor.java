@@ -1,18 +1,23 @@
 package cn.org.expect.maven.intellij.idea;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.intellij.idea.navigation.NavigationCellRenderer;
-import cn.org.expect.maven.intellij.idea.navigation.SearchNavigation;
+import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationHead;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.search.MavenSearchUtils;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
+import com.intellij.ide.actions.searcheverywhere.PersistentSearchEverywhereContributorFilter;
+import com.intellij.ide.util.gotoByName.FileTypeRef;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
+import com.intellij.ide.util.gotoByName.GotoFileConfiguration;
+import com.intellij.ide.util.gotoByName.GotoFileModel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
@@ -53,7 +58,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
     @Override
     public void fetchElements(@NotNull String pattern, @NotNull ProgressIndicator progressIndicator, @NotNull Processor<? super Object> consumer) {
         if (log.isDebugEnabled()) {
-            log.debug("fetchElements() " + pattern);
+            log.debug("fetchElements({}, {}, {}) ", pattern, progressIndicator, consumer);
         }
 
         super.fetchElements(pattern, progressIndicator, consumer);
@@ -83,14 +88,13 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
         // 禁用来源的处理逻辑：自动打开 url
         // super.processSelectedItem(selectedObject, modifiers, searchText);
 
-        if (selectedObject instanceof SearchNavigation) {
-            SearchNavigation navigation = (SearchNavigation) selectedObject;
+        if (selectedObject instanceof SearchNavigationHead) {
+            SearchNavigationHead navigation = (SearchNavigationHead) selectedObject;
             this.plugin.getContext().setSelectedNavigation(navigation); // 保存选择记录
-
             MavenArtifact artifact = navigation.getArtifact();
 
             if (log.isDebugEnabled()) {
-                log.debug("select: " + artifact + ", fold: " + artifact.isFold() + ", version: " + artifact.getVersionCount());
+                log.debug("processSelectedItem({}, {}, {}) {}, fold: {}, version: {}", selectedObject, modifiers, searchText, artifact, artifact.isFold(), artifact.getVersionCount());
             }
 
             // 折叠或展开
@@ -99,7 +103,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
                 if (this.plugin.getDatabase().select(groupId, artifactId) == null) {
-                    navigation.setLeftIcon(MavenPluginIcon.LEFT_WAITING); // 更改为：等待图标
+                    navigation.setIcon(MavenPluginIcon.LEFT_WAITING); // 更改为：等待图标
                     this.plugin.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
                 } else {
                     this.plugin.repaint();
@@ -124,7 +128,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
     @Override
     public Object getDataForItem(Object element, String dataId) {
         if (log.isDebugEnabled()) {
-            log.debug("getDataForItem " + element + ", " + dataId);
+            log.debug("getDataForItem({}, {})", element, dataId);
         }
 
         return super.getDataForItem(element, dataId);
@@ -133,7 +137,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
     @Override
     public int getElementPriority(Object element, String searchPattern) {
         if (log.isDebugEnabled()) {
-            log.debug("getElementPriority() " + element.getClass().getName());
+            log.debug("getElementPriority({}, {}) ", element, searchPattern);
         }
         return 50;
     }
@@ -217,11 +221,18 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
     @Override
     public List<AnAction> getActions(@NotNull Runnable onChanged) {
         if (log.isDebugEnabled()) {
-            log.debug("getActions() " + onChanged);
+            log.debug("getActions({}) ", onChanged);
         }
 
         this.rebuildList = Ensure.notNull(onChanged);
-        return super.getActions(onChanged);
+        return new ArrayList<>();
+    }
+
+    @NotNull
+    public PersistentSearchEverywhereContributorFilter<FileTypeRef> createFileTypeFilter(@NotNull Project project) {
+        List<FileTypeRef> items = new ArrayList<>(FileTypeRef.forAllFileTypes());
+        items.add(0, GotoFileModel.DIRECTORY_FILE_TYPE_REF);
+        return new PersistentSearchEverywhereContributorFilter<>(items, GotoFileConfiguration.getInstance(project), FileTypeRef::getName, FileTypeRef::getIcon);
     }
 
     @Override

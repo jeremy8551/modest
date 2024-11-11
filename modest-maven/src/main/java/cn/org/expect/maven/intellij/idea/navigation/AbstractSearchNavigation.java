@@ -34,7 +34,7 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
     }
 
     @Override
-    public void setLeftIcon(Icon icon) {
+    public void setIcon(Icon icon) {
         this.icon = icon;
     }
 

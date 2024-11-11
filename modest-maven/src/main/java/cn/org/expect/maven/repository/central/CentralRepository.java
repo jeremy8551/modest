@@ -110,7 +110,7 @@ public class CentralRepository implements MavenRepository {
 
     public synchronized String sendURL(String url) throws IOException {
         if (log.isDebugEnabled()) {
-            log.debug("send URL: " + url);
+            log.debug("send URL: {}", url);
         }
 
         try {

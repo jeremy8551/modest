@@ -7,33 +7,156 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
+import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
+import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.maven.search.MavenSearchUtils;
+import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.NetUtils;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.BrowserUtil;
+import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
+import com.intellij.ide.actions.searcheverywhere.SearchEverywhereHeader;
+import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
+import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.ui.components.JBList;
+import com.intellij.util.ui.Advertiser;
 
-public class NavigationPopupMenu {
-    private final static Log log = LogFactory.getLog(NavigationPopupMenu.class);
+public class MavenPluginInit extends Thread {
+    private final static Log log = LogFactory.getLog(MavenPluginInit.class);
 
     private final MavenSearchPlugin plugin;
 
-    public NavigationPopupMenu(MavenSearchPlugin plugin) {
+    public MavenPluginInit(MavenSearchPlugin plugin) {
+        super();
+        this.setName(MavenPluginInit.class.getSimpleName());
         this.plugin = Ensure.notNull(plugin);
-        this.init();
     }
 
-    protected void init() {
+    @Override
+    public void run() {
+        log.info(MavenSearchMessage.START_THREAD.fill(this.getName()));
+
+        MavenPluginContext context = this.plugin.getContext(); // 上下文信息
+        this.loadComponent(context); // 加载 UI 组件
+        context.setLoadStatus(true); // 设置加载完成标志
+        this.loadPopupMenu(context); // 加载弹出菜单
+        this.waitFor(context.getProgressIndicator(), 3000); // 等待 idea 默认的搜索功能执行完毕
+
+        SearchEverywhereHeader myHeader = this.plugin.getContext().getMyHeader();
+        if (myHeader != null) {
+            List<SearchEverywhereHeader.SETab> tabs = myHeader.getTabs();
+            for (SearchEverywhereHeader.SETab tab : tabs) {
+                List<SearchEverywhereContributor<?>> contributors = tab.getContributors();
+                for (SearchEverywhereContributor<?> contributor : contributors) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("tabName: {}, tabID: {}, groupName: {}, className: {}", tab.getName(), tab.getID(), contributor.getGroupName(), contributor.getClass().getName());
+                    }
+                }
+            }
+        }
+
+        // 编辑器中选中的文本
+        String editorSelectText = plugin.getContext().getEditorSelectText();
+        if (StringUtils.isNotBlank(editorSelectText)) {
+            if (log.isDebugEnabled()) {
+                log.debug("Idea editor selected text: {} ", editorSelectText);
+            }
+            plugin.setSearchText(MavenSearchUtils.parse(editorSelectText)); // 复制选中的文本到搜索栏
+        }
+
+        log.info(MavenSearchMessage.DETECTED_IDEA_UI_COMPONENT.fill(this.getName()));
+    }
+
+    /**
+     * 等待 SearchEverywhereUI 组件渲染完毕
+     *
+     * @param timeout 超时时间，单位：毫秒
+     */
+    protected void waitFor(ProgressIndicator progress, long timeout) {
+        if (progress != null) {
+            long startMillis = System.currentTimeMillis();
+            while (progress.isRunning() && !progress.isCanceled() && System.currentTimeMillis() - startMillis <= timeout) {
+                Dates.sleep(100);
+            }
+        }
+    }
+
+    /**
+     * 检测Idea的UI组件
+     *
+     * @param context 事件
+     */
+    protected void loadComponent(MavenPluginContext context) {
+        AnActionEvent event = context.getActionEvent();
+        SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
+        long startMillis = System.currentTimeMillis();
+        while (!manager.isShown()) { // 等待对话框显示
+            if (System.currentTimeMillis() - startMillis >= 3000) {
+                break;
+            } else {
+                Dates.sleep(100);
+            }
+        }
+
+        SearchEverywhereUI ui = manager.getCurrentlyShownUI();
+        context.setSearchEverywhereUI(ui);
+
+        try {
+            JBList<Object> jbList = JavaDialectFactory.get().getField(ui, "myResultsList");
+            context.setJBList(jbList);
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+
+        try {
+            SearchListModel listModel = JavaDialectFactory.get().getField(ui, "myListModel");
+            context.setJBListModel(listModel);
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+
+        try {
+            ProgressIndicator progressIndicator = JavaDialectFactory.get().getField(ui, "mySearchProgressIndicator");
+            context.setProgressIndicator(progressIndicator);
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+
+        try {
+            Advertiser advertiser = JavaDialectFactory.get().getField(ui, "myHintLabel");
+            context.setAdvertiser(advertiser);
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+
+        try {
+            JTextField searchField = ui.getSearchField();
+            context.setSearchField(searchField);
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+
+        try {
+            SearchEverywhereHeader myHeader = JavaDialectFactory.get().getField(ui, "myHeader");
+            context.setMyHeader(myHeader);
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+    }
+
+    protected void loadPopupMenu(MavenPluginContext context) {
         JPopupMenu listPopupMenu = new JPopupMenu();
         JMenuItem copyMaven = new JMenuItem("Copy Maven dependency");
         JMenuItem copyGradle = new JMenuItem("Copy Gradle dependency");
@@ -49,7 +172,6 @@ public class NavigationPopupMenu {
         itemPopupMenu.add(repeat);
         itemPopupMenu.add(clearCache);
 
-        MavenPluginContext context = this.plugin.getContext();
         JBList<Object> JBList = context.getJBList();
         SearchListModel listModel = context.getJBListModel();
 
@@ -215,7 +337,7 @@ public class NavigationPopupMenu {
                     MavenSearchResult result = plugin.getDatabase().select(pattern);
                     if (result != null && listModel.getFoundElementsInfo().size() >= result.size()) { // 判断是否满足插叙更多记录的条件
                         if (log.isDebugEnabled()) {
-                            log.debug("Click More Button ..");
+                            log.debug("Click '... more' button ..");
                         }
                         plugin.getServiceSearch().searchMore(plugin, pattern);
                     }

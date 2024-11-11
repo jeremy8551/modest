@@ -17,8 +17,8 @@ import cn.org.expect.maven.intellij.idea.navigation.MavenFoundElementInfo;
 import cn.org.expect.maven.intellij.idea.navigation.MavenFoundElementInfoComparator;
 import cn.org.expect.maven.intellij.idea.navigation.MavenSearchNavigation;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigation;
+import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationHead;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
-import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationList;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationResultSet;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
@@ -26,7 +26,6 @@ import cn.org.expect.maven.search.AbstractMavenSearch;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchNotification;
-import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.MessageFormatter;
 import cn.org.expect.util.StringUtils;
@@ -42,7 +41,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
-import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
@@ -86,62 +84,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
     @Override
     public void asyncSearch(String groupId, String artifactId) {
         this.getServiceSearch().searchExtra(this, groupId, artifactId);
-    }
-
-    /**
-     * 检测Idea的UI组件
-     *
-     * @param event 事件
-     */
-    public void detectIdeaComponent(AnActionEvent event) {
-        SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
-        long startMillis = System.currentTimeMillis();
-        while (!manager.isShown()) { // 等待对话框显示
-            if (System.currentTimeMillis() - startMillis >= 3000) {
-                break;
-            } else {
-                Dates.sleep(100);
-            }
-        }
-
-        MavenPluginContext context = this.context;
-        SearchEverywhereUI ui = manager.getCurrentlyShownUI();
-        context.setSearchEverywhereUI(ui);
-
-        try {
-            JBList<Object> jbList = JavaDialectFactory.get().getField(ui, "myResultsList");
-            context.setJBList(jbList);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-
-        try {
-            SearchListModel listModel = JavaDialectFactory.get().getField(ui, "myListModel");
-            context.setJBListModel(listModel);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-
-        try {
-            ProgressIndicator progressIndicator = JavaDialectFactory.get().getField(ui, "mySearchProgressIndicator");
-            context.setProgressIndicator(progressIndicator);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-
-        try {
-            Advertiser advertiser = JavaDialectFactory.get().getField(ui, "myHintLabel");
-            context.setAdvertiser(advertiser);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-
-        try {
-            JTextField searchField = context.getSearchEverywhereUI().getSearchField();
-            context.setSearchField(searchField);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
     }
 
     /**
@@ -237,25 +179,8 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
             return;
         }
 
-        String fontColor = "orange";
-        Icon icon;
-        switch (type) {
-            case NORMAL:
-                icon = MavenPluginIcon.BOTTOM;
-                break;
-
-            case RUNNING:
-                icon = MavenPluginIcon.BOTTOM_WAITING;
-                break;
-
-            case ERROR:
-                icon = MavenPluginIcon.BOTTOM_ERROR;
-                fontColor = "red";
-                break;
-
-            default:
-                icon = null;
-        }
+        String fontColor = MavenSearchAdvertiser.ERROR == type ? "red" : "orange";
+        Icon icon = IdeaUtils.getIcon(type);
 
         try {
             JLabel myTextPanel = JavaDialectFactory.get().getField(advertiser, "myTextPanel");
@@ -280,21 +205,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
         JBList<Object> jbList = this.context.getJBList();
         if (jbList != null) {
             jbList.setEmptyText(message);
-        }
-    }
-
-    /**
-     * 等待 SearchEverywhereUI 组件渲染完毕
-     *
-     * @param timeoutMillis 超时时间，单位：毫秒
-     */
-    public void waitForSearchEverywhereUI(long timeoutMillis) {
-        ProgressIndicator progress = this.context.getProgressIndicator();
-        if (progress != null) {
-            long startMillis = System.currentTimeMillis();
-            while (progress.isRunning() && System.currentTimeMillis() - startMillis >= timeoutMillis) {
-                Dates.sleep(100);
-            }
         }
     }
 
@@ -338,7 +248,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
 
         // 设置广告信息
         if (log.isDebugEnabled()) {
-            log.debug("repaint: " + JBList.getClass().getSimpleName() + ", size: " + listModel.getSize() + ", " + JBList.getModel().getSize() + ", " + listModel.isResultsExpired());
+            log.debug("repaint, size: {}, {}, {}", listModel.getSize(), JBList.getModel().getSize(), listModel.isResultsExpired());
         }
 
         String message = MavenSearchMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
@@ -352,14 +262,12 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
         SearchNavigationResultSet resultSet = this.toNavigationResultSet(result);
         this.context.setNavigationResultSet(resultSet);
 
-        // 设置广告信息
-        if (log.isDebugEnabled()) {
-            log.debug("rebuild, size: " + resultSet.size());
-        }
-
         String message = MavenSearchMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
         this.setRunningText(MavenSearchAdvertiser.NORMAL, message);
 
+        if (log.isDebugEnabled()) {
+            log.debug("repaintMore(), rebuildList, size: {} ", resultSet.size());
+        }
         this.context.getContributor().rebuildList();
     }
 
@@ -380,20 +288,20 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
      * @param listModel 组件的数据模型
      */
     protected void setSelection(JBList<Object> jbList, SearchListModel listModel) {
-        SearchNavigation selectedItem = this.context.getSelectedNavigation();
+        SearchNavigationHead selectedItem = this.context.getSelectedNavigation();
         if (selectedItem != null) {
             int selectedIndex = -1;
             for (int i = listModel.getSize() - 1; i >= 0; i--) {
                 Object object = listModel.getElementAt(i);
-                if (object instanceof SearchNavigation) {
-                    SearchNavigation item = (SearchNavigation) object;
+                if (object instanceof SearchNavigationHead) {
+                    SearchNavigationHead item = (SearchNavigationHead) object;
                     if (selectedItem.getArtifact().equals(item.getArtifact()) && item.getArtifact().isUnfold()) {
                         selectedIndex = i;
 
                         // 设置左侧等待图标
                         MavenArtifact artifact = selectedItem.getArtifact();
                         if (artifact.isUnfold() && this.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId()) == null) {
-                            item.setLeftIcon(MavenPluginIcon.LEFT_WAITING);
+                            item.setIcon(MavenPluginIcon.LEFT_WAITING);
                         }
                         break;
                     }
@@ -419,34 +327,34 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
         int size = list.size();
         java.util.List<MavenSearchNavigation> newList = new ArrayList<MavenSearchNavigation>(size);
         for (MavenArtifact artifact : list) {
-            SearchNavigation catalog = new SearchNavigation(artifact);
-            newList.add(catalog);
+            SearchNavigationHead head = new SearchNavigationHead(artifact);
+            newList.add(head);
 
             String groupId = artifact.getGroupId();
             String artifactId = artifact.getArtifactId();
 
-            MavenSearchResult versionResult = this.getDatabase().select(groupId, artifactId);
-            if (versionResult != null) {
-                catalog.setLeftIcon(MavenPluginIcon.LEFT_HAS_QUERY);
+            MavenSearchResult itemResult = this.getDatabase().select(groupId, artifactId);
+            if (itemResult != null) {
+                head.setIcon(MavenPluginIcon.LEFT_HAS_QUERY);
             }
 
             // 如果当前是展开状态
             if (artifact.isUnfold()) {
-                if (versionResult != null) {
-                    catalog.setLeftIcon(MavenPluginIcon.LEFT_UNFOLD);
-                    for (MavenArtifact version : versionResult.getList()) {
-                        SearchNavigationItem navigation = new SearchNavigationItem(version);
-                        if (this.getLocalRepository().exists(version)) {
-                            navigation.setLeftIcon(MavenPluginIcon.RIGHT_LOCAL);
+                if (itemResult != null) {
+                    head.setIcon(MavenPluginIcon.LEFT_UNFOLD);
+                    for (MavenArtifact itemArtifact : itemResult.getList()) {
+                        SearchNavigationItem item = new SearchNavigationItem(itemArtifact);
+                        if (this.getLocalRepository().exists(itemArtifact)) {
+                            item.setIcon(MavenPluginIcon.RIGHT_LOCAL);
                         }
-                        newList.add(navigation);
+                        newList.add(item);
                     }
                 }
             }
 
             // 判断是否正在查询详细信息
             if (this.getServiceSearch().isSearching(groupId, artifactId)) {
-                catalog.setLeftIcon(MavenPluginIcon.LEFT_WAITING);
+                head.setIcon(MavenPluginIcon.LEFT_WAITING);
             }
         }
         return newList;
@@ -460,39 +368,38 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
      */
     protected SearchNavigationResultSet toNavigationResultSet(MavenSearchResult result) {
         java.util.List<MavenArtifact> list = result.getList();
-        java.util.List<SearchNavigationList> newList = new ArrayList<SearchNavigationList>(list.size());
+        java.util.List<SearchNavigation> newList = new ArrayList<SearchNavigation>(list.size());
         for (MavenArtifact artifact : list) {
-            SearchNavigation catalog = new SearchNavigation(artifact);
-            List<SearchNavigationItem> itemList = new ArrayList<>();
+            SearchNavigationHead head = new SearchNavigationHead(artifact);
+            List<SearchNavigationItem> items = new ArrayList<>();
 
             String groupId = artifact.getGroupId();
             String artifactId = artifact.getArtifactId();
-
-            MavenSearchResult versionResult = this.getDatabase().select(groupId, artifactId);
-            if (versionResult != null) {
-                catalog.setLeftIcon(MavenPluginIcon.LEFT_HAS_QUERY);
+            MavenSearchResult itemResult = this.getDatabase().select(groupId, artifactId);
+            if (itemResult != null) {
+                head.setIcon(MavenPluginIcon.LEFT_HAS_QUERY);
             }
 
             // 如果当前是展开状态
             if (artifact.isUnfold()) {
-                if (versionResult != null) {
-                    catalog.setLeftIcon(MavenPluginIcon.LEFT_UNFOLD);
-                    for (MavenArtifact version : versionResult.getList()) {
-                        SearchNavigationItem item = new SearchNavigationItem(version);
-                        if (this.getLocalRepository().exists(version)) {
-                            item.setLeftIcon(MavenPluginIcon.RIGHT_LOCAL);
+                if (itemResult != null) {
+                    head.setIcon(MavenPluginIcon.LEFT_UNFOLD);
+                    for (MavenArtifact itemArtifact : itemResult.getList()) {
+                        SearchNavigationItem item = new SearchNavigationItem(itemArtifact);
+                        if (this.getLocalRepository().exists(itemArtifact)) {
+                            item.setIcon(MavenPluginIcon.RIGHT_LOCAL);
                         }
-                        itemList.add(item);
+                        items.add(item);
                     }
                 }
             }
 
             // 判断是否正在查询详细信息
             if (this.getServiceSearch().isSearching(groupId, artifactId)) {
-                catalog.setLeftIcon(MavenPluginIcon.LEFT_WAITING);
+                head.setIcon(MavenPluginIcon.LEFT_WAITING);
             }
 
-            newList.add(new SearchNavigationList(catalog, itemList));
+            newList.add(new SearchNavigation(head, items));
         }
 
         return new SearchNavigationResultSet(newList);
@@ -580,14 +487,9 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
     public String getEditorSelectText() {
         Editor editor = this.context.getActionEvent().getDataContext().getData(CommonDataKeys.EDITOR);
         if (editor != null) {
-            String selectedText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
-            if (StringUtils.isNotBlank(selectedText)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("--->      Selected text: " + selectedText);
-                }
-                return selectedText;
-            }
+            return StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
+        } else {
+            return null;
         }
-        return null;
     }
 }

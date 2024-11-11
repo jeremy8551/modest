@@ -40,9 +40,9 @@ public class PatternResultAnalysis {
         JSONArray docs = response.getJSONArray("docs");
 
         if (log.isDebugEnabled()) {
-            log.debug("send Response, find: " + numFound + ", return " + docs.length() + ", response: " + responseBody);
+            log.debug("send Response, find: {}, return {}, response: {}", numFound, docs.length(), responseBody);
         }
-        
+
         List<MavenArtifact> list = new ArrayList<MavenArtifact>(docs.length());
         for (int i = 0; i < docs.length(); i++) {
             JSONObject doc = docs.getJSONObject(i);

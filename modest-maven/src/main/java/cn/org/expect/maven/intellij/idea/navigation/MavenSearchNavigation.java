@@ -12,11 +12,11 @@ import com.intellij.util.TextWithIcon;
 public interface MavenSearchNavigation extends NavigationItem {
 
     /**
-     * 设置导航记录左侧的图标
+     * 设置导航记录（左侧或右侧）的图标
      *
      * @param icon 图标
      */
-    void setLeftIcon(Icon icon);
+    void setIcon(Icon icon);
 
     /**
      * 返回 Maven 工件信息

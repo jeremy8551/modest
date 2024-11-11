@@ -7,26 +7,26 @@ import java.util.Set;
 
 public class SearchNavigationResultSet {
 
-    private final Map<String, SearchNavigationList> map;
+    private final Map<String, SearchNavigation> map;
 
-    public SearchNavigationResultSet(List<SearchNavigationList> list) {
+    public SearchNavigationResultSet(List<SearchNavigation> list) {
         this.map = new LinkedHashMap<>(list.size());
-        for (SearchNavigationList navigation : list) {
-            SearchNavigation catalog = navigation.getCatalog();
-            String key = catalog.getName();
+        for (SearchNavigation navigation : list) {
+            SearchNavigationHead head = navigation.getHeader();
+            String key = head.getName();
             map.put(key, navigation);
         }
     }
 
-    public SearchNavigationList getItems(String name) {
-        return this.map.get(name);
-    }
-
-    public String[] getNames() {
+    public String[] getNavigationNames() {
         Set<String> keys = this.map.keySet();
         String[] array = new String[keys.size()];
         keys.toArray(array);
         return array;
+    }
+
+    public SearchNavigation getNavigation(String name) {
+        return this.map.get(name);
     }
 
     public int size() {

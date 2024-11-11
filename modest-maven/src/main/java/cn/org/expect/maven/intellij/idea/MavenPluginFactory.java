@@ -9,15 +9,14 @@ import org.jetbrains.annotations.NotNull;
 public class MavenPluginFactory implements SearchEverywhereContributorFactory<Object> {
 
     public @NotNull SearchEverywhereContributor<Object> createContributor(@NotNull AnActionEvent event) {
-        LogFactory.set("sout+:debug");
+        if (Boolean.parseBoolean(System.getProperty("idea.is.internal"))) {
+            LogFactory.set("sout+:debug");
+        }
+        
         MavenPluginContext context = new MavenPluginContext(event);
         MavenSearchPlugin plugin = new MavenSearchPlugin(context);
-
-        // 保存编辑器中选中的文本
-        context.setEditorSelectText(plugin.getEditorSelectText());
-
-        // 启动线程
-        new MavenPluginThread(plugin).start();
+        context.setEditorSelectText(plugin.getEditorSelectText()); // 保存选中的文本
+        new MavenPluginInit(plugin).start(); // 启动线程
         return plugin.getContributor();
     }
 }

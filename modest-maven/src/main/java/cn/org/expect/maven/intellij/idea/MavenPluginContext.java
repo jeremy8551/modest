@@ -3,13 +3,15 @@ package cn.org.expect.maven.intellij.idea;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.maven.intellij.idea.navigation.SearchNavigation;
+import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationHead;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationResultSet;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchContext;
+import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
+import com.intellij.ide.actions.searcheverywhere.SearchEverywhereHeader;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -35,7 +37,7 @@ public class MavenPluginContext implements MavenSearchContext {
     private volatile String editorSelectText;
 
     /** 选中的导航记录 */
-    private volatile SearchNavigation selectedNavigation;
+    private volatile SearchNavigationHead selectedNavigation;
 
     /** 选中的版本列表记录 */
     private volatile SearchNavigationItem selectNavigationItem;
@@ -64,9 +66,15 @@ public class MavenPluginContext implements MavenSearchContext {
     /** 导航记录结果集 */
     private volatile SearchNavigationResultSet navigationResultSet;
 
+    private volatile SearchEverywhereHeader myHeader;
+
+    /** 加载上下文信息的状态，true表示加载完毕 false表示还未加载 */
+    private volatile boolean loadStatus;
+
     public MavenPluginContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
         this.inputIntervalTime = 300;
+        this.loadStatus = false;
     }
 
     public AnActionEvent getActionEvent() {
@@ -139,7 +147,7 @@ public class MavenPluginContext implements MavenSearchContext {
      *
      * @return 导航栏
      */
-    public SearchNavigation getSelectedNavigation() {
+    public SearchNavigationHead getSelectedNavigation() {
         return this.selectedNavigation;
     }
 
@@ -148,7 +156,7 @@ public class MavenPluginContext implements MavenSearchContext {
      *
      * @param navigation 导航栏
      */
-    public void setSelectedNavigation(SearchNavigation navigation) {
+    public void setSelectedNavigation(SearchNavigationHead navigation) {
         this.selectedNavigation = navigation;
     }
 
@@ -170,7 +178,16 @@ public class MavenPluginContext implements MavenSearchContext {
         this.selectNavigationItem = selectNavigationItem;
     }
 
+    protected void waitForLoad() {
+        long timeout = 3000;
+        long startMillis = System.currentTimeMillis();
+        while (!this.loadStatus && System.currentTimeMillis() - startMillis <= timeout) {
+            Dates.sleep(200);
+        }
+    }
+
     public SearchEverywhereUI getSearchEverywhereUI() {
+        this.waitForLoad();
         return this.searchEverywhereUI;
     }
 
@@ -179,6 +196,7 @@ public class MavenPluginContext implements MavenSearchContext {
     }
 
     public JBList<Object> getJBList() {
+        this.waitForLoad();
         return this.JBList;
     }
 
@@ -187,6 +205,7 @@ public class MavenPluginContext implements MavenSearchContext {
     }
 
     public Advertiser getAdvertiser() {
+        this.waitForLoad();
         return this.advertiser;
     }
 
@@ -195,6 +214,7 @@ public class MavenPluginContext implements MavenSearchContext {
     }
 
     public SearchListModel getJBListModel() {
+        this.waitForLoad();
         return this.JBListModel;
     }
 
@@ -203,6 +223,7 @@ public class MavenPluginContext implements MavenSearchContext {
     }
 
     public ProgressIndicator getProgressIndicator() {
+        this.waitForLoad();
         return this.progressIndicator;
     }
 
@@ -211,6 +232,7 @@ public class MavenPluginContext implements MavenSearchContext {
     }
 
     public JTextField getSearchField() {
+        this.waitForLoad();
         return searchField;
     }
 
@@ -224,5 +246,18 @@ public class MavenPluginContext implements MavenSearchContext {
 
     public void setNavigationResultSet(SearchNavigationResultSet navigationResultSet) {
         this.navigationResultSet = navigationResultSet;
+    }
+
+    public SearchEverywhereHeader getMyHeader() {
+        this.waitForLoad();
+        return myHeader;
+    }
+
+    public void setMyHeader(SearchEverywhereHeader myHeader) {
+        this.myHeader = myHeader;
+    }
+
+    public void setLoadStatus(boolean detected) {
+        this.loadStatus = detected;
     }
 }

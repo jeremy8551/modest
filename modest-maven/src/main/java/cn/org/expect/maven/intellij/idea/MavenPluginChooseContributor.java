@@ -1,7 +1,7 @@
 package cn.org.expect.maven.intellij.idea;
 
 import cn.org.expect.maven.intellij.idea.navigation.EmptySearchNavigation;
-import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationList;
+import cn.org.expect.maven.intellij.idea.navigation.SearchNavigation;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationResultSet;
 import cn.org.expect.util.Ensure;
 import com.intellij.navigation.ChooseByNameContributor;
@@ -27,7 +27,7 @@ public class MavenPluginChooseContributor implements ChooseByNameContributor {
     public synchronized String[] getNames(Project project, boolean includeNonProjectItems) {
         SearchNavigationResultSet resultSet = this.plugin.getContext().getNavigationResultSet();
         if (resultSet != null) {
-            return resultSet.getNames();
+            return resultSet.getNavigationNames();
         } else {
             return new String[]{""};
         }
@@ -35,9 +35,9 @@ public class MavenPluginChooseContributor implements ChooseByNameContributor {
 
     public synchronized NavigationItem[] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
         SearchNavigationResultSet resultSet = this.plugin.getContext().getNavigationResultSet();
-        SearchNavigationList list = resultSet.getItems(name);
-        if (list != null) {
-            return list.toArray();
+        SearchNavigation navigation = resultSet.getNavigation(name);
+        if (navigation != null) {
+            return navigation.getItems();
         } else {
             return new NavigationItem[]{new EmptySearchNavigation()};
         }

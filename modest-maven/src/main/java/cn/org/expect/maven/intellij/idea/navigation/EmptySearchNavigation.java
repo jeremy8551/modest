@@ -4,7 +4,7 @@ import javax.swing.*;
 
 import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 
-public class EmptySearchNavigation extends SearchNavigation {
+public class EmptySearchNavigation extends SearchNavigationHead {
 
     public EmptySearchNavigation() {
         super(new MavenArtifactImpl());

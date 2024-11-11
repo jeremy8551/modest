@@ -15,10 +15,10 @@ import cn.org.expect.util.StringUtils;
 /**
  * 监听并执行：用户输入的模糊查询
  */
-public class SearchInputThread extends AbstractSearchThread<SearchElementPattern> {
-    protected final static Log log = LogFactory.getLog(SearchInputThread.class);
+public class MavenSearchInputThread extends AbstractSearchThread<SearchElementPattern> {
+    protected final static Log log = LogFactory.getLog(MavenSearchInputThread.class);
 
-    public SearchInputThread() {
+    public MavenSearchInputThread() {
         super();
     }
 
@@ -46,14 +46,15 @@ public class SearchInputThread extends AbstractSearchThread<SearchElementPattern
     }
 
     public void run() {
-        log.info("start " + SearchInputThread.class.getSimpleName() + " ..");
+        String name = MavenSearchInputThread.class.getSimpleName();
+        log.info(MavenSearchMessage.START_THREAD.fill(name));
         while (this.notTerminate) {
             try {
                 SearchElementPattern take = this.queue.take();
                 String pattern = take.getPattern();
-                MavenSearch search = take.getSearch();
 
                 // 设置未返回结果时显示的内容与广告栏信息
+                MavenSearch search = take.getSearch();
                 search.setWaitingText(MavenSearchMessage.SEARCHING.getMessage());
                 search.setRunningText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
 
@@ -62,6 +63,10 @@ public class SearchInputThread extends AbstractSearchThread<SearchElementPattern
 
                 // 查询
                 if (this.queue.isEmpty()) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("{} search pattern: {} ..", name, pattern);
+                    }
+
                     MavenSearchDatabase database = search.getDatabase();
                     MavenSearchResult result = this.query(database, pattern);
                     if (!this.notTerminate) {
@@ -89,10 +94,6 @@ public class SearchInputThread extends AbstractSearchThread<SearchElementPattern
         String patternFinal = MavenSearchUtils.parse(pattern);
         if (StringUtils.isBlank(patternFinal)) {
             return null;
-        }
-
-        if (log.isDebugEnabled()) {
-            log.debug("search Pattern: " + patternFinal);
         }
 
         MavenSearchResult result = database.select(patternFinal);
