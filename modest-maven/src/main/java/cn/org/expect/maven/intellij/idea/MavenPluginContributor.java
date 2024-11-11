@@ -21,7 +21,6 @@ import com.intellij.ide.util.gotoByName.GotoFileModel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
-import com.intellij.util.Alarm;
 import com.intellij.util.Processor;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,8 +35,6 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
     private final MavenSearchPlugin plugin;
 
     private Runnable rebuildList;
-
-    private final Alarm rebuildListAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD, this);
 
     public MavenPluginContributor(MavenSearchPlugin plugin) {
         super(plugin.getContext().getActionEvent());
@@ -228,6 +225,15 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
         return new ArrayList<>();
     }
 
+    /**
+     * 切换UI界面Tab，触发的任务
+     *
+     * @return 任务
+     */
+    public Runnable getRebuildListTask() {
+        return rebuildList;
+    }
+
     @NotNull
     public PersistentSearchEverywhereContributorFilter<FileTypeRef> createFileTypeFilter(@NotNull Project project) {
         List<FileTypeRef> items = new ArrayList<>(FileTypeRef.forAllFileTypes());
@@ -238,14 +244,5 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
     @Override
     public void dispose() {
         super.dispose();
-    }
-
-    /**
-     * 重新JList列表
-     */
-    public void rebuildList() {
-        if (!this.rebuildListAlarm.isDisposed() && this.rebuildListAlarm.getActiveRequestCount() == 0) {
-            this.rebuildListAlarm.addRequest(() -> this.rebuildList.run(), 100);
-        }
     }
 }

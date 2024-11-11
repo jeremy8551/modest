@@ -55,10 +55,20 @@ public class MavenPluginInit extends Thread {
         // 编辑器中选中的文本
         String editorSelectText = plugin.getContext().getEditorSelectText();
         if (StringUtils.isNotBlank(editorSelectText)) {
+            String pattern = MavenSearchUtils.parse(editorSelectText);
+
             if (log.isDebugEnabled()) {
-                log.debug("Idea editor selected text: {} ", editorSelectText);
+                log.debug("Idea editor selected text: {} --> {}", editorSelectText, pattern);
             }
-            plugin.setSearchFieldText(MavenSearchUtils.parse(editorSelectText)); // 复制选中的文本到搜索栏
+
+            // 自动切换 Tab 页
+            this.plugin.runEDTThread(() -> {
+                plugin.setSearchFieldText(pattern); // 复制选中的文本到搜索栏
+
+                if (MavenSearchUtils.isXML(editorSelectText)) {
+                    context.getSearchEverywhereUI().switchToTab(context.getContributor().getSearchProviderId());
+                }
+            }, 100);
         }
 
         log.info(MavenSearchMessage.DETECTED_IDEA_UI_COMPONENT.fill(this.getName()));

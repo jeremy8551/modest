@@ -36,6 +36,7 @@ import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationAction;
 import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
+import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
@@ -44,13 +45,16 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBList;
+import com.intellij.util.Alarm;
 import com.intellij.util.ui.Advertiser;
 import org.jetbrains.annotations.NotNull;
 
-public class MavenSearchPlugin extends AbstractMavenSearch {
+public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable {
     private final static Log log = LogFactory.getLog(MavenSearchPlugin.class);
 
     private final MavenPluginContext context;
+
+    private final Alarm rebuildListAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD, this);
 
     public MavenSearchPlugin(MavenPluginContext context) {
         super(RepositoryConfigFactory.getInstance(context.getActionEvent()));
@@ -155,10 +159,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
 
     @Override
     public void setSearchFieldText(String text) {
-        if (this.notMavenSearchTab()) {
-            return;
-        }
-
         context.getSearchEverywhereUI().getSearchField().setText(text);
     }
 
@@ -279,7 +279,9 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
         if (log.isDebugEnabled()) {
             log.debug("repaintMore(), rebuildList, size: {} ", resultSet.size());
         }
-        this.context.getContributor().rebuildList();
+
+        // 刷新 JList 界面
+        this.runEDTThread(() -> context.getContributor().getRebuildListTask().run(), 100);
     }
 
     private void updateComparator(SearchListModel listModel, Comparator comparator) {
@@ -503,5 +505,18 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
         } else {
             return null;
         }
+    }
+
+    /**
+     * 使用官方的 EDT 线程执行 swing 相关任务
+     */
+    public void runEDTThread(Runnable task, long delayMillis) {
+        if (!this.rebuildListAlarm.isDisposed() && this.rebuildListAlarm.getActiveRequestCount() == 0) {
+            this.rebuildListAlarm.addRequest(task, 100);
+        }
+    }
+
+    @Override
+    public void dispose() {
     }
 }
