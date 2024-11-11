@@ -106,11 +106,11 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
                     navigation.setIcon(MavenPluginIcon.LEFT_WAITING); // 更改为：等待图标
                     this.plugin.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
                 } else {
-                    this.plugin.repaint();
+                    this.plugin.repaintSearchResult();
                 }
             } else { // 设置为：折叠
                 artifact.setFold(true);
-                this.plugin.repaint();
+                this.plugin.repaintSearchResult();
             }
             return false;
         }
@@ -220,8 +220,8 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
 
     @Override
     public List<AnAction> getActions(@NotNull Runnable onChanged) {
-        if (log.isDebugEnabled()) {
-            log.debug("getActions({}) ", onChanged);
+        if (log.isTraceEnabled()) {
+            log.trace("getActions({}) ", onChanged);
         }
 
         this.rebuildList = Ensure.notNull(onChanged);

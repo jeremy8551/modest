@@ -1,6 +1,5 @@
 package cn.org.expect.maven.intellij.idea;
 
-import cn.org.expect.maven.intellij.idea.navigation.EmptySearchNavigation;
 import cn.org.expect.maven.intellij.idea.navigation.MavenSearchNavigation;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.navigation.ChooseByNameContributor;
@@ -25,11 +24,7 @@ public class MavenPluginModel extends FilteringGotoByModel<Object> {
 
     @Override
     protected boolean acceptItem(NavigationItem item) {
-        if (item instanceof EmptySearchNavigation) {
-            return false;
-        } else {
-            return item instanceof MavenSearchNavigation;
-        }
+        return item instanceof MavenSearchNavigation;
     }
 
     @Override

@@ -30,7 +30,7 @@ public class MavenSearchInputThread extends AbstractSearchThread<SearchElementPa
      */
     public void search(MavenSearch search, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
-            search.setRunningText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
+            search.setStatusbarText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
             this.add(new SearchElementPattern(search, pattern));
         }
     }
@@ -51,12 +51,12 @@ public class MavenSearchInputThread extends AbstractSearchThread<SearchElementPa
         while (this.notTerminate) {
             try {
                 SearchElementPattern take = this.queue.take();
+                MavenSearch search = take.getSearch();
                 String pattern = take.getPattern();
 
                 // 设置未返回结果时显示的内容与广告栏信息
-                MavenSearch search = take.getSearch();
-                search.setWaitingText(MavenSearchMessage.SEARCHING.getMessage());
-                search.setRunningText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
+                search.setProgressText(MavenSearchMessage.SEARCHING.getMessage());
+                search.setStatusbarText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
 
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
                 Dates.sleep(search.getContext().getInputIntervalTime());
@@ -73,15 +73,15 @@ public class MavenSearchInputThread extends AbstractSearchThread<SearchElementPa
                         continue;
                     } else if (result == null) {
                         String message = MavenSearchMessage.FAIL_SEND_REQUEST.getMessage();
-                        search.setWaitingText(message);
-                        search.setRunningText(MavenSearchAdvertiser.ERROR, message);
+                        search.setProgressText(message);
+                        search.setStatusbarText(MavenSearchAdvertiser.ERROR, message);
                     } else if (result.size() == 0) {
                         String message = MavenSearchMessage.NOTHING_FOUND.getMessage();
-                        search.setWaitingText(message);
-                        search.setRunningText(MavenSearchAdvertiser.NORMAL, message);
+                        search.setProgressText(message);
+                        search.setStatusbarText(MavenSearchAdvertiser.NORMAL, message);
                     } else {
                         search.getContext().setSearchResult(result);
-                        search.repaint(result);
+                        search.repaintSearchResult(result);
                     }
                 }
             } catch (Throwable e) {

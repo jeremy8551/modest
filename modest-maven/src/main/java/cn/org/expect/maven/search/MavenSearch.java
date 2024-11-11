@@ -60,41 +60,46 @@ public interface MavenSearch {
      *
      * @param text 文本信息
      */
-    void setSearchText(String text);
+    void setSearchFieldText(String text);
 
     /**
-     * 在等待搜索时，显示的文本信息
+     * 在等待搜索结果时，显示进度的文本信息
      *
      * @param message 文本信息
      */
-    void setWaitingText(String message);
+    void setProgressText(String message);
 
     /**
-     * 执行搜索时，显示的文本信息
+     * 设置状态栏的信息
      *
      * @param type    文本类型
      * @param message 文本信息
      */
-    void setRunningText(MavenSearchAdvertiser type, String message);
+    void setStatusbarText(MavenSearchAdvertiser type, String message);
+
+    /**
+     * 清空查询结果列表
+     */
+    void clearSearchResultUI();
 
     /**
      * 使用最新的查询结果，渲染 UI 界面
      */
-    void repaint();
+    void repaintSearchResult();
 
     /**
      * 使用参数指定的查询结果，渲染 UI 界面
      *
      * @param result 查询结果
      */
-    void repaint(MavenSearchResult result);
+    void repaintSearchResult(MavenSearchResult result);
 
     /**
      * 触发更多按钮操作时，执行的方法
      *
      * @param result 查询结果
      */
-    void repaintMore(MavenSearchResult result);
+    void repaintMoreSearchResult(MavenSearchResult result);
 
     /**
      * 返回 Maven 仓库信息

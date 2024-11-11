@@ -13,7 +13,6 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.maven.search.MavenSearchUtils;
@@ -23,7 +22,6 @@ import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.NetUtils;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereHeader;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
@@ -54,26 +52,13 @@ public class MavenPluginInit extends Thread {
         this.loadPopupMenu(context); // 加载弹出菜单
         this.waitFor(context.getProgressIndicator(), 3000); // 等待 idea 默认的搜索功能执行完毕
 
-        SearchEverywhereHeader myHeader = this.plugin.getContext().getMyHeader();
-        if (myHeader != null) {
-            List<SearchEverywhereHeader.SETab> tabs = myHeader.getTabs();
-            for (SearchEverywhereHeader.SETab tab : tabs) {
-                List<SearchEverywhereContributor<?>> contributors = tab.getContributors();
-                for (SearchEverywhereContributor<?> contributor : contributors) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("tabName: {}, tabID: {}, groupName: {}, className: {}", tab.getName(), tab.getID(), contributor.getGroupName(), contributor.getClass().getName());
-                    }
-                }
-            }
-        }
-
         // 编辑器中选中的文本
         String editorSelectText = plugin.getContext().getEditorSelectText();
         if (StringUtils.isNotBlank(editorSelectText)) {
             if (log.isDebugEnabled()) {
                 log.debug("Idea editor selected text: {} ", editorSelectText);
             }
-            plugin.setSearchText(MavenSearchUtils.parse(editorSelectText)); // 复制选中的文本到搜索栏
+            plugin.setSearchFieldText(MavenSearchUtils.parse(editorSelectText)); // 复制选中的文本到搜索栏
         }
 
         log.info(MavenSearchMessage.DETECTED_IDEA_UI_COMPONENT.fill(this.getName()));
@@ -267,10 +252,10 @@ public class MavenPluginInit extends Thread {
         // 清空所有缓存
         clearCache.addActionListener(e -> {
             plugin.getDatabase().clear();
-            plugin.repaint(new SimpleMavenSearchResult()); // 刷新一个空结果
-            plugin.setWaitingText("");
-            plugin.setRunningText(null, "");
-            plugin.setSearchText("");
+            plugin.clearSearchResultUI(); // 刷新一个空结果
+            plugin.setProgressText("");
+            plugin.setStatusbarText(null, "");
+            plugin.setSearchFieldText("");
             plugin.getContext().setNavigationResultSet(null);
             plugin.sendNotification(MavenSearchNotification.NORMAL, clearCache.getText());
         });
@@ -335,7 +320,7 @@ public class MavenPluginInit extends Thread {
                 if (selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) { // 点击 more 按钮
                     String pattern = context.getSearchText();
                     MavenSearchResult result = plugin.getDatabase().select(pattern);
-                    if (result != null && listModel.getFoundElementsInfo().size() >= result.size()) { // 判断是否满足插叙更多记录的条件
+                    if (result != null && listModel.getFoundElementsInfo().size() >= result.size()) { // 判断是否满足执行点击更多链接的条件
                         if (log.isDebugEnabled()) {
                             log.debug("Click '... more' button ..");
                         }

@@ -145,7 +145,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
      * @return 插件名
      */
     public @NotNull String getName() {
-        return "Maven+";
+        return "Maven+ Plugin";
     }
 
     /**
@@ -164,12 +164,16 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
     }
 
     @Override
-    public void setSearchText(String text) {
+    public void setSearchFieldText(String text) {
+        if (this.notMavenSearchTab()) {
+            return;
+        }
+
         context.getSearchEverywhereUI().getSearchField().setText(text);
     }
 
     @Override
-    public void setRunningText(MavenSearchAdvertiser type, String message) {
+    public void setStatusbarText(MavenSearchAdvertiser type, String message) {
         if (this.notMavenSearchTab()) {
             return;
         }
@@ -197,25 +201,42 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
     }
 
     @Override
-    public void setWaitingText(String message) {
+    public void setProgressText(String message) {
         if (this.notMavenSearchTab()) {
             return;
         }
 
-        JBList<Object> jbList = this.context.getJBList();
-        if (jbList != null) {
-            jbList.setEmptyText(message);
+        JBList<Object> JBList = this.context.getJBList();
+        if (JBList != null) {
+            JBList.setEmptyText(message);
         }
     }
 
     @Override
-    public synchronized void repaint() {
-        MavenSearchResult result = this.context.getSearchResult();
-        this.repaint(result);
+    public synchronized void clearSearchResultUI() {
+        SearchListModel listModel = this.context.getJBListModel();
+        for (int i = listModel.getSize() - 1; i >= 0; i--) {
+            SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
+            Object element = info.getElement();
+
+            if (!(info instanceof MavenFoundElementInfo) && element instanceof MavenSearchNavigation) {
+                try {
+                    listModel.removeElement(element, info.getContributor());
+                } catch (Throwable e) { // 如果不能删除，则将导航记录清空，排序时放到最后
+                    log.error(e.getLocalizedMessage(), e);
+                }
+            }
+        }
     }
 
     @Override
-    public synchronized void repaint(MavenSearchResult result) {
+    public synchronized void repaintSearchResult() {
+        MavenSearchResult result = this.context.getSearchResult();
+        this.repaintSearchResult(result);
+    }
+
+    @Override
+    public synchronized void repaintSearchResult(MavenSearchResult result) {
         if (result == null) {
             log.warn("repaint fail, result is null!");
             return;
@@ -240,30 +261,30 @@ public class MavenSearchPlugin extends AbstractMavenSearch {
 
         // 渲染 JBList
         try {
-            JBList.repaint();
             JBList.revalidate();
+            JBList.repaint();
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         }
 
         // 设置广告信息
         if (log.isDebugEnabled()) {
-            log.debug("repaint, size: {}, {}, {}", listModel.getSize(), JBList.getModel().getSize(), listModel.isResultsExpired());
+            log.debug("repaint, size: {}, {}", listModel.getSize(), JBList.getModel().getSize());
         }
 
         String message = MavenSearchMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
-        this.setRunningText(MavenSearchAdvertiser.NORMAL, message);
+        this.setStatusbarText(MavenSearchAdvertiser.NORMAL, message);
     }
 
     @Override
-    public synchronized void repaintMore(MavenSearchResult result) {
+    public synchronized void repaintMoreSearchResult(MavenSearchResult result) {
         Ensure.notNull(result);
 
         SearchNavigationResultSet resultSet = this.toNavigationResultSet(result);
         this.context.setNavigationResultSet(resultSet);
 
         String message = MavenSearchMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
-        this.setRunningText(MavenSearchAdvertiser.NORMAL, message);
+        this.setStatusbarText(MavenSearchAdvertiser.NORMAL, message);
 
         if (log.isDebugEnabled()) {
             log.debug("repaintMore(), rebuildList, size: {} ", resultSet.size());

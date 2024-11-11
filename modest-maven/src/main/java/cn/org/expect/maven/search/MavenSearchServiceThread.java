@@ -26,7 +26,7 @@ public class MavenSearchServiceThread extends AbstractSearchThread<Object> {
     public void searchMore(MavenSearch search, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
             String message = MavenSearchMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern));
-            search.setRunningText(MavenSearchAdvertiser.RUNNING, message);
+            search.setStatusbarText(MavenSearchAdvertiser.RUNNING, message);
 
             try {
                 this.queue.put(new SearchElementMore(search, pattern));
@@ -46,7 +46,7 @@ public class MavenSearchServiceThread extends AbstractSearchThread<Object> {
     public void searchExtra(MavenSearch search, String groupId, String artifactId) {
         if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
             String message = MavenSearchMessage.SEARCHING_EXTRA.fill(groupId, artifactId);
-            search.setRunningText(MavenSearchAdvertiser.RUNNING, message);
+            search.setStatusbarText(MavenSearchAdvertiser.RUNNING, message);
 
             try {
                 this.queue.put(new SearchElementExtra(search, groupId, artifactId));
@@ -84,7 +84,7 @@ public class MavenSearchServiceThread extends AbstractSearchThread<Object> {
                         }
 
                         if (result != null) {
-                            search.repaint();
+                            search.repaintSearchResult();
                         }
                     }
                     continue;
@@ -113,7 +113,7 @@ public class MavenSearchServiceThread extends AbstractSearchThread<Object> {
                             SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, next.getStart(), foundNumber);
                             database.insert(pattern, newResult); // 保存到数据库
                             search.getContext().setSearchResult(newResult); // 保存查询记录
-                            search.repaintMore(newResult); // 重新渲染
+                            search.repaintMoreSearchResult(newResult); // 重新渲染
                         }
                     }
                     continue;
