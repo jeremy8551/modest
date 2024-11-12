@@ -63,7 +63,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
 
     @Override
     public MavenPluginContext getContext() {
-        return context;
+        return this.context;
     }
 
     /**
@@ -257,11 +257,11 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             log.error(e.getLocalizedMessage(), e);
         }
 
-        // 设置广告信息
         if (log.isDebugEnabled()) {
-            log.debug("repaint, size: {}, {}", listModel.getSize(), JBList.getModel().getSize());
+            log.debug(MavenSearchMessage.get("repaint.search.list", listModel.getSize(), JBList.getModel().getSize()));
         }
 
+        // 设置广告信息
         String message = MavenSearchMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
         this.setStatusbarText(MavenSearchAdvertiser.NORMAL, message);
     }
@@ -277,7 +277,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         this.setStatusbarText(MavenSearchAdvertiser.NORMAL, message);
 
         if (log.isDebugEnabled()) {
-            log.debug("repaintMore(), rebuildList, size: {} ", resultSet.size());
+            log.debug("repaintMoreSearchResult(), rebuildList, size: {} ", resultSet.size());
         }
 
         // 刷新 JList 界面

@@ -22,6 +22,9 @@
       ]]>
     </description>
 
+    <!-- 配置国际化资源 -->
+    <resource-bundle>messages.MavenPluginBundle</resource-bundle>
+
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="jeremy8551@qq.com" url="https://github.com/jeremy8551/modest">Jeremy8551</vendor>
 

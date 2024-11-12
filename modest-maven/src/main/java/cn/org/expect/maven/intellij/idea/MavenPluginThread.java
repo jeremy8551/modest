@@ -1,5 +1,7 @@
 package cn.org.expect.maven.intellij.idea;
 
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -49,7 +51,8 @@ public class MavenPluginThread extends Thread {
         MavenPluginContext context = this.plugin.getContext(); // 上下文信息
         this.loadComponent(context); // 加载 UI 组件
         context.setLoadStatus(true); // 设置加载完成标志
-        this.loadPopupMenu(context); // 加载弹出菜单
+        this.setTabShortcut(context); // 添加快捷键
+        this.setPopupMenuUI(context); // 加载弹出菜单
         this.waitFor(context.getProgressIndicator(), 3000); // 等待 idea 默认的搜索功能执行完毕
 
         // 编辑器中选中的文本
@@ -151,7 +154,24 @@ public class MavenPluginThread extends Thread {
         }
     }
 
-    protected void loadPopupMenu(MavenPluginContext context) {
+    /**
+     * 打开搜索对话框后，点击 Shift 快捷键自动切换 Tab 页
+     *
+     * @param context 上下文信息
+     */
+    protected void setTabShortcut(MavenPluginContext context) {
+        context.getSearchField().addKeyListener(new KeyAdapter() {
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                    context.getSearchEverywhereUI().switchToTab(context.getContributor().getSearchProviderId());
+                }
+            }
+        });
+    }
+
+    protected void setPopupMenuUI(MavenPluginContext context) {
         JPopupMenu listPopupMenu = new JPopupMenu();
         JMenuItem copyMaven = new JMenuItem("Copy Maven dependency");
         JMenuItem copyGradle = new JMenuItem("Copy Gradle dependency");

@@ -1,13 +1,15 @@
 package cn.org.expect.maven.search;
 
+import cn.org.expect.util.Ensure;
+
 public class SearchElementPattern {
 
     private final MavenSearch search;
     private final String pattern;
 
     public SearchElementPattern(MavenSearch search, String pattern) {
-        this.search = search;
-        this.pattern = pattern;
+        this.search = Ensure.notNull(search);
+        this.pattern = Ensure.notNull(pattern);
     }
 
     public MavenSearch getSearch() {

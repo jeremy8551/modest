@@ -1,6 +1,8 @@
 package cn.org.expect.maven.search;
 
 import cn.org.expect.util.MessageFormatter;
+import com.intellij.DynamicBundle;
+import org.jetbrains.annotations.NotNull;
 
 public class MavenSearchMessage {
 
@@ -19,4 +21,19 @@ public class MavenSearchMessage {
     public final static MessageFormatter START_THREAD = new MessageFormatter("{} start ..");
 
     public final static MessageFormatter DETECTED_IDEA_UI_COMPONENT = new MessageFormatter("{} finish!");
+
+    private final static MavenPluginDynamicBundle BUNDLE = new MavenPluginDynamicBundle("messages.MavenPluginBundle");
+
+    private MavenSearchMessage() {
+    }
+
+    public static String get(String key, Object... params) {
+        return BUNDLE.getMessage(key, params);
+    }
+
+    private static class MavenPluginDynamicBundle extends DynamicBundle {
+        protected MavenPluginDynamicBundle(@NotNull String pathToBundle) {
+            super(pathToBundle);
+        }
+    }
 }
