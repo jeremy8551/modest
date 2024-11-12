@@ -209,7 +209,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
             Object element = info.getElement();
 
-            if (!(info instanceof MavenFoundElementInfo) && element instanceof MavenSearchNavigation) {
+            if (element instanceof MavenSearchNavigation) {
                 try {
                     listModel.removeElement(element, info.getContributor());
                 } catch (Throwable e) { // 如果不能删除，则将导航记录清空，排序时放到最后
