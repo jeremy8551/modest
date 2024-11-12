@@ -31,56 +31,67 @@ public class DatabaseSerializer {
         this.load(repository, pattern, artifact);
     }
 
+    public static File getStoreDir(File repository) {
+        if (repository != null && repository.exists() && repository.isDirectory()) {
+            File parent = repository.getParentFile();
+            if (parent == null) {
+                parent = repository;
+            }
+
+            File dir = new File(parent, ".maven_plus");
+            if (FileUtils.createDirectory(dir)) {
+                return dir;
+            }
+        }
+        return null;
+    }
+
     public void save(File repository, Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
         ObjectMapper mapper = new ObjectMapper();
-        if (repository.exists() && repository.isDirectory()) {
-            File dir = new File(repository.getParentFile(), ".search");
-            if (FileUtils.createDirectory(dir)) {
-                File file1 = new File(dir, DatabaseSerializer.PATTERN_TABLE);
-                File file2 = new File(dir, DatabaseSerializer.ARTIFACT_TABLE);
-                if (log.isDebugEnabled()) {
-                    log.debug("save database files: {}, {} ..", file1.getAbsolutePath(), file2.getAbsolutePath());
-                }
+        File dir = DatabaseSerializer.getStoreDir(repository);
+        if (dir != null) {
+            File file1 = new File(dir, DatabaseSerializer.PATTERN_TABLE);
+            File file2 = new File(dir, DatabaseSerializer.ARTIFACT_TABLE);
+            if (log.isDebugEnabled()) {
+                log.debug("save database files: {}, {} ..", file1.getAbsolutePath(), file2.getAbsolutePath());
+            }
 
-                try {
-                    String json1 = mapper.writeValueAsString(pattern);
-                    FileUtils.write(file1, CharsetName.UTF_8, false, json1);
+            try {
+                String json1 = mapper.writeValueAsString(pattern);
+                FileUtils.write(file1, CharsetName.UTF_8, false, json1);
 
-                    String json2 = mapper.writeValueAsString(artifact);
-                    FileUtils.write(file2, CharsetName.UTF_8, false, json2);
-                } catch (Throwable e) {
-                    log.error(e.getLocalizedMessage(), e);
-                }
+                String json2 = mapper.writeValueAsString(artifact);
+                FileUtils.write(file2, CharsetName.UTF_8, false, json2);
+            } catch (Throwable e) {
+                log.error(e.getLocalizedMessage(), e);
             }
         }
     }
 
     public void load(File repository, Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
         try {
-            if (repository.exists() && repository.isDirectory()) {
-                File dir = new File(repository.getParentFile(), ".search");
-                if (dir.exists() && dir.isDirectory()) {
-                    File file1 = new File(dir, DatabaseSerializer.PATTERN_TABLE);
-                    boolean loadfile1 = false;
-                    if (file1.exists() && file1.isFile()) {
-                        String jsonStr = FileUtils.readline(file1, CharsetName.UTF_8, 0);
-                        pattern.clear();
-                        pattern.putAll(this.deserializePatternTable(jsonStr));
-                        loadfile1 = true;
-                    }
+            File dir = DatabaseSerializer.getStoreDir(repository);
+            if (dir != null) {
+                File file1 = new File(dir, DatabaseSerializer.PATTERN_TABLE);
+                boolean loadfile1 = false;
+                if (file1.exists() && file1.isFile()) {
+                    String jsonStr = FileUtils.readline(file1, CharsetName.UTF_8, 0);
+                    pattern.clear();
+                    pattern.putAll(this.deserializePatternTable(jsonStr));
+                    loadfile1 = true;
+                }
 
-                    boolean loadfile2 = false;
-                    File file2 = new File(dir, DatabaseSerializer.ARTIFACT_TABLE);
-                    if (file2.exists() && file2.isFile()) {
-                        String jsonStr = FileUtils.readline(file2, CharsetName.UTF_8, 0);
-                        artifact.clear();
-                        artifact.putAll(this.deserializeArtifactTable(jsonStr));
-                        loadfile2 = true;
-                    }
+                boolean loadfile2 = false;
+                File file2 = new File(dir, DatabaseSerializer.ARTIFACT_TABLE);
+                if (file2.exists() && file2.isFile()) {
+                    String jsonStr = FileUtils.readline(file2, CharsetName.UTF_8, 0);
+                    artifact.clear();
+                    artifact.putAll(this.deserializeArtifactTable(jsonStr));
+                    loadfile2 = true;
+                }
 
-                    if (log.isDebugEnabled()) {
-                        log.debug("load database file: {}({}), {}({})", file1.getAbsolutePath(), loadfile1 ? pattern.size() : 0, file2.getAbsolutePath(), loadfile2 ? artifact.size() : 0);
-                    }
+                if (log.isDebugEnabled()) {
+                    log.debug("load database file: {}({}), {}({})", file1.getAbsolutePath(), loadfile1 ? pattern.size() : 0, file2.getAbsolutePath(), loadfile2 ? artifact.size() : 0);
                 }
             }
         } catch (Throwable e) {
