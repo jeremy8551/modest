@@ -5,7 +5,7 @@ import java.io.OutputStreamWriter;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.intellij.idea.MavenPluginContext;
+import cn.org.expect.maven.intellij.idea.MavenSearchPluginContext;
 import cn.org.expect.maven.intellij.idea.MavenSearchPlugin;
 import cn.org.expect.maven.intellij.idea.RepositoryConfigFactory;
 import cn.org.expect.maven.search.MavenSearch;
@@ -35,7 +35,7 @@ public class CleanRepositoryLastUpdated extends AnAction {
         this.find = 0;
         this.success = 0;
 
-        MavenPluginContext context = new MavenPluginContext(event);
+        MavenSearchPluginContext context = new MavenSearchPluginContext(event);
         MavenSearch search = new MavenSearchPlugin(context);
         File repository = RepositoryConfigFactory.getInstance(event).getRepository();
         if (repository == null) {

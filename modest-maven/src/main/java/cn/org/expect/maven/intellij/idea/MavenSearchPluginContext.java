@@ -19,7 +19,7 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.Advertiser;
 
-public class MavenPluginContext implements MavenSearchContext {
+public class MavenSearchPluginContext implements MavenSearchContext {
 
     /** 事件 */
     private final AnActionEvent event;
@@ -71,7 +71,7 @@ public class MavenPluginContext implements MavenSearchContext {
     /** 加载上下文信息的状态，true表示加载完毕 false表示还未加载 */
     private volatile boolean loadStatus;
 
-    public MavenPluginContext(AnActionEvent event) {
+    public MavenSearchPluginContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
         this.inputIntervalTime = 300;
         this.loadStatus = false;

@@ -48,7 +48,7 @@ public class MavenPluginThread extends Thread {
     public void run() {
         log.info(MavenSearchMessage.get("maven.search.thread.start", this.getName()));
 
-        MavenPluginContext context = this.plugin.getContext(); // 上下文信息
+        MavenSearchPluginContext context = this.plugin.getContext(); // 上下文信息
         this.loadComponent(context); // 加载 UI 组件
         context.setLoadStatus(true); // 设置加载完成标志
         this.setTabShortcut(context); // 添加快捷键
@@ -96,7 +96,7 @@ public class MavenPluginThread extends Thread {
      *
      * @param context 事件
      */
-    protected void loadComponent(MavenPluginContext context) {
+    protected void loadComponent(MavenSearchPluginContext context) {
         AnActionEvent event = context.getActionEvent();
         SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
         long startMillis = System.currentTimeMillis();
@@ -159,7 +159,7 @@ public class MavenPluginThread extends Thread {
      *
      * @param context 上下文信息
      */
-    protected void setTabShortcut(MavenPluginContext context) {
+    protected void setTabShortcut(MavenSearchPluginContext context) {
         context.getSearchField().addKeyListener(new KeyAdapter() {
 
             @Override
@@ -171,7 +171,7 @@ public class MavenPluginThread extends Thread {
         });
     }
 
-    protected void setPopupMenuUI(MavenPluginContext context) {
+    protected void setPopupMenuUI(MavenSearchPluginContext context) {
         JPopupMenu listPopupMenu = new JPopupMenu();
         JMenuItem copyMaven = new JMenuItem("Copy Maven dependency");
         JMenuItem copyGradle = new JMenuItem("Copy Gradle dependency");

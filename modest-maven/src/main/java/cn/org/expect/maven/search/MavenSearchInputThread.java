@@ -56,7 +56,7 @@ public class MavenSearchInputThread extends AbstractSearchThread<SearchElementPa
                 String pattern = take.getPattern();
 
                 // 设置未返回结果时显示的内容与广告栏信息
-                search.setProgressText(MavenSearchMessage.get("maven.search.empty.text"));
+                search.setProgressText(MavenSearchMessage.get("maven.search.progress.text"));
                 search.setStatusbarText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern)));
 
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件

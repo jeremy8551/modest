@@ -52,17 +52,17 @@ import org.jetbrains.annotations.NotNull;
 public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable {
     private final static Log log = LogFactory.getLog(MavenSearchPlugin.class);
 
-    private final MavenPluginContext context;
+    private final MavenSearchPluginContext context;
 
     private final Alarm rebuildListAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD, this);
 
-    public MavenSearchPlugin(MavenPluginContext context) {
+    public MavenSearchPlugin(MavenSearchPluginContext context) {
         super(RepositoryConfigFactory.getInstance(context.getActionEvent()));
         this.context = Ensure.notNull(context);
     }
 
     @Override
-    public MavenPluginContext getContext() {
+    public MavenSearchPluginContext getContext() {
         return this.context;
     }
 
@@ -258,7 +258,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
 
         if (log.isDebugEnabled()) {
-            log.debug(MavenSearchMessage.get("maven.search.repaint.list", listModel.getSize(), JBList.getModel().getSize()));
+            log.debug("repaint, size: {}, {}", listModel.getSize(), JBList.getModel().getSize());
         }
 
         // 设置广告信息
