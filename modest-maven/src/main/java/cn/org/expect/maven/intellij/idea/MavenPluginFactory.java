@@ -16,7 +16,7 @@ public class MavenPluginFactory implements SearchEverywhereContributorFactory<Ob
         MavenPluginContext context = new MavenPluginContext(event);
         MavenSearchPlugin plugin = new MavenSearchPlugin(context);
         context.setEditorSelectText(plugin.getEditorSelectText()); // 保存选中的文本
-        new MavenPluginInit(plugin).start(); // 启动线程
+        new MavenPluginThread(plugin).start(); // 启动线程
         return plugin.getContributor();
     }
 }

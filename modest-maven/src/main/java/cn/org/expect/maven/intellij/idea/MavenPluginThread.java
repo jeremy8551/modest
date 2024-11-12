@@ -31,14 +31,14 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.Advertiser;
 
-public class MavenPluginInit extends Thread {
-    private final static Log log = LogFactory.getLog(MavenPluginInit.class);
+public class MavenPluginThread extends Thread {
+    private final static Log log = LogFactory.getLog(MavenPluginThread.class);
 
     private final MavenSearchPlugin plugin;
 
-    public MavenPluginInit(MavenSearchPlugin plugin) {
+    public MavenPluginThread(MavenSearchPlugin plugin) {
         super();
-        this.setName(MavenPluginInit.class.getSimpleName());
+        this.setName(MavenPluginThread.class.getSimpleName());
         this.plugin = Ensure.notNull(plugin);
     }
 
@@ -62,13 +62,13 @@ public class MavenPluginInit extends Thread {
             }
 
             // 自动切换 Tab 页
-            this.plugin.runEDTThread(() -> {
+            this.plugin.runEdtThread(() -> {
                 plugin.setSearchFieldText(pattern); // 复制选中的文本到搜索栏
 
                 if (MavenSearchUtils.isXML(editorSelectText)) {
                     context.getSearchEverywhereUI().switchToTab(context.getContributor().getSearchProviderId());
                 }
-            }, 100);
+            }, 0);
         }
 
         log.info(MavenSearchMessage.DETECTED_IDEA_UI_COMPONENT.fill(this.getName()));
