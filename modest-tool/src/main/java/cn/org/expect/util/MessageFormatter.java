@@ -16,7 +16,7 @@ public class MessageFormatter {
         /** 无参数方式, 如: {} */
         SIMPLE,
 
-        /** 占位符类型是：{1} */
+        /** 占位符类型是：{0} */
         NORMAL
     }
 

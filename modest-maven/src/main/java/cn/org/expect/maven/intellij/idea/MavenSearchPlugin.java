@@ -258,11 +258,11 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
 
         if (log.isDebugEnabled()) {
-            log.debug(MavenSearchMessage.get("repaint.search.list", listModel.getSize(), JBList.getModel().getSize()));
+            log.debug(MavenSearchMessage.get("maven.search.repaint.list", listModel.getSize(), JBList.getModel().getSize()));
         }
 
         // 设置广告信息
-        String message = MavenSearchMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
+        String message = MavenSearchMessage.get("maven.search.status.text", result.getFoundNumber(), result.size());
         this.setStatusbarText(MavenSearchAdvertiser.NORMAL, message);
     }
 
@@ -273,7 +273,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         SearchNavigationResultSet resultSet = this.toNavigationResultSet(result);
         this.context.setNavigationResultSet(resultSet);
 
-        String message = MavenSearchMessage.REMOTE_SEARCH_RESULT.fill(result.getFoundNumber(), result.size());
+        String message = MavenSearchMessage.get("maven.search.status.text", result.getFoundNumber(), result.size());
         this.setStatusbarText(MavenSearchAdvertiser.NORMAL, message);
 
         if (log.isDebugEnabled()) {

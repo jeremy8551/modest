@@ -30,7 +30,8 @@ public class MavenSearchInputThread extends AbstractSearchThread<SearchElementPa
      */
     public void search(MavenSearch search, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
-            search.setStatusbarText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
+            String message = MavenSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern));
+            search.setStatusbarText(MavenSearchAdvertiser.RUNNING, message);
             this.add(new SearchElementPattern(search, pattern));
         }
     }
@@ -47,7 +48,7 @@ public class MavenSearchInputThread extends AbstractSearchThread<SearchElementPa
 
     public void run() {
         String name = MavenSearchInputThread.class.getSimpleName();
-        log.info(MavenSearchMessage.START_THREAD.fill(name));
+        log.info(MavenSearchMessage.get("maven.search.thread.start", name));
         while (this.notTerminate) {
             try {
                 SearchElementPattern take = this.queue.take();
@@ -55,8 +56,8 @@ public class MavenSearchInputThread extends AbstractSearchThread<SearchElementPa
                 String pattern = take.getPattern();
 
                 // 设置未返回结果时显示的内容与广告栏信息
-                search.setProgressText(MavenSearchMessage.SEARCHING.getMessage());
-                search.setStatusbarText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern)));
+                search.setProgressText(MavenSearchMessage.get("maven.search.empty.text"));
+                search.setStatusbarText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern)));
 
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
                 Dates.sleep(search.getContext().getInputIntervalTime());
@@ -72,11 +73,11 @@ public class MavenSearchInputThread extends AbstractSearchThread<SearchElementPa
                     if (!this.notTerminate) {
                         continue;
                     } else if (result == null) {
-                        String message = MavenSearchMessage.FAIL_SEND_REQUEST.getMessage();
+                        String message = MavenSearchMessage.get("maven.search.send.url.fail");
                         search.setProgressText(message);
                         search.setStatusbarText(MavenSearchAdvertiser.ERROR, message);
                     } else if (result.size() == 0) {
-                        String message = MavenSearchMessage.NOTHING_FOUND.getMessage();
+                        String message = MavenSearchMessage.get("maven.search.noting.found");
                         search.setProgressText(message);
                         search.setStatusbarText(MavenSearchAdvertiser.NORMAL, message);
                     } else {

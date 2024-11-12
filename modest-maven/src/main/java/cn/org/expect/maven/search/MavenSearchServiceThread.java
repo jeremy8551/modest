@@ -25,7 +25,7 @@ public class MavenSearchServiceThread extends AbstractSearchThread<Object> {
      */
     public void searchMore(MavenSearch search, String pattern) {
         if (StringUtils.isNotBlank(pattern)) {
-            String message = MavenSearchMessage.SEARCHING_PATTERN.fill(StringUtils.escapeLineSeparator(pattern));
+            String message = MavenSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern));
             search.setStatusbarText(MavenSearchAdvertiser.RUNNING, message);
 
             try {
@@ -45,7 +45,7 @@ public class MavenSearchServiceThread extends AbstractSearchThread<Object> {
      */
     public void searchExtra(MavenSearch search, String groupId, String artifactId) {
         if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
-            String message = MavenSearchMessage.SEARCHING_EXTRA.fill(groupId, artifactId);
+            String message = MavenSearchMessage.get("maven.search.extra.text", groupId, artifactId);
             search.setStatusbarText(MavenSearchAdvertiser.RUNNING, message);
 
             try {
@@ -58,7 +58,7 @@ public class MavenSearchServiceThread extends AbstractSearchThread<Object> {
 
     public void run() {
         String name = MavenSearchServiceThread.class.getSimpleName();
-        log.info(MavenSearchMessage.START_THREAD.fill(name));
+        log.info(MavenSearchMessage.get("maven.search.thread.start", name));
         while (this.notTerminate) {
             try {
                 Object object = this.queue.take();

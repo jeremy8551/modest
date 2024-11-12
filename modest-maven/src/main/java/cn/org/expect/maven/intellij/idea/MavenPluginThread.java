@@ -46,7 +46,7 @@ public class MavenPluginThread extends Thread {
 
     @Override
     public void run() {
-        log.info(MavenSearchMessage.START_THREAD.fill(this.getName()));
+        log.info(MavenSearchMessage.get("maven.search.thread.start", this.getName()));
 
         MavenPluginContext context = this.plugin.getContext(); // 上下文信息
         this.loadComponent(context); // 加载 UI 组件
@@ -74,7 +74,7 @@ public class MavenPluginThread extends Thread {
             }, 0);
         }
 
-        log.info(MavenSearchMessage.DETECTED_IDEA_UI_COMPONENT.fill(this.getName()));
+        log.info(MavenSearchMessage.get("maven.search.thread.finish", this.getName()));
     }
 
     /**

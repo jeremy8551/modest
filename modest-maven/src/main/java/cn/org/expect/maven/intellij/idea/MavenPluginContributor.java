@@ -9,6 +9,7 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.intellij.idea.navigation.NavigationCellRenderer;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationHead;
 import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchUtils;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
@@ -116,11 +117,11 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
     }
 
     /**
-     * 获取所选元素的上下文数据
+     * 从参数 element 中读取数据
      *
      * @param element 元素
      * @param dataId  数据编号
-     * @return
+     * @return 返回数据
      */
     @Override
     public Object getDataForItem(Object element, String dataId) {
@@ -187,7 +188,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
      */
     @Override
     public String getGroupName() {
-        return "Maven";
+        return MavenSearchMessage.get("maven.search.tab.name");
     }
 
     /**
