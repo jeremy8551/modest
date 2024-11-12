@@ -14,11 +14,7 @@ import cn.org.expect.maven.search.MavenSearchUtils;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
-import com.intellij.ide.actions.searcheverywhere.PersistentSearchEverywhereContributorFilter;
-import com.intellij.ide.util.gotoByName.FileTypeRef;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
-import com.intellij.ide.util.gotoByName.GotoFileConfiguration;
-import com.intellij.ide.util.gotoByName.GotoFileModel;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
@@ -26,7 +22,7 @@ import com.intellij.util.Processor;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Idea 搜索的贡献者
+ * Search Everywhere 自定义的搜索类别
  */
 public class MavenPluginContributor extends AbstractGotoSEContributor {
     private final static Log log = LogFactory.getLog(MavenPluginContributor.class);
@@ -202,7 +198,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
     }
 
     /**
-     * 定义是否可以在“查找”工具窗口中显示找到的结果
+     * 定义是否可以在“查找”工具窗口中显示找到的结果，对应搜索窗口右上角的图标
      *
      * @return
      */
@@ -231,15 +227,8 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
      *
      * @return 任务
      */
-    public Runnable getRebuildListTask() {
+    public Runnable getRebuildRunnable() {
         return rebuildList;
-    }
-
-    @NotNull
-    public PersistentSearchEverywhereContributorFilter<FileTypeRef> createFileTypeFilter(@NotNull Project project) {
-        List<FileTypeRef> items = new ArrayList<>(FileTypeRef.forAllFileTypes());
-        items.add(0, GotoFileModel.DIRECTORY_FILE_TYPE_REF);
-        return new PersistentSearchEverywhereContributorFilter<>(items, GotoFileConfiguration.getInstance(project), FileTypeRef::getName, FileTypeRef::getIcon);
     }
 
     @Override

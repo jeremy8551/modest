@@ -248,15 +248,6 @@ public class MavenSearchPluginContext implements MavenSearchContext {
         this.navigationResultSet = navigationResultSet;
     }
 
-    public SearchEverywhereHeader getMyHeader() {
-        this.waitForLoad();
-        return myHeader;
-    }
-
-    public void setMyHeader(SearchEverywhereHeader myHeader) {
-        this.myHeader = myHeader;
-    }
-
     public void setLoadStatus(boolean detected) {
         this.loadStatus = detected;
     }

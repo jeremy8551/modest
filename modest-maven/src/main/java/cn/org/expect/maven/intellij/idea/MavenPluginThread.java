@@ -1,7 +1,5 @@
 package cn.org.expect.maven.intellij.idea;
 
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
@@ -12,6 +10,8 @@ import javax.swing.*;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.intellij.idea.listener.InputFieldListener;
+import cn.org.expect.maven.intellij.idea.listener.SearchListener;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
@@ -24,7 +24,6 @@ import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.NetUtils;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.BrowserUtil;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereHeader;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
@@ -51,7 +50,6 @@ public class MavenPluginThread extends Thread {
         MavenSearchPluginContext context = this.plugin.getContext(); // 上下文信息
         this.loadComponent(context); // 加载 UI 组件
         context.setLoadStatus(true); // 设置加载完成标志
-        this.setTabShortcut(context); // 添加快捷键
         this.setPopupMenuUI(context); // 加载弹出菜单
         this.waitFor(context.getProgressIndicator(), 3000); // 等待 idea 默认的搜索功能执行完毕
 
@@ -110,6 +108,7 @@ public class MavenPluginThread extends Thread {
 
         SearchEverywhereUI ui = manager.getCurrentlyShownUI();
         context.setSearchEverywhereUI(ui);
+        ui.addSearchListener(new SearchListener(this.plugin));
 
         try {
             JBList<Object> jbList = JavaDialectFactory.get().getField(ui, "myResultsList");
@@ -142,33 +141,10 @@ public class MavenPluginThread extends Thread {
         try {
             JTextField searchField = ui.getSearchField();
             context.setSearchField(searchField);
+            searchField.addKeyListener(new InputFieldListener(context)); // 打开搜索对话框后，点击 Shift 快捷键自动切换 Tab 页
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         }
-
-        try {
-            SearchEverywhereHeader myHeader = JavaDialectFactory.get().getField(ui, "myHeader");
-            context.setMyHeader(myHeader);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-    }
-
-    /**
-     * 打开搜索对话框后，点击 Shift 快捷键自动切换 Tab 页
-     *
-     * @param context 上下文信息
-     */
-    protected void setTabShortcut(MavenSearchPluginContext context) {
-        context.getSearchField().addKeyListener(new KeyAdapter() {
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
-                    context.getSearchEverywhereUI().switchToTab(context.getContributor().getSearchProviderId());
-                }
-            }
-        });
     }
 
     protected void setPopupMenuUI(MavenSearchPluginContext context) {
@@ -282,7 +258,7 @@ public class MavenPluginThread extends Thread {
         // 清空所有缓存
         clearCache.addActionListener(e -> {
             plugin.getDatabase().clear();
-            plugin.clearSearchResultUI(); // 刷新一个空结果
+            plugin.clearSearchResult(); // 刷新一个空结果
             plugin.setProgressText("");
             plugin.setStatusbarText(null, "");
             plugin.setSearchFieldText("");
@@ -373,34 +349,32 @@ public class MavenPluginThread extends Thread {
         });
 
         JTextField searchField = context.getSearchField();
-        if (searchField != null) {
-            searchField.addMouseListener(new MouseListener() {
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                }
+        searchField.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+            }
 
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    // 右键点击
-                    if (e.isPopupTrigger()) {
-                        int x = searchField.getX();
-                        int y = searchField.getY() - 30;
-                        itemPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
-                    }
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // 右键点击
+                if (e.isPopupTrigger()) {
+                    int x = searchField.getX();
+                    int y = searchField.getY() - 30;
+                    itemPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
                 }
+            }
 
-                @Override
-                public void mouseReleased(MouseEvent e) {
-                }
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
 
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                }
+            @Override
+            public void mouseEntered(MouseEvent e) {
+            }
 
-                @Override
-                public void mouseExited(MouseEvent e) {
-                }
-            });
-        }
+            @Override
+            public void mouseExited(MouseEvent e) {
+            }
+        });
     }
 }

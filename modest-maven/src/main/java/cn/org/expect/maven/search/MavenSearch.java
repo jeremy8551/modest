@@ -80,7 +80,7 @@ public interface MavenSearch {
     /**
      * 清空查询结果列表
      */
-    void clearSearchResultUI();
+    void clearSearchResult();
 
     /**
      * 使用最新的查询结果，渲染 UI 界面

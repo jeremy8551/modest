@@ -203,7 +203,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     }
 
     @Override
-    public synchronized void clearSearchResultUI() {
+    public synchronized void clearSearchResult() {
         SearchListModel listModel = this.context.getJBListModel();
         for (int i = listModel.getSize() - 1; i >= 0; i--) {
             SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
@@ -281,7 +281,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
 
         // 刷新 JList 界面
-        this.runEdtThread(() -> context.getContributor().getRebuildListTask().run(), 100);
+        this.runEdtThread(() -> context.getContributor().getRebuildRunnable().run(), 0);
     }
 
     private void updateComparator(SearchListModel listModel, Comparator comparator) {
@@ -511,7 +511,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
      * 使用官方的 EDT 线程执行 swing 相关任务
      */
     public void runEdtThread(Runnable task, long delayMillis) {
-        if (!this.rebuildListAlarm.isDisposed() && this.rebuildListAlarm.getActiveRequestCount() == 0) {
+        if (!this.rebuildListAlarm.isDisposed()) {
             this.rebuildListAlarm.addRequest(task, delayMillis);
         }
     }

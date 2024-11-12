@@ -40,6 +40,7 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
+<!--        <applicationInitializedListener implementation="cn.org.expect.maven.intellij.idea.ApplicationInitializedListenerImpl"/>-->
         <!--<lang.findUsagesProvider implementationClass="cn.org.expect.intellijidea.plugin.maven.provider.MavenFindUsagesProvider" language=""/>-->
         <searchEverywhereContributor implementation="cn.org.expect.maven.intellij.idea.MavenPluginFactory"/>
     </extensions>
@@ -54,7 +55,7 @@
         </action>
 
         <!-- 绘制菜单 -->
-        <group popup="false" id="MavenFinder" text="MavenFinder">
+        <group popup="false" id="MavenPlusID" text="MavenFinder">
             <separator/> <!--分隔符-->
             <reference ref="OpenLocalRepository"/>
             <reference ref="CleanRepositoryLastUpdated"/>
