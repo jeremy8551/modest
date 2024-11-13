@@ -2,9 +2,10 @@ package cn.org.expect.maven.search;
 
 import cn.org.expect.util.Ensure;
 
-public class SearchElementPattern {
+public class SearchElementPattern implements SearchElement {
 
     private final MavenSearch search;
+    
     private final String pattern;
 
     public SearchElementPattern(MavenSearch search, String pattern) {

@@ -153,9 +153,13 @@ public class MavenPluginThread extends Thread {
         JMenuItem copyGradle = new JMenuItem("Copy Gradle dependency");
         JMenuItem openInBrowser = new JMenuItem("Open in Browser");
         JMenuItem openFileSystem = new JMenuItem("Open in FileSystem");
+        JMenuItem download = new JMenuItem("Download to local repository");
+        JMenuItem delete = new JMenuItem("Delete from local repository");
         listPopupMenu.add(copyMaven); // 将菜单项添加到弹出菜单中
         listPopupMenu.add(copyGradle);
         listPopupMenu.add(openInBrowser);
+        listPopupMenu.add(download);
+        listPopupMenu.add(delete);
 
         JPopupMenu itemPopupMenu = new JPopupMenu();
         JMenuItem repeat = new JMenuItem("Refresh the query");
@@ -247,6 +251,41 @@ public class MavenPluginThread extends Thread {
             BrowserUtil.browse(new File(FileUtils.joinPath(list.toArray(new String[0]))));
         });
 
+        download.addActionListener(e -> {
+            SearchNavigationItem selectItem = context.getSelectItem();
+            if (selectItem == null) {
+                log.warn("Not a selected Navigation Item!");
+                return;
+            }
+
+            plugin.getServiceSearch().download(plugin, selectItem.getArtifact());
+            plugin.repaintSearchResult();
+        });
+
+        delete.addActionListener(e -> {
+            SearchNavigationItem selectItem = context.getSelectItem();
+            if (selectItem == null) {
+                log.warn("Not a selected Navigation Item!");
+                return;
+            }
+
+            MavenArtifact artifact = selectItem.getArtifact();
+            List<String> list = new ArrayList<>();
+            list.add(plugin.getLocalRepository().getAddress());
+            StringUtils.split(artifact.getGroupId(), '.', list);
+            list.add(artifact.getArtifactId());
+            list.add(artifact.getVersion());
+            File dir = new File(FileUtils.joinPath(list.toArray(new String[0])));
+
+            if (dir.exists()) {
+                if (log.isDebugEnabled()) {
+                    log.debug("delete local repository {} ..", dir.getAbsolutePath());
+                }
+                FileUtils.delete(dir);
+                plugin.repaintSearchResult();
+            }
+        });
+
         // 重新执行查询
         repeat.addActionListener(e -> {
             String pattern = context.getSearchText();
@@ -290,8 +329,12 @@ public class MavenPluginThread extends Thread {
 
                         if (plugin.getLocalRepository().exists(item.getArtifact())) {
                             listPopupMenu.add(openFileSystem);
+                            listPopupMenu.remove(download);
+                            listPopupMenu.add(delete);
                         } else {
                             listPopupMenu.remove(openFileSystem);
+                            listPopupMenu.add(download);
+                            listPopupMenu.remove(delete);
                         }
                         listPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
                         return;

@@ -267,8 +267,8 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     }
 
     @Override
-    public synchronized void repaintMoreSearchResult(MavenSearchResult result) {
-        Ensure.notNull(result);
+    public synchronized void repaintMoreSearchResult() {
+        MavenSearchResult result = this.context.getSearchResult();
 
         SearchNavigationResultSet resultSet = this.toNavigationResultSet(result);
         this.context.setNavigationResultSet(resultSet);
@@ -358,7 +358,9 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
                     head.setIcon(MavenPluginIcon.LEFT_UNFOLD);
                     for (MavenArtifact itemArtifact : itemResult.getList()) {
                         SearchNavigationItem item = new SearchNavigationItem(itemArtifact);
-                        if (this.getLocalRepository().exists(itemArtifact)) {
+                        if (this.getServiceSearch().isDownloading(itemArtifact)) { // 正在下载
+                            item.setIcon(MavenPluginIcon.RIGHT_DOWNLOAD);
+                        } else if (this.getLocalRepository().exists(itemArtifact)) {
                             item.setIcon(MavenPluginIcon.RIGHT_LOCAL);
                         }
                         newList.add(item);

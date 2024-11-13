@@ -1,6 +1,6 @@
 package cn.org.expect.maven.search;
 
-public class SearchElementExtra {
+public class SearchElementExtra implements SearchElement {
 
     private final MavenSearch search;
     private final String groupId;

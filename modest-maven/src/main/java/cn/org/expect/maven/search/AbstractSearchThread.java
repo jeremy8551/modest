@@ -21,7 +21,7 @@ public abstract class AbstractSearchThread<T> extends Thread {
     protected final BlockingQueue<T> queue;
 
     /** 正在搜索的任务 */
-    protected volatile SearchElementExtra searching;
+    protected volatile T searching;
 
     /**
      * 构造方法
@@ -29,6 +29,7 @@ public abstract class AbstractSearchThread<T> extends Thread {
     public AbstractSearchThread() {
         this.queue = new LinkedTransferQueue<>();
         this.notTerminate = true;
+        this.setName(this.getClass().getSimpleName());
     }
 
     /**

@@ -28,6 +28,8 @@ public class MavenPluginIcon {
     public static final Icon RIGHT_LOCAL = load("/cn/org/expect/maven/intellij/idea/icon/maven-repository-right-local.svg");
 
     public static final Icon RIGHT_REMOTE = load("/cn/org/expect/maven/intellij/idea/icon/maven-repository-right-remote.svg");
+    
+    public static final Icon RIGHT_DOWNLOAD = load("/cn/org/expect/maven/intellij/idea/icon/maven-repository-right-download.svg");
 
     public static Icon load(String filepath) {
         return IconLoader.getIcon(filepath, MavenPluginIcon.class);

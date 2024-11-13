@@ -96,10 +96,8 @@ public interface MavenSearch {
 
     /**
      * 触发更多按钮操作时，执行的方法
-     *
-     * @param result 查询结果
      */
-    void repaintMoreSearchResult(MavenSearchResult result);
+    void repaintMoreSearchResult();
 
     /**
      * 返回 Maven 仓库信息

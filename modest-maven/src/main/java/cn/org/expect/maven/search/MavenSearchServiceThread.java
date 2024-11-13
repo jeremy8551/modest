@@ -1,17 +1,22 @@
 package cn.org.expect.maven.search;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
+import cn.org.expect.maven.intellij.idea.IdeaUtils;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.maven.search.db.MavenSearchDatabase;
+import cn.org.expect.util.FileUtils;
+import cn.org.expect.util.NetUtils;
 import cn.org.expect.util.StringUtils;
 
 /**
  * 立即执行模糊查询与精确查询
  */
-public class MavenSearchServiceThread extends AbstractSearchThread<Object> {
+public class MavenSearchServiceThread extends AbstractSearchThread<SearchElement> {
 
     public MavenSearchServiceThread() {
         super();
@@ -56,72 +61,144 @@ public class MavenSearchServiceThread extends AbstractSearchThread<Object> {
         }
     }
 
+    /**
+     * 下载工件
+     *
+     * @param search   搜索接口
+     * @param artifact 工件
+     */
+    public void download(MavenSearch search, MavenArtifact artifact) {
+        if (search != null && artifact != null) {
+            String message = MavenSearchMessage.get("maven.search.download.url", artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion());
+            search.setStatusbarText(MavenSearchAdvertiser.RUNNING, message);
+
+            try {
+                this.queue.put(new SearchElementDownload(search, artifact));
+            } catch (Throwable e) {
+                log.error(e.getLocalizedMessage(), e);
+            }
+        }
+    }
+
     public void run() {
-        String name = MavenSearchServiceThread.class.getSimpleName();
-        log.info(MavenSearchMessage.get("maven.search.thread.start", name));
+        log.info(MavenSearchMessage.get("maven.search.thread.start", this.getName()));
         while (this.notTerminate) {
             try {
-                Object object = this.queue.take();
+                SearchElement element = this.queue.take();
+                int value;
 
-                // 精确查询
-                if (object instanceof SearchElementExtra) {
-                    SearchElementExtra element = (SearchElementExtra) object;
-                    String groupId = element.getGroupId();
-                    String artifactId = element.getArtifactId();
-                    MavenSearch search = element.getSearch();
-
-                    if (log.isDebugEnabled()) {
-                        log.debug("{} search groupId: {}, artifactId: {} ..", name, groupId, artifactId);
-                    }
-
-                    this.searching = element;
-                    if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
-                        MavenSearchResult result;
-                        try {
-                            result = this.searchExtra(search.getDatabase(), groupId, artifactId);
-                        } finally {
-                            this.searching = null;
-                        }
-
-                        if (result != null) {
-                            search.repaintSearchResult();
-                        }
-                    }
-                    continue;
+                this.searching = element;
+                try {
+                    value = this.execute(element);
+                } finally {
+                    this.searching = null;
                 }
 
-                // more 按钮的模糊查询操作
-                if (object instanceof SearchElementMore) {
-                    SearchElementMore element = (SearchElementMore) object;
-                    MavenSearch search = element.getSearch();
-                    String pattern = element.getPattern();
+                switch (value) {
+                    case 0:
+                        element.getSearch().repaintSearchResult();
+                        break;
 
-                    if (log.isDebugEnabled()) {
-                        log.debug("{} search more: {}", name, pattern);
-                    }
-
-                    MavenSearchDatabase database = search.getDatabase();
-                    MavenSearchResult result = database.select(pattern);
-                    if (result != null && result.getFoundNumber() > result.size()) { // 还有未加载的数据
-                        int start = result.getStart();
-                        int foundNumber = result.getFoundNumber();
-                        List<MavenArtifact> list = result.getList();
-
-                        MavenSearchResult next = this.getRepository().query(StringUtils.trimBlank(StringUtils.replaceAll(pattern, ".", "%2E")), start);
-                        if (next != null) {
-                            list.addAll(next.getList());
-                            SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, next.getStart(), foundNumber);
-                            database.insert(pattern, newResult); // 保存到数据库
-                            search.getContext().setSearchResult(newResult); // 保存查询记录
-                            search.repaintMoreSearchResult(newResult); // 重新渲染
-                        }
-                    }
-                    continue;
+                    case 1:
+                        element.getSearch().repaintMoreSearchResult();
+                        break;
                 }
             } catch (Throwable e) {
                 log.error(e.getLocalizedMessage(), e);
             }
         }
+    }
+
+    private int execute(SearchElement object) throws Exception {
+        // 精确查询
+        if (object instanceof SearchElementExtra) {
+            SearchElementExtra element = (SearchElementExtra) object;
+            String groupId = element.getGroupId();
+            String artifactId = element.getArtifactId();
+            MavenSearch search = element.getSearch();
+
+            if (log.isDebugEnabled()) {
+                log.debug("{} search groupId: {}, artifactId: {} ..", this.getName(), groupId, artifactId);
+            }
+
+            if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
+                MavenSearchResult result = this.searchExtra(search.getDatabase(), groupId, artifactId);
+                if (result != null) {
+                    return 0;
+                }
+            }
+            return -1;
+        }
+
+        // 下载工件
+        if (object instanceof SearchElementDownload) {
+            SearchElementDownload element = (SearchElementDownload) object;
+            MavenArtifact artifact = element.getArtifact();
+            MavenSearch search = element.getSearch();
+
+            List<String> list = new ArrayList<>();
+            list.add(search.getRemoteRepository().getAddress());
+            StringUtils.split(artifact.getGroupId(), '.', list);
+            list.add(artifact.getArtifactId());
+            list.add(artifact.getVersion());
+            String url = NetUtils.joinUri(list.toArray(new String[0]));
+
+            String filepath = search.getLocalRepository().getAddress();
+            if (FileUtils.isDirectory(filepath)) {
+                list.clear();
+                list.add(filepath);
+                StringUtils.split(artifact.getGroupId(), '.', list);
+                list.add(artifact.getArtifactId());
+                list.add(artifact.getVersion());
+                File parent = new File(FileUtils.joinPath(list.toArray(new String[0])));
+                FileUtils.createDirectory(parent);
+
+                List<String> files = IdeaUtils.fetchFileList(url);
+                for (String fileName : files) {
+                    String httpUrl = NetUtils.joinUri(url, fileName);
+                    File downfile = new File(parent, fileName);
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("download {} to {} ..", httpUrl, downfile.getAbsolutePath());
+                    }
+
+                    IdeaUtils.download(httpUrl, downfile);
+                }
+                return 0;
+            }
+            return -1;
+        }
+
+        // more 按钮的模糊查询操作
+        if (object instanceof SearchElementMore) {
+            SearchElementMore element = (SearchElementMore) object;
+            MavenSearch search = element.getSearch();
+            String pattern = element.getPattern();
+
+            if (log.isDebugEnabled()) {
+                log.debug("{} search more: {}", this.getName(), pattern);
+            }
+
+            MavenSearchDatabase database = search.getDatabase();
+            MavenSearchResult result = database.select(pattern);
+            if (result != null && result.getFoundNumber() > result.size()) { // 还有未加载的数据
+                int start = result.getStart();
+                int foundNumber = result.getFoundNumber();
+                List<MavenArtifact> list = result.getList();
+
+                MavenSearchResult next = this.getRepository().query(StringUtils.trimBlank(StringUtils.replaceAll(pattern, ".", "%2E")), start);
+                if (next != null) {
+                    list.addAll(next.getList());
+                    SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, next.getStart(), foundNumber);
+                    database.insert(pattern, newResult); // 保存到数据库
+                    search.getContext().setSearchResult(newResult); // 保存查询记录
+                    return 1;
+                }
+            }
+            return -1;
+        }
+
+        throw new UnsupportedOperationException(object.getClass().getName());
     }
 
     private MavenSearchResult searchExtra(MavenSearchDatabase database, String groupId, String artifactId) {
@@ -168,7 +245,35 @@ public class MavenSearchServiceThread extends AbstractSearchThread<Object> {
             }
         }
 
-        SearchElementExtra element = this.searching;
-        return element != null && groupId.equals(element.getGroupId()) && artifactId.equals(element.getArtifactId());
+        if (this.searching instanceof SearchElementExtra) {
+            SearchElementExtra element = (SearchElementExtra) this.searching;
+            return groupId.equals(element.getGroupId()) && artifactId.equals(element.getArtifactId());
+        }
+
+        return false;
+    }
+
+    /**
+     * 判断当前是否正在下载工件
+     *
+     * @param artifact 工件
+     * @return 返回true表示正在下载
+     */
+    public boolean isDownloading(MavenArtifact artifact) {
+        for (Object object : this.queue) {
+            if (object instanceof SearchElementDownload) {
+                SearchElementDownload element = (SearchElementDownload) object;
+                if (element.getArtifact().equals(artifact)) {
+                    return true;
+                }
+            }
+        }
+
+        if (this.searching instanceof SearchElementDownload) {
+            SearchElementDownload element = (SearchElementDownload) this.searching;
+            return element.getArtifact().equals(artifact);
+        }
+
+        return false;
     }
 }

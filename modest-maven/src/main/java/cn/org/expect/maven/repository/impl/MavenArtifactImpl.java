@@ -8,7 +8,7 @@ import cn.org.expect.util.StringComparator;
 
 public class MavenArtifactImpl implements MavenArtifact {
 
-    private String artifact;
+    private String artifactId;
     private String groupId;
     private String version;
     private String type;
@@ -22,8 +22,8 @@ public class MavenArtifactImpl implements MavenArtifact {
         this("", "", "", "", 0, -1);
     }
 
-    public MavenArtifactImpl(String groupId, String artifact, String version, String type, long timestamp, int versionCount) {
-        this.artifact = artifact;
+    public MavenArtifactImpl(String groupId, String artifactId, String version, String type, long timestamp, int versionCount) {
+        this.artifactId = artifactId;
         this.groupId = groupId;
         this.version = version;
         this.type = type;
@@ -34,7 +34,7 @@ public class MavenArtifactImpl implements MavenArtifact {
 
     @Override
     public String getArtifactId() {
-        return artifact;
+        return artifactId;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class MavenArtifactImpl implements MavenArtifact {
         if (obj instanceof MavenArtifact) {
             MavenArtifact artifact = (MavenArtifact) obj;
             return StringComparator.compareTo(this.groupId, artifact.getGroupId()) == 0 //
-                    && StringComparator.compareTo(this.artifact, artifact.getArtifactId()) == 0 //
+                    && StringComparator.compareTo(this.artifactId, artifact.getArtifactId()) == 0 //
                     && StringComparator.compareTo(this.version, artifact.getVersion()) == 0 //
                     && StringComparator.compareTo(this.type, artifact.getType()) == 0 //
                     ;
@@ -92,7 +92,7 @@ public class MavenArtifactImpl implements MavenArtifact {
 
     @Override
     public String toString() {
-        return this.groupId + ":" + this.artifact + ":" + this.version + ", time=" + Dates.format19(this.getTimestamp()) + ", " + this.getVersionCount();
+        return this.groupId + ":" + this.artifactId + ":" + this.version + ", time=" + Dates.format19(this.getTimestamp()) + ", " + this.getVersionCount();
     }
 }
 
