@@ -80,7 +80,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     @Override
     public void asyncSearch(String pattern) {
         this.context.setSearchText(pattern);
-        this.context.setSelectedNavigation(null);
+        this.context.setSelectNavigationHead(null);
         this.getInputSearch().search(this, pattern);
     }
 
@@ -301,7 +301,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
      * @param listModel 组件的数据模型
      */
     protected void setSelection(JBList<Object> jbList, SearchListModel listModel) {
-        SearchNavigationHead selectedItem = this.context.getSelectedNavigation();
+        SearchNavigationHead selectedItem = this.context.getSelectNavigationHead();
         if (selectedItem != null) {
             int selectedIndex = -1;
             for (int i = listModel.getSize() - 1; i >= 0; i--) {

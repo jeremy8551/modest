@@ -147,7 +147,7 @@ public class MavenSearchPluginContext implements MavenSearchContext {
      *
      * @return 导航栏
      */
-    public SearchNavigationHead getSelectedNavigation() {
+    public SearchNavigationHead getSelectNavigationHead() {
         return this.selectedNavigation;
     }
 
@@ -156,7 +156,7 @@ public class MavenSearchPluginContext implements MavenSearchContext {
      *
      * @param navigation 导航栏
      */
-    public void setSelectedNavigation(SearchNavigationHead navigation) {
+    public void setSelectNavigationHead(SearchNavigationHead navigation) {
         this.selectedNavigation = navigation;
     }
 
@@ -165,7 +165,7 @@ public class MavenSearchPluginContext implements MavenSearchContext {
      *
      * @return 版本列表记录
      */
-    public SearchNavigationItem getSelectItem() {
+    public SearchNavigationItem getSelectNavigationItem() {
         return selectNavigationItem;
     }
 
@@ -174,7 +174,7 @@ public class MavenSearchPluginContext implements MavenSearchContext {
      *
      * @param selectNavigationItem 版本列表记录
      */
-    public void setSelectItem(SearchNavigationItem selectNavigationItem) {
+    public void setSelectNavigationItem(SearchNavigationItem selectNavigationItem) {
         this.selectNavigationItem = selectNavigationItem;
     }
 

@@ -172,7 +172,7 @@ public class MavenPluginThread extends Thread {
 
         // 添加菜单项的操作
         copyMaven.addActionListener(e -> {
-            SearchNavigationItem selectItem = context.getSelectItem();
+            SearchNavigationItem selectItem = context.getSelectNavigationItem();
             if (selectItem == null) {
                 log.warn("Not a selected Navigation Item!");
                 return;
@@ -194,7 +194,7 @@ public class MavenPluginThread extends Thread {
         });
 
         copyGradle.addActionListener(e -> {
-            SearchNavigationItem selectItem = context.getSelectItem();
+            SearchNavigationItem selectItem = context.getSelectNavigationItem();
             if (selectItem == null) {
                 log.warn("Not a selected Navigation Item!");
                 return;
@@ -214,7 +214,7 @@ public class MavenPluginThread extends Thread {
         });
 
         openInBrowser.addActionListener(e -> {
-            SearchNavigationItem selectItem = context.getSelectItem();
+            SearchNavigationItem selectItem = context.getSelectNavigationItem();
             if (selectItem == null) {
                 log.warn("Not a selected Navigation Item!");
                 return;
@@ -236,7 +236,7 @@ public class MavenPluginThread extends Thread {
                 return;
             }
 
-            SearchNavigationItem selectItem = context.getSelectItem();
+            SearchNavigationItem selectItem = context.getSelectNavigationItem();
             if (selectItem == null) {
                 log.warn("Not a selected Navigation Item!");
                 return;
@@ -252,7 +252,7 @@ public class MavenPluginThread extends Thread {
         });
 
         download.addActionListener(e -> {
-            SearchNavigationItem selectItem = context.getSelectItem();
+            SearchNavigationItem selectItem = context.getSelectNavigationItem();
             if (selectItem == null) {
                 log.warn("Not a selected Navigation Item!");
                 return;
@@ -263,7 +263,7 @@ public class MavenPluginThread extends Thread {
         });
 
         delete.addActionListener(e -> {
-            SearchNavigationItem selectItem = context.getSelectItem();
+            SearchNavigationItem selectItem = context.getSelectNavigationItem();
             if (selectItem == null) {
                 log.warn("Not a selected Navigation Item!");
                 return;
@@ -323,7 +323,7 @@ public class MavenPluginThread extends Thread {
                     Object selected = listModel.getElementAt(index);
                     if (selected instanceof SearchNavigationItem) {
                         SearchNavigationItem item = (SearchNavigationItem) selected;
-                        context.setSelectItem(item);
+                        context.setSelectNavigationItem(item);
                         int x = JBList.getX() + 30;
                         int y = JBList.getCellBounds(0, index).height; // JList 中第一行到选中行之间的高度
 

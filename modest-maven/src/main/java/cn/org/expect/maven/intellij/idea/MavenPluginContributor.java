@@ -84,7 +84,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
 
         if (selectedObject instanceof SearchNavigationHead) {
             SearchNavigationHead navigation = (SearchNavigationHead) selectedObject;
-            this.plugin.getContext().setSelectedNavigation(navigation); // 保存选择记录
+            this.plugin.getContext().setSelectNavigationHead(navigation); // 保存选择记录
             MavenArtifact artifact = navigation.getArtifact();
 
             if (log.isDebugEnabled()) {
