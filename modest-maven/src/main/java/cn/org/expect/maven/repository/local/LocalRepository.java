@@ -45,11 +45,10 @@ public class LocalRepository implements MavenRepository {
             list.add(artifact.getVersion());
 
             String filepath = FileUtils.joinPath(list.toArray(new String[0]));
-            File artifactDir = new File(filepath);
-            if (artifactDir.exists() && artifactDir.isDirectory()) {
-                File[] files = artifactDir.listFiles((dir, name) -> new File(dir, name).isFile() && name.equalsIgnoreCase(artifact.getArtifactId() + "-" + artifact.getVersion() + ".jar"));
-                return files != null && files.length > 0;
-            }
+            String filename = artifact.getArtifactId() + "-" + artifact.getVersion();
+            File parent = new File(filepath);
+            File[] files = parent.listFiles(file -> file.exists() && file.isFile() && FileUtils.getFilenameNoExt(file.getName()).equalsIgnoreCase(filename) && StringUtils.inArrayIgnoreCase(FileUtils.getFilenameExt(file.getName()), "jar", artifact.getType()));
+            return files != null && files.length > 0;
         }
         return false;
     }

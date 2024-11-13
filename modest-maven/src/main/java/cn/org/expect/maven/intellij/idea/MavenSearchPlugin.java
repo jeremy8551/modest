@@ -81,6 +81,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     public void asyncSearch(String pattern) {
         this.context.setSearchText(pattern);
         this.context.setSelectNavigationHead(null);
+        this.context.setSelectNavigationItem(null);
         this.getInputSearch().search(this, pattern);
     }
 
@@ -243,7 +244,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         this.mergeNavigation(listModel, list);
 
         // 选中记录
-        this.setSelection(JBList, listModel);
+        this.setSelectNavigation(JBList, listModel);
 
         // 设置 more 按钮
         listModel.setHasMore(this.context.getContributor(), result.getFoundNumber() > result.size());
@@ -300,33 +301,47 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
      * @param jbList    组件
      * @param listModel 组件的数据模型
      */
-    protected void setSelection(JBList<Object> jbList, SearchListModel listModel) {
-        SearchNavigationHead selectedItem = this.context.getSelectNavigationHead();
-        if (selectedItem != null) {
-            int selectedIndex = -1;
-            for (int i = listModel.getSize() - 1; i >= 0; i--) {
+    protected void setSelectNavigation(JBList<Object> jbList, SearchListModel listModel) {
+        int selectedIndex = -1;
+
+        SearchNavigationHead selectHead = this.context.getSelectNavigationHead();
+        if (selectHead != null) {
+            for (int i = 0, size = listModel.getSize(); i < size; i++) {
                 Object object = listModel.getElementAt(i);
                 if (object instanceof SearchNavigationHead) {
-                    SearchNavigationHead item = (SearchNavigationHead) object;
-                    if (selectedItem.getArtifact().equals(item.getArtifact()) && item.getArtifact().isUnfold()) {
-                        selectedIndex = i;
-
-                        // 设置左侧等待图标
-                        MavenArtifact artifact = selectedItem.getArtifact();
+                    SearchNavigationHead head = (SearchNavigationHead) object;
+                    if (selectHead.getArtifact().equals(head.getArtifact()) && head.getArtifact().isUnfold()) {
+                        MavenArtifact artifact = selectHead.getArtifact();
                         if (artifact.isUnfold() && this.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId()) == null) {
-                            item.setIcon(MavenPluginIcon.LEFT_WAITING);
+                            head.setIcon(MavenPluginIcon.LEFT_WAITING); // 设置左侧等待图标
                         }
+
+                        selectedIndex = i;
                         break;
                     }
                 }
             }
+        }
 
-            if (selectedIndex == -1) {
-                jbList.clearSelection();
-            } else {
-                jbList.setSelectedIndex(selectedIndex);
-                jbList.ensureIndexIsVisible(selectedIndex);
+        SearchNavigationItem selectItem = this.context.getSelectNavigationItem();
+        if (selectItem != null) {
+            for (int i = 0, size = listModel.getSize(); i < size; i++) {
+                Object object = listModel.getElementAt(i);
+                if (object instanceof SearchNavigationItem) {
+                    SearchNavigationItem item = (SearchNavigationItem) object;
+                    if (selectItem.getArtifact().equals(item.getArtifact())) {
+                        selectedIndex = i;
+                        break;
+                    }
+                }
             }
+        }
+
+        if (selectedIndex == -1) {
+            jbList.clearSelection();
+        } else {
+            jbList.setSelectedIndex(selectedIndex);
+            jbList.ensureIndexIsVisible(selectedIndex);
         }
     }
 

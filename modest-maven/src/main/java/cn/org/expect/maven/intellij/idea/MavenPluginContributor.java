@@ -83,10 +83,11 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
         // super.processSelectedItem(selectedObject, modifiers, searchText);
 
         if (selectedObject instanceof SearchNavigationHead) {
-            SearchNavigationHead navigation = (SearchNavigationHead) selectedObject;
-            this.plugin.getContext().setSelectNavigationHead(navigation); // 保存选择记录
-            MavenArtifact artifact = navigation.getArtifact();
+            SearchNavigationHead head = (SearchNavigationHead) selectedObject;
+            this.plugin.getContext().setSelectNavigationHead(head); // 保存选择记录
+            this.plugin.getContext().setSelectNavigationItem(null); // 清空子选项
 
+            MavenArtifact artifact = head.getArtifact();
             if (log.isDebugEnabled()) {
                 log.debug("processSelectedItem({}, {}, {}) {}, fold: {}, version: {}", selectedObject, modifiers, searchText, artifact, artifact.isFold(), artifact.getVersionCount());
             }
@@ -97,7 +98,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
                 if (this.plugin.getDatabase().select(groupId, artifactId) == null) {
-                    navigation.setIcon(MavenPluginIcon.LEFT_WAITING); // 更改为：等待图标
+                    head.setIcon(MavenPluginIcon.LEFT_WAITING); // 更改为：等待图标
                     this.plugin.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
                 } else {
                     this.plugin.repaintSearchResult();
