@@ -149,12 +149,13 @@ public class MavenPluginThread extends Thread {
 
     protected void setPopupMenuUI(MavenSearchPluginContext context) {
         JPopupMenu listPopupMenu = new JPopupMenu();
-        JMenuItem copyMaven = new JMenuItem("Copy Maven dependency");
-        JMenuItem copyGradle = new JMenuItem("Copy Gradle dependency");
-        JMenuItem openInBrowser = new JMenuItem("Open in Browser");
-        JMenuItem openFileSystem = new JMenuItem("Open in FileSystem");
-        JMenuItem download = new JMenuItem("Download to local repository");
-        JMenuItem delete = new JMenuItem("Delete from local repository");
+        JMenuItem copyMaven = new JMenuItem(MavenSearchMessage.get("maven.search.btn.copy.maven.dependency.text"));
+        JMenuItem copyGradle = new JMenuItem(MavenSearchMessage.get("maven.search.btn.copy.gradle.dependency.text"));
+        JMenuItem openInBrowser = new JMenuItem(MavenSearchMessage.get("maven.search.btn.open.in.browser.text"));
+        JMenuItem openFileSystem = new JMenuItem(MavenSearchMessage.get("maven.search.btn.open.in.filesystem.text"));
+        JMenuItem download = new JMenuItem(MavenSearchMessage.get("maven.search.btn.download.local.repository.text"));
+        JMenuItem delete = new JMenuItem(MavenSearchMessage.get("maven.search.btn.delete.local.repository.text"));
+
         listPopupMenu.add(copyMaven); // 将菜单项添加到弹出菜单中
         listPopupMenu.add(copyGradle);
         listPopupMenu.add(openInBrowser);
@@ -162,8 +163,8 @@ public class MavenPluginThread extends Thread {
         listPopupMenu.add(delete);
 
         JPopupMenu itemPopupMenu = new JPopupMenu();
-        JMenuItem repeat = new JMenuItem("Refresh the query");
-        JMenuItem clearCache = new JMenuItem("Clear all cache");
+        JMenuItem repeat = new JMenuItem(MavenSearchMessage.get("maven.search.btn.refresh.query.text"));
+        JMenuItem clearCache = new JMenuItem(MavenSearchMessage.get("maven.search.btn.clear.cache.text"));
         itemPopupMenu.add(repeat);
         itemPopupMenu.add(clearCache);
 

@@ -21,8 +21,10 @@ public class MavenPluginFactory implements SearchEverywhereContributorFactory<Ob
         MavenSearchMessage.setChineseCondition((key) -> "取消".equals(CommonBundle.getCancelButtonText()));
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);
         MavenSearchPlugin plugin = new MavenSearchPlugin(context);
+        MavenPluginContributor contributor = plugin.getContributor();
+        plugin.updateTabTooltipText(contributor.getSearchProviderId());
         context.setEditorSelectText(plugin.getEditorSelectText()); // 保存选中的文本
         new MavenPluginThread(plugin).start(); // 启动线程
-        return plugin.getContributor();
+        return contributor;
     }
 }

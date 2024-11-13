@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import javax.swing.*;
 
 import cn.org.expect.jdk.JavaDialectFactory;
@@ -30,6 +31,7 @@ import cn.org.expect.util.Ensure;
 import cn.org.expect.util.MessageFormatter;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
+import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.notification.Notification;
@@ -521,6 +523,21 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             return StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
         } else {
             return null;
+        }
+    }
+
+    /**
+     * 设置标签页的提示信息
+     *
+     * @param tabID 标签页ID
+     */
+    public void updateTabTooltipText(String tabID) {
+        AnActionEvent event = this.context.getActionEvent();
+        SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
+        Map<String, String> map = JavaDialectFactory.get().getField(manager, "myTabsShortcutsMap");
+        if (map != null) {
+            String text = MavenSearchMessage.get("maven.search.tab.tooltip.text", IdeaUtils.getShortcutText("pressed SHIFT"));
+            map.put(tabID, text);
         }
     }
 

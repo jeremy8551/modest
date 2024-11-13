@@ -19,6 +19,9 @@ import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import com.intellij.notification.NotificationType;
+import com.intellij.openapi.actionSystem.KeyboardShortcut;
+import com.intellij.openapi.actionSystem.Shortcut;
+import com.intellij.openapi.keymap.KeymapUtil;
 
 public class IdeaUtils {
 
@@ -95,6 +98,22 @@ public class IdeaUtils {
             } finally {
                 IO.close(rbc);
             }
+        }
+    }
+
+    /**
+     * 返回快捷键的文本
+     *
+     * @param keystroke 快捷键信息，如：press shift
+     * @return 快捷键的文本，如: ⇧
+     */
+    public static String getShortcutText(String keystroke) {
+        try {
+            KeyStroke shiftKeyStroke = KeyStroke.getKeyStroke(keystroke);
+            Shortcut shiftShortcut = new KeyboardShortcut(shiftKeyStroke, null);
+            return KeymapUtil.getShortcutText(shiftShortcut);
+        } catch (Throwable e) {
+            return keystroke;
         }
     }
 }
