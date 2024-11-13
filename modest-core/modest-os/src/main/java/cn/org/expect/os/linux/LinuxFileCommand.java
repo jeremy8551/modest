@@ -206,13 +206,13 @@ public class LinuxFileCommand implements OSFileCommand {
 
     public boolean upload(InputStream in, String remote) throws IOException {
         FileOutputStream out = new FileOutputStream(new File(remote));
-        IO.write(in, out);
+        IO.write(in, out, null);
         return true;
     }
 
     public boolean download(String remote, OutputStream out) throws IOException {
         FileInputStream in = new FileInputStream(new File(remote));
-        IO.write(in, out);
+        IO.write(in, out, null);
         return true;
     }
 

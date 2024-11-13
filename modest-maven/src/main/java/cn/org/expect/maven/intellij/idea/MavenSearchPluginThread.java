@@ -1,7 +1,7 @@
 package cn.org.expect.maven.intellij.idea;
 
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,14 +32,14 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.Advertiser;
 
-public class MavenPluginThread extends Thread {
-    private final static Log log = LogFactory.getLog(MavenPluginThread.class);
+public class MavenSearchPluginThread extends Thread {
+    private final static Log log = LogFactory.getLog(MavenSearchPluginThread.class);
 
     private final MavenSearchPlugin plugin;
 
-    public MavenPluginThread(MavenSearchPlugin plugin) {
+    public MavenSearchPluginThread(MavenSearchPlugin plugin) {
         super();
-        this.setName(MavenPluginThread.class.getSimpleName());
+        this.setName(MavenSearchPluginThread.class.getSimpleName());
         this.plugin = Ensure.notNull(plugin);
     }
 
@@ -149,18 +149,19 @@ public class MavenPluginThread extends Thread {
 
     protected void setPopupMenuUI(MavenSearchPluginContext context) {
         JPopupMenu listPopupMenu = new JPopupMenu();
-        JMenuItem copyMaven = new JMenuItem(MavenSearchMessage.get("maven.search.btn.copy.maven.dependency.text"));
-        JMenuItem copyGradle = new JMenuItem(MavenSearchMessage.get("maven.search.btn.copy.gradle.dependency.text"));
-        JMenuItem openInBrowser = new JMenuItem(MavenSearchMessage.get("maven.search.btn.open.in.browser.text"));
-        JMenuItem openFileSystem = new JMenuItem(MavenSearchMessage.get("maven.search.btn.open.in.filesystem.text"));
-        JMenuItem download = new JMenuItem(MavenSearchMessage.get("maven.search.btn.download.local.repository.text"));
-        JMenuItem delete = new JMenuItem(MavenSearchMessage.get("maven.search.btn.delete.local.repository.text"));
+        JMenuItem copyMaven = new JMenuItem(MavenSearchMessage.get("maven.search.btn.copy.maven.dependency.text")); // 复制 Maven 依赖
+        JMenuItem copyGradle = new JMenuItem(MavenSearchMessage.get("maven.search.btn.copy.gradle.dependency.text")); // 复制 Gradle 依赖
+        JMenuItem openInBrowser = new JMenuItem(MavenSearchMessage.get("maven.search.btn.open.in.browser.text")); // 在浏览器中打开
+        JMenuItem openFileSystem = new JMenuItem(MavenSearchMessage.get("maven.search.btn.open.in.filesystem.text")); // 打开本地仓库目录
+        JMenuItem downloadFile = new JMenuItem(MavenSearchMessage.get("maven.search.btn.download.local.repository.text")); // 下载按钮
+        JMenuItem cancelDownload = new JMenuItem(MavenSearchMessage.get("maven.search.btn.cancel.download.local.repository.text")); // 取消下载按钮
+        JMenuItem deleteFile = new JMenuItem(MavenSearchMessage.get("maven.search.btn.delete.local.repository.text")); // 删除本地仓库中的文件
 
         listPopupMenu.add(copyMaven); // 将菜单项添加到弹出菜单中
         listPopupMenu.add(copyGradle);
         listPopupMenu.add(openInBrowser);
-        listPopupMenu.add(download);
-        listPopupMenu.add(delete);
+        listPopupMenu.add(downloadFile);
+        listPopupMenu.add(deleteFile);
 
         JPopupMenu itemPopupMenu = new JPopupMenu();
         JMenuItem repeat = new JMenuItem(MavenSearchMessage.get("maven.search.btn.refresh.query.text"));
@@ -171,7 +172,7 @@ public class MavenPluginThread extends Thread {
         JBList<Object> JBList = context.getJBList();
         SearchListModel listModel = context.getJBListModel();
 
-        // 添加菜单项的操作
+        // 复制 Maven 依赖
         copyMaven.addActionListener(e -> {
             SearchNavigationItem selectItem = context.getSelectNavigationItem();
             if (selectItem == null) {
@@ -194,6 +195,7 @@ public class MavenPluginThread extends Thread {
             plugin.sendNotification(MavenSearchNotification.NORMAL, copyMaven.getText());
         });
 
+        // 复制 Gradle 依赖
         copyGradle.addActionListener(e -> {
             SearchNavigationItem selectItem = context.getSelectNavigationItem();
             if (selectItem == null) {
@@ -214,6 +216,7 @@ public class MavenPluginThread extends Thread {
             plugin.sendNotification(MavenSearchNotification.NORMAL, copyGradle.getText());
         });
 
+        // 在浏览器中打开
         openInBrowser.addActionListener(e -> {
             SearchNavigationItem selectItem = context.getSelectNavigationItem();
             if (selectItem == null) {
@@ -231,6 +234,7 @@ public class MavenPluginThread extends Thread {
             BrowserUtil.browse(url);
         });
 
+        // 打开文件系统目录
         openFileSystem.addActionListener(e -> {
             String filepath = plugin.getLocalRepository().getAddress();
             if (StringUtils.isBlank(filepath)) {
@@ -252,7 +256,8 @@ public class MavenPluginThread extends Thread {
             BrowserUtil.browse(new File(FileUtils.joinPath(list.toArray(new String[0]))));
         });
 
-        download.addActionListener(e -> {
+        // 下载文件
+        downloadFile.addActionListener(e -> {
             SearchNavigationItem selectItem = context.getSelectNavigationItem();
             if (selectItem == null) {
                 log.warn("Not a selected Navigation Item!");
@@ -263,7 +268,19 @@ public class MavenPluginThread extends Thread {
             plugin.repaintSearchResult();
         });
 
-        delete.addActionListener(e -> {
+        // 取消下载
+        cancelDownload.addActionListener(e -> {
+            SearchNavigationItem selectItem = context.getSelectNavigationItem();
+            if (selectItem == null) {
+                log.warn("Not a selected Navigation Item!");
+                return;
+            }
+
+            plugin.getServiceSearch().terminateDownloading();
+        });
+
+        // 删除文件
+        deleteFile.addActionListener(e -> {
             SearchNavigationItem selectItem = context.getSelectNavigationItem();
             if (selectItem == null) {
                 log.warn("Not a selected Navigation Item!");
@@ -307,35 +324,52 @@ public class MavenPluginThread extends Thread {
         });
 
         // 监听鼠标事件
-        JBList.addMouseListener(new MouseListener() {
+        JBList.addMouseListener(new MouseAdapter() {
 
             @Override
-            public void mouseClicked(MouseEvent e) {
+            public void mousePressed(MouseEvent e) {
+                if (plugin.notMavenSearchTab()) {
+                    return;
+                }
+
                 // 左键点击
                 if (e.getButton() == MouseEvent.BUTTON1) {
-
-                    // 根据点击位置，获得对应的导航记录
-                    int index = JBList.locationToIndex(e.getPoint());
-                    if (index == -1) {
+                    int selectedIndex = JBList.getSelectedIndex();
+                    if (selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) { // 点击 more 按钮
+                        String pattern = context.getSearchText();
+                        MavenSearchResult result = plugin.getDatabase().select(pattern);
+                        if (result != null && listModel.getFoundElementsInfo().size() >= result.size()) { // 判断是否满足执行点击更多链接的条件
+                            if (log.isDebugEnabled()) {
+                                log.debug("Click '... more' button ..");
+                            }
+                            plugin.getServiceSearch().searchMore(plugin, pattern);
+                        }
                         return;
                     }
 
                     // 点击版本
-                    Object selected = listModel.getElementAt(index);
+                    Object selected = listModel.getElementAt(selectedIndex);
                     if (selected instanceof SearchNavigationItem) {
                         SearchNavigationItem item = (SearchNavigationItem) selected;
                         context.setSelectNavigationItem(item);
                         int x = JBList.getX() + 30;
-                        int y = JBList.getCellBounds(0, index).height; // JList 中第一行到选中行之间的高度
+                        int y = JBList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
 
-                        if (plugin.getLocalRepository().exists(item.getArtifact())) {
+                        if (plugin.getLocalRepository().exists(item.getArtifact())) { // 工件在本地仓库中存在
                             listPopupMenu.add(openFileSystem);
-                            listPopupMenu.remove(download);
-                            listPopupMenu.add(delete);
+                            listPopupMenu.add(deleteFile);
+                            listPopupMenu.remove(downloadFile);
+                            listPopupMenu.remove(cancelDownload);
                         } else {
                             listPopupMenu.remove(openFileSystem);
-                            listPopupMenu.add(download);
-                            listPopupMenu.remove(delete);
+                            if (plugin.getServiceSearch().isDownloading(item.getArtifact())) {
+                                listPopupMenu.remove(downloadFile);
+                                listPopupMenu.add(cancelDownload);
+                            } else {
+                                listPopupMenu.add(downloadFile);
+                                listPopupMenu.remove(cancelDownload);
+                            }
+                            listPopupMenu.remove(deleteFile);
                         }
                         listPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
                         return;
@@ -359,6 +393,10 @@ public class MavenPluginThread extends Thread {
                     }
                 }
             }
+        });
+
+        JTextField searchField = context.getSearchField();
+        searchField.addMouseListener(new MouseAdapter() {
 
             @Override
             public void mousePressed(MouseEvent e) {
@@ -366,58 +404,12 @@ public class MavenPluginThread extends Thread {
                     return;
                 }
 
-                int selectedIndex = JBList.getSelectedIndex();
-                if (selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) { // 点击 more 按钮
-                    String pattern = context.getSearchText();
-                    MavenSearchResult result = plugin.getDatabase().select(pattern);
-                    if (result != null && listModel.getFoundElementsInfo().size() >= result.size()) { // 判断是否满足执行点击更多链接的条件
-                        if (log.isDebugEnabled()) {
-                            log.debug("Click '... more' button ..");
-                        }
-                        plugin.getServiceSearch().searchMore(plugin, pattern);
-                    }
-                }
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
-
-        JTextField searchField = context.getSearchField();
-        searchField.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-                // 右键点击
-                if (e.isPopupTrigger() && !plugin.notMavenSearchTab()) {
+                // 左键点击
+                if (e.getButton() == MouseEvent.BUTTON1) {
                     int x = searchField.getX();
                     int y = searchField.getY() - 30;
                     itemPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
                 }
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
             }
         });
     }

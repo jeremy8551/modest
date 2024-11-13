@@ -24,7 +24,7 @@ public class MavenPluginFactory implements SearchEverywhereContributorFactory<Ob
         MavenPluginContributor contributor = plugin.getContributor();
         plugin.updateTabTooltipText(contributor.getSearchProviderId());
         context.setEditorSelectText(plugin.getEditorSelectText()); // 保存选中的文本
-        new MavenPluginThread(plugin).start(); // 启动线程
+        new MavenSearchPluginThread(plugin).start(); // 启动线程
         return contributor;
     }
 }

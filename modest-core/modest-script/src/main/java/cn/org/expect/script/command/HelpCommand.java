@@ -251,7 +251,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
         String packageUri = UniversalScriptEngine.class.getPackage().getName().replace('.', '/');
         InputStream in = ClassUtils.getResourceAsStream("/" + packageUri + "/readme.md", HelpCommand.class);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
-        IO.write(in, out);
+        IO.write(in, out, null);
         String markdown = out.toString(charsetName);
         String usage = new MessageFormatter(MessageFormatter.Placeholder.NORMAL).format(markdown, args);
         stdout.println(usage);

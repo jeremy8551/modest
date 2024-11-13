@@ -49,7 +49,7 @@ public class MavenSearchInputThread extends AbstractSearchThread<SearchElementPa
     public void run() {
         String name = MavenSearchInputThread.class.getSimpleName();
         log.info(MavenSearchMessage.get("maven.search.thread.start", name));
-        while (this.notTerminate) {
+        while (!this.terminate) {
             try {
                 SearchElementPattern take = this.queue.take();
                 MavenSearch search = take.getSearch();
@@ -70,9 +70,11 @@ public class MavenSearchInputThread extends AbstractSearchThread<SearchElementPa
 
                     MavenSearchDatabase database = search.getDatabase();
                     MavenSearchResult result = this.query(database, pattern);
-                    if (!this.notTerminate) {
+                    if (this.terminate) {
                         continue;
-                    } else if (result == null) {
+                    }
+
+                    if (result == null) {
                         String message = MavenSearchMessage.get("maven.search.send.url.fail");
                         search.setProgressText(message);
                         search.setStatusbarText(MavenSearchAdvertiser.ERROR, message);

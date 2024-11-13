@@ -18,5 +18,4 @@ public interface Terminate {
      * 任务是否立即停止运行，取决于具体的实现
      */
     void terminate();
-
 }

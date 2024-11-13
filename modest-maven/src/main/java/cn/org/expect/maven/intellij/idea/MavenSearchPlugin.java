@@ -374,7 +374,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
                 if (itemResult != null) {
                     head.setIcon(MavenPluginIcon.LEFT_UNFOLD);
                     for (MavenArtifact itemArtifact : itemResult.getList()) {
-                        SearchNavigationItem item = new SearchNavigationItem(itemArtifact);
+                        SearchNavigationItem item = new SearchNavigationItem(itemArtifact, this.getLocalRepository().getJarfile(itemArtifact));
                         if (this.getServiceSearch().isDownloading(itemArtifact)) { // 正在下载
                             item.setIcon(MavenPluginIcon.RIGHT_DOWNLOAD);
                         } else if (this.getLocalRepository().exists(itemArtifact)) {
@@ -418,7 +418,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
                 if (itemResult != null) {
                     head.setIcon(MavenPluginIcon.LEFT_UNFOLD);
                     for (MavenArtifact itemArtifact : itemResult.getList()) {
-                        SearchNavigationItem item = new SearchNavigationItem(itemArtifact);
+                        SearchNavigationItem item = new SearchNavigationItem(itemArtifact, this.getLocalRepository().getJarfile(itemArtifact));
                         if (this.getLocalRepository().exists(itemArtifact)) {
                             item.setIcon(MavenPluginIcon.RIGHT_LOCAL);
                         }

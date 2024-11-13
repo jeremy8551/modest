@@ -1,6 +1,8 @@
 package cn.org.expect.maven.search;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.maven.search.db.MavenSearchDatabase;
 import cn.org.expect.util.FileUtils;
+import cn.org.expect.util.IO;
 import cn.org.expect.util.NetUtils;
 import cn.org.expect.util.StringUtils;
 
@@ -82,16 +85,17 @@ public class MavenSearchServiceThread extends AbstractSearchThread<SearchElement
 
     public void run() {
         log.info(MavenSearchMessage.get("maven.search.thread.start", this.getName()));
-        while (this.notTerminate) {
+        while (!this.terminate) {
             try {
                 SearchElement element = this.queue.take();
                 int value;
 
                 this.searching = element;
                 try {
-                    value = this.execute(element);
+                    value = this.run(element);
                 } finally {
                     this.searching = null;
+                    this.terminate = false;
                 }
 
                 switch (value) {
@@ -109,7 +113,7 @@ public class MavenSearchServiceThread extends AbstractSearchThread<SearchElement
         }
     }
 
-    private int execute(SearchElement object) throws Exception {
+    protected int run(SearchElement object) throws Exception {
         // 精确查询
         if (object instanceof SearchElementExtra) {
             SearchElementExtra element = (SearchElementExtra) object;
@@ -141,7 +145,7 @@ public class MavenSearchServiceThread extends AbstractSearchThread<SearchElement
             StringUtils.split(artifact.getGroupId(), '.', list);
             list.add(artifact.getArtifactId());
             list.add(artifact.getVersion());
-            String url = NetUtils.joinUri(list.toArray(new String[0]));
+            String parentUrl = NetUtils.joinUri(list.toArray(new String[0]));
 
             String filepath = search.getLocalRepository().getAddress();
             if (FileUtils.isDirectory(filepath)) {
@@ -153,16 +157,28 @@ public class MavenSearchServiceThread extends AbstractSearchThread<SearchElement
                 File parent = new File(FileUtils.joinPath(list.toArray(new String[0])));
                 FileUtils.createDirectory(parent);
 
-                List<String> files = IdeaUtils.fetchFileList(url);
-                for (String fileName : files) {
-                    String httpUrl = NetUtils.joinUri(url, fileName);
-                    File downfile = new File(parent, fileName);
+                List<String> files = IdeaUtils.fetchFileList(parentUrl);
+                for (String filename : files) {
+                    if (this.terminate) {
+                        break;
+                    }
+
+                    String httpUrl = NetUtils.joinUri(parentUrl, filename);
+                    File downfile = new File(parent, filename);
 
                     if (log.isDebugEnabled()) {
                         log.debug("download {} to {} ..", httpUrl, downfile.getAbsolutePath());
                     }
 
-                    IdeaUtils.download(httpUrl, downfile);
+                    // 创建目录，创建下载文件
+                    if (FileUtils.createDirectory(parent) && FileUtils.createFile(downfile, true)) {
+                        IO.write(new URL(httpUrl).openStream(), new FileOutputStream(downfile), this); // 开始下载文件
+                    }
+
+                    // 如果终止了下载文件，则需要将被终止的文件删除
+                    if (this.isTerminate()) {
+                        FileUtils.delete(downfile);
+                    }
                 }
                 return 0;
             }
@@ -275,5 +291,11 @@ public class MavenSearchServiceThread extends AbstractSearchThread<SearchElement
         }
 
         return false;
+    }
+
+    public void terminateDownloading() {
+        if (this.searching instanceof SearchElementDownload) {
+            this.terminate();
+        }
     }
 }

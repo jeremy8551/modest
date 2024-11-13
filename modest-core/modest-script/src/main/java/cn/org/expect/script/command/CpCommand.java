@@ -66,7 +66,7 @@ public class CpCommand extends AbstractFileCommand implements UniversalScriptInp
 
             FileUtils.assertCreateFile(file);
             session.putValue("file", file);
-            IO.write(srcfile.getInputStream(), new FileOutputStream(file, false));
+            IO.write(srcfile.getInputStream(), new FileOutputStream(file, false), null);
             return 0;
         } else {
             File src = new File(srcfile.getAbsolutePath());

@@ -23,6 +23,7 @@ import java.util.Set;
 
 import cn.org.expect.Modest;
 import cn.org.expect.collection.Throwables;
+import cn.org.expect.concurrent.Terminate;
 
 /**
  * IO工具
@@ -357,12 +358,13 @@ public class IO {
     /**
      * 从输入流 in 中读取字节写入到输出流 out 中
      *
-     * @param in  输入流（会自动关闭）
-     * @param out 输出流（会自动关闭）
+     * @param in        输入流（会自动关闭）
+     * @param out       输出流（会自动关闭）
+     * @param terminate 终止接口，可以为null
      * @return 返回总输出字节数
-     * @throws IOException IO错误
+     * @throws IOException 发生错误
      */
-    public static long write(InputStream in, OutputStream out) throws IOException {
+    public static long write(InputStream in, OutputStream out, Terminate terminate) throws IOException {
         if (in == null) {
             throw new NullPointerException();
         }
@@ -374,6 +376,10 @@ public class IO {
             long total = 0;
             byte[] array = new byte[IO.BYTES_BUFFER_SIZE];
             for (int len; (len = in.read(array)) != -1; ) {
+                if (terminate != null && terminate.isTerminate()) {
+                    break;
+                }
+
                 out.write(array, 0, len);
                 out.flush();
                 total += len;

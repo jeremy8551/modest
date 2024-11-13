@@ -24,7 +24,7 @@ public class ServletUtils {
         response.setHeader("Content-Disposition", "attachment; filename=\"" + StringUtils.defaultString(filename, file.getName()) + "\"");
         ServletOutputStream out = response.getOutputStream();
         InputStream in = new FileInputStream(file);
-        IO.write(in, out);
+        IO.write(in, out, null);
     }
 
     /**

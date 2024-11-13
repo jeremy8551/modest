@@ -35,6 +35,12 @@ public class LocalRepository implements MavenRepository {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * 判断工件是否存在
+     *
+     * @param artifact 工件信息
+     * @return 返回true表示工件存在 false表示不存在
+     */
     public boolean exists(MavenArtifact artifact) {
         File repository = this.config.getRepository();
         if (repository != null && repository.exists() && repository.isDirectory()) {
@@ -51,6 +57,26 @@ public class LocalRepository implements MavenRepository {
             return files != null && files.length > 0;
         }
         return false;
+    }
+
+    public File getJarfile(MavenArtifact artifact) {
+        File repository = this.config.getRepository();
+        if (repository != null && repository.exists() && repository.isDirectory()) {
+            List<String> list = new ArrayList<>();
+            list.add(repository.getAbsolutePath());
+            StringUtils.split(artifact.getGroupId(), '.', list);
+            list.add(artifact.getArtifactId());
+            list.add(artifact.getVersion());
+
+            String filepath = FileUtils.joinPath(list.toArray(new String[0]));
+            String filename = artifact.getArtifactId() + "-" + artifact.getVersion() + ".jar";
+            File parent = new File(filepath);
+            File[] array = parent.listFiles(file -> file.exists() && file.isFile() && file.getName().equalsIgnoreCase(filename));
+            if (array != null && array.length == 1) {
+                return array[0];
+            }
+        }
+        return null;
     }
 
     @Override

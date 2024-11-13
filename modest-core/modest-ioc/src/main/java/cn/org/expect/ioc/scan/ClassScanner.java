@@ -488,7 +488,7 @@ public class ClassScanner {
                 FileUtils.assertCreateFile(unzipJarfile);
                 JarFile newJarfile = null;
                 try {
-                    IO.write(jarfile.getInputStream(entry), new FileOutputStream(unzipJarfile)); // 解压jar包中的jar文件
+                    IO.write(jarfile.getInputStream(entry), new FileOutputStream(unzipJarfile), null); // 解压jar包中的jar文件
                     newJarfile = new JarFile(unzipJarfile);
                 } catch (Throwable e) {
                     if (log.isDebugEnabled()) {

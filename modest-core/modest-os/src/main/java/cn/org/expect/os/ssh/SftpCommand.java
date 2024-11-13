@@ -628,7 +628,7 @@ public class SftpCommand implements OSFtpCommand {
 
         InputStream in = sftp.get(remotefilepath);
         FileOutputStream out = new FileOutputStream(localfile, false);
-        IO.write(in, out);
+        IO.write(in, out, null);
     }
 
     public String read(String filepath, String charsetName, int lineno) {

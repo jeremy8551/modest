@@ -3,19 +3,20 @@ package cn.org.expect.maven.search;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 
+import cn.org.expect.concurrent.Terminate;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.util.Ensure;
 
-public abstract class AbstractSearchThread<T> extends Thread {
+public abstract class AbstractSearchThread<T> extends Thread implements Terminate {
     protected final static Log log = LogFactory.getLog(AbstractSearchThread.class);
 
     /** Maven仓库 */
     private MavenRepository mavenRepository;
 
     /** 线程任务的中断标志 */
-    protected volatile boolean notTerminate;
+    protected volatile boolean terminate;
 
     /** 远程调用组件 */
     protected final BlockingQueue<T> queue;
@@ -28,7 +29,7 @@ public abstract class AbstractSearchThread<T> extends Thread {
      */
     public AbstractSearchThread() {
         this.queue = new LinkedTransferQueue<>();
-        this.notTerminate = true;
+        this.terminate = false;
         this.setName(this.getClass().getSimpleName());
     }
 
@@ -50,10 +51,11 @@ public abstract class AbstractSearchThread<T> extends Thread {
         return mavenRepository;
     }
 
-    /**
-     * 终止线程任务
-     */
     public void terminate() {
-        this.notTerminate = false;
+        this.terminate = true;
+    }
+
+    public boolean isTerminate() {
+        return this.terminate;
     }
 }

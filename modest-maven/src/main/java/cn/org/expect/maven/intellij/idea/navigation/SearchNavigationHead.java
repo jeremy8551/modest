@@ -2,8 +2,8 @@ package cn.org.expect.maven.intellij.idea.navigation;
 
 import javax.swing.*;
 
-import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.intellij.idea.MavenPluginIcon;
+import cn.org.expect.maven.repository.MavenArtifact;
 import com.intellij.util.TextWithIcon;
 
 public class SearchNavigationHead extends AbstractSearchNavigation {
@@ -19,7 +19,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
 
     @Override
     public String getLocationString() {
-        return this.artifact.getGroupId();
+        return " " + this.artifact.getGroupId();
     }
 
     @Override

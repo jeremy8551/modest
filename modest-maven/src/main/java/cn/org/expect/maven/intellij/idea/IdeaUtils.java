@@ -1,29 +1,30 @@
 package cn.org.expect.maven.intellij.idea;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.*;
 
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.FileUtils;
-import cn.org.expect.util.IO;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.KeyboardShortcut;
 import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.keymap.KeymapUtil;
 
 public class IdeaUtils {
+    private final static Log log = LogFactory.getLog(IdeaUtils.class);
 
     public static NotificationType toNotification(MavenSearchNotification type) {
         if (type == null) {
@@ -84,23 +85,6 @@ public class IdeaUtils {
         return fileList;
     }
 
-    public static void download(String urlString, File file) throws IOException {
-        if (FileUtils.createDirectory(file.getParentFile()) && FileUtils.createFile(file, true)) {
-            URL website = new URL(urlString);
-            ReadableByteChannel rbc = Channels.newChannel(website.openStream());
-            try {
-                FileOutputStream fos = new FileOutputStream(file);
-                try {
-                    fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-                } finally {
-                    IO.close(fos);
-                }
-            } finally {
-                IO.close(rbc);
-            }
-        }
-    }
-
     /**
      * 返回快捷键的文本
      *
@@ -115,5 +99,68 @@ public class IdeaUtils {
         } catch (Throwable e) {
             return keystroke;
         }
+    }
+
+    public static String parseJDKVersion(File file) {
+        if (file != null) {
+            try (JarFile jarfile = new JarFile(file)) {
+                JarEntry entry = jarfile.stream().filter(e -> e.getName().endsWith(".class")).findFirst().orElse(null);
+                if (entry != null) {
+                    try (InputStream in = jarfile.getInputStream(entry)) {
+                        in.skip(6); // Skip the first 6 bytes
+                        int major = in.read() << 8 | in.read();
+                        switch (major) {
+                            case 45:
+                                return "JDK 1.1";
+                            case 46:
+                                return "JDK 1.2";
+                            case 47:
+                                return "JDK 1.3";
+                            case 48:
+                                return "JDK 1.4";
+                            case 49:
+                                return "JDK 5";
+                            case 50:
+                                return "JDK 6";
+                            case 51:
+                                return "JDK 7";
+                            case 52:
+                                return "JDK 8";
+                            case 53:
+                                return "JDK 9";
+                            case 54:
+                                return "JDK 10";
+                            case 55:
+                                return "JDK 11";
+                            case 56:
+                                return "JDK 12";
+                            case 57:
+                                return "JDK 13";
+                            case 58:
+                                return "JDK 14";
+                            case 59:
+                                return "JDK 15";
+                            case 60:
+                                return "JDK 16";
+                            case 61:
+                                return "JDK 17";
+                            case 62:
+                                return "JDK 18";
+                            case 63:
+                                return "JDK 19";
+                            case 64:
+                                return "JDK 20";
+                            case 65:
+                                return "JDK 21";
+                            case 66:
+                                return "JDK 22";
+                        }
+                    }
+                }
+            } catch (Throwable e) {
+                log.error(e.getLocalizedMessage(), e);
+            }
+        }
+        return null;
     }
 }

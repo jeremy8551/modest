@@ -84,7 +84,7 @@ public class ScriptFormatter extends UniversalScriptFormatter {
             File tempDir = session.getTempDir();
             File parent = FileUtils.createDirectory(tempDir, ScriptFormatter.class.getSimpleName(), Dates.format17());
             File file = FileUtils.createNewFile(parent, "ScriptConvert.blob");
-            IO.write(blob.getBinaryStream(), new FileOutputStream(file));
+            IO.write(blob.getBinaryStream(), new FileOutputStream(file), null);
             return file.getAbsolutePath();
         }
 
