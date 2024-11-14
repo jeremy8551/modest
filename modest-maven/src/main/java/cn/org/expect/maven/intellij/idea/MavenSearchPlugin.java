@@ -18,7 +18,6 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.concurrent.MavenSearchEDTJob;
 import cn.org.expect.maven.concurrent.MavenSearchExtraJob;
 import cn.org.expect.maven.concurrent.MavenSearchdDownloadJob;
-import cn.org.expect.maven.intellij.idea.navigation.MavenFoundElementInfo;
 import cn.org.expect.maven.intellij.idea.navigation.MavenFoundElementInfoComparator;
 import cn.org.expect.maven.intellij.idea.navigation.MavenSearchNavigation;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigation;
@@ -220,6 +219,15 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
     }
 
+    /**
+     * 重新执行查询
+     */
+    public void repeat() {
+        String pattern = context.getSearchText();
+        this.getDatabase().delete(pattern);
+        this.asyncSearch(cn.org.expect.maven.search.MavenSearchUtils.parse(pattern));
+    }
+
     public synchronized void clearSearchResult() {
         SearchListModel listModel = this.context.getJBListModel();
         for (int i = listModel.getSize() - 1; i >= 0; i--) {
@@ -250,6 +258,9 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             log.warn("repaint fail, result is null!");
             return;
         }
+
+        SearchNavigationResultSet navigationResult = this.toNavigationResult(result);
+        this.context.setNavigationResultSet(navigationResult);
 
         JBList<Object> JBList = this.context.getJBList();
         SearchListModel listModel = this.context.getJBListModel();
@@ -286,30 +297,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
 
         // 设置广告信息
         this.setStatusbarText(MavenSearchAdvertiser.NORMAL, MavenSearchMessage.get("maven.search.status.text", result.getFoundNumber(), result.size()));
-    }
-
-    public synchronized void repaintMoreSearchResult() {
-        MavenSearchResult result = this.context.getSearchResult();
-
-        SearchNavigationResultSet resultSet = this.toNavigationResult(result);
-        this.context.setNavigationResultSet(resultSet);
-
-        String message = MavenSearchMessage.get("maven.search.status.text", result.getFoundNumber(), result.size());
-        this.setStatusbarText(MavenSearchAdvertiser.NORMAL, message);
-
-        if (log.isDebugEnabled()) {
-            log.debug("repaintMoreSearchResult(), rebuildList, size: {} ", resultSet.size());
-        }
-    }
-
-    private void updateComparator(SearchListModel listModel, Comparator comparator) {
-        if (listModel.getClass().getSimpleName().equals("MixedSearchListModel")) {
-            try {
-                JavaDialectFactory.get().setField(listModel, "myElementsComparator", comparator);
-            } catch (Throwable e) {
-                log.error(e.getLocalizedMessage(), e);
-            }
-        }
     }
 
     /**
@@ -460,71 +447,44 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
      * @param list      导航记录
      */
     protected void mergeNavigation(SearchListModel listModel, java.util.List<MavenSearchNavigation> list) {
-        // 删除（自动添加的）导航记录
-        for (int i = listModel.getSize() - 1; i >= 0; i--) {
+
+        // 记录其他搜索类别 的记录
+        List<SearchEverywhereFoundElementInfo> otherContributors = new ArrayList<>();
+        for (int i = 0; i < listModel.getSize(); i++) {
             SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
             Object element = info.getElement();
-
-            if (!(info instanceof MavenFoundElementInfo) && element instanceof MavenSearchNavigation) {
-                try {
-                    listModel.removeElement(element, info.getContributor());
-                } catch (Throwable e) { // 如果不能删除，则将导航记录清空，排序时放到最后
-                    log.error(e.getLocalizedMessage(), e);
-                }
+            if (!(element instanceof MavenSearchNavigation)) {
+                otherContributors.add(info);
             }
         }
+
+        // 清空所有数据
+        listModel.clear();
 
         // 添加导航记录
-        int i = 0;
-        Iterator<MavenSearchNavigation> it = list.iterator();
-        for (; i < listModel.getSize(); i++) {
-            SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
-            if (info instanceof MavenFoundElementInfo) {
-                MavenFoundElementInfo element = (MavenFoundElementInfo) info;
-                if (it.hasNext()) { // 向 ListModel 添加记录
-                    MavenSearchNavigation item = it.next();
-                    element.setElement(item);
-                    element.setContributor(this.contributor);
-                } else {
-                    break;
-                }
-            }
+        List<SearchEverywhereFoundElementInfo> infoList = new ArrayList<>();
+        for (Iterator<MavenSearchNavigation> it = list.iterator(); it.hasNext(); ) {
+            SearchEverywhereFoundElementInfo info = new SearchEverywhereFoundElementInfo(it.next(), MavenSearchNavigation.PRIORITY, contributor);
+            infoList.add(info);
         }
 
-        // 删除导航记录（注意：删除操作与上面的添加操作不能写到一起）
-        for (int j = listModel.getSize() - 1; j >= i; j--) {
-            SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(j);
-            if (info instanceof MavenFoundElementInfo) {
-                MavenFoundElementInfo element = (MavenFoundElementInfo) info;
-                MavenSearchNavigation item = element.getElement();
-                if (item != null) {
-                    try {
-                        listModel.removeElement(item, info.getContributor());
-                    } catch (Throwable e) { // 如果不能删除导航记录，则将导航记录清空
-                        log.error(e.getLocalizedMessage(), e);
-                        element.setPriority(Integer.MIN_VALUE); // 将权重设置为最小，比 More 元素（Priority=0）小
-                        element.setElement(null);
-                    }
-                }
-            }
+        this.updateComparator(listModel, new MavenFoundElementInfoComparator());
+        try {
+            listModel.addElements(infoList);
+            listModel.addElements(otherContributors);
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        } finally {
+            this.updateComparator(listModel, SearchEverywhereFoundElementInfo.COMPARATOR.reversed());
         }
+    }
 
-        // 向 ListModel 添加记录
-        if (it.hasNext()) {
-            java.util.List<MavenFoundElementInfo> newList = new ArrayList<MavenFoundElementInfo>(list.size());
-            do {
-                MavenSearchNavigation navigation = it.next();
-                MavenFoundElementInfo elementInfo = new MavenFoundElementInfo(navigation, this.contributor);
-                newList.add(elementInfo);
-            } while (it.hasNext());
-
-            this.updateComparator(listModel, new MavenFoundElementInfoComparator());
+    private void updateComparator(SearchListModel listModel, Comparator comparator) {
+        if (listModel.getClass().getSimpleName().equals("MixedSearchListModel")) {
             try {
-                listModel.addElements(newList);
+                JavaDialectFactory.get().setField(listModel, "myElementsComparator", comparator);
             } catch (Throwable e) {
                 log.error(e.getLocalizedMessage(), e);
-            } finally {
-                this.updateComparator(listModel, SearchEverywhereFoundElementInfo.COMPARATOR.reversed());
             }
         }
     }

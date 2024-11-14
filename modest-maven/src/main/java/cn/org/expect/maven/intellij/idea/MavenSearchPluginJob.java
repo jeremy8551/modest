@@ -328,9 +328,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
 
         // 重新执行查询
         repeat.addActionListener(e -> {
-            String pattern = context.getSearchText();
-            plugin.getDatabase().delete(pattern);
-            plugin.asyncSearch(MavenSearchUtils.parse(pattern));
+            plugin.repeat();
             plugin.sendNotification(MavenSearchNotification.NORMAL, repeat.getText());
         });
 
@@ -350,17 +348,14 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
 
             @Override
             public void mousePressed(MouseEvent e) {
-                if (plugin.notMavenSearchTab()) {
-                    return;
-                }
-
                 // 点击位置
                 int selectedIndex = JBList.locationToIndex(e.getPoint());
 
                 // 左键点击
                 if (e.getButton() == MouseEvent.BUTTON1) {
+
                     // 点击 more 按钮
-                    if (selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) {
+                    if (!plugin.notMavenSearchTab() && selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) {
                         String pattern = context.getSearchText();
                         MavenSearchResult result = plugin.getDatabase().select(pattern);
                         if (result != null) { // 判断是否满足执行点击更多链接的条件

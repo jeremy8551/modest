@@ -11,6 +11,9 @@ import com.intellij.util.TextWithIcon;
  */
 public interface MavenSearchNavigation extends NavigationItem {
 
+    /** 默认排序权重 */
+    public final static int PRIORITY = 50;
+
     /**
      * 设置导航记录（左侧或右侧）的图标
      *

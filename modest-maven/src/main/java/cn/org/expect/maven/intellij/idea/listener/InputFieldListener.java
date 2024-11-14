@@ -16,8 +16,14 @@ public class InputFieldListener extends KeyAdapter {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_F2) { // TODO 改成可配置
-            plugin.getContext().getSearchEverywhereUI().switchToTab(plugin.getContributor().getSearchProviderId());
+        if (plugin.notMavenSearchTab()) {
+            if (e.getKeyCode() == KeyEvent.VK_F2) {
+                plugin.getContext().getSearchEverywhereUI().switchToTab(plugin.getContributor().getSearchProviderId());
+            }
+        } else {
+            if (e.getKeyCode() == KeyEvent.VK_F5) {
+                plugin.repeat();
+            }
         }
     }
 }
