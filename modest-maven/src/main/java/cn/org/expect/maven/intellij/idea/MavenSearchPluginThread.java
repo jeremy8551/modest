@@ -30,6 +30,7 @@ import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.ui.components.JBList;
+import com.intellij.util.Alarm;
 import com.intellij.util.ui.Advertiser;
 
 public class MavenSearchPluginThread extends Thread {
@@ -120,6 +121,9 @@ public class MavenSearchPluginThread extends Thread {
         try {
             SearchListModel listModel = JavaDialectFactory.get().getField(ui, "myListModel");
             context.setJBListModel(listModel);
+
+            Alarm rebuildListAlarm = JavaDialectFactory.get().getField(ui, "rebuildListAlarm");
+            context.setRebuildListAlarm(rebuildListAlarm);
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         }
@@ -157,11 +161,10 @@ public class MavenSearchPluginThread extends Thread {
         JMenuItem cancelDownload = new JMenuItem(MavenSearchMessage.get("maven.search.btn.cancel.download.local.repository.text")); // 取消下载按钮
         JMenuItem deleteFile = new JMenuItem(MavenSearchMessage.get("maven.search.btn.delete.local.repository.text")); // 删除本地仓库中的文件
 
-        listPopupMenu.add(copyMaven); // 将菜单项添加到弹出菜单中
+        // 必须要有以下菜单
+        listPopupMenu.add(copyMaven);
         listPopupMenu.add(copyGradle);
         listPopupMenu.add(openInBrowser);
-        listPopupMenu.add(downloadFile);
-        listPopupMenu.add(deleteFile);
 
         JPopupMenu itemPopupMenu = new JPopupMenu();
         JMenuItem repeat = new JMenuItem(MavenSearchMessage.get("maven.search.btn.refresh.query.text"));
@@ -332,10 +335,13 @@ public class MavenSearchPluginThread extends Thread {
                     return;
                 }
 
+                // 点击位置
+                int selectedIndex = JBList.locationToIndex(e.getPoint());
+
                 // 左键点击
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    int selectedIndex = JBList.getSelectedIndex();
-                    if (selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) { // 点击 more 按钮
+                    // 点击 more 按钮
+                    if (selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) {
                         String pattern = context.getSearchText();
                         MavenSearchResult result = plugin.getDatabase().select(pattern);
                         if (result != null && listModel.getFoundElementsInfo().size() >= result.size()) { // 判断是否满足执行点击更多链接的条件
@@ -348,9 +354,24 @@ public class MavenSearchPluginThread extends Thread {
                     }
 
                     // 点击版本
-                    Object selected = listModel.getElementAt(selectedIndex);
-                    if (selected instanceof SearchNavigationItem) {
-                        SearchNavigationItem item = (SearchNavigationItem) selected;
+                    Object selectedObject = listModel.getElementAt(selectedIndex);
+                    if (selectedObject instanceof SearchNavigationItem) {
+                        if (listPopupMenu.isVisible()) {
+                            listPopupMenu.setVisible(false);
+                        }
+                    }
+                    return;
+                }
+
+                // 右键点击
+                if (e.getButton() == MouseEvent.BUTTON3) {
+
+                    // 点击版本
+                    Object selectedObject = listModel.getElementAt(selectedIndex);
+                    if (selectedObject instanceof SearchNavigationItem) {
+                        JBList.setSelectedIndex(selectedIndex);
+                        
+                        SearchNavigationItem item = (SearchNavigationItem) selectedObject;
                         context.setSelectNavigationItem(item);
                         int x = JBList.getX() + 30;
                         int y = JBList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
@@ -362,6 +383,7 @@ public class MavenSearchPluginThread extends Thread {
                             listPopupMenu.remove(cancelDownload);
                         } else {
                             listPopupMenu.remove(openFileSystem);
+                            listPopupMenu.remove(deleteFile);
                             if (plugin.getServiceSearch().isDownloading(item.getArtifact())) {
                                 listPopupMenu.remove(downloadFile);
                                 listPopupMenu.add(cancelDownload);
@@ -372,25 +394,8 @@ public class MavenSearchPluginThread extends Thread {
                             listPopupMenu.remove(deleteFile);
                         }
                         listPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
-                        return;
                     }
-                }
-
-                // 右键点击
-                if (e.getButton() == MouseEvent.BUTTON3) {
-                    int index = JBList.locationToIndex(e.getPoint());
-                    if (index == -1) {
-                        return;
-                    }
-
-                    // 点击版本
-                    Object selected = listModel.getElementAt(index);
-                    if (selected instanceof SearchNavigationItem) {
-                        if (listPopupMenu.isVisible()) {
-                            listPopupMenu.setVisible(false);
-                        }
-                        return;
-                    }
+                    return;
                 }
             }
         });
@@ -404,8 +409,7 @@ public class MavenSearchPluginThread extends Thread {
                     return;
                 }
 
-                // 左键点击
-                if (e.getButton() == MouseEvent.BUTTON1) {
+                if (e.getButton() == MouseEvent.BUTTON3) {
                     int x = searchField.getX();
                     int y = searchField.getY() - 30;
                     itemPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单

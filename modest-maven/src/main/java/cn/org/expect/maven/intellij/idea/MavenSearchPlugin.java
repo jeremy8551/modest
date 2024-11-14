@@ -56,8 +56,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
 
     private final MavenSearchPluginContext context;
 
-    private final Alarm rebuildListAlarm = new Alarm(Alarm.ThreadToUse.SWING_THREAD, this);
-
     public MavenSearchPlugin(MavenSearchPluginContext context) {
         super(RepositoryConfigFactory.getInstance(context.getActionEvent()));
         this.context = Ensure.notNull(context);
@@ -229,7 +227,11 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     }
 
     @Override
-    public synchronized void repaintSearchResult(MavenSearchResult result) {
+    public void repaintSearchResult(MavenSearchResult result) {
+        this.runEdtThread(() -> this.repaintSearchResult1(result), 0);
+    }
+
+    public synchronized void repaintSearchResult1(MavenSearchResult result) {
         if (result == null) {
             log.warn("repaint fail, result is null!");
             return;
@@ -270,10 +272,14 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     }
 
     @Override
-    public synchronized void repaintMoreSearchResult() {
+    public void repaintMoreSearchResult() {
+        this.runEdtThread(() -> this.repaintMoreSearchResult1(), 0);
+    }
+
+    public synchronized void repaintMoreSearchResult1() {
         MavenSearchResult result = this.context.getSearchResult();
 
-        SearchNavigationResultSet resultSet = this.toNavigationResultSet(result);
+        SearchNavigationResultSet resultSet = this.toNavigationResult(result);
         this.context.setNavigationResultSet(resultSet);
 
         String message = MavenSearchMessage.get("maven.search.status.text", result.getFoundNumber(), result.size());
@@ -282,9 +288,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         if (log.isDebugEnabled()) {
             log.debug("repaintMoreSearchResult(), rebuildList, size: {} ", resultSet.size());
         }
-
-        // 刷新 JList 界面
-        this.runEdtThread(() -> context.getContributor().getRebuildRunnable().run(), 0);
     }
 
     private void updateComparator(SearchListModel listModel, Comparator comparator) {
@@ -399,7 +402,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
      * @param result 查询结果
      * @return 导航记录
      */
-    protected SearchNavigationResultSet toNavigationResultSet(MavenSearchResult result) {
+    protected SearchNavigationResultSet toNavigationResult(MavenSearchResult result) {
         java.util.List<MavenArtifact> list = result.getList();
         java.util.List<SearchNavigation> newList = new ArrayList<SearchNavigation>(list.size());
         for (MavenArtifact artifact : list) {
@@ -544,9 +547,10 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     /**
      * 使用官方的 EDT 线程执行 swing 相关任务
      */
-    public void runEdtThread(Runnable task, long delayMillis) {
-        if (!this.rebuildListAlarm.isDisposed()) {
-            this.rebuildListAlarm.addRequest(task, delayMillis);
+    public synchronized void runEdtThread(Runnable task, long delayMillis) {
+        Alarm rebuildListAlarm = this.context.getRebuildListAlarm();
+        if (!rebuildListAlarm.isDisposed()) {
+            rebuildListAlarm.addRequest(task, delayMillis);
         }
     }
 

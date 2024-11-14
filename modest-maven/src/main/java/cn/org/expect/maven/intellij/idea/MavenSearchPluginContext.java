@@ -11,12 +11,12 @@ import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchContext;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereHeader;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.ui.components.JBList;
+import com.intellij.util.Alarm;
 import com.intellij.util.ui.Advertiser;
 
 public class MavenSearchPluginContext implements MavenSearchContext {
@@ -66,7 +66,8 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 导航记录结果集 */
     private volatile SearchNavigationResultSet navigationResultSet;
 
-    private volatile SearchEverywhereHeader myHeader;
+    /** 重新构建 List */
+    private volatile Alarm rebuildListAlarm;
 
     /** 加载上下文信息的状态，true表示加载完毕 false表示还未加载 */
     private volatile boolean loadStatus;
@@ -250,5 +251,14 @@ public class MavenSearchPluginContext implements MavenSearchContext {
 
     public void setLoadStatus(boolean detected) {
         this.loadStatus = detected;
+    }
+
+    public Alarm getRebuildListAlarm() {
+        this.waitForLoad();
+        return rebuildListAlarm;
+    }
+
+    public void setRebuildListAlarm(Alarm rebuildListAlarm) {
+        this.rebuildListAlarm = rebuildListAlarm;
     }
 }
