@@ -12,7 +12,7 @@ public class SearchListener extends SearchAdapter {
 
     private final MavenSearchPlugin plugin;
 
-    public SearchListener(MavenSearchPlugin plugin) {
+    public SearchListener(@NotNull MavenSearchPlugin plugin) {
         this.plugin = plugin;
     }
 

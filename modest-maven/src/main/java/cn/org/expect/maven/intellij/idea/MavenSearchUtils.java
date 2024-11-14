@@ -97,12 +97,15 @@ public class MavenSearchUtils {
             Shortcut shiftShortcut = new KeyboardShortcut(shiftKeyStroke, null);
             return KeymapUtil.getShortcutText(shiftShortcut);
         } catch (Throwable e) {
+            if (log.isErrorEnabled()) {
+                log.error(e.getLocalizedMessage(), e);
+            }
             return keystroke;
         }
     }
 
     public static String parseJDKVersion(File file) {
-        if (file != null) {
+        if (file != null && file.exists() && file.isFile()) {
             try (JarFile jarfile = new JarFile(file)) {
                 JarEntry entry = jarfile.stream().filter(e -> e.getName().endsWith(".class")).findFirst().orElse(null);
                 if (entry != null) {

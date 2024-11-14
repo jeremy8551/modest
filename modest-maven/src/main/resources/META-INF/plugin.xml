@@ -40,7 +40,7 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-<!--        <applicationInitializedListener implementation="cn.org.expect.maven.intellij.idea.ApplicationInitializedListenerImpl"/>-->
+        <applicationInitializedListener implementation="cn.org.expect.maven.intellij.idea.listener.MavenSearchPluginApplicationListener" id="Maven+"/>
         <!--<lang.findUsagesProvider implementationClass="cn.org.expect.intellijidea.plugin.maven.provider.MavenFindUsagesProvider" language=""/>-->
         <searchEverywhereContributor implementation="cn.org.expect.maven.intellij.idea.MavenSearchPluginFactory"/>
     </extensions>

@@ -11,9 +11,12 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.*;
 
+import cn.org.expect.concurrent.ThreadSource;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.intellij.idea.concurrent.MavenSearchExecutorService;
 import cn.org.expect.maven.intellij.idea.navigation.MavenFoundElementInfo;
 import cn.org.expect.maven.intellij.idea.navigation.MavenFoundElementInfoComparator;
 import cn.org.expect.maven.intellij.idea.navigation.MavenSearchNavigation;
@@ -29,7 +32,6 @@ import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.MessageFormatter;
-import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
@@ -40,8 +42,6 @@ import com.intellij.notification.NotificationType;
 import com.intellij.notification.Notifications;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.CommonDataKeys;
-import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
@@ -54,14 +54,19 @@ import org.jetbrains.annotations.NotNull;
 public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable {
     private final static Log log = LogFactory.getLog(MavenSearchPlugin.class);
 
+    private final EasyContext ioc;
+
     private final MavenSearchPluginContext context;
 
-    public MavenSearchPlugin(MavenSearchPluginContext context) {
+    private final MavenSearchPluginContributor contributor;
+
+    public MavenSearchPlugin(EasyContext ioc, MavenSearchPluginContext context) {
         super(RepositoryConfigFactory.getInstance(context.getActionEvent()));
+        this.ioc = Ensure.notNull(ioc);
         this.context = Ensure.notNull(context);
+        this.contributor = new MavenSearchPluginContributor(this);
     }
 
-    @Override
     public MavenSearchPluginContext getContext() {
         return this.context;
     }
@@ -72,12 +77,9 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
      * @return 搜索贡献者
      */
     public MavenSearchPluginContributor getContributor() {
-        MavenSearchPluginContributor contributor = new MavenSearchPluginContributor(this);  // 创建 Idea 搜索的贡献者
-        this.context.setContributor(contributor);
-        return contributor;
+        return this.contributor;
     }
 
-    @Override
     public void asyncSearch(String pattern) {
         this.context.setSearchText(pattern);
         this.context.setSelectNavigationHead(null);
@@ -85,19 +87,16 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         this.getInputSearch().search(this, pattern);
     }
 
-    @Override
     public void asyncSearch(String groupId, String artifactId) {
         this.getServiceSearch().searchExtra(this, groupId, artifactId);
     }
 
-    @Override
     public void copyToClipboard(String text) {
         StringSelection selection = new StringSelection(text);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, null);
     }
 
-    @Override
     public void sendNotification(MavenSearchNotification type, String text, Object... array) {
         String message = new MessageFormatter(text).fill(array);
         NotificationType notificationType = MavenSearchUtils.toNotification(type);
@@ -108,7 +107,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
     }
 
-    @Override
     public void sendNotification(MavenSearchNotification type, String text, String actionName, File file) {
         Project project = context.getActionEvent().getProject();
         if (project != null) {
@@ -116,7 +114,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             Notification notification = new Notification(this.getGroupId(), this.getName(), text, notificationType);
             notification.addAction(new NotificationAction(actionName) {
 
-                @Override
                 public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
                     if (file.exists()) {
                         VirtualFile virtualFile = LocalFileSystem.getInstance().findFileByIoFile(file);
@@ -155,15 +152,25 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
 
         String selectedTabID = ui.getSelectedTabID();
-        return !this.context.getContributor().getSearchProviderId().equals(selectedTabID);
+        return !this.contributor.getSearchProviderId().equals(selectedTabID);
     }
 
-    @Override
+    /**
+     * 在 Tab 页上添加提示信息
+     */
+    public void updateTabTooltip() {
+        SearchEverywhereManager manager = SearchEverywhereManager.getInstance(this.context.getActionEvent().getProject());
+        Map<String, String> map = JavaDialectFactory.get().getField(manager, "myTabsShortcutsMap");
+        if (map != null) {
+            String text = MavenSearchMessage.get("maven.search.tab.tooltip.text", MavenSearchUtils.getShortcutText("pressed F2"));
+            map.put(this.contributor.getSearchProviderId(), text);
+        }
+    }
+
     public void setSearchFieldText(String text) {
         context.getSearchEverywhereUI().getSearchField().setText(text);
     }
 
-    @Override
     public void setStatusbarText(MavenSearchAdvertiser type, String message) {
         if (this.notMavenSearchTab()) {
             return;
@@ -191,7 +198,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
     }
 
-    @Override
     public void setProgressText(String message) {
         if (this.notMavenSearchTab()) {
             return;
@@ -203,7 +209,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
     }
 
-    @Override
     public synchronized void clearSearchResult() {
         SearchListModel listModel = this.context.getJBListModel();
         for (int i = listModel.getSize() - 1; i >= 0; i--) {
@@ -220,18 +225,16 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
     }
 
-    @Override
-    public synchronized void repaintSearchResult() {
+    public synchronized void showSearchResult() {
         MavenSearchResult result = this.context.getSearchResult();
-        this.repaintSearchResult(result);
+        this.showSearchResult(result);
     }
 
-    @Override
-    public void repaintSearchResult(MavenSearchResult result) {
-        this.runEdtThread(() -> this.repaintSearchResult1(result), 0);
+    public void showSearchResult(MavenSearchResult result) {
+        this.execute(() -> this.repaintSearchResult(result));
     }
 
-    public synchronized void repaintSearchResult1(MavenSearchResult result) {
+    protected synchronized void repaintSearchResult(MavenSearchResult result) {
         if (result == null) {
             log.warn("repaint fail, result is null!");
             return;
@@ -251,7 +254,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         this.setSelectNavigation(JBList, listModel);
 
         // 设置 more 按钮
-        listModel.setHasMore(this.context.getContributor(), result.getFoundNumber() > result.size());
+        listModel.setHasMore(this.contributor, result.getFoundNumber() > result.size());
         listModel.freezeElements();
 
         // 渲染 JBList
@@ -271,12 +274,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         this.setStatusbarText(MavenSearchAdvertiser.NORMAL, message);
     }
 
-    @Override
-    public void repaintMoreSearchResult() {
-        this.runEdtThread(() -> this.repaintMoreSearchResult1(), 0);
-    }
-
-    public synchronized void repaintMoreSearchResult1() {
+    public synchronized void repaintMoreSearchResult() {
         MavenSearchResult result = this.context.getSearchResult();
 
         SearchNavigationResultSet resultSet = this.toNavigationResult(result);
@@ -472,7 +470,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
                 if (it.hasNext()) { // 向 ListModel 添加记录
                     MavenSearchNavigation item = it.next();
                     element.setElement(item);
-                    element.setContributor(this.context.getContributor());
+                    element.setContributor(this.contributor);
                 } else {
                     break;
                 }
@@ -502,7 +500,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             java.util.List<MavenFoundElementInfo> newList = new ArrayList<MavenFoundElementInfo>(list.size());
             do {
                 MavenSearchNavigation navigation = it.next();
-                MavenFoundElementInfo elementInfo = new MavenFoundElementInfo(navigation, this.context.getContributor());
+                MavenFoundElementInfo elementInfo = new MavenFoundElementInfo(navigation, this.contributor);
                 newList.add(elementInfo);
             } while (it.hasNext());
 
@@ -518,43 +516,19 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     }
 
     /**
-     * 返回在编辑器中选中的文本
-     */
-    public String getEditorSelectText() {
-        Editor editor = this.context.getActionEvent().getDataContext().getData(CommonDataKeys.EDITOR);
-        if (editor != null) {
-            return StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * 设置标签页的提示信息
+     * 多线程执行任务 <br>
+     * 如果想要使用官方的 EDT 线程，需要让 task 实现 {@linkplain EDTJob} 接口
      *
-     * @param tabID 标签页ID
+     * @param command 任务
      */
-    public void updateTabTooltipText(String tabID) {
-        AnActionEvent event = this.context.getActionEvent();
-        SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
-        Map<String, String> map = JavaDialectFactory.get().getField(manager, "myTabsShortcutsMap");
-        if (map != null) {
-            String text = MavenSearchMessage.get("maven.search.tab.tooltip.text", MavenSearchUtils.getShortcutText("pressed SHIFT"));
-            map.put(tabID, text);
-        }
+    public synchronized void execute(Runnable command) {
+        this.ioc.getBean(ThreadSource.class).getExecutorService().execute(command);
     }
 
-    /**
-     * 使用官方的 EDT 线程执行 swing 相关任务
-     */
-    public synchronized void runEdtThread(Runnable task, long delayMillis) {
-        Alarm rebuildListAlarm = this.context.getRebuildListAlarm();
-        if (!rebuildListAlarm.isDisposed()) {
-            rebuildListAlarm.addRequest(task, delayMillis);
-        }
+    public void setService(Alarm alarm) {
+        this.ioc.getBean(MavenSearchExecutorService.class).setSearchEverywhereService(alarm);
     }
 
-    @Override
     public void dispose() {
     }
 }

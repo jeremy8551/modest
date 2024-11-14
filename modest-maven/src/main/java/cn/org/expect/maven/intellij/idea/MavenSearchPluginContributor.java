@@ -11,7 +11,6 @@ import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationHead;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchUtils;
-import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
@@ -31,9 +30,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
 
     private final MavenSearchPlugin plugin;
 
-    private Runnable rebuildList;
-
-    public MavenSearchPluginContributor(MavenSearchPlugin plugin) {
+    public MavenSearchPluginContributor(@NotNull MavenSearchPlugin plugin) {
         super(plugin.getContext().getActionEvent());
         this.contributor = new MavenSearchPluginChooseContributor(plugin);
         this.plugin = plugin;
@@ -101,11 +98,11 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
                     head.setIcon(MavenSearchPluginIcon.LEFT_WAITING); // 更改为：等待图标
                     this.plugin.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
                 } else {
-                    this.plugin.repaintSearchResult();
+                    this.plugin.showSearchResult();
                 }
             } else { // 设置为：折叠
                 artifact.setFold(true);
-                this.plugin.repaintSearchResult();
+                this.plugin.showSearchResult();
             }
             return false;
         }
@@ -219,17 +216,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
             log.trace("getActions({}) ", onChanged);
         }
 
-        this.rebuildList = Ensure.notNull(onChanged);
         return new ArrayList<>();
-    }
-
-    /**
-     * 切换UI界面Tab，触发的任务
-     *
-     * @return 任务
-     */
-    public Runnable getRebuildRunnable() {
-        return rebuildList;
     }
 
     @Override

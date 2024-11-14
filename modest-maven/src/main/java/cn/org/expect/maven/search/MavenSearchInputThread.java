@@ -84,7 +84,7 @@ public class MavenSearchInputThread extends AbstractSearchThread<SearchElementPa
                         search.setStatusbarText(MavenSearchAdvertiser.NORMAL, message);
                     } else {
                         search.getContext().setSearchResult(result);
-                        search.repaintSearchResult(result);
+                        search.showSearchResult(result);
                     }
                 }
             } catch (Throwable e) {

@@ -88,9 +88,9 @@ public class MavenSearchServiceThread extends AbstractSearchThread<SearchElement
         while (!this.terminate) {
             try {
                 SearchElement element = this.queue.take();
-                int value;
-
                 this.searching = element;
+
+                boolean value;
                 try {
                     value = this.run(element);
                 } finally {
@@ -98,14 +98,8 @@ public class MavenSearchServiceThread extends AbstractSearchThread<SearchElement
                     this.terminate = false;
                 }
 
-                switch (value) {
-                    case 0:
-                        element.getSearch().repaintSearchResult();
-                        break;
-
-                    case 1:
-                        element.getSearch().repaintMoreSearchResult();
-                        break;
+                if (value) {
+                    element.getSearch().showSearchResult();
                 }
             } catch (Throwable e) {
                 log.error(e.getLocalizedMessage(), e);
@@ -113,25 +107,34 @@ public class MavenSearchServiceThread extends AbstractSearchThread<SearchElement
         }
     }
 
-    protected int run(SearchElement object) throws Exception {
+    protected boolean run(SearchElement object) throws Exception {
         // 精确查询
         if (object instanceof SearchElementExtra) {
             SearchElementExtra element = (SearchElementExtra) object;
-            String groupId = element.getGroupId();
-            String artifactId = element.getArtifactId();
             MavenSearch search = element.getSearch();
+            String groupId = StringUtils.trimBlank(element.getGroupId());
+            String artifactId = StringUtils.trimBlank(element.getArtifactId());
+
+            if (StringUtils.isBlank(groupId) || StringUtils.isBlank(artifactId)) {
+                throw new UnsupportedOperationException(groupId + ":" + artifactId);
+            }
 
             if (log.isDebugEnabled()) {
                 log.debug("{} search groupId: {}, artifactId: {} ..", this.getName(), groupId, artifactId);
             }
 
-            if (StringUtils.isNotBlank(groupId) && StringUtils.isNotBlank(artifactId)) {
-                MavenSearchResult result = this.searchExtra(search.getDatabase(), groupId, artifactId);
-                if (result != null) {
-                    return 0;
-                }
+            MavenSearchResult result = search.getDatabase().select(groupId, artifactId);
+            if (result != null) {
+                return true;
             }
-            return -1;
+
+            result = this.getRepository().query(groupId, artifactId);
+            if (result != null) {
+                search.getDatabase().insert(groupId, artifactId, result);
+                return true;
+            } else {
+                return false;
+            }
         }
 
         // 下载工件
@@ -180,9 +183,9 @@ public class MavenSearchServiceThread extends AbstractSearchThread<SearchElement
                         FileUtils.delete(downfile);
                     }
                 }
-                return 0;
+                return true;
             }
-            return -1;
+            return false;
         }
 
         // more 按钮的模糊查询操作
@@ -208,40 +211,13 @@ public class MavenSearchServiceThread extends AbstractSearchThread<SearchElement
                     SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, next.getStart(), foundNumber);
                     database.insert(pattern, newResult); // 保存到数据库
                     search.getContext().setSearchResult(newResult); // 保存查询记录
-                    return 1;
+                    return true;
                 }
             }
-            return -1;
+            return false;
         }
 
         throw new UnsupportedOperationException(object.getClass().getName());
-    }
-
-    private MavenSearchResult searchExtra(MavenSearchDatabase database, String groupId, String artifactId) {
-        if (StringUtils.isBlank(groupId) || StringUtils.isBlank(artifactId)) {
-            return null;
-        }
-
-        groupId = StringUtils.trimBlank(groupId);
-        artifactId = StringUtils.trimBlank(artifactId);
-
-        MavenSearchResult result = database.select(groupId, artifactId);
-        if (result != null) {
-            return result;
-        }
-
-        try {
-            result = this.getRepository().query(groupId, artifactId);
-            if (result != null) {
-                database.insert(groupId, artifactId, result);
-                return result;
-            } else {
-                return null;
-            }
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-            return null;
-        }
     }
 
     /**

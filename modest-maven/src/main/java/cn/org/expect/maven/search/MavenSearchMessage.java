@@ -20,7 +20,7 @@ public class MavenSearchMessage {
     private MavenSearchMessage() {
     }
 
-    public static void setChineseCondition(Predicate<String> useChinese) {
+    public static void setChineseCondition(Predicate<String> useChinese) { // TODO 改成根据 zh_CN fr 使用对应的 Locale 对象
         USE_CHINESE = useChinese;
     }
 

@@ -28,12 +28,12 @@ public class CentralRepository implements MavenRepository {
 
     protected volatile Call call;
 
-    protected volatile boolean notTerminate;
+    protected volatile boolean terminate;
 
     public CentralRepository() {
         this.pattern = new ExtraResultAnalysis();
         this.extra = new PatternResultAnalysis();
-        this.notTerminate = true;
+        this.terminate = false;
     }
 
     @Override
@@ -43,11 +43,11 @@ public class CentralRepository implements MavenRepository {
 
     @Override
     public MavenSearchResult query(String pattern, int start) {
-        this.notTerminate = true;
+        this.terminate = false;
         String url = "https://search.maven.org/solrsearch/select?q=" + pattern + "&rows=200&wt=json&start=" + (start - 1); // 构建请求 URL
         String responseBody = this.sendRequest(url);
 
-        if (StringUtils.isBlank(responseBody) || !this.notTerminate) {
+        if (StringUtils.isBlank(responseBody) || this.terminate) {
             return null;
         }
 
@@ -58,10 +58,10 @@ public class CentralRepository implements MavenRepository {
 
     @Override
     public MavenSearchResult query(String groupId, String artifactId) {
-        this.notTerminate = true;
+        this.terminate = false;
         String url = "https://search.maven.org/solrsearch/select?q=g:" + groupId + "+AND+a:" + artifactId + "&core=gav&rows=200&wt=json"; // 构建请求 URL
         String responseBody = this.sendRequest(url);
-        if (!this.notTerminate) {
+        if (this.terminate) {
             return null;
         }
 
@@ -71,15 +71,20 @@ public class CentralRepository implements MavenRepository {
         int start = result.size(); // 起始位置
         if (result.getFoundNumber() > start) {
             do {
+                if (this.terminate) {
+                    break;
+                }
+
                 responseBody = this.sendRequest(url + "&start=" + start);
-                if (!this.notTerminate) {
+                
+                if (this.terminate) {
                     break;
                 }
 
                 MavenSearchResult next = this.extra.parse(responseBody);
                 list.addAll(next.getList());
                 start = next.getStart();
-            } while (this.notTerminate && result.getFoundNumber() > start);
+            } while (result.getFoundNumber() > start);
             list.sort(EXTRA_RESULT_COMPARATOR);
             return new SimpleMavenSearchResult(list, start, result.getFoundNumber());
         } else {
@@ -91,7 +96,11 @@ public class CentralRepository implements MavenRepository {
     public String sendRequest(String url) {
         Throwable throwable = null;
         int times = 3;
-        for (int i = 0; i < times && this.notTerminate; i++) {
+        for (int i = 0; i < times; i++) {
+            if (this.terminate) {
+                break;
+            }
+
             try {
                 return this.sendURL(url);
             } catch (Throwable e) {
@@ -101,10 +110,10 @@ public class CentralRepository implements MavenRepository {
             }
         }
 
-        if (this.notTerminate) {
-            throw new RuntimeException("try " + times + " times send request, but fail!", throwable);
-        } else {
+        if (this.terminate) {
             return null;
+        } else {
+            throw new RuntimeException("try " + times + " times send request, but fail!", throwable);
         }
     }
 
@@ -127,12 +136,12 @@ public class CentralRepository implements MavenRepository {
 
     @Override
     public boolean isTerminate() {
-        return this.notTerminate;
+        return this.terminate;
     }
 
     @Override
     public void terminate() {
-        this.notTerminate = false;
+        this.terminate = true;
         if (this.call != null) {
             this.call.cancel();
         }

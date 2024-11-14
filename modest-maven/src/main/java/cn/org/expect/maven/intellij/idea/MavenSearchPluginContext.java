@@ -16,7 +16,6 @@ import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.ui.components.JBList;
-import com.intellij.util.Alarm;
 import com.intellij.util.ui.Advertiser;
 
 public class MavenSearchPluginContext implements MavenSearchContext {
@@ -24,17 +23,11 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 事件 */
     private final AnActionEvent event;
 
-    /** 搜素贡献者 */
-    private volatile MavenSearchPluginContributor contributor;
-
     /** 连续输入文本的间隔时间 */
     private long inputIntervalTime;
 
     /** 最后一次执行模糊查询的文本 */
     private volatile String searchPattern;
-
-    /** IDea 编辑器中选中的文本 */
-    private volatile String editorSelectText;
 
     /** 选中的导航记录 */
     private volatile SearchNavigationHead selectedNavigation;
@@ -66,9 +59,6 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 导航记录结果集 */
     private volatile SearchNavigationResultSet navigationResultSet;
 
-    /** 重新构建 List */
-    private volatile Alarm rebuildListAlarm;
-
     /** 加载上下文信息的状态，true表示加载完毕 false表示还未加载 */
     private volatile boolean loadStatus;
 
@@ -80,14 +70,6 @@ public class MavenSearchPluginContext implements MavenSearchContext {
 
     public AnActionEvent getActionEvent() {
         return this.event;
-    }
-
-    public MavenSearchPluginContributor getContributor() {
-        return this.contributor;
-    }
-
-    public void setContributor(MavenSearchPluginContributor contributor) {
-        this.contributor = contributor;
     }
 
     @Override
@@ -123,24 +105,6 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     @Override
     public MavenSearchResult getSearchResult() {
         return this.mavenSearchResult;
-    }
-
-    /**
-     * 返回编辑器中选中的文本
-     *
-     * @return 文本信息
-     */
-    public String getEditorSelectText() {
-        return this.editorSelectText;
-    }
-
-    /**
-     * 编辑器中选中的文本
-     *
-     * @param editorSelectText 文本信息
-     */
-    public void setEditorSelectText(String editorSelectText) {
-        this.editorSelectText = editorSelectText;
     }
 
     /**
@@ -251,14 +215,5 @@ public class MavenSearchPluginContext implements MavenSearchContext {
 
     public void setLoadStatus(boolean detected) {
         this.loadStatus = detected;
-    }
-
-    public Alarm getRebuildListAlarm() {
-        this.waitForLoad();
-        return rebuildListAlarm;
-    }
-
-    public void setRebuildListAlarm(Alarm rebuildListAlarm) {
-        this.rebuildListAlarm = rebuildListAlarm;
     }
 }

@@ -2,8 +2,10 @@ package cn.org.expect.maven.intellij.idea.action;
 
 import java.io.File;
 
-import cn.org.expect.maven.intellij.idea.MavenSearchPluginContext;
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.intellij.idea.MavenSearchPlugin;
+import cn.org.expect.maven.intellij.idea.MavenSearchPluginContext;
 import cn.org.expect.maven.intellij.idea.RepositoryConfigFactory;
 import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.search.MavenSearchNotification;
@@ -19,8 +21,9 @@ public class OpenLocalRepository extends AnAction {
 
     @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
+        EasyContext ioc = DefaultEasyContext.getInstance();
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);
-        MavenSearch plugin = new MavenSearchPlugin(context);
+        MavenSearch plugin = new MavenSearchPlugin(ioc, context);
         File repository = RepositoryConfigFactory.getInstance(event).getRepository();
         if (repository == null) {
             plugin.sendNotification(MavenSearchNotification.ERROR, "Cannot find Maven local repository!");

@@ -85,19 +85,14 @@ public interface MavenSearch {
     /**
      * 使用最新的查询结果，渲染 UI 界面
      */
-    void repaintSearchResult();
+    void showSearchResult();
 
     /**
      * 使用参数指定的查询结果，渲染 UI 界面
      *
      * @param result 查询结果
      */
-    void repaintSearchResult(MavenSearchResult result);
-
-    /**
-     * 触发更多按钮操作时，执行的方法
-     */
-    void repaintMoreSearchResult();
+    void showSearchResult(MavenSearchResult result);
 
     /**
      * 返回 Maven 仓库信息
