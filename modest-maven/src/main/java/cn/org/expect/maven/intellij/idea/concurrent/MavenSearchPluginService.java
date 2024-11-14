@@ -1,10 +1,9 @@
 package cn.org.expect.maven.intellij.idea.concurrent;
 
-import java.util.concurrent.ExecutorService;
-
+import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
 import com.intellij.util.Alarm;
 
-public interface MavenSearchExecutorService extends ExecutorService {
+public interface MavenSearchPluginService extends MavenSearchExecutorService {
 
     /**
      * 设置 SearchEverywhere UI 使用的线程池

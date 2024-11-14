@@ -7,20 +7,21 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.concurrent.AbstractJob;
 import cn.org.expect.jdk.JavaDialectFactory;
-import cn.org.expect.log.Log;
-import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.concurrent.EDTJob;
+import cn.org.expect.maven.concurrent.MavenSearchJob;
+import cn.org.expect.maven.concurrent.MavenSearchMoreJob;
+import cn.org.expect.maven.concurrent.MavenSearchdDownloadJob;
 import cn.org.expect.maven.intellij.idea.listener.InputFieldListener;
 import cn.org.expect.maven.intellij.idea.listener.SearchListener;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.maven.search.MavenSearchUtils;
 import cn.org.expect.util.Dates;
-import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.NetUtils;
 import cn.org.expect.util.StringUtils;
@@ -35,18 +36,10 @@ import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.Advertiser;
 
-public class MavenSearchPluginJob extends AbstractJob implements Runnable, EDTJob {
-    private final static Log log = LogFactory.getLog(MavenSearchPluginJob.class);
+public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
 
-    private final MavenSearchPlugin plugin;
-
-    public MavenSearchPluginJob(MavenSearchPlugin plugin) {
-        this.setName(MavenSearchPluginJob.class.getSimpleName());
-        this.plugin = Ensure.notNull(plugin);
-    }
-
-    public void run() {
-        this.execute();
+    public MavenSearchPluginJob() {
+        super();
     }
 
     public int execute() {
@@ -54,11 +47,12 @@ public class MavenSearchPluginJob extends AbstractJob implements Runnable, EDTJo
             log.info(MavenSearchMessage.get("maven.search.thread.start", this.getName()));
         }
 
-        MavenSearchPluginContext context = this.plugin.getContext(); // 上下文信息
-        this.loadComponent(context); // 加载 UI 组件
+        MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
+        MavenSearchPluginContext context = plugin.getContext(); // 上下文信息
+        this.loadComponent(plugin); // 加载 UI 组件
         context.setLoadStatus(true); // 设置加载完成标志
-        this.setPopupMenuUI(context); // 加载弹出菜单
-        this.processEditorSelectText(context);
+        this.setPopupMenuUI(plugin); // 加载弹出菜单
+        this.processEditorSelectText(plugin);
 
         if (log.isInfoEnabled()) {
             log.info(MavenSearchMessage.get("maven.search.thread.finish", this.getName()));
@@ -69,9 +63,10 @@ public class MavenSearchPluginJob extends AbstractJob implements Runnable, EDTJo
     /**
      * 将编辑器中选中的文本，复制到 Tab 页的输入框中
      *
-     * @param context 上下文信息
+     * @param plugin 搜索接口
      */
-    private void processEditorSelectText(MavenSearchPluginContext context) {
+    private void processEditorSelectText(MavenSearchPlugin plugin) {
+        MavenSearchPluginContext context = plugin.getContext();
         this.waitFor(context.getProgressIndicator(), 3000); // 等待 idea 默认的搜索功能执行完毕
         Editor editor = context.getActionEvent().getDataContext().getData(CommonDataKeys.EDITOR);
         if (editor != null) {
@@ -112,9 +107,10 @@ public class MavenSearchPluginJob extends AbstractJob implements Runnable, EDTJo
     /**
      * 检测Idea的UI组件
      *
-     * @param context 事件
+     * @param plugin 事件
      */
-    protected void loadComponent(MavenSearchPluginContext context) {
+    protected void loadComponent(MavenSearchPlugin plugin) {
+        MavenSearchPluginContext context = plugin.getContext();
         AnActionEvent event = context.getActionEvent();
         SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
         long startMillis = System.currentTimeMillis();
@@ -129,8 +125,8 @@ public class MavenSearchPluginJob extends AbstractJob implements Runnable, EDTJo
         // 得到当前已显示的 SearchEverywhere 对象
         SearchEverywhereUI ui = manager.getCurrentlyShownUI();
         context.setSearchEverywhereUI(ui);
-        ui.addSearchListener(new SearchListener(this.plugin));
-        this.plugin.setService(JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
+        ui.addSearchListener(new SearchListener(plugin));
+        plugin.setService(JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
 
         try {
             JBList<Object> jbList = JavaDialectFactory.get().getField(ui, "myResultsList");
@@ -163,13 +159,14 @@ public class MavenSearchPluginJob extends AbstractJob implements Runnable, EDTJo
         try {
             JTextField searchField = ui.getSearchField();
             context.setSearchField(searchField);
-            searchField.addKeyListener(new InputFieldListener(this.plugin)); // 打开搜索对话框后，点击 Shift 快捷键自动切换 Tab 页
+            searchField.addKeyListener(new InputFieldListener(plugin)); // 打开搜索对话框后，点击 Shift 快捷键自动切换 Tab 页
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         }
     }
 
-    protected void setPopupMenuUI(MavenSearchPluginContext context) {
+    protected void setPopupMenuUI(MavenSearchPlugin plugin) {
+        MavenSearchPluginContext context = plugin.getContext();
         JPopupMenu listPopupMenu = new JPopupMenu();
         JMenuItem copyMaven = new JMenuItem(MavenSearchMessage.get("maven.search.btn.copy.maven.dependency.text")); // 复制 Maven 依赖
         JMenuItem copyGradle = new JMenuItem(MavenSearchMessage.get("maven.search.btn.copy.gradle.dependency.text")); // 复制 Gradle 依赖
@@ -285,7 +282,10 @@ public class MavenSearchPluginJob extends AbstractJob implements Runnable, EDTJo
                 return;
             }
 
-            plugin.getServiceSearch().download(plugin, selectItem.getArtifact());
+            MavenArtifact artifact = selectItem.getArtifact();
+            String message = MavenSearchMessage.get("maven.search.download.url", artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion());
+            plugin.setStatusbarText(MavenSearchAdvertiser.RUNNING, message);
+            plugin.execute(new MavenSearchdDownloadJob(artifact));
             plugin.showSearchResult();
         });
 
@@ -297,7 +297,8 @@ public class MavenSearchPluginJob extends AbstractJob implements Runnable, EDTJo
                 return;
             }
 
-            plugin.getServiceSearch().terminateDownloading();
+            MavenArtifact artifact = selectItem.getArtifact();
+            plugin.getService().terminate(MavenSearchdDownloadJob.class, job -> job.getArtifact().equals(artifact));
         });
 
         // 删除文件
@@ -366,7 +367,10 @@ public class MavenSearchPluginJob extends AbstractJob implements Runnable, EDTJo
                             if (log.isDebugEnabled()) {
                                 log.debug("Click '... more' button ..");
                             }
-                            plugin.getServiceSearch().searchMore(plugin, pattern);
+
+                            String message = MavenSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern));
+                            plugin.setStatusbarText(MavenSearchAdvertiser.RUNNING, message);
+                            plugin.execute(new MavenSearchMoreJob(pattern));
                         }
                         return;
                     }
@@ -390,11 +394,13 @@ public class MavenSearchPluginJob extends AbstractJob implements Runnable, EDTJo
                         JBList.setSelectedIndex(selectedIndex);
 
                         SearchNavigationItem item = (SearchNavigationItem) selectedObject;
+                        MavenArtifact artifact = item.getArtifact();
+
                         context.setSelectNavigationItem(item);
                         int x = JBList.getX() + 30;
                         int y = JBList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
 
-                        if (plugin.getLocalRepository().exists(item.getArtifact())) { // 工件在本地仓库中存在
+                        if (plugin.getLocalRepository().exists(artifact)) { // 工件在本地仓库中存在
                             listPopupMenu.add(openFileSystem);
                             listPopupMenu.add(deleteFile);
                             listPopupMenu.remove(downloadFile);
@@ -402,7 +408,8 @@ public class MavenSearchPluginJob extends AbstractJob implements Runnable, EDTJo
                         } else {
                             listPopupMenu.remove(openFileSystem);
                             listPopupMenu.remove(deleteFile);
-                            if (plugin.getServiceSearch().isDownloading(item.getArtifact())) {
+
+                            if (plugin.getService().isRunning(MavenSearchdDownloadJob.class, job -> job.getArtifact().equals(artifact))) {
                                 listPopupMenu.remove(downloadFile);
                                 listPopupMenu.add(cancelDownload);
                             } else {

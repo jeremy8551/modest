@@ -2,6 +2,8 @@ package cn.org.expect.maven.search;
 
 import java.io.File;
 
+import cn.org.expect.maven.concurrent.EDTJob;
+import cn.org.expect.maven.intellij.idea.concurrent.MavenSearchPluginService;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.db.MavenSearchDatabase;
@@ -93,6 +95,21 @@ public interface MavenSearch {
      * @param result 查询结果
      */
     void showSearchResult(MavenSearchResult result);
+
+    /**
+     * 多线程执行任务 <br>
+     * 如果想要使用官方的 EDT 线程，需要让 task 实现 {@linkplain EDTJob} 接口
+     *
+     * @param command 任务
+     */
+    void execute(Runnable command);
+
+    /**
+     * 判断当前是否正在查询某个 Maven 工件
+     *
+     * @return 返回true表示正在查询
+     */
+    MavenSearchPluginService getService();
 
     /**
      * 返回 Maven 仓库信息

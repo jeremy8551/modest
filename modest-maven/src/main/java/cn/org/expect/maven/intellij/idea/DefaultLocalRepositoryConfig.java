@@ -10,25 +10,25 @@ import cn.org.expect.util.Ensure;
 import cn.org.expect.util.Settings;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class RepositoryConfigFactory implements LocalRepositoryConfig {
-    private final static Log log = LogFactory.getLog(RepositoryConfigFactory.class);
+public class DefaultLocalRepositoryConfig implements LocalRepositoryConfig {
+    private final static Log log = LogFactory.getLog(DefaultLocalRepositoryConfig.class);
 
     private static volatile File REPOSITORY;
 
-    private static volatile RepositoryConfigFactory INSTANCE;
+    private static volatile DefaultLocalRepositoryConfig INSTANCE;
 
-    public static RepositoryConfigFactory getInstance(AnActionEvent event) {
+    public static LocalRepositoryConfig getInstance(AnActionEvent event) {
         if (INSTANCE == null) {
-            synchronized (RepositoryConfigFactory.class) {
+            synchronized (DefaultLocalRepositoryConfig.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new RepositoryConfigFactory(event);
+                    INSTANCE = new DefaultLocalRepositoryConfig(event);
                 }
             }
         }
         return INSTANCE;
     }
 
-    protected RepositoryConfigFactory(AnActionEvent event) {
+    protected DefaultLocalRepositoryConfig(AnActionEvent event) {
         // 如果idea中安装了 Maven 插件
         if (ClassUtils.forName("org.jetbrains.idea.maven.project.MavenProjectsManager") != null) {
             MavenSettingListener.start(event);
@@ -49,7 +49,7 @@ public class RepositoryConfigFactory implements LocalRepositoryConfig {
         if (m2.exists() && m2.isDirectory()) {
             File repository = new File(m2, "repository");
             if (repository.exists() && repository.isDirectory()) {
-                RepositoryConfigFactory.REPOSITORY = repository;
+                DefaultLocalRepositoryConfig.REPOSITORY = repository;
             }
         }
     }
@@ -60,6 +60,6 @@ public class RepositoryConfigFactory implements LocalRepositoryConfig {
     }
 
     public static void setRepository(File dir) {
-        RepositoryConfigFactory.REPOSITORY = Ensure.notNull(dir);
+        DefaultLocalRepositoryConfig.REPOSITORY = Ensure.notNull(dir);
     }
 }

@@ -3,6 +3,7 @@ package cn.org.expect.maven.intellij.idea;
 import java.util.List;
 import javax.swing.*;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationHead;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationItem;
 import cn.org.expect.maven.intellij.idea.navigation.SearchNavigationResultSet;
@@ -25,6 +26,9 @@ public class MavenSearchPluginContext implements MavenSearchContext {
 
     /** 连续输入文本的间隔时间 */
     private long inputIntervalTime;
+
+    /** 远程 Maven 仓库的标识符，就是 {@linkplain EasyBean#value()} */
+    private volatile String remoteRepositoryName;
 
     /** 最后一次执行模糊查询的文本 */
     private volatile String searchPattern;
@@ -65,6 +69,7 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     public MavenSearchPluginContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
         this.inputIntervalTime = 300;
+        this.remoteRepositoryName = "central";
         this.loadStatus = false;
     }
 
@@ -211,6 +216,14 @@ public class MavenSearchPluginContext implements MavenSearchContext {
 
     public void setNavigationResultSet(SearchNavigationResultSet navigationResultSet) {
         this.navigationResultSet = navigationResultSet;
+    }
+
+    public String getRemoteRepositoryName() {
+        return remoteRepositoryName;
+    }
+
+    public void setRemoteRepositoryName(String remoteRepositoryName) {
+        this.remoteRepositoryName = remoteRepositoryName;
     }
 
     public void setLoadStatus(boolean detected) {

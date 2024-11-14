@@ -53,9 +53,9 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
 
     @Override
     public void changed() {
-        File oldDir = DatabaseSerializer.getStoreDir(RepositoryConfigFactory.getInstance(this.event).getRepository());
+        File oldDir = DatabaseSerializer.getStoreDir(DefaultLocalRepositoryConfig.getInstance(this.event).getRepository());
         this.execute(this.event);
-        File newDir = DatabaseSerializer.getStoreDir(RepositoryConfigFactory.getInstance(this.event).getRepository());
+        File newDir = DatabaseSerializer.getStoreDir(DefaultLocalRepositoryConfig.getInstance(this.event).getRepository());
 
         if (log.isDebugEnabled()) {
             log.debug("move cache files from {} to {}", oldDir, newDir);
@@ -111,7 +111,7 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
             }
 
             if (StringUtils.isNotBlank(filepath)) {
-                RepositoryConfigFactory.setRepository(new File(filepath)); // 获取 Maven 本地仓库路径
+                DefaultLocalRepositoryConfig.setRepository(new File(filepath)); // 获取 Maven 本地仓库路径
             }
 
             return manager;

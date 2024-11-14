@@ -17,7 +17,7 @@ public class MavenSearchPluginFactory implements SearchEverywhereContributorFact
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);
         MavenSearchPlugin plugin = new MavenSearchPlugin(ioc, context);
         plugin.updateTabTooltip();
-        plugin.execute(new MavenSearchPluginJob(plugin));
+        plugin.execute(new MavenSearchPluginJob());
         return plugin.getContributor();
     }
 }

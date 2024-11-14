@@ -11,12 +11,13 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.*;
 
-import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.intellij.idea.concurrent.MavenSearchExecutorService;
+import cn.org.expect.maven.concurrent.MavenSearchEDTJob;
+import cn.org.expect.maven.concurrent.MavenSearchExtraJob;
+import cn.org.expect.maven.concurrent.MavenSearchdDownloadJob;
 import cn.org.expect.maven.intellij.idea.navigation.MavenFoundElementInfo;
 import cn.org.expect.maven.intellij.idea.navigation.MavenFoundElementInfoComparator;
 import cn.org.expect.maven.intellij.idea.navigation.MavenSearchNavigation;
@@ -32,6 +33,7 @@ import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.MessageFormatter;
+import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
@@ -47,22 +49,18 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.components.JBList;
-import com.intellij.util.Alarm;
 import com.intellij.util.ui.Advertiser;
 import org.jetbrains.annotations.NotNull;
 
 public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable {
     private final static Log log = LogFactory.getLog(MavenSearchPlugin.class);
 
-    private final EasyContext ioc;
-
     private final MavenSearchPluginContext context;
 
     private final MavenSearchPluginContributor contributor;
 
     public MavenSearchPlugin(EasyContext ioc, MavenSearchPluginContext context) {
-        super(RepositoryConfigFactory.getInstance(context.getActionEvent()));
-        this.ioc = Ensure.notNull(ioc);
+        super(ioc, context.getRemoteRepositoryName(), DefaultLocalRepositoryConfig.getInstance(context.getActionEvent()));
         this.context = Ensure.notNull(context);
         this.contributor = new MavenSearchPluginContributor(this);
     }
@@ -81,14 +79,27 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     }
 
     public void asyncSearch(String pattern) {
+        if (StringUtils.isBlank(pattern)) {
+            return;
+        }
+
         this.context.setSearchText(pattern);
         this.context.setSelectNavigationHead(null);
         this.context.setSelectNavigationItem(null);
-        this.getInputSearch().search(this, pattern);
+
+        this.setProgressText(MavenSearchMessage.get("maven.search.progress.text"));
+        this.setStatusbarText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern)));
+        this.getInput().search(this, pattern);
     }
 
     public void asyncSearch(String groupId, String artifactId) {
-        this.getServiceSearch().searchExtra(this, groupId, artifactId);
+        if (StringUtils.isBlank(groupId) || StringUtils.isBlank(artifactId)) {
+            throw new UnsupportedOperationException(groupId + ":" + artifactId);
+        }
+
+        String message = MavenSearchMessage.get("maven.search.extra.text", groupId, artifactId);
+        this.setStatusbarText(MavenSearchAdvertiser.RUNNING, message);
+        this.execute(new MavenSearchExtraJob(groupId, artifactId));
     }
 
     public void copyToClipboard(String text) {
@@ -231,7 +242,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     }
 
     public void showSearchResult(MavenSearchResult result) {
-        this.execute(() -> this.repaintSearchResult(result));
+        this.execute(new MavenSearchEDTJob(() -> this.repaintSearchResult(result)));
     }
 
     protected synchronized void repaintSearchResult(MavenSearchResult result) {
@@ -376,7 +387,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
                     head.setIcon(MavenSearchPluginIcon.LEFT_UNFOLD);
                     for (MavenArtifact itemArtifact : itemResult.getList()) {
                         SearchNavigationItem item = new SearchNavigationItem(itemArtifact, this.getLocalRepository().getJarfile(itemArtifact));
-                        if (this.getServiceSearch().isDownloading(itemArtifact)) { // 正在下载
+                        if (this.getService().isRunning(MavenSearchdDownloadJob.class, job -> job.getArtifact().equals(itemArtifact))) { // 正在下载
                             item.setIcon(MavenSearchPluginIcon.RIGHT_DOWNLOAD);
                         } else if (this.getLocalRepository().exists(itemArtifact)) {
                             item.setIcon(MavenSearchPluginIcon.RIGHT_LOCAL);
@@ -387,7 +398,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             }
 
             // 判断是否正在查询详细信息
-            if (this.getServiceSearch().isSearching(groupId, artifactId)) {
+            if (this.getService().isRunning(MavenSearchExtraJob.class, job -> groupId.equals(job.getGroupId()) && artifactId.equals(job.getArtifactId()))) {
                 head.setIcon(MavenSearchPluginIcon.LEFT_WAITING);
             }
         }
@@ -429,7 +440,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             }
 
             // 判断是否正在查询详细信息
-            if (this.getServiceSearch().isSearching(groupId, artifactId)) {
+            if (this.getService().isRunning(MavenSearchExtraJob.class, job -> groupId.equals(job.getGroupId()) && artifactId.equals(job.getArtifactId()))) {
                 head.setIcon(MavenSearchPluginIcon.LEFT_WAITING);
             }
 
@@ -513,20 +524,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
                 this.updateComparator(listModel, SearchEverywhereFoundElementInfo.COMPARATOR.reversed());
             }
         }
-    }
-
-    /**
-     * 多线程执行任务 <br>
-     * 如果想要使用官方的 EDT 线程，需要让 task 实现 {@linkplain EDTJob} 接口
-     *
-     * @param command 任务
-     */
-    public synchronized void execute(Runnable command) {
-        this.ioc.getBean(ThreadSource.class).getExecutorService().execute(command);
-    }
-
-    public void setService(Alarm alarm) {
-        this.ioc.getBean(MavenSearchExecutorService.class).setSearchEverywhereService(alarm);
     }
 
     public void dispose() {

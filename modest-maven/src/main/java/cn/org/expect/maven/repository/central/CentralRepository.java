@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
@@ -19,6 +20,7 @@ import okhttp3.Response;
 /**
  * 中央仓库
  */
+@EasyBean("central")
 public class CentralRepository implements MavenRepository {
     protected final static Log log = LogFactory.getLog(CentralRepository.class);
 
@@ -36,12 +38,10 @@ public class CentralRepository implements MavenRepository {
         this.terminate = false;
     }
 
-    @Override
     public String getAddress() {
         return "https://repo1.maven.org/maven2/";
     }
 
-    @Override
     public MavenSearchResult query(String pattern, int start) {
         this.terminate = false;
         String url = "https://search.maven.org/solrsearch/select?q=" + pattern + "&rows=200&wt=json&start=" + (start - 1); // 构建请求 URL
@@ -56,7 +56,6 @@ public class CentralRepository implements MavenRepository {
         return result;
     }
 
-    @Override
     public MavenSearchResult query(String groupId, String artifactId) {
         this.terminate = false;
         String url = "https://search.maven.org/solrsearch/select?q=g:" + groupId + "+AND+a:" + artifactId + "&core=gav&rows=200&wt=json"; // 构建请求 URL
@@ -76,7 +75,7 @@ public class CentralRepository implements MavenRepository {
                 }
 
                 responseBody = this.sendRequest(url + "&start=" + start);
-                
+
                 if (this.terminate) {
                     break;
                 }
@@ -134,12 +133,10 @@ public class CentralRepository implements MavenRepository {
         }
     }
 
-    @Override
     public boolean isTerminate() {
         return this.terminate;
     }
 
-    @Override
     public void terminate() {
         this.terminate = true;
         if (this.call != null) {

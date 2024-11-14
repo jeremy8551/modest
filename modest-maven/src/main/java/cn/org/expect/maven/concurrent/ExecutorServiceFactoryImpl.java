@@ -1,4 +1,4 @@
-package cn.org.expect.maven.intellij.idea.concurrent;
+package cn.org.expect.maven.concurrent;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutorService;

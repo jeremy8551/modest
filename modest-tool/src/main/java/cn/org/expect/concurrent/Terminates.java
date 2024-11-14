@@ -17,7 +17,7 @@ public class Terminates implements Terminate {
     private final List<Terminate> list;
 
     /** 任务的终止状态 */
-    private volatile boolean terminate;
+    protected volatile boolean terminate;
 
     /**
      * 初始化

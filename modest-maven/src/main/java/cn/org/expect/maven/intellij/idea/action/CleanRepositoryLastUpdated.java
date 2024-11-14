@@ -9,7 +9,7 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.intellij.idea.MavenSearchPlugin;
 import cn.org.expect.maven.intellij.idea.MavenSearchPluginContext;
-import cn.org.expect.maven.intellij.idea.RepositoryConfigFactory;
+import cn.org.expect.maven.intellij.idea.DefaultLocalRepositoryConfig;
 import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.CharsetName;
@@ -40,7 +40,7 @@ public class CleanRepositoryLastUpdated extends AnAction {
         EasyContext ioc = DefaultEasyContext.getInstance();
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);
         MavenSearch search = new MavenSearchPlugin(ioc, context);
-        File repository = RepositoryConfigFactory.getInstance(event).getRepository();
+        File repository = DefaultLocalRepositoryConfig.getInstance(event).getRepository();
         if (repository == null) {
             search.sendNotification(MavenSearchNotification.ERROR, "Cannot find Maven local repository!");
             return;
