@@ -265,8 +265,12 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         this.setSelectNavigation(JBList, listModel);
 
         // 设置 more 按钮
-        listModel.setHasMore(this.contributor, result.getFoundNumber() > result.size());
-        listModel.freezeElements();
+        try {
+            listModel.setHasMore(this.contributor, result.getFoundNumber() > result.size());
+            listModel.freezeElements();
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
 
         // 渲染 JBList
         try {
@@ -281,8 +285,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
 
         // 设置广告信息
-        String message = MavenSearchMessage.get("maven.search.status.text", result.getFoundNumber(), result.size());
-        this.setStatusbarText(MavenSearchAdvertiser.NORMAL, message);
+        this.setStatusbarText(MavenSearchAdvertiser.NORMAL, MavenSearchMessage.get("maven.search.status.text", result.getFoundNumber(), result.size()));
     }
 
     public synchronized void repaintMoreSearchResult() {
