@@ -23,8 +23,8 @@ import com.intellij.openapi.actionSystem.KeyboardShortcut;
 import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.keymap.KeymapUtil;
 
-public class IdeaUtils {
-    private final static Log log = LogFactory.getLog(IdeaUtils.class);
+public class MavenSearchUtils {
+    private final static Log log = LogFactory.getLog(MavenSearchUtils.class);
 
     public static NotificationType toNotification(MavenSearchNotification type) {
         if (type == null) {

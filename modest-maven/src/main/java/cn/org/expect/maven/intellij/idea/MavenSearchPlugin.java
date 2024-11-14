@@ -102,7 +102,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     @Override
     public void sendNotification(MavenSearchNotification type, String text, Object... array) {
         String message = new MessageFormatter(text).fill(array);
-        NotificationType notificationType = IdeaUtils.toNotification(type);
+        NotificationType notificationType = MavenSearchUtils.toNotification(type);
         Project project = context.getActionEvent().getProject();
         if (project != null) {
             Notification notification = new Notification(this.getGroupId(), this.getName(), message, notificationType);
@@ -114,7 +114,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     public void sendNotification(MavenSearchNotification type, String text, String actionName, File file) {
         Project project = context.getActionEvent().getProject();
         if (project != null) {
-            NotificationType notificationType = IdeaUtils.toNotification(type);
+            NotificationType notificationType = MavenSearchUtils.toNotification(type);
             Notification notification = new Notification(this.getGroupId(), this.getName(), text, notificationType);
             notification.addAction(new NotificationAction(actionName) {
 
@@ -177,7 +177,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
 
         String fontColor = MavenSearchAdvertiser.ERROR == type ? "red" : "orange";
-        Icon icon = IdeaUtils.getIcon(type);
+        Icon icon = MavenSearchUtils.getIcon(type);
 
         try {
             JLabel myTextPanel = JavaDialectFactory.get().getField(advertiser, "myTextPanel");
@@ -536,7 +536,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
         Map<String, String> map = JavaDialectFactory.get().getField(manager, "myTabsShortcutsMap");
         if (map != null) {
-            String text = MavenSearchMessage.get("maven.search.tab.tooltip.text", IdeaUtils.getShortcutText("pressed SHIFT"));
+            String text = MavenSearchMessage.get("maven.search.tab.tooltip.text", MavenSearchUtils.getShortcutText("pressed SHIFT"));
             map.put(tabID, text);
         }
     }

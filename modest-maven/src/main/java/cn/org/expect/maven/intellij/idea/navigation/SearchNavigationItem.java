@@ -3,7 +3,7 @@ package cn.org.expect.maven.intellij.idea.navigation;
 import java.io.File;
 import javax.swing.*;
 
-import cn.org.expect.maven.intellij.idea.IdeaUtils;
+import cn.org.expect.maven.intellij.idea.MavenSearchUtils;
 import cn.org.expect.maven.intellij.idea.MavenSearchPluginIcon;
 import cn.org.expect.maven.repository.MavenArtifact;
 import com.intellij.util.TextWithIcon;
@@ -34,7 +34,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
 
     @Override
     public TextWithIcon getRightIcon() {
-        String version = IdeaUtils.parseJDKVersion(this.jarfile);
+        String version = MavenSearchUtils.parseJDKVersion(this.jarfile);
         return new TextWithIcon(version == null ? "" : version + " ", this.icon);
     }
 }

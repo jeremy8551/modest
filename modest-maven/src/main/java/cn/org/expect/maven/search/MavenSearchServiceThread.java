@@ -6,7 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.maven.intellij.idea.IdeaUtils;
+import cn.org.expect.maven.intellij.idea.MavenSearchUtils;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
@@ -157,7 +157,7 @@ public class MavenSearchServiceThread extends AbstractSearchThread<SearchElement
                 File parent = new File(FileUtils.joinPath(list.toArray(new String[0])));
                 FileUtils.createDirectory(parent);
 
-                List<String> files = IdeaUtils.fetchFileList(parentUrl);
+                List<String> files = MavenSearchUtils.fetchFileList(parentUrl);
                 for (String filename : files) {
                     if (this.terminate) {
                         break;
