@@ -2,19 +2,19 @@ package cn.org.expect.maven.intellij.idea.navigation;
 
 import javax.swing.*;
 
-import cn.org.expect.maven.intellij.idea.MavenPluginIcon;
+import cn.org.expect.maven.intellij.idea.MavenSearchPluginIcon;
 import cn.org.expect.maven.repository.MavenArtifact;
 import com.intellij.util.TextWithIcon;
 
 public class SearchNavigationHead extends AbstractSearchNavigation {
 
     public SearchNavigationHead(MavenArtifact artifact) {
-        super(artifact, MavenPluginIcon.LEFT_FOLD);
+        super(artifact, MavenSearchPluginIcon.LEFT_FOLD);
     }
 
     @Override
     public TextWithIcon getRightIcon() {
-        return new TextWithIcon(this.artifact.getType() + " ", MavenPluginIcon.RIGHT);
+        return new TextWithIcon(this.artifact.getType() + " ", MavenSearchPluginIcon.RIGHT);
     }
 
     @Override

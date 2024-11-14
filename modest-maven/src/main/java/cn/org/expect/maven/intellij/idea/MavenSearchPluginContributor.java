@@ -24,24 +24,24 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Search Everywhere 自定义的搜索类别
  */
-public class MavenPluginContributor extends AbstractGotoSEContributor {
-    private final static Log log = LogFactory.getLog(MavenPluginContributor.class);
+public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
+    private final static Log log = LogFactory.getLog(MavenSearchPluginContributor.class);
 
-    private final MavenPluginChooseContributor contributor;
+    private final MavenSearchPluginChooseContributor contributor;
 
     private final MavenSearchPlugin plugin;
 
     private Runnable rebuildList;
 
-    public MavenPluginContributor(MavenSearchPlugin plugin) {
+    public MavenSearchPluginContributor(MavenSearchPlugin plugin) {
         super(plugin.getContext().getActionEvent());
-        this.contributor = new MavenPluginChooseContributor(plugin);
+        this.contributor = new MavenSearchPluginChooseContributor(plugin);
         this.plugin = plugin;
     }
 
     @Override
     public @NotNull String getSearchProviderId() {
-        return MavenPluginContributor.class.getSimpleName() + ".Tab";
+        return MavenSearchPluginContributor.class.getSimpleName() + ".Tab";
     }
 
     @Override
@@ -98,7 +98,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
                 if (this.plugin.getDatabase().select(groupId, artifactId) == null) {
-                    head.setIcon(MavenPluginIcon.LEFT_WAITING); // 更改为：等待图标
+                    head.setIcon(MavenSearchPluginIcon.LEFT_WAITING); // 更改为：等待图标
                     this.plugin.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
                 } else {
                     this.plugin.repaintSearchResult();
@@ -154,7 +154,7 @@ public class MavenPluginContributor extends AbstractGotoSEContributor {
 
     @Override
     protected FilteringGotoByModel<?> createModel(Project project) {
-        return new MavenPluginModel(project, this.contributor);
+        return new MavenSearchPluginModel(project, this.contributor);
     }
 
     /**

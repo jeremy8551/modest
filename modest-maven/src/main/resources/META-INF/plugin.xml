@@ -42,7 +42,7 @@
     <extensions defaultExtensionNs="com.intellij">
 <!--        <applicationInitializedListener implementation="cn.org.expect.maven.intellij.idea.ApplicationInitializedListenerImpl"/>-->
         <!--<lang.findUsagesProvider implementationClass="cn.org.expect.intellijidea.plugin.maven.provider.MavenFindUsagesProvider" language=""/>-->
-        <searchEverywhereContributor implementation="cn.org.expect.maven.intellij.idea.MavenPluginFactory"/>
+        <searchEverywhereContributor implementation="cn.org.expect.maven.intellij.idea.MavenSearchPluginFactory"/>
     </extensions>
 
     <actions>

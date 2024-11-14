@@ -45,13 +45,13 @@ public class IdeaUtils {
 
         switch (type) {
             case NORMAL:
-                return MavenPluginIcon.BOTTOM;
+                return MavenSearchPluginIcon.BOTTOM;
 
             case RUNNING:
-                return MavenPluginIcon.BOTTOM_WAITING;
+                return MavenSearchPluginIcon.BOTTOM_WAITING;
 
             case ERROR:
-                return MavenPluginIcon.BOTTOM_ERROR;
+                return MavenSearchPluginIcon.BOTTOM_ERROR;
 
             default:
                 throw new UnsupportedOperationException(type.name());

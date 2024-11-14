@@ -6,9 +6,9 @@ import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
 
-public class MavenPluginModel extends FilteringGotoByModel<Object> {
+public class MavenSearchPluginModel extends FilteringGotoByModel<Object> {
 
-    public MavenPluginModel(Project project, ChooseByNameContributor contributor) {
+    public MavenSearchPluginModel(Project project, ChooseByNameContributor contributor) {
         super(project, new ChooseByNameContributor[]{contributor});
     }
 

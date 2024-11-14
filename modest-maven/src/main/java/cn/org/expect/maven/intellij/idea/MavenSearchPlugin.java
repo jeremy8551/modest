@@ -73,8 +73,8 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
      *
      * @return 搜索贡献者
      */
-    public MavenPluginContributor getContributor() {
-        MavenPluginContributor contributor = new MavenPluginContributor(this);  // 创建 Idea 搜索的贡献者
+    public MavenSearchPluginContributor getContributor() {
+        MavenSearchPluginContributor contributor = new MavenSearchPluginContributor(this);  // 创建 Idea 搜索的贡献者
         this.context.setContributor(contributor);
         return contributor;
     }
@@ -315,7 +315,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
                     if (selectHead.getArtifact().equals(head.getArtifact()) && head.getArtifact().isUnfold()) {
                         MavenArtifact artifact = selectHead.getArtifact();
                         if (artifact.isUnfold() && this.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId()) == null) {
-                            head.setIcon(MavenPluginIcon.LEFT_WAITING); // 设置左侧等待图标
+                            head.setIcon(MavenSearchPluginIcon.LEFT_WAITING); // 设置左侧等待图标
                         }
 
                         selectedIndex = i;
@@ -366,19 +366,19 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
 
             MavenSearchResult itemResult = this.getDatabase().select(groupId, artifactId);
             if (itemResult != null) {
-                head.setIcon(MavenPluginIcon.LEFT_HAS_QUERY);
+                head.setIcon(MavenSearchPluginIcon.LEFT_HAS_QUERY);
             }
 
             // 如果当前是展开状态
             if (artifact.isUnfold()) {
                 if (itemResult != null) {
-                    head.setIcon(MavenPluginIcon.LEFT_UNFOLD);
+                    head.setIcon(MavenSearchPluginIcon.LEFT_UNFOLD);
                     for (MavenArtifact itemArtifact : itemResult.getList()) {
                         SearchNavigationItem item = new SearchNavigationItem(itemArtifact, this.getLocalRepository().getJarfile(itemArtifact));
                         if (this.getServiceSearch().isDownloading(itemArtifact)) { // 正在下载
-                            item.setIcon(MavenPluginIcon.RIGHT_DOWNLOAD);
+                            item.setIcon(MavenSearchPluginIcon.RIGHT_DOWNLOAD);
                         } else if (this.getLocalRepository().exists(itemArtifact)) {
-                            item.setIcon(MavenPluginIcon.RIGHT_LOCAL);
+                            item.setIcon(MavenSearchPluginIcon.RIGHT_LOCAL);
                         }
                         newList.add(item);
                     }
@@ -387,14 +387,14 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
 
             // 判断是否正在查询详细信息
             if (this.getServiceSearch().isSearching(groupId, artifactId)) {
-                head.setIcon(MavenPluginIcon.LEFT_WAITING);
+                head.setIcon(MavenSearchPluginIcon.LEFT_WAITING);
             }
         }
         return newList;
     }
 
     /**
-     * 将查询结果转为导航记录，目标是提供给 {@link MavenPluginChooseContributor} 使用
+     * 将查询结果转为导航记录，目标是提供给 {@link MavenSearchPluginChooseContributor} 使用
      *
      * @param result 查询结果
      * @return 导航记录
@@ -410,17 +410,17 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             String artifactId = artifact.getArtifactId();
             MavenSearchResult itemResult = this.getDatabase().select(groupId, artifactId);
             if (itemResult != null) {
-                head.setIcon(MavenPluginIcon.LEFT_HAS_QUERY);
+                head.setIcon(MavenSearchPluginIcon.LEFT_HAS_QUERY);
             }
 
             // 如果当前是展开状态
             if (artifact.isUnfold()) {
                 if (itemResult != null) {
-                    head.setIcon(MavenPluginIcon.LEFT_UNFOLD);
+                    head.setIcon(MavenSearchPluginIcon.LEFT_UNFOLD);
                     for (MavenArtifact itemArtifact : itemResult.getList()) {
                         SearchNavigationItem item = new SearchNavigationItem(itemArtifact, this.getLocalRepository().getJarfile(itemArtifact));
                         if (this.getLocalRepository().exists(itemArtifact)) {
-                            item.setIcon(MavenPluginIcon.RIGHT_LOCAL);
+                            item.setIcon(MavenSearchPluginIcon.RIGHT_LOCAL);
                         }
                         items.add(item);
                     }
@@ -429,7 +429,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
 
             // 判断是否正在查询详细信息
             if (this.getServiceSearch().isSearching(groupId, artifactId)) {
-                head.setIcon(MavenPluginIcon.LEFT_WAITING);
+                head.setIcon(MavenSearchPluginIcon.LEFT_WAITING);
             }
 
             newList.add(new SearchNavigation(head, items));

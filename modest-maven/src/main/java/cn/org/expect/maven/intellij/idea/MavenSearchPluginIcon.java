@@ -7,7 +7,7 @@ import com.intellij.openapi.util.IconLoader;
 /**
  * Idea 官方图标: {@linkplain com.intellij.icons.AllIcons}
  */
-public class MavenPluginIcon {
+public class MavenSearchPluginIcon {
 
     public static final Icon LEFT_FOLD = load("/cn/org/expect/maven/intellij/idea/icon/maven-repository-left.svg");
 
@@ -28,10 +28,10 @@ public class MavenPluginIcon {
     public static final Icon RIGHT_LOCAL = load("/cn/org/expect/maven/intellij/idea/icon/maven-repository-right-local.svg");
 
     public static final Icon RIGHT_REMOTE = load("/cn/org/expect/maven/intellij/idea/icon/maven-repository-right-remote.svg");
-    
+
     public static final Icon RIGHT_DOWNLOAD = load("/cn/org/expect/maven/intellij/idea/icon/maven-repository-right-download.svg");
 
     public static Icon load(String filepath) {
-        return IconLoader.getIcon(filepath, MavenPluginIcon.class);
+        return IconLoader.getIcon(filepath, MavenSearchPluginIcon.class);
     }
 }

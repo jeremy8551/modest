@@ -25,7 +25,7 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     private final AnActionEvent event;
 
     /** 搜素贡献者 */
-    private volatile MavenPluginContributor contributor;
+    private volatile MavenSearchPluginContributor contributor;
 
     /** 连续输入文本的间隔时间 */
     private long inputIntervalTime;
@@ -81,11 +81,11 @@ public class MavenSearchPluginContext implements MavenSearchContext {
         return this.event;
     }
 
-    public MavenPluginContributor getContributor() {
+    public MavenSearchPluginContributor getContributor() {
         return this.contributor;
     }
 
-    public void setContributor(MavenPluginContributor contributor) {
+    public void setContributor(MavenSearchPluginContributor contributor) {
         this.contributor = contributor;
     }
 

@@ -8,11 +8,11 @@ import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
 
-public class MavenPluginChooseContributor implements ChooseByNameContributor {
+public class MavenSearchPluginChooseContributor implements ChooseByNameContributor {
 
     private final MavenSearchPlugin plugin;
 
-    public MavenPluginChooseContributor(MavenSearchPlugin plugin) {
+    public MavenSearchPluginChooseContributor(MavenSearchPlugin plugin) {
         this.plugin = Ensure.notNull(plugin);
     }
 

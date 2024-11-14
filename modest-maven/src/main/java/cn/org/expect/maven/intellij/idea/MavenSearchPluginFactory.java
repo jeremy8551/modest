@@ -9,7 +9,7 @@ import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributorFact
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.NotNull;
 
-public class MavenPluginFactory implements SearchEverywhereContributorFactory<Object> {
+public class MavenSearchPluginFactory implements SearchEverywhereContributorFactory<Object> {
 
     public @NotNull SearchEverywhereContributor<Object> createContributor(@NotNull AnActionEvent event) {
         if (Boolean.parseBoolean(System.getProperty("idea.is.internal"))) { // 判断是否是开发测试阶段
@@ -21,7 +21,7 @@ public class MavenPluginFactory implements SearchEverywhereContributorFactory<Ob
         MavenSearchMessage.setChineseCondition((key) -> "取消".equals(CommonBundle.getCancelButtonText()));
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);
         MavenSearchPlugin plugin = new MavenSearchPlugin(context);
-        MavenPluginContributor contributor = plugin.getContributor();
+        MavenSearchPluginContributor contributor = plugin.getContributor();
         plugin.updateTabTooltipText(contributor.getSearchProviderId());
         context.setEditorSelectText(plugin.getEditorSelectText()); // 保存选中的文本
         new MavenSearchPluginThread(plugin).start(); // 启动线程

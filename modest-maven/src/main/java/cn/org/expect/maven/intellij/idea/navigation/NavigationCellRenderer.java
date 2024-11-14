@@ -3,7 +3,7 @@ package cn.org.expect.maven.intellij.idea.navigation;
 import java.awt.*;
 import javax.swing.*;
 
-import cn.org.expect.maven.intellij.idea.MavenPluginContributor;
+import cn.org.expect.maven.intellij.idea.MavenSearchPluginContributor;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.SearchEverywherePsiRenderer;
@@ -15,7 +15,7 @@ import com.intellij.util.ui.UIUtil;
 
 public class NavigationCellRenderer extends SearchEverywherePsiRenderer {
 
-    public NavigationCellRenderer(MavenPluginContributor contributor) {
+    public NavigationCellRenderer(MavenSearchPluginContributor contributor) {
         super(contributor);
     }
 
