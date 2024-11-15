@@ -70,10 +70,22 @@
                 <artifactId>modest-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>resetAndPom</id>
                         <goals>
                             <goal>reset</goal> <!-- 删除当前模块中的所有源代码和测试代码 -->
                             <goal>pom</goal> <!-- 生成POM类 -->
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>deleteFile</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>deleteFile</goal>
+                        </goals>
+                        <configuration>
+                            <deleteDirectory>${basedir}</deleteDirectory>
+                            <deletePattern>JDK\d+\.txt</deletePattern>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
