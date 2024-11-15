@@ -16,7 +16,6 @@ public class SearchListener extends SearchAdapter {
         this.plugin = plugin;
     }
 
-    @Override
     public void searchFinished(@NotNull Map<SearchEverywhereContributor<?>, Boolean> hasMoreContributors) {
         if (plugin.notMavenSearchTab()) { // 如果不是 Maven+ 的 Tab，则将状态栏中的文本更换为广告
             Advertiser advertiser = plugin.getContext().getAdvertiser();

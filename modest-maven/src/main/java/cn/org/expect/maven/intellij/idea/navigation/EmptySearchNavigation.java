@@ -10,12 +10,10 @@ public class EmptySearchNavigation extends SearchNavigationHead {
         super(new MavenArtifactImpl());
     }
 
-    @Override
     public Icon getIcon(boolean unused) {
         return null;
     }
 
-    @Override
     public String getLocationString() {
         return "";
     }

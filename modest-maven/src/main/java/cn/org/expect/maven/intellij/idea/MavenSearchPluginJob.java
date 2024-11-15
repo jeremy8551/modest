@@ -351,7 +351,6 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         // 监听鼠标事件
         JBList.addMouseListener(new MouseAdapter() {
 
-            @Override
             public void mousePressed(MouseEvent e) {
                 // 点击位置
                 int selectedIndex = JBList.locationToIndex(e.getPoint());
@@ -429,7 +428,6 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         JTextField searchField = context.getSearchField();
         searchField.addMouseListener(new MouseAdapter() {
 
-            @Override
             public void mousePressed(MouseEvent e) {
                 if (plugin.notMavenSearchTab()) {
                     return;

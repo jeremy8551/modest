@@ -24,7 +24,6 @@ public class MavenSearchExtraJob extends MavenSearchJob {
         return artifactId;
     }
 
-    @Override
     public int execute() throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("{} search groupId: {}, artifactId: {} ..", this.getName(), groupId, artifactId);

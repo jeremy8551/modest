@@ -23,46 +23,37 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
         this.icon = Ensure.notNull(icon);
     }
 
-    @Override
     public MavenArtifact getArtifact() {
         return artifact;
     }
 
-    @Override
     public TextWithIcon getRightIcon() {
         return new TextWithIcon("", this.icon);
     }
 
-    @Override
     public void setIcon(Icon icon) {
         this.icon = icon;
     }
 
-    @Override
     public long getId() {
         return id;
     }
 
-    @Override
     public String getName() {
         return this.id + ":" + this.artifact.getGroupId() + ":" + this.artifact.getArtifactId() + ":" + this.artifact.getVersion();
     }
 
-    @Override
     public ItemPresentation getPresentation() {
         return this;
     }
 
-    @Override
     public String getPresentableText() {
         return this.artifact.getArtifactId();
     }
 
-    @Override
     public void navigate(boolean requestFocus) {
     }
 
-    @Override
     public boolean equals(Object o) {
         return o != null && o.getClass().equals(this.getClass()) && ((AbstractSearchNavigation) o).id == this.id;
     }

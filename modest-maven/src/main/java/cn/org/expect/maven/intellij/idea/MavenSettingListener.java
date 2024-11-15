@@ -51,7 +51,6 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
         }
     }
 
-    @Override
     public void changed() {
         File oldDir = DatabaseSerializer.getStoreDir(DefaultLocalRepositoryConfig.getInstance(this.event).getRepository());
         this.execute(this.event);
@@ -119,7 +118,6 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
         return null;
     }
 
-    @Override
     public void dispose() {
     }
 }

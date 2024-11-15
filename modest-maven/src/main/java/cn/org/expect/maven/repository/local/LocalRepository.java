@@ -19,18 +19,15 @@ public class LocalRepository implements MavenRepository {
         this.config = Ensure.notNull(config);
     }
 
-    @Override
     public String getAddress() {
         File file = this.config.getRepository();
         return file == null ? "" : file.getAbsolutePath();
     }
 
-    @Override
     public MavenSearchResult query(String pattern, int start) throws Exception {
         throw new UnsupportedOperationException();
     }
 
-    @Override
     public MavenSearchResult query(String groupId, String artifactId) throws Exception {
         throw new UnsupportedOperationException();
     }
@@ -79,12 +76,10 @@ public class LocalRepository implements MavenRepository {
         return null;
     }
 
-    @Override
     public boolean isTerminate() {
         return false;
     }
 
-    @Override
     public void terminate() {
     }
 }

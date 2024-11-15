@@ -12,17 +12,14 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
         super(artifact, MavenSearchPluginIcon.LEFT_FOLD);
     }
 
-    @Override
     public TextWithIcon getRightIcon() {
         return new TextWithIcon(this.artifact.getType() + " ", MavenSearchPluginIcon.RIGHT);
     }
 
-    @Override
     public String getLocationString() {
         return " " + this.artifact.getGroupId();
     }
 
-    @Override
     public Icon getIcon(boolean unused) {
         return this.icon;
     }

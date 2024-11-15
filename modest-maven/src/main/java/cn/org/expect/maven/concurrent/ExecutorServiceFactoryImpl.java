@@ -10,13 +10,12 @@ import cn.org.expect.concurrent.ExecutorServiceFactory;
 
 public class ExecutorServiceFactoryImpl implements ExecutorServiceFactory {
 
-    private MavenSearchExecutorService service;
+    private final MavenSearchExecutorService service;
 
     public ExecutorServiceFactoryImpl(MavenSearchExecutorService service) {
         this.service = service;
     }
 
-    @Override
     public ExecutorService create(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
         return this.service;
     }

@@ -12,56 +12,45 @@ public class MavenSearchPluginModel extends FilteringGotoByModel<Object> {
         super(project, new ChooseByNameContributor[]{contributor});
     }
 
-    @Override
     protected NavigationItem filterValueFor(NavigationItem item) {
         return null;
     }
 
-    @Override
     public boolean useMiddleMatching() {
         return super.useMiddleMatching();
     }
 
-    @Override
     protected boolean acceptItem(NavigationItem item) {
         return item instanceof MavenSearchNavigation;
     }
 
-    @Override
     public String getPromptText() {
         return "Search artifact in Maven Repository ..";
     }
 
-    @Override
     public String getNotInMessage() {
         return this.getNotFoundMessage();
     }
 
-    @Override
     public String getNotFoundMessage() {
         return "No matching results";
     }
 
-    @Override
     public String getCheckBoxName() {
         return MavenSearchPlugin.class.getSimpleName() + "CheckBox";
     }
 
-    @Override
     public boolean loadInitialCheckBoxState() {
         return false;
     }
 
-    @Override
     public void saveInitialCheckBoxState(boolean state) {
     }
 
-    @Override
     public String[] getSeparators() {
         return new String[]{":"};
     }
 
-    @Override
     public String getFullName(Object element) {
         if (element instanceof NavigationItem) {
             return ((NavigationItem) element).getName();
@@ -70,7 +59,6 @@ public class MavenSearchPluginModel extends FilteringGotoByModel<Object> {
         throw new UnsupportedOperationException(element == null ? "" : element.toString());
     }
 
-    @Override
     public boolean willOpenEditor() {
         return false;
     }

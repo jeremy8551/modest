@@ -54,7 +54,6 @@ public class DefaultLocalRepositoryConfig implements LocalRepositoryConfig {
         }
     }
 
-    @Override
     public File getRepository() {
         return REPOSITORY;
     }

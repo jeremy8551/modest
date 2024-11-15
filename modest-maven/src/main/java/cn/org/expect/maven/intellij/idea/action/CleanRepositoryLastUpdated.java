@@ -7,9 +7,9 @@ import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.intellij.idea.DefaultLocalRepositoryConfig;
 import cn.org.expect.maven.intellij.idea.MavenSearchPlugin;
 import cn.org.expect.maven.intellij.idea.MavenSearchPluginContext;
-import cn.org.expect.maven.intellij.idea.DefaultLocalRepositoryConfig;
 import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.CharsetName;
@@ -32,7 +32,6 @@ public class CleanRepositoryLastUpdated extends AnAction {
     /** 删除的文件数量 */
     private int success;
 
-    @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
         this.find = 0;
         this.success = 0;

@@ -4,9 +4,9 @@ import java.io.File;
 
 import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.maven.intellij.idea.DefaultLocalRepositoryConfig;
 import cn.org.expect.maven.intellij.idea.MavenSearchPlugin;
 import cn.org.expect.maven.intellij.idea.MavenSearchPluginContext;
-import cn.org.expect.maven.intellij.idea.DefaultLocalRepositoryConfig;
 import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import com.intellij.ide.BrowserUtil;
@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
  */
 public class OpenLocalRepository extends AnAction {
 
-    @Override
     public void actionPerformed(@NotNull AnActionEvent event) {
         EasyContext ioc = DefaultEasyContext.getInstance();
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);

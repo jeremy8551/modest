@@ -45,62 +45,50 @@ public class IdeaLog implements Log {
         return true;
     }
 
-    @Override
     public void trace(String message, Object... args) {
         log.trace(new MessageFormatter(message).fill(args));
     }
 
-    @Override
     public void trace(String message, Throwable e) {
         log.trace(message + FileUtils.lineSeparator + StringUtils.toString(e));
     }
 
-    @Override
     public void debug(String message, Object... args) {
         log.debug(new MessageFormatter(message).fill(args));
     }
 
-    @Override
     public void debug(String message, Throwable e) {
         log.debug(message + FileUtils.lineSeparator + StringUtils.toString(e));
     }
 
-    @Override
     public void info(String message, Object... args) {
         log.info(new MessageFormatter(message).fill(args));
     }
 
-    @Override
     public void info(String message, Throwable e) {
         log.info(message + FileUtils.lineSeparator + StringUtils.toString(e));
     }
 
-    @Override
     public void warn(String message, Object... args) {
         log.warn(new MessageFormatter(message).fill(args));
     }
 
-    @Override
     public void warn(String message, Throwable e) {
         log.warn(message + FileUtils.lineSeparator + StringUtils.toString(e));
     }
 
-    @Override
     public void error(String message, Object... args) {
         log.error(new MessageFormatter(message).fill(args));
     }
 
-    @Override
     public void error(String message, Throwable e) {
         log.error(message + FileUtils.lineSeparator + StringUtils.toString(e));
     }
 
-    @Override
     public void fatal(String message, Object... args) {
         log.error(new MessageFormatter(message).fill(args));
     }
 
-    @Override
     public void fatal(String message, Throwable e) {
         log.error(message + FileUtils.lineSeparator + StringUtils.toString(e));
     }

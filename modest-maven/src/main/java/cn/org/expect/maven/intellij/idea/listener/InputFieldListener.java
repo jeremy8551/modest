@@ -14,7 +14,6 @@ public class InputFieldListener extends KeyAdapter {
         this.plugin = plugin;
     }
 
-    @Override
     public void keyPressed(KeyEvent e) {
         if (plugin.notMavenSearchTab()) {
             if (e.getKeyCode() == KeyEvent.VK_F2) {

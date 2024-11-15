@@ -35,7 +35,6 @@ public class NavigationCell extends ColoredListCellRenderer<Object> {
         this.fgColor = fgColor;
     }
 
-    @Override
     protected void customizeCellRenderer(@NotNull JList<?> list, Object value, int index, boolean selected, boolean hasFocus) {
         SimpleTextAttributes simple = null;
 

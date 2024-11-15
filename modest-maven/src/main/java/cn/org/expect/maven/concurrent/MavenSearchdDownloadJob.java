@@ -32,7 +32,6 @@ public class MavenSearchdDownloadJob extends MavenSearchJob {
         return artifact;
     }
 
-    @Override
     public int execute() throws Exception {
         MavenSearch search = this.getSearch();
 

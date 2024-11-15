@@ -6,7 +6,6 @@ import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInf
 
 public class MavenFoundElementInfoComparator implements Comparator<SearchEverywhereFoundElementInfo> {
 
-    @Override
     public int compare(SearchEverywhereFoundElementInfo o1, SearchEverywhereFoundElementInfo o2) {
         // 空白导航记录移动到最后
         if (o1.getElement() instanceof EmptySearchNavigation) {

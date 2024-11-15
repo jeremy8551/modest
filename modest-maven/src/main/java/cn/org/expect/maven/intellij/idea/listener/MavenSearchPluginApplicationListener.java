@@ -15,7 +15,6 @@ import com.intellij.ide.ApplicationInitializedListener;
  */
 public class MavenSearchPluginApplicationListener implements ApplicationInitializedListener {
 
-    @Override
     public void componentsInitialized() {
         if (Boolean.parseBoolean(System.getProperty("idea.is.internal"))) { // 如果是开发模式
             DefaultEasyContext.newInstance(this.getClass().getClassLoader(), "sout+:info", ClassUtils.getPackageName(MavenSearchPluginApplicationListener.class, 4) + ":debug");

@@ -32,52 +32,42 @@ public class MavenArtifactImpl implements MavenArtifact {
         this.fold = true;
     }
 
-    @Override
     public String getArtifactId() {
         return artifactId;
     }
 
-    @Override
     public String getGroupId() {
         return groupId;
     }
 
-    @Override
     public String getVersion() {
         return version;
     }
 
-    @Override
     public Date getTimestamp() {
         return new Date(this.timestamp);
     }
 
-    @Override
     public int getVersionCount() {
         return versionCount;
     }
 
-    @Override
     public String getType() {
         return type;
     }
 
-    @Override
     public boolean isFold() {
         return fold;
     }
 
-    @Override
     public boolean isUnfold() {
         return !this.fold;
     }
 
-    @Override
     public void setFold(boolean fold) {
         this.fold = fold;
     }
 
-    @Override
     public boolean equals(Object obj) {
         if (obj instanceof MavenArtifact) {
             MavenArtifact artifact = (MavenArtifact) obj;
@@ -90,7 +80,6 @@ public class MavenArtifactImpl implements MavenArtifact {
         return false;
     }
 
-    @Override
     public String toString() {
         return this.groupId + ":" + this.artifactId + ":" + this.version + ", time=" + Dates.format19(this.getTimestamp()) + ", " + this.getVersionCount();
     }

@@ -36,17 +36,14 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         this.plugin = plugin;
     }
 
-    @Override
     public @NotNull String getSearchProviderId() {
         return MavenSearchPluginContributor.class.getSimpleName() + ".Tab";
     }
 
-    @Override
     protected boolean processElement(@NotNull ProgressIndicator progressIndicator, @NotNull Processor<? super FoundItemDescriptor<Object>> consumer, FilteringGotoByModel<?> model, Object element, int degree) {
         return super.processElement(progressIndicator, consumer, model, element, degree);
     }
 
-    @Override
     public void fetchElements(@NotNull String pattern, @NotNull ProgressIndicator progressIndicator, @NotNull Processor<? super Object> consumer) {
         if (log.isDebugEnabled()) {
             log.debug("fetchElements({}, {}, {}) ", pattern, progressIndicator, consumer);
@@ -55,7 +52,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         super.fetchElements(pattern, progressIndicator, consumer);
     }
 
-    @Override
     public @NotNull ListCellRenderer<Object> getElementsRenderer() {
         return new NavigationCellRenderer(this);
     }
@@ -66,7 +62,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @param pattern 搜索模型
      * @return 过滤后的字符串
      */
-    @Override
+
     public @NotNull String filterControlSymbols(String pattern) {
         if (pattern != null && pattern.length() > 0) {
             this.plugin.asyncSearch(MavenSearchUtils.parse(pattern));
@@ -74,7 +70,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         return pattern;
     }
 
-    @Override
     public boolean processSelectedItem(Object selectedObject, int modifiers, String searchText) {
         // 禁用来源的处理逻辑：自动打开 url
         // super.processSelectedItem(selectedObject, modifiers, searchText);
@@ -117,7 +112,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @param dataId  数据编号
      * @return 返回数据
      */
-    @Override
+
     public Object getDataForItem(Object element, String dataId) {
         if (log.isDebugEnabled()) {
             log.debug("getDataForItem({}, {})", element, dataId);
@@ -126,7 +121,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         return super.getDataForItem(element, dataId);
     }
 
-    @Override
     public int getElementPriority(Object element, String searchPattern) {
         if (log.isDebugEnabled()) {
             log.debug("getElementPriority({}, {}) ", element, searchPattern);
@@ -134,7 +128,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         return 50;
     }
 
-    @Override
     public boolean isMultiSelectionSupported() {
         return false;
     }
@@ -144,12 +137,11 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return 广告文本
      */
-    @Override
+
     public String getAdvertisement() {
         return this.plugin.getRemoteRepository().getAddress();
     }
 
-    @Override
     protected FilteringGotoByModel<?> createModel(Project project) {
         return new MavenSearchPluginModel(project, this.contributor);
     }
@@ -160,7 +152,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return true表示有单独的选项卡
      */
-    @Override
+
     public boolean isShownInSeparateTab() {
         return true;
     }
@@ -170,7 +162,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return 标签页名
      */
-    @Override
+
     public String getFullGroupName() {
         return this.getGroupName();
     }
@@ -180,7 +172,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return 标签页名
      */
-    @Override
+
     public String getGroupName() {
         return MavenSearchMessage.get("maven.search.tab.name");
     }
@@ -190,7 +182,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return 排序编号
      */
-    @Override
+
     public int getSortWeight() {
         return 0;
     }
@@ -200,17 +192,15 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return
      */
-    @Override
+
     public boolean showInFindResults() {
         return false;
     }
 
-    @Override
     public boolean isEmptyPatternSupported() {
         return false;
     }
 
-    @Override
     public List<AnAction> getActions(@NotNull Runnable onChanged) {
         if (log.isTraceEnabled()) {
             log.trace("getActions({}) ", onChanged);
@@ -219,7 +209,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         return new ArrayList<>();
     }
 
-    @Override
     public void dispose() {
         super.dispose();
     }
