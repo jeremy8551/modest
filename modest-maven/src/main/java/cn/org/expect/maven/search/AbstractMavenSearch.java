@@ -2,7 +2,7 @@ package cn.org.expect.maven.search;
 
 import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.maven.intellij.idea.concurrent.MavenSearchPluginService;
+import cn.org.expect.maven.intellij.idea.concurrent.MavenSearchPluginExecutorService;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.local.LocalRepository;
 import cn.org.expect.maven.repository.local.LocalRepositoryConfig;
@@ -40,11 +40,11 @@ public abstract class AbstractMavenSearch implements MavenSearch {
     }
 
     public void setService(Alarm alarm) {
-        this.ioc.getBean(MavenSearchPluginService.class).setSearchEverywhereService(alarm);
+        this.ioc.getBean(MavenSearchPluginExecutorService.class).setSearchEverywhereService(alarm);
     }
 
-    public MavenSearchPluginService getService() {
-        return this.ioc.getBean(MavenSearchPluginService.class);
+    public MavenSearchPluginExecutorService getService() {
+        return this.ioc.getBean(MavenSearchPluginExecutorService.class);
     }
 
     public MavenRepository getRemoteRepository() {

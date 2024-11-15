@@ -23,14 +23,14 @@ import com.intellij.util.concurrency.EdtExecutorService;
 import org.jetbrains.annotations.NotNull;
 
 @EasyBean(singleton = true)
-public class MavenSearchExecutorServiceImpl implements MavenSearchPluginService {
-    private final static Log log = LogFactory.getLog(MavenSearchExecutorServiceImpl.class);
+public class MavenSearchPluginExecutorServiceImpl implements MavenSearchPluginExecutorService {
+    private final static Log log = LogFactory.getLog(MavenSearchPluginExecutorServiceImpl.class);
 
     private volatile Alarm service;
 
     private final List<Runnable> list;
 
-    public MavenSearchExecutorServiceImpl() {
+    public MavenSearchPluginExecutorServiceImpl() {
         this.list = new Vector<>();
     }
 

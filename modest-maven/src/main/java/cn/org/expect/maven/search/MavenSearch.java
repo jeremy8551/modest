@@ -3,7 +3,7 @@ package cn.org.expect.maven.search;
 import java.io.File;
 
 import cn.org.expect.maven.concurrent.EDTJob;
-import cn.org.expect.maven.intellij.idea.concurrent.MavenSearchPluginService;
+import cn.org.expect.maven.intellij.idea.concurrent.MavenSearchPluginExecutorService;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.db.MavenSearchDatabase;
@@ -109,7 +109,7 @@ public interface MavenSearch {
      *
      * @return 返回true表示正在查询
      */
-    MavenSearchPluginService getService();
+    MavenSearchPluginExecutorService getService();
 
     /**
      * 返回 Maven 仓库信息
