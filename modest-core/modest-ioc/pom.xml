@@ -26,6 +26,11 @@
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-jdk</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-concurrent</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

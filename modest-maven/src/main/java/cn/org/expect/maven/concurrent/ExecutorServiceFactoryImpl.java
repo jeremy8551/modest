@@ -6,8 +6,10 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.concurrent.ExecutorServiceFactory;
 
+@EasyBean
 public class ExecutorServiceFactoryImpl implements ExecutorServiceFactory {
 
     private final MavenSearchExecutorService service;
