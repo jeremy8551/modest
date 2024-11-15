@@ -138,6 +138,10 @@ public class CentralRepository implements MavenRepository {
     }
 
     public void terminate() {
+        if (log.isDebugEnabled()) {
+            log.debug("{} terminated!", this.getClass().getSimpleName());
+        }
+
         this.terminate = true;
         if (this.call != null) {
             this.call.cancel();

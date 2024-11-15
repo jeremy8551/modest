@@ -36,7 +36,6 @@ public abstract class AbstractMavenSearch implements MavenSearch {
         if (command instanceof MavenSearchAware) {
             ((MavenSearchAware) command).setSearch(this);
         }
-
         this.ioc.getBean(ThreadSource.class).getExecutorService().execute(command);
     }
 
@@ -48,20 +47,10 @@ public abstract class AbstractMavenSearch implements MavenSearch {
         return this.ioc.getBean(MavenSearchPluginService.class);
     }
 
-    /**
-     * 返回 Maven 仓库信息
-     *
-     * @return Maven 仓库信息
-     */
     public MavenRepository getRemoteRepository() {
         return this.ioc.getBean(MavenRepository.class, this.remoteRepositoryName);
     }
 
-    /**
-     * 返回本地 Maven 仓库信息
-     *
-     * @return 本地 Maven 仓库信息
-     */
     public LocalRepository getLocalRepository() {
         return localRepository;
     }
@@ -89,7 +78,7 @@ public abstract class AbstractMavenSearch implements MavenSearch {
         if (DATABASE == null) {
             synchronized (MavenSearchDatabaseImpl.class) {
                 if (DATABASE == null) {
-                    DATABASE = new MavenSearchDatabaseImpl(this.localRepository);
+                    DATABASE = new MavenSearchDatabaseImpl(this);
                 }
             }
         }

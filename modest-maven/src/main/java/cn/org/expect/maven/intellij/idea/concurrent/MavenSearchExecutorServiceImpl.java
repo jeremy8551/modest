@@ -70,24 +70,28 @@ public class MavenSearchExecutorServiceImpl implements MavenSearchPluginService 
         this.list.remove(task);
     }
 
-    public void execute(@NotNull Runnable command) {
+    public void addJob(Object command) {
         if (command instanceof MavenSearchJob) {
             MavenSearchJob job = (MavenSearchJob) command;
             job.setService(this);
             this.list.add(job);
         }
+    }
+
+    public void execute(@NotNull Runnable command) {
+        this.addJob(command);
 
         if (command instanceof EDTJob) {
             if (this.service != null && !this.service.isDisposed()) {
                 if (log.isDebugEnabled()) {
-                    log.debug("{} run {} ..", this.service.getClass().getSimpleName(), command.getClass().getName());
+                    log.debug("{} execute {} ..", this.service.getClass().getSimpleName(), command.getClass().getName());
                 }
                 this.service.addRequest(command, 0);
                 return;
             }
 
             if (log.isDebugEnabled()) {
-                log.debug("{} run {} ..", EdtExecutorService.class.getSimpleName(), command.getClass().getName());
+                log.debug("{} execute {} ..", EdtExecutorService.class.getSimpleName(), command.getClass().getName());
             }
             EdtExecutorService.getInstance().execute(command);
             return;
@@ -100,29 +104,39 @@ public class MavenSearchExecutorServiceImpl implements MavenSearchPluginService 
     }
 
     public @NotNull <T> Future<T> submit(@NotNull Callable<T> command) {
-        if (this.service != null && command instanceof EDTJob) {
+        this.addJob(command);
+
+        if (command instanceof EDTJob) {
+            if (log.isDebugEnabled()) {
+                log.debug("{} submit {} ..", EdtExecutorService.class.getSimpleName(), command.getClass().getName());
+            }
             return EdtExecutorService.getInstance().submit(command);
-        } else {
-            return ApplicationManager.getApplication().executeOnPooledThread(command);
         }
+
+        if (log.isDebugEnabled()) {
+            log.debug("{} submit {} ..", ApplicationManager.class.getSimpleName(), command.getClass().getName());
+        }
+        return ApplicationManager.getApplication().executeOnPooledThread(command);
     }
 
     public @NotNull Future<?> submit(@NotNull Runnable command) {
-        if (this.service != null && command instanceof EDTJob) {
+        this.addJob(command);
+
+        if (command instanceof EDTJob) {
+            if (log.isDebugEnabled()) {
+                log.debug("{} submit {} ..", EdtExecutorService.class.getSimpleName(), command.getClass().getName());
+            }
             return EdtExecutorService.getInstance().submit(command);
-        } else {
-            return ApplicationManager.getApplication().executeOnPooledThread(command);
         }
+
+        if (log.isDebugEnabled()) {
+            log.debug("{} submit {} ..", ApplicationManager.class.getSimpleName(), command.getClass().getName());
+        }
+        return ApplicationManager.getApplication().executeOnPooledThread(command);
     }
 
     public @NotNull <T> List<Future<T>> invokeAll(@NotNull Collection<? extends Callable<T>> tasks) throws InterruptedException {
-        return tasks.stream().map(command -> {
-            if (this.service != null && command instanceof EDTJob) {
-                return EdtExecutorService.getInstance().submit(command);
-            } else {
-                return ApplicationManager.getApplication().executeOnPooledThread(command);
-            }
-        }).toList();
+        return tasks.stream().map(command -> this.submit(command)).toList();
     }
 
     public @NotNull <T> Future<T> submit(@NotNull Runnable task, T result) {

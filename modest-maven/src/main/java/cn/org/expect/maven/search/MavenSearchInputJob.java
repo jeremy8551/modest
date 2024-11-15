@@ -28,6 +28,8 @@ public class MavenSearchInputJob extends MavenSearchJob {
      * @param pattern 字符串
      */
     public synchronized void search(MavenSearch search, String pattern) {
+        search.getService().terminate(MavenSearchPatternJob.class, p -> true);
+
         try {
             MavenSearchPatternJob job = new MavenSearchPatternJob(pattern);
             job.setSearch(search);
@@ -49,11 +51,6 @@ public class MavenSearchInputJob extends MavenSearchJob {
 
                 // 如果队列为空，表示在等待期间没有添加查询任务，则直接执行查询
                 if (this.queue.isEmpty()) {
-                    // 保证同时只能有2个任务在运行
-                    final int[] count = {0};
-                    search.getService().terminate(MavenSearchPatternJob.class, p -> ++count[0] >= 2);
-
-                    // 并发查询
                     String pattern = job.getPattern();
                     search.setProgressText(MavenSearchMessage.get("maven.search.progress.text"));
                     search.setStatusbarText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern)));

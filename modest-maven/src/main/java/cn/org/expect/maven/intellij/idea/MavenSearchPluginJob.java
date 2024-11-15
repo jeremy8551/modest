@@ -9,6 +9,7 @@ import javax.swing.*;
 
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.maven.concurrent.EDTJob;
+import cn.org.expect.maven.concurrent.MavenSearchEDTJob;
 import cn.org.expect.maven.concurrent.MavenSearchJob;
 import cn.org.expect.maven.concurrent.MavenSearchMoreJob;
 import cn.org.expect.maven.concurrent.MavenSearchdDownloadJob;
@@ -34,6 +35,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.ui.components.JBList;
+import com.intellij.util.concurrency.EdtExecutorService;
 import com.intellij.util.ui.Advertiser;
 
 public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
@@ -72,20 +74,23 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         if (editor != null) {
             String editorSelectText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
             if (StringUtils.isNotBlank(editorSelectText)) {
-                plugin.execute(() -> {
+                // 只能使用 EdtExecutorService.getInstance() 不能递归调用 plugin.execute() 方法
+                EdtExecutorService.getInstance().execute(new MavenSearchEDTJob(() -> {
+
                     // 编辑器中选中的文本
                     String pattern = MavenSearchUtils.parse(editorSelectText);
                     if (log.isDebugEnabled()) {
                         log.debug("Idea editor selected text: {} --> {}", editorSelectText, pattern);
                     }
 
-                    // 自动切换 Tab 页
-                    plugin.setSearchFieldText(pattern); // 复制选中的文本到搜索栏
+                    // 复制选中的文本到搜索栏
+                    plugin.setSearchFieldText(pattern);
 
-                    if (MavenSearchUtils.isXML(editorSelectText)) { // TODO 可以配置是否自动跳转 tab
+                    // 自动切换 Tab 页
+                    if (context.isAutoSwitchTab() && MavenSearchUtils.isXML(editorSelectText)) {
                         context.getSearchEverywhereUI().switchToTab(plugin.getContributor().getSearchProviderId());
                     }
-                });
+                }));
             }
         }
     }

@@ -3,12 +3,16 @@ package cn.org.expect.maven.concurrent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import cn.org.expect.maven.intellij.idea.MavenSearchUtils;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.search.MavenSearch;
+import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
@@ -71,6 +75,23 @@ public class MavenSearchdDownloadJob extends MavenSearchJob {
                 if (this.isTerminate()) {
                     FileUtils.delete(downfile);
                 }
+            }
+
+            if (!this.terminate) {
+                File remote = new File(parent, "_remote.repositories");
+
+                SimpleDateFormat sdf = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy");
+                sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00")); // CST 是中国标准时间 (GMT+08:00)
+                String formattedDate = sdf.format(new Date());
+
+                StringBuilder str = new StringBuilder("#NOTE: Maven+ Plugin").append(FileUtils.lineSeparator);
+                str.append("#").append(formattedDate).append(FileUtils.lineSeparator);
+                for (String name : files) {
+                    if (name.toLowerCase().endsWith(".jar") || name.toLowerCase().endsWith(".pom")) {
+                        str.append(name).append(">").append(search.getContext().getRemoteRepositoryName()).append("=").append(FileUtils.lineSeparator);
+                    }
+                }
+                FileUtils.write(remote, CharsetName.UTF_8, false, str.toString());
             }
 
             search.showSearchResult();

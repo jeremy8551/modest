@@ -63,6 +63,9 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 导航记录结果集 */
     private volatile SearchNavigationResultSet navigationResultSet;
 
+    /** 如果选中文本是groupid:artifactid:version时，是否自动切换tab */
+    private volatile boolean autoSwitchTab;
+
     /** 加载上下文信息的状态，true表示加载完毕 false表示还未加载 */
     private volatile boolean loadStatus;
 
@@ -71,33 +74,29 @@ public class MavenSearchPluginContext implements MavenSearchContext {
         this.inputIntervalTime = 300;
         this.remoteRepositoryName = "central";
         this.loadStatus = false;
+        this.autoSwitchTab = true;
     }
 
     public AnActionEvent getActionEvent() {
         return this.event;
     }
 
-    @Override
     public String getSearchText() {
         return searchPattern;
     }
 
-    @Override
     public void setSearchText(String searchPattern) {
         this.searchPattern = searchPattern;
     }
 
-    @Override
     public long getInputIntervalTime() {
         return this.inputIntervalTime;
     }
 
-    @Override
     public void setInputIntervalTime(long continueInputIntervalTime) {
         this.inputIntervalTime = continueInputIntervalTime;
     }
 
-    @Override
     public synchronized void setSearchResult(MavenSearchResult result) {
         Ensure.notNull(result);
         List<MavenArtifact> list = result.getList();
@@ -107,7 +106,6 @@ public class MavenSearchPluginContext implements MavenSearchContext {
         this.mavenSearchResult = result;
     }
 
-    @Override
     public MavenSearchResult getSearchResult() {
         return this.mavenSearchResult;
     }
@@ -224,6 +222,14 @@ public class MavenSearchPluginContext implements MavenSearchContext {
 
     public void setRemoteRepositoryName(String remoteRepositoryName) {
         this.remoteRepositoryName = remoteRepositoryName;
+    }
+
+    public void setAutoSwitchTab(boolean autoSwitchTab) {
+        this.autoSwitchTab = autoSwitchTab;
+    }
+
+    public boolean isAutoSwitchTab() {
+        return autoSwitchTab;
     }
 
     public void setLoadStatus(boolean detected) {

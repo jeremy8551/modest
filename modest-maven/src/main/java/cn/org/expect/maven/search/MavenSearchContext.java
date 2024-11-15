@@ -45,4 +45,11 @@ public interface MavenSearchContext {
      * @return 搜索结果
      */
     MavenSearchResult getSearchResult();
+
+    /**
+     * 返回远程仓库标志
+     *
+     * @return 标识，如: central、aliyun
+     */
+    String getRemoteRepositoryName();
 }

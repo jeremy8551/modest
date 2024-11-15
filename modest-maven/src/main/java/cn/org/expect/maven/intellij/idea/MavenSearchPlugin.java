@@ -224,8 +224,10 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
      */
     public void repeat() {
         String pattern = context.getSearchText();
-        this.getDatabase().delete(pattern);
-        this.asyncSearch(cn.org.expect.maven.search.MavenSearchUtils.parse(pattern));
+        if (StringUtils.isNotBlank(pattern)) {
+            this.getDatabase().delete(pattern);
+            this.asyncSearch(cn.org.expect.maven.search.MavenSearchUtils.parse(pattern));
+        }
     }
 
     public synchronized void clearSearchResult() {
@@ -448,13 +450,13 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
      */
     protected void mergeNavigation(SearchListModel listModel, java.util.List<MavenSearchNavigation> list) {
 
-        // 记录其他搜索类别 的记录
-        List<SearchEverywhereFoundElementInfo> otherContributors = new ArrayList<>();
+        // 保存其他搜索类别的记录
+        List<SearchEverywhereFoundElementInfo> others = new ArrayList<>();
         for (int i = 0; i < listModel.getSize(); i++) {
             SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
             Object element = info.getElement();
             if (!(element instanceof MavenSearchNavigation)) {
-                otherContributors.add(info);
+                others.add(info);
             }
         }
 
@@ -471,7 +473,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         this.updateComparator(listModel, new MavenFoundElementInfoComparator());
         try {
             listModel.addElements(infoList);
-            listModel.addElements(otherContributors);
+            listModel.addElements(others);
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         } finally {

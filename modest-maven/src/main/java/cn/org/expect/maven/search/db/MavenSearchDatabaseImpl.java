@@ -7,16 +7,19 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.repository.local.LocalRepository;
+import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
 public class MavenSearchDatabaseImpl implements MavenSearchDatabase {
-    private final static Log log = LogFactory.getLog(MavenSearchDatabaseImpl.class);
+    protected final static Log log = LogFactory.getLog(MavenSearchDatabaseImpl.class);
+
+    protected MavenSearch search;
 
     /** 本地仓库 */
-    private final LocalRepository localRepository;
+    private final MavenRepository localRepository;
 
     /** 模糊搜索词 pattern 与 {@linkplain MavenSearchResult} 的映射 */
     protected final Map<String, MavenSearchResult> patternMap;
@@ -27,11 +30,12 @@ public class MavenSearchDatabaseImpl implements MavenSearchDatabase {
     /** 序列化与反序列化工具 */
     protected final DatabaseSerializer serializer;
 
-    public MavenSearchDatabaseImpl(LocalRepository repository) {
-        this.localRepository = Ensure.notNull(repository);
-        this.patternMap = new ConcurrentHashMap<String, MavenSearchResult>();
-        this.extraMap = new ConcurrentHashMap<String, Map<String, MavenSearchResult>>();
-        this.serializer = new DatabaseSerializer(new File(repository.getAddress()), this.patternMap, this.extraMap);
+    public MavenSearchDatabaseImpl(MavenSearch search) {
+        this.patternMap = new ConcurrentHashMap<>();
+        this.extraMap = new ConcurrentHashMap<>();
+        this.search = Ensure.notNull(search);
+        this.localRepository = search.getLocalRepository();
+        this.serializer = new DatabaseSerializer(new File(this.localRepository.getAddress()), this.patternMap, this.extraMap);
     }
 
     @Override
@@ -77,6 +81,6 @@ public class MavenSearchDatabaseImpl implements MavenSearchDatabase {
     }
 
     public void store() {
-        this.serializer.save(new File(this.localRepository.getAddress()), this.patternMap, this.extraMap);
+        this.search.execute(() -> this.serializer.save(new File(this.localRepository.getAddress()), this.patternMap, this.extraMap));
     }
 }
