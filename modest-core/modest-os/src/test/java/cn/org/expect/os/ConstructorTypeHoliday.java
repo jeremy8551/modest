@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.cn.NationalHoliday;
+import cn.org.expect.day.NationalHoliday;
 import cn.org.expect.util.Dates;
 
 @EasyBean(value = "zh_cn")

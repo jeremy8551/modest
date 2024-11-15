@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import cn.org.expect.cn.NationalHoliday;
+import cn.org.expect.day.NationalHoliday;
 
 // 不要配置 EasyBean 注解
 public class USHolidays implements NationalHoliday {

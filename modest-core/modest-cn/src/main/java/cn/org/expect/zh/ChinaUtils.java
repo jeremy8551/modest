@@ -1,4 +1,4 @@
-package cn.org.expect.util;
+package cn.org.expect.zh;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -9,8 +9,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import cn.org.expect.cn.ChineseRandom;
 import cn.org.expect.jdk.JavaDialectFactory;
+import cn.org.expect.util.ArrayUtils;
+import cn.org.expect.util.CharsetName;
+import cn.org.expect.util.Dates;
+import cn.org.expect.util.Ensure;
+import cn.org.expect.util.Property;
+import cn.org.expect.util.StringUtils;
+import cn.org.expect.util.XMLUtils;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

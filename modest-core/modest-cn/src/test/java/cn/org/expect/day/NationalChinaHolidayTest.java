@@ -1,4 +1,4 @@
-package cn.org.expect.cn;
+package cn.org.expect.day;
 
 import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.util.Dates;

@@ -1,6 +1,6 @@
 package cn.org.expect.springboot.starter.configuration;
 
-import cn.org.expect.cn.NationalHoliday;
+import cn.org.expect.day.NationalHoliday;
 import cn.org.expect.io.Codepage;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.springboot.starter.SpringApplicationArgument;

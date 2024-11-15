@@ -7,12 +7,13 @@ import java.util.Arrays;
 import java.util.List;
 import javax.sql.DataSource;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.database.DatabaseDialect;
-import cn.org.expect.ioc.EasyBeanEventListener;
 import cn.org.expect.ioc.EasyBeanBuilder;
-import cn.org.expect.ioc.EasyBeanEvent;
-import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyBeanDefine;
+import cn.org.expect.ioc.EasyBeanEvent;
+import cn.org.expect.ioc.EasyBeanEventListener;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -26,7 +27,7 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2012-03-06
  */
-@cn.org.expect.annotation.EasyBean
+@EasyBean
 public class DatabaseDialectBuilder implements EasyBeanBuilder<DatabaseDialect>, EasyBeanEventListener {
     private final static Log log = LogFactory.getLog(DatabaseDialectBuilder.class);
 

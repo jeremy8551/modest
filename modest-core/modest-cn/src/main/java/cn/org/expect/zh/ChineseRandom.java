@@ -1,11 +1,10 @@
-package cn.org.expect.cn;
+package cn.org.expect.zh;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import cn.org.expect.util.ChinaUtils;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.Property;
@@ -406,5 +405,4 @@ public class ChineseRandom {
     public Random get() {
         return this.random;
     }
-
 }

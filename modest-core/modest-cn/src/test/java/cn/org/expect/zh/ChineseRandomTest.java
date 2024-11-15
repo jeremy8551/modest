@@ -1,4 +1,4 @@
-package cn.org.expect.cn;
+package cn.org.expect.zh;
 
 import org.junit.Test;
 

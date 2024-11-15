@@ -7,7 +7,7 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import cn.org.expect.cn.ChineseRandom;
+import cn.org.expect.zh.ChineseRandom;
 import cn.org.expect.io.BufferedLineWriter;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.FileUtils;

@@ -6,7 +6,7 @@ import java.util.Date;
 
 import cn.org.expect.ProjectPom;
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.cn.ChineseRandom;
+import cn.org.expect.zh.ChineseRandom;
 import cn.org.expect.io.BufferedLineWriter;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.test.ModestRunner;

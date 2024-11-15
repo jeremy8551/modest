@@ -3,7 +3,7 @@ package cn.org.expect.os;
 import java.io.IOException;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.cn.NationalHoliday;
+import cn.org.expect.day.NationalHoliday;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.impl.EasyBeanDefineImpl;
 import cn.org.expect.test.ModestRunner;

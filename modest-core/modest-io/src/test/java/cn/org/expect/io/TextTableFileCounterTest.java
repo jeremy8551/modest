@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Random;
 
-import cn.org.expect.cn.ChineseRandom;
+import cn.org.expect.zh.ChineseRandom;
 import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.ioc.EasyBeanInfo;
