@@ -53,9 +53,9 @@
       ]]>
     </change-notes>
 
-    <idea-version since-build="232.10300.40"></idea-version>
+    <idea-version since-build="232.*"></idea-version>
 
-    <!-- 配置国际化资源 TODO 资源文件名不对 -->
+    <!-- 配置国际化资源 -->
     <resource-bundle>messages.MavenSearchPluginBundle</resource-bundle>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
