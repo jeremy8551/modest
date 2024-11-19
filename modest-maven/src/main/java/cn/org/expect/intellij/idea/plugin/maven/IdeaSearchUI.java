@@ -20,10 +20,11 @@ import com.intellij.util.ui.Advertiser;
 public class IdeaSearchUI {
     private final static Log log = LogFactory.getLog(IdeaSearchUI.class);
 
+    /** Idea搜索功能UI */
     protected volatile SearchEverywhereUI ui;
 
     /** 状态栏信息 */
-    private volatile String advertiserText;
+    private volatile String statusBarText;
 
     public IdeaSearchUI() {
     }
@@ -37,6 +38,10 @@ public class IdeaSearchUI {
     }
 
     public String getSelectedTabID() {
+        if (this.ui == null) {
+            return "";
+        }
+
         return this.ui.getSelectedTabID();
     }
 
@@ -48,7 +53,7 @@ public class IdeaSearchUI {
         return this.ui.getSearchField();
     }
 
-    public void setStatusbarText(MavenSearchAdvertiser type, String message) {
+    public void setStatusBar(MavenSearchAdvertiser type, String message) {
         if (this.ui == null) {
             return;
         }
@@ -58,10 +63,9 @@ public class IdeaSearchUI {
         String text = new MessageFormatter("<html><span style='color:{};'>{}</span></html>").fill(fontColor, message);
 
         try {
-
             // 检查注册项是否启用，为true，表示使用扩展模式作为状态栏
             if (Registry.is("search.everywhere.footer.extended.info")) {
-                this.advertiserText = text;
+                this.statusBarText = text;
 
                 // 更新状态栏中的文本信息
                 ExtendedInfoComponent info = JavaDialectFactory.get().getField(this.ui, "myExtendedInfoComponent");
@@ -128,6 +132,6 @@ public class IdeaSearchUI {
     }
 
     public String getAdvertiserText(Object obj) {
-        return this.advertiserText;
+        return this.statusBarText;
     }
 }

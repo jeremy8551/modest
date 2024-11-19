@@ -175,7 +175,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             return;
         }
 
-        this.getIdeaUI().setStatusbarText(type, message);
+        this.getIdeaUI().setStatusBar(type, message);
     }
 
     public void setProgressText(String message) {
