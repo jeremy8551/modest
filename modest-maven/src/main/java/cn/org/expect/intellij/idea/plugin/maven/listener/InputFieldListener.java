@@ -17,7 +17,8 @@ public class InputFieldListener extends KeyAdapter {
     public void keyPressed(KeyEvent e) {
         if (plugin.notMavenSearchTab()) {
             if (e.getKeyCode() == KeyEvent.VK_F2) { // F2 搜索
-                plugin.getContext().getSearchEverywhereUI().switchToTab(plugin.getContributor().getSearchProviderId());
+                String tabID = plugin.getContributor().getSearchProviderId();
+                plugin.getIdeaUI().switchToTab(tabID);
             }
         } else {
             if (e.getKeyCode() == KeyEvent.VK_F5) { // F5 刷新

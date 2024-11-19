@@ -62,7 +62,9 @@ public abstract class MavenSearchJob extends BaseJob implements Runnable, MavenS
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         } finally {
-            this.service.removeJob(this);
+            if (this.service != null) {
+                this.service.removeJob(this);
+            }
         }
     }
 }

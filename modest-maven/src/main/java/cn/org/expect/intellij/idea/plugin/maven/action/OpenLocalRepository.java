@@ -20,9 +20,8 @@ import org.jetbrains.annotations.NotNull;
 public class OpenLocalRepository extends AnAction {
 
     public void actionPerformed(@NotNull AnActionEvent event) {
-        EasyContext ioc = DefaultEasyContext.getInstance();
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);
-        MavenSearch plugin = new MavenSearchPlugin(ioc, context);
+        MavenSearch plugin = new MavenSearchPlugin(context);
         File repository = DefaultLocalRepositoryConfig.getInstance(event).getRepository();
         if (repository == null) {
             plugin.sendNotification(MavenSearchNotification.ERROR, "Cannot find Maven local repository!");

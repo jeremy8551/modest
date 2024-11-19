@@ -10,7 +10,6 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.listener.InputFieldListener;
 import cn.org.expect.intellij.idea.plugin.maven.listener.SearchListener;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
-import cn.org.expect.jdk.JavaDialect;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.maven.concurrent.EDTJob;
 import cn.org.expect.maven.concurrent.MavenSearchDownloadJob;
@@ -80,7 +79,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
 
         // 得到当前已显示的 SearchEverywhere 对象
         SearchEverywhereUI ui = manager.getCurrentlyShownUI(); // TODO 修改注册项后，再打开查询界面，这个位置报错 isShown
-        context.setSearchEverywhereUI(ui);
+        plugin.getIdeaUI().setSearchEverywhereUI(ui);
         ui.addSearchListener(new SearchListener(plugin));
         plugin.setService(JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
     }
@@ -108,10 +107,9 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         itemPopupMenu.add(clearCache);
 
         // 读取 JList 对象
-        SearchEverywhereUI ui = context.getSearchEverywhereUI();
-        JavaDialect dialect = JavaDialectFactory.get();
-        JBList<Object> JBList = dialect.getField(ui, "myResultsList");
-        SearchListModel listModel = dialect.getField(ui, "myListModel");
+        IdeaSearchUI ui = plugin.getIdeaUI();
+        JBList<Object> JBList = ui.getJBList();
+        SearchListModel listModel = ui.getListModel();
 
         // 复制 Maven 依赖
         copyMaven.addActionListener(e -> {
@@ -372,9 +370,8 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
      */
     private void setEditorSelectText(MavenSearchPlugin plugin) {
         MavenSearchPluginContext context = plugin.getContext();
-        SearchEverywhereUI ui = context.getSearchEverywhereUI();
         try {
-            ProgressIndicator progress = JavaDialectFactory.get().getField(ui, "mySearchProgressIndicator");
+            ProgressIndicator progress = plugin.getIdeaUI().getProgressIndicator();
 
             // 等待 idea 默认的搜索功能执行完毕
             long startMillis = System.currentTimeMillis();
@@ -404,7 +401,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
 
                     // 自动切换 Tab 页
                     if (context.isAutoSwitchTab() && MavenSearchUtils.isXML(editorSelectText)) {
-                        ui.switchToTab(plugin.getContributor().getSearchProviderId());
+                        plugin.getIdeaUI().switchToTab(plugin.getContributor().getSearchProviderId());
                     }
                 }));
             }

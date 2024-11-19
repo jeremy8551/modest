@@ -28,9 +28,8 @@ public class MavenSearchPluginFactory implements SearchEverywhereContributorFact
         }
 
         MavenSearchMessage.setChineseCondition((key) -> "取消".equals(CommonBundle.getCancelButtonText())); // TODO 位置需要改
-        EasyContext ioc = DefaultEasyContext.getInstance();
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);
-        MavenSearchPlugin plugin = new MavenSearchPlugin(ioc, context);
+        MavenSearchPlugin plugin = new MavenSearchPlugin(context);
         plugin.updateTabTooltip();
         plugin.execute(new MavenSearchPluginJob());
         return plugin.getContributor();

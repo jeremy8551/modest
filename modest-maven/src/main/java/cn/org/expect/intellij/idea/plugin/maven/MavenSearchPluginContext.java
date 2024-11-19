@@ -10,7 +10,6 @@ import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchContext;
 import cn.org.expect.util.Ensure;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
 public class MavenSearchPluginContext implements MavenSearchContext {
@@ -33,20 +32,14 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 选中的版本列表记录 */
     private volatile SearchNavigationItem selectNavigationItem;
 
-    /** Idea查询对话框对象 */
-    private volatile SearchEverywhereUI searchEverywhereUI;
-
     /** 最近一次模糊搜索结果 */
     private volatile MavenSearchResult mavenSearchResult;
 
     /** 导航记录结果集 */
     private volatile SearchNavigationResultSet navigationResultSet;
 
-    /** 如果选中文本是groupid:artifactid:version时，是否自动切换tab */
+    /** 如果选中文本是 groupId:artifactId:version 时，是否自动切换tab */
     private volatile boolean autoSwitchTab;
-
-    /** 状态栏信息 */
-    private volatile String advertiserText;
 
     public MavenSearchPluginContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
@@ -124,14 +117,6 @@ public class MavenSearchPluginContext implements MavenSearchContext {
         this.selectNavigationItem = selectNavigationItem;
     }
 
-    public SearchEverywhereUI getSearchEverywhereUI() {
-        return this.searchEverywhereUI;
-    }
-
-    public void setSearchEverywhereUI(SearchEverywhereUI searchEverywhereUI) {
-        this.searchEverywhereUI = searchEverywhereUI;
-    }
-
     public SearchNavigationResultSet getNavigationResultSet() {
         return navigationResultSet;
     }
@@ -154,18 +139,5 @@ public class MavenSearchPluginContext implements MavenSearchContext {
 
     public boolean isAutoSwitchTab() {
         return autoSwitchTab;
-    }
-
-    public String getAdvertiserText(Object obj) {
-//        if (obj instanceof MavenSearchNavigation) { // 根据不同的类型
-//            return this.advertiserText;
-//        } else {
-//            return "";
-//        }
-        return this.advertiserText;
-    }
-
-    public void setAdvertiserText(String advertiserText) {
-        this.advertiserText = advertiserText;
     }
 }

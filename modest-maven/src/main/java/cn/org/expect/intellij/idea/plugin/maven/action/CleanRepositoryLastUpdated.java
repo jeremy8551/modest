@@ -3,13 +3,11 @@ package cn.org.expect.intellij.idea.plugin.maven.action;
 import java.io.File;
 import java.io.OutputStreamWriter;
 
-import cn.org.expect.ioc.DefaultEasyContext;
-import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.log.Log;
-import cn.org.expect.log.LogFactory;
 import cn.org.expect.intellij.idea.plugin.maven.DefaultLocalRepositoryConfig;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContext;
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.CharsetName;
@@ -36,9 +34,8 @@ public class CleanRepositoryLastUpdated extends AnAction {
         this.find = 0;
         this.success = 0;
 
-        EasyContext ioc = DefaultEasyContext.getInstance();
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);
-        MavenSearch search = new MavenSearchPlugin(ioc, context);
+        MavenSearch search = new MavenSearchPlugin(context);
         File repository = DefaultLocalRepositoryConfig.getInstance(event).getRepository();
         if (repository == null) {
             search.sendNotification(MavenSearchNotification.ERROR, "Cannot find Maven local repository!");

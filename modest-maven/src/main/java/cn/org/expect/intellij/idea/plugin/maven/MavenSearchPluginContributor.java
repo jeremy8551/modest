@@ -135,10 +135,11 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
             return null;
         }
 
-        return new ExtendedInfo(plugin.getContext()::getAdvertiserText, (o -> new AnAction() {
-            @Override
-            public void actionPerformed(@NotNull AnActionEvent e) {
-                System.out.println("ExtendedInfo actionPerformed()");
+        return new ExtendedInfo(this.plugin.getIdeaUI()::getAdvertiserText, (o -> new AnAction() {
+            public void actionPerformed(@NotNull AnActionEvent event) {
+                if (log.isDebugEnabled()) {
+                    log.debug("ExtendedInfo actionPerformed()");
+                }
             }
         }));
     }

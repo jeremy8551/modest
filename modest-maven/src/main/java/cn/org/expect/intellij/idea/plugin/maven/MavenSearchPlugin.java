@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenFoundElementInfoComparator;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
@@ -16,7 +15,6 @@ import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigation;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationResultSet;
-import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -34,9 +32,7 @@ import cn.org.expect.util.MessageFormatter;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
-import com.intellij.ide.actions.searcheverywhere.footer.ExtendedInfoComponent;
 import com.intellij.notification.Notification;
 import com.intellij.notification.NotificationAction;
 import com.intellij.notification.NotificationType;
@@ -45,25 +41,30 @@ import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.registry.Registry;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.components.JBLabel;
 import com.intellij.ui.components.JBList;
-import com.intellij.util.ui.Advertiser;
 import org.jetbrains.annotations.NotNull;
 
 public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable {
     private final static Log log = LogFactory.getLog(MavenSearchPlugin.class);
 
+    /** Idea查询对话框对象 */
+    private final IdeaSearchUI ideaUI;
+
     private final MavenSearchPluginContext context;
 
     private final MavenSearchPluginContributor contributor;
 
-    public MavenSearchPlugin(EasyContext ioc, MavenSearchPluginContext context) {
+    public MavenSearchPlugin(MavenSearchPluginContext context) {
         super(context.getRemoteRepositoryName(), DefaultLocalRepositoryConfig.getInstance(context.getActionEvent()));
+        this.ideaUI = new IdeaSearchUI();
         this.context = Ensure.notNull(context);
         this.contributor = new MavenSearchPluginContributor(this);
+    }
+
+    public IdeaSearchUI getIdeaUI() {
+        return this.ideaUI;
     }
 
     public MavenSearchPluginContext getContext() {
@@ -145,12 +146,11 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
      * @return 返回true表示标签页不符合 false表示符合
      */
     public boolean notMavenSearchTab() {
-        SearchEverywhereUI ui = this.context.getSearchEverywhereUI();
-        if (ui == null) {
+        if (this.getIdeaUI().getSearchEverywhereUI() == null) {
             return false;
         }
 
-        String selectedTabID = ui.getSelectedTabID();
+        String selectedTabID = this.getIdeaUI().getSelectedTabID();
         return !this.contributor.getSearchProviderId().equals(selectedTabID);
     }
 
@@ -167,7 +167,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     }
 
     public void setSearchFieldText(String text) {
-        context.getSearchEverywhereUI().getSearchField().setText(text);
+        this.getIdeaUI().getSearchField().setText(text);
     }
 
     public void setStatusbarText(MavenSearchAdvertiser type, String message) {
@@ -175,47 +175,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             return;
         }
 
-        try {
-            Icon icon = MavenSearchUtils.getIcon(type);
-            String fontColor = MavenSearchAdvertiser.ERROR == type ? "red" : "orange";
-            String text = new MessageFormatter("<html><span style='color:{};'>{}</span></html>").fill(fontColor, message);
-
-            // 检查注册项是否启用，为true，表示使用扩展模式作为状态栏
-            if (Registry.is("search.everywhere.footer.extended.info")) {
-                this.context.setAdvertiserText(text);
-
-                // 更新状态栏中的文本信息
-                SearchEverywhereUI ui = this.context.getSearchEverywhereUI();
-                ExtendedInfoComponent info = JavaDialectFactory.get().getField(ui, "myExtendedInfoComponent");
-                JBLabel label = JavaDialectFactory.get().getField(info, "text");
-                label.setIcon(icon);
-                label.setText(text);
-                return;
-            }
-
-            SearchEverywhereUI ui = this.context.getSearchEverywhereUI();
-            Advertiser advertiser = JavaDialectFactory.get().getField(ui, "myHintLabel");
-            if (advertiser == null) {
-                return;
-            }
-
-            // 如果文本信息为空，则显示默认的广告信息
-            if (StringUtils.isBlank(message)) {
-                advertiser.showRandomText();
-                return;
-            }
-
-            JLabel myTextPanel = JavaDialectFactory.get().getField(advertiser, "myTextPanel");
-            myTextPanel.setText(text);
-            myTextPanel.setIcon(icon);
-            myTextPanel.repaint();
-
-            JLabel myNextLabel = JavaDialectFactory.get().getField(advertiser, "myNextLabel");
-            myNextLabel.setText(null);
-            myNextLabel.repaint();
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
+        this.getIdeaUI().setStatusbarText(type, message);
     }
 
     public void setProgressText(String message) {
@@ -223,8 +183,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             return;
         }
 
-        JBList<Object> JBList = JavaDialectFactory.get().getField(this.context.getSearchEverywhereUI(), "myResultsList");
-        JBList.setEmptyText(message);
+        this.getIdeaUI().getJBList().setEmptyText(message);
     }
 
     /**
@@ -239,7 +198,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     }
 
     public synchronized void clearSearchResult() {
-        SearchListModel listModel = JavaDialectFactory.get().getField(context.getSearchEverywhereUI(), "myListModel");
+        SearchListModel listModel = this.getIdeaUI().getListModel();
         for (int i = listModel.getSize() - 1; i >= 0; i--) {
             SearchEverywhereFoundElementInfo info = listModel.getRawFoundElementAt(i);
             Object element = info.getElement();
@@ -272,8 +231,8 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         SearchNavigationResultSet navigationResult = this.toNavigationResult(result);
         this.context.setNavigationResultSet(navigationResult);
 
-        JBList<Object> JBList = JavaDialectFactory.get().getField(this.context.getSearchEverywhereUI(), "myResultsList");
-        SearchListModel listModel = JavaDialectFactory.get().getField(context.getSearchEverywhereUI(), "myListModel");
+        JBList<Object> JBList = this.getIdeaUI().getJBList();
+        SearchListModel listModel = this.getIdeaUI().getListModel();
 
         // 一定要先删除 more 按钮
         listModel.clearMoreItems();
