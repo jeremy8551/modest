@@ -56,7 +56,7 @@
     <idea-version since-build="232.10300.40"></idea-version>
 
     <!-- 配置国际化资源 TODO 资源文件名不对 -->
-    <resource-bundle>messages.MavenPluginBundle</resource-bundle>
+    <resource-bundle>messages.MavenSearchPluginBundle</resource-bundle>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
     <vendor email="jeremy8551@qq.com" url="https://github.com/jeremy8551/modest">Jeremy8551</vendor>

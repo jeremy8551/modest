@@ -8,7 +8,7 @@ import cn.org.expect.util.MessageFormatter;
 
 public class MavenSearchMessage {
 
-    public final static String BUNDLE_NAME = "messages.MavenPluginBundle";
+    public final static String BUNDLE_NAME = "messages.MavenSearchPluginBundle";
 
     public final static ResourceBundle BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME, Locale.ROOT);
 
