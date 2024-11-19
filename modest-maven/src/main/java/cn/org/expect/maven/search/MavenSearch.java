@@ -65,13 +65,6 @@ public interface MavenSearch {
     void sendNotification(MavenSearchNotification type, String text, String actionName, File file);
 
     /**
-     * 设置 UI 界面中的搜索文本
-     *
-     * @param text 文本信息
-     */
-    void setSearchFieldText(String text);
-
-    /**
      * 在等待搜索结果时，显示进度的文本信息
      *
      * @param message 文本信息

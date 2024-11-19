@@ -1,18 +1,31 @@
 package cn.org.expect.maven.concurrent;
 
-import cn.org.expect.util.Ensure;
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 
 public class MavenSearchEDTJob extends MavenSearchJob implements EDTJob {
+    protected final static Log log = LogFactory.getLog(MavenSearchEDTJob.class);
 
-    private final Runnable runnable;
+    private Runnable runnable;
 
     public MavenSearchEDTJob(Runnable runnable) {
         super();
-        this.runnable = Ensure.notNull(runnable);
+        this.runnable = runnable;
     }
 
-    public int execute() throws Exception {
-        runnable.run();
-        return 0;
+    protected final void setRunnable(Runnable runnable) {
+        this.runnable = runnable;
+    }
+
+    public final int execute() throws Exception {
+        if (this.runnable == null) {
+            if (log.isWarnEnabled()) {
+                log.warn("runnable is null!");
+            }
+            return 1;
+        } else {
+            this.runnable.run();
+            return 0;
+        }
     }
 }

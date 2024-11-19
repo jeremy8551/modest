@@ -109,7 +109,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         // 读取 JList 对象
         IdeaSearchUI ui = plugin.getIdeaUI();
         JBList<Object> JBList = ui.getJBList();
-        SearchListModel listModel = ui.getListModel();
+        SearchListModel listModel = ui.getSearchListModel();
 
         // 复制 Maven 依赖
         copyMaven.addActionListener(e -> {
@@ -259,7 +259,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
             plugin.clearSearchResult(); // 刷新一个空结果
             plugin.setProgressText("");
             plugin.setStatusbarText(null, "");
-            plugin.setSearchFieldText("");
+            plugin.getIdeaUI().getSearchField().setText("");
             plugin.getContext().setNavigationResultSet(null);
             plugin.sendNotification(MavenSearchNotification.NORMAL, clearCache.getText());
         });
@@ -397,7 +397,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
                     }
 
                     // 复制选中的文本到搜索栏
-                    plugin.setSearchFieldText(pattern);
+                    plugin.getIdeaUI().getSearchField().setText(pattern);
 
                     // 自动切换 Tab 页
                     if (context.isAutoSwitchTab() && MavenSearchUtils.isXML(editorSelectText)) {

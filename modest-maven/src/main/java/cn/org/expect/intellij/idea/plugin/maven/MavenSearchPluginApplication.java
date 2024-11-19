@@ -2,16 +2,10 @@ package cn.org.expect.intellij.idea.plugin.maven;
 
 import java.util.List;
 
-import cn.org.expect.ioc.DefaultEasyContext;
-import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.search.AbstractMavenSearch;
-import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.AppLifecycleListener;
-import com.intellij.ide.plugins.IdeaPluginDescriptor;
-import com.intellij.ide.plugins.PluginManagerCore;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -42,7 +36,6 @@ public class MavenSearchPluginApplication implements AppLifecycleListener {
         if (log.isDebugEnabled()) {
             log.debug("appStarted() ");
         }
-        this.init();
     }
 
     @Override
@@ -70,26 +63,6 @@ public class MavenSearchPluginApplication implements AppLifecycleListener {
     public void appWillBeClosed(boolean isRestart) {
         if (log.isDebugEnabled()) {
             log.debug("appWillBeClosed() ");
-        }
-    }
-
-    public void init() {
-        EasyContext ioc = new DefaultEasyContext(this.getClass().getClassLoader(), "sout+:info", Boolean.parseBoolean(System.getProperty("idea.is.internal")) ? ClassUtils.getPackageName(MavenSearchPluginApplication.class, 4) + ":debug" : "");
-        AbstractMavenSearch.setEasyContext(ioc);
-
-        String packageName = MavenSearchPluginApplication.class.getPackage().getName();
-        IdeaPluginDescriptor[] plugins = PluginManagerCore.getPlugins();
-        for (IdeaPluginDescriptor pluginDescriptor : plugins) {
-            String id = pluginDescriptor.getPluginId().getIdString();
-            if (id.equals(packageName)) {
-                AbstractMavenSearch.setId(id);
-                String name = pluginDescriptor.getName();
-                AbstractMavenSearch.setName(name);
-
-                if (log.isDebugEnabled()) {
-                    log.debug("plugin ID: {}, name: {}", id, name);
-                }
-            }
         }
     }
 }

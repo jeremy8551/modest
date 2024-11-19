@@ -44,7 +44,7 @@ public class MavenSearchPluginFactory implements SearchEverywhereContributorFact
         for (IdeaPluginDescriptor pluginDescriptor : plugins) {
             String id = pluginDescriptor.getPluginId().getIdString();
             if (id.equals(packageName)) {
-                AbstractMavenSearch.setId(id);
+                AbstractMavenSearch.setID(id);
                 String name = pluginDescriptor.getName();
                 AbstractMavenSearch.setName(name);
 

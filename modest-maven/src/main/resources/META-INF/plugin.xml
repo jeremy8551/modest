@@ -72,7 +72,7 @@
 
     <!-- 应用监听器 -->
     <applicationListeners>
-        <!--        <listener class="cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication" topic="com.intellij.ide.AppLifecycleListener"/>-->
+        <listener class="cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication" topic="com.intellij.ide.AppLifecycleListener"/>
     </applicationListeners>
 
     <!-- Extension points defined by the plugin.

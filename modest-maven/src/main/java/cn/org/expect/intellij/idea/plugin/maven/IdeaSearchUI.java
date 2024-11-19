@@ -107,7 +107,7 @@ public class IdeaSearchUI {
         return JavaDialectFactory.get().getField(this.ui, "myResultsList");
     }
 
-    public SearchListModel getListModel() {
+    public SearchListModel getSearchListModel() {
         if (this.ui == null) {
             return null;
         }

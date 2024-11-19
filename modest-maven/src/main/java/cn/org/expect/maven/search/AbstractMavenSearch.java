@@ -13,10 +13,10 @@ import cn.org.expect.util.Ensure;
 public abstract class AbstractMavenSearch implements MavenSearch {
 
     /** 插件的ID */
-    private static String id;
+    private static String ID;
 
     /** 插件名 */
-    private static String name;
+    private static String NAME;
 
     /** IOC 容器 */
     private static volatile EasyContext IOC;
@@ -41,15 +41,15 @@ public abstract class AbstractMavenSearch implements MavenSearch {
     }
 
     public static EasyContext getEasyContext() {
-        return IOC;
+        return AbstractMavenSearch.IOC;
     }
 
-    public static void setId(String id) {
-        AbstractMavenSearch.id = id;
+    public static void setID(String ID) {
+        AbstractMavenSearch.ID = ID;
     }
 
-    public static void setName(String name) {
-        AbstractMavenSearch.name = name;
+    public static void setName(String NAME) {
+        AbstractMavenSearch.NAME = NAME;
     }
 
     /**
@@ -58,11 +58,11 @@ public abstract class AbstractMavenSearch implements MavenSearch {
      * @return 字符串
      */
     public String getGroupId() {
-        return id;
+        return ID;
     }
 
     public String getName() {
-        return name;
+        return NAME;
     }
 
     public synchronized void execute(Runnable command) {
