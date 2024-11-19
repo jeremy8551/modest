@@ -41,33 +41,37 @@ public class IdeaSearchUI {
     }
 
     public JTextField getSearchField() {
+        if (this.ui == null) {
+            return null;
+        }
+
         return this.ui.getSearchField();
     }
 
-    public JBLabel getStatusBar() {
-        ExtendedInfoComponent info = JavaDialectFactory.get().getField(ui, "myExtendedInfoComponent");
-        return JavaDialectFactory.get().getField(info, "text");
-    }
-
     public void setStatusbarText(MavenSearchAdvertiser type, String message) {
+        if (this.ui == null) {
+            return;
+        }
+
+        Icon icon = MavenSearchUtils.getIcon(type);
+        String fontColor = MavenSearchAdvertiser.ERROR == type ? "red" : "orange";
+        String text = new MessageFormatter("<html><span style='color:{};'>{}</span></html>").fill(fontColor, message);
+
         try {
-            Icon icon = MavenSearchUtils.getIcon(type);
-            String fontColor = MavenSearchAdvertiser.ERROR == type ? "red" : "orange";
-            String text = new MessageFormatter("<html><span style='color:{};'>{}</span></html>").fill(fontColor, message);
 
             // 检查注册项是否启用，为true，表示使用扩展模式作为状态栏
             if (Registry.is("search.everywhere.footer.extended.info")) {
                 this.advertiserText = text;
 
                 // 更新状态栏中的文本信息
-                ExtendedInfoComponent info = JavaDialectFactory.get().getField(ui, "myExtendedInfoComponent");
+                ExtendedInfoComponent info = JavaDialectFactory.get().getField(this.ui, "myExtendedInfoComponent");
                 JBLabel label = JavaDialectFactory.get().getField(info, "text");
                 label.setIcon(icon);
                 label.setText(text);
                 return;
             }
 
-            Advertiser advertiser = JavaDialectFactory.get().getField(ui, "myHintLabel");
+            Advertiser advertiser = JavaDialectFactory.get().getField(this.ui, "myHintLabel");
             if (advertiser == null) {
                 return;
             }
@@ -92,18 +96,34 @@ public class IdeaSearchUI {
     }
 
     public JBList<Object> getJBList() {
+        if (this.ui == null) {
+            return null;
+        }
+
         return JavaDialectFactory.get().getField(this.ui, "myResultsList");
     }
 
     public SearchListModel getListModel() {
+        if (this.ui == null) {
+            return null;
+        }
+
         return JavaDialectFactory.get().getField(this.ui, "myListModel");
     }
 
     public ProgressIndicator getProgressIndicator() {
-        return JavaDialectFactory.get().getField(ui, "mySearchProgressIndicator");
+        if (this.ui == null) {
+            return null;
+        }
+
+        return JavaDialectFactory.get().getField(this.ui, "mySearchProgressIndicator");
     }
 
     public void switchToTab(String tabID) {
+        if (this.ui == null) {
+            return;
+        }
+
         this.ui.switchToTab(tabID);
     }
 

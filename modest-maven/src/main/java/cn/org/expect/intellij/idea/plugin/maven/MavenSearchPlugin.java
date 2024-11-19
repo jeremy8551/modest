@@ -228,6 +228,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             return;
         }
 
+        // TODO 需要与下面的方法合并
         SearchNavigationResultSet navigationResult = this.toNavigationResult(result);
         this.context.setNavigationResultSet(navigationResult);
 
