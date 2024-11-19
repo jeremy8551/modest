@@ -4,17 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.log.Log;
-import cn.org.expect.log.LogFactory;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.NavigationCellRenderer;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchUtils;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
+import com.intellij.ide.actions.searcheverywhere.ExtendedInfo;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.Processor;
@@ -29,6 +31,8 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
     private final MavenSearchPluginChooseContributor contributor;
 
     private final MavenSearchPlugin plugin;
+
+    private volatile Runnable onChanged;
 
     public MavenSearchPluginContributor(@NotNull MavenSearchPlugin plugin) {
         super(plugin.getContext().getActionEvent());
@@ -62,7 +66,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @param pattern 搜索模型
      * @return 过滤后的字符串
      */
-
     public @NotNull String filterControlSymbols(String pattern) {
         if (pattern != null && pattern.length() > 0) {
             this.plugin.asyncSearch(MavenSearchUtils.parse(pattern));
@@ -112,7 +115,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @param dataId  数据编号
      * @return 返回数据
      */
-
     public Object getDataForItem(Object element, String dataId) {
         if (log.isDebugEnabled()) {
             log.debug("getDataForItem({}, {})", element, dataId);
@@ -128,6 +130,19 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         return 50;
     }
 
+    public ExtendedInfo createExtendedInfo() {
+        if (plugin.notMavenSearchTab()) {
+            return null;
+        }
+
+        return new ExtendedInfo(plugin.getContext()::getAdvertiserText, (o -> new AnAction() {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent e) {
+                System.out.println("ExtendedInfo actionPerformed()");
+            }
+        }));
+    }
+
     public boolean isMultiSelectionSupported() {
         return false;
     }
@@ -137,7 +152,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return 广告文本
      */
-
     public String getAdvertisement() {
         return this.plugin.getRemoteRepository().getAddress();
     }
@@ -152,7 +166,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return true表示有单独的选项卡
      */
-
     public boolean isShownInSeparateTab() {
         return true;
     }
@@ -162,7 +175,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return 标签页名
      */
-
     public String getFullGroupName() {
         return this.getGroupName();
     }
@@ -172,7 +184,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return 标签页名
      */
-
     public String getGroupName() {
         return MavenSearchMessage.get("maven.search.tab.name");
     }
@@ -182,7 +193,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return 排序编号
      */
-
     public int getSortWeight() {
         return 0;
     }
@@ -192,7 +202,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return
      */
-
     public boolean showInFindResults() {
         return false;
     }
@@ -206,10 +215,15 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
             log.trace("getActions({}) ", onChanged);
         }
 
+        this.onChanged = onChanged;
         return new ArrayList<>();
     }
 
     public void dispose() {
         super.dispose();
+    }
+
+    public Runnable getOnChanged() {
+        return onChanged;
     }
 }

@@ -19,7 +19,7 @@ public abstract class AbstractMavenSearch implements MavenSearch {
     private static String name;
 
     /** IOC 容器 */
-    private static EasyContext IOC;
+    private static volatile EasyContext IOC;
 
     /** IOC容器 */
     private final String remoteRepositoryName;
@@ -38,6 +38,10 @@ public abstract class AbstractMavenSearch implements MavenSearch {
 
     public static void setEasyContext(EasyContext ioc) {
         AbstractMavenSearch.IOC = Ensure.notNull(ioc);
+    }
+
+    public static EasyContext getEasyContext() {
+        return IOC;
     }
 
     public static void setId(String id) {
@@ -68,6 +72,11 @@ public abstract class AbstractMavenSearch implements MavenSearch {
         IOC.getBean(ThreadSource.class).getExecutorService().execute(command);
     }
 
+    /**
+     * 设置线程池
+     *
+     * @param service 线程池
+     */
     public void setService(Object service) {
         IOC.getBean(MavenSearchExecutorService.class).setSearchService(service);
     }

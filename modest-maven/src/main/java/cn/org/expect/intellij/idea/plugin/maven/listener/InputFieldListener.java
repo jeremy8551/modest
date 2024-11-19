@@ -16,11 +16,11 @@ public class InputFieldListener extends KeyAdapter {
 
     public void keyPressed(KeyEvent e) {
         if (plugin.notMavenSearchTab()) {
-            if (e.getKeyCode() == KeyEvent.VK_F2) {
+            if (e.getKeyCode() == KeyEvent.VK_F2) { // F2 搜索
                 plugin.getContext().getSearchEverywhereUI().switchToTab(plugin.getContributor().getSearchProviderId());
             }
         } else {
-            if (e.getKeyCode() == KeyEvent.VK_F5) {
+            if (e.getKeyCode() == KeyEvent.VK_F5) { // F5 刷新
                 plugin.repeat();
             }
         }

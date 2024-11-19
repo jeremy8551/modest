@@ -1,7 +1,6 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
 import java.util.List;
-import javax.swing.*;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
@@ -10,14 +9,9 @@ import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationResul
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchContext;
-import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
-import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.progress.ProgressIndicator;
-import com.intellij.ui.components.JBList;
-import com.intellij.util.ui.Advertiser;
 
 public class MavenSearchPluginContext implements MavenSearchContext {
 
@@ -42,23 +36,8 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** Idea查询对话框对象 */
     private volatile SearchEverywhereUI searchEverywhereUI;
 
-    /** 查询结果中的列表 */
-    private volatile JBList<Object> JBList;
-
-    /** JBList 数据模型 */
-    private volatile SearchListModel JBListModel;
-
-    /** 查询结果最下面的广告栏 */
-    private volatile Advertiser advertiser;
-
-    /** 进度指示器 */
-    private volatile ProgressIndicator progressIndicator;
-
     /** 最近一次模糊搜索结果 */
     private volatile MavenSearchResult mavenSearchResult;
-
-    /** 搜索输入框 */
-    private volatile JTextField searchField;
 
     /** 导航记录结果集 */
     private volatile SearchNavigationResultSet navigationResultSet;
@@ -66,14 +45,13 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 如果选中文本是groupid:artifactid:version时，是否自动切换tab */
     private volatile boolean autoSwitchTab;
 
-    /** 加载上下文信息的状态，true表示加载完毕 false表示还未加载 */
-    private volatile boolean loadStatus;
+    /** 状态栏信息 */
+    private volatile String advertiserText;
 
     public MavenSearchPluginContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
         this.inputIntervalTime = 300;
         this.remoteRepositoryName = "central";
-        this.loadStatus = false;
         this.autoSwitchTab = true;
     }
 
@@ -146,66 +124,12 @@ public class MavenSearchPluginContext implements MavenSearchContext {
         this.selectNavigationItem = selectNavigationItem;
     }
 
-    protected void waitForLoad() {
-        long timeout = 3000;
-        long startMillis = System.currentTimeMillis();
-        while (!this.loadStatus && System.currentTimeMillis() - startMillis <= timeout) {
-            Dates.sleep(200);
-        }
-    }
-
     public SearchEverywhereUI getSearchEverywhereUI() {
-        this.waitForLoad();
         return this.searchEverywhereUI;
     }
 
     public void setSearchEverywhereUI(SearchEverywhereUI searchEverywhereUI) {
         this.searchEverywhereUI = searchEverywhereUI;
-    }
-
-    public JBList<Object> getJBList() {
-        this.waitForLoad();
-        return this.JBList;
-    }
-
-    public void setJBList(JBList<Object> jbList) {
-        this.JBList = jbList;
-    }
-
-    public Advertiser getAdvertiser() {
-        this.waitForLoad();
-        return this.advertiser;
-    }
-
-    public void setAdvertiser(Advertiser advertiser) {
-        this.advertiser = advertiser;
-    }
-
-    public SearchListModel getJBListModel() {
-        this.waitForLoad();
-        return this.JBListModel;
-    }
-
-    public void setJBListModel(SearchListModel JBListModel) {
-        this.JBListModel = JBListModel;
-    }
-
-    public ProgressIndicator getProgressIndicator() {
-        this.waitForLoad();
-        return this.progressIndicator;
-    }
-
-    public void setProgressIndicator(ProgressIndicator progressIndicator) {
-        this.progressIndicator = progressIndicator;
-    }
-
-    public JTextField getSearchField() {
-        this.waitForLoad();
-        return searchField;
-    }
-
-    public void setSearchField(JTextField searchField) {
-        this.searchField = searchField;
     }
 
     public SearchNavigationResultSet getNavigationResultSet() {
@@ -232,7 +156,16 @@ public class MavenSearchPluginContext implements MavenSearchContext {
         return autoSwitchTab;
     }
 
-    public void setLoadStatus(boolean detected) {
-        this.loadStatus = detected;
+    public String getAdvertiserText(Object obj) {
+//        if (obj instanceof MavenSearchNavigation) { // 根据不同的类型
+//            return this.advertiserText;
+//        } else {
+//            return "";
+//        }
+        return this.advertiserText;
+    }
+
+    public void setAdvertiserText(String advertiserText) {
+        this.advertiserText = advertiserText;
     }
 }

@@ -10,12 +10,13 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.listener.InputFieldListener;
 import cn.org.expect.intellij.idea.plugin.maven.listener.SearchListener;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
+import cn.org.expect.jdk.JavaDialect;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.maven.concurrent.EDTJob;
+import cn.org.expect.maven.concurrent.MavenSearchDownloadJob;
 import cn.org.expect.maven.concurrent.MavenSearchEDTJob;
 import cn.org.expect.maven.concurrent.MavenSearchJob;
 import cn.org.expect.maven.concurrent.MavenSearchMoreJob;
-import cn.org.expect.maven.concurrent.MavenSearchDownloadJob;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
@@ -36,7 +37,6 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.concurrency.EdtExecutorService;
-import com.intellij.util.ui.Advertiser;
 
 public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
 
@@ -50,11 +50,9 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         }
 
         MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
-        MavenSearchPluginContext context = plugin.getContext(); // 上下文信息
-        this.loadComponent(plugin); // 加载 UI 组件
-        context.setLoadStatus(true); // 设置加载完成标志
+        this.setSearchEverywhereUI(plugin); // 加载 UI 组件
         this.setPopupMenuUI(plugin); // 加载弹出菜单
-        this.processEditorSelectText(plugin);
+        this.setEditorSelectText(plugin);
 
         if (log.isInfoEnabled()) {
             log.info(MavenSearchMessage.get("maven.search.thread.finish", this.getName()));
@@ -63,64 +61,17 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
     }
 
     /**
-     * 将编辑器中选中的文本，复制到 Tab 页的输入框中
-     *
-     * @param plugin 搜索接口
-     */
-    private void processEditorSelectText(MavenSearchPlugin plugin) {
-        MavenSearchPluginContext context = plugin.getContext();
-        this.waitFor(context.getProgressIndicator(), 3000); // 等待 idea 默认的搜索功能执行完毕
-        Editor editor = context.getActionEvent().getDataContext().getData(CommonDataKeys.EDITOR);
-        if (editor != null) {
-            String editorSelectText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
-            if (StringUtils.isNotBlank(editorSelectText)) {
-                // 只能使用 EdtExecutorService.getInstance() 不能递归调用 plugin.execute() 方法
-                EdtExecutorService.getInstance().execute(new MavenSearchEDTJob(() -> {
-
-                    // 编辑器中选中的文本
-                    String pattern = MavenSearchUtils.parse(editorSelectText);
-                    if (log.isDebugEnabled()) {
-                        log.debug("Idea editor selected text: {} --> {}", editorSelectText, pattern);
-                    }
-
-                    // 复制选中的文本到搜索栏
-                    plugin.setSearchFieldText(pattern);
-
-                    // 自动切换 Tab 页
-                    if (context.isAutoSwitchTab() && MavenSearchUtils.isXML(editorSelectText)) {
-                        context.getSearchEverywhereUI().switchToTab(plugin.getContributor().getSearchProviderId());
-                    }
-                }));
-            }
-        }
-    }
-
-    /**
-     * 等待 SearchEverywhereUI 组件渲染完毕
-     *
-     * @param timeout 超时时间，单位：毫秒
-     */
-    protected void waitFor(ProgressIndicator progress, long timeout) {
-        if (progress != null) {
-            long startMillis = System.currentTimeMillis();
-            while (progress.isRunning() && !progress.isCanceled() && System.currentTimeMillis() - startMillis <= timeout) {
-                Dates.sleep(100);
-            }
-        }
-    }
-
-    /**
      * 检测Idea的UI组件
      *
      * @param plugin 事件
      */
-    protected void loadComponent(MavenSearchPlugin plugin) {
+    protected void setSearchEverywhereUI(MavenSearchPlugin plugin) {
         MavenSearchPluginContext context = plugin.getContext();
         AnActionEvent event = context.getActionEvent();
         SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
         long startMillis = System.currentTimeMillis();
         while (!manager.isShown()) { // 等待 SearchEverywhere 显示
-            if (System.currentTimeMillis() - startMillis >= 3000) {
+            if (System.currentTimeMillis() - startMillis >= 10000) {
                 break;
             } else {
                 Dates.sleep(100);
@@ -128,46 +79,10 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         }
 
         // 得到当前已显示的 SearchEverywhere 对象
-        SearchEverywhereUI ui = manager.getCurrentlyShownUI();
+        SearchEverywhereUI ui = manager.getCurrentlyShownUI(); // TODO 修改注册项后，再打开查询界面，这个位置报错 isShown
         context.setSearchEverywhereUI(ui);
         ui.addSearchListener(new SearchListener(plugin));
         plugin.setService(JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
-
-        try {
-            JBList<Object> jbList = JavaDialectFactory.get().getField(ui, "myResultsList");
-            context.setJBList(jbList);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-
-        try {
-            SearchListModel listModel = JavaDialectFactory.get().getField(ui, "myListModel");
-            context.setJBListModel(listModel);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-
-        try {
-            ProgressIndicator progressIndicator = JavaDialectFactory.get().getField(ui, "mySearchProgressIndicator");
-            context.setProgressIndicator(progressIndicator);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-
-        try {
-            Advertiser advertiser = JavaDialectFactory.get().getField(ui, "myHintLabel");
-            context.setAdvertiser(advertiser);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-
-        try {
-            JTextField searchField = ui.getSearchField();
-            context.setSearchField(searchField);
-            searchField.addKeyListener(new InputFieldListener(plugin)); // 打开搜索对话框后，点击 Shift 快捷键自动切换 Tab 页
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
     }
 
     protected void setPopupMenuUI(MavenSearchPlugin plugin) {
@@ -192,8 +107,11 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         itemPopupMenu.add(repeat);
         itemPopupMenu.add(clearCache);
 
-        JBList<Object> JBList = context.getJBList();
-        SearchListModel listModel = context.getJBListModel();
+        // 读取 JList 对象
+        SearchEverywhereUI ui = context.getSearchEverywhereUI();
+        JavaDialect dialect = JavaDialectFactory.get();
+        JBList<Object> JBList = dialect.getField(ui, "myResultsList");
+        SearchListModel listModel = dialect.getField(ui, "myListModel");
 
         // 复制 Maven 依赖
         copyMaven.addActionListener(e -> {
@@ -425,20 +343,71 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         });
 
         // 在搜索输入框下方，显示菜单
-        JTextField searchField = context.getSearchField();
-        searchField.addMouseListener(new MouseAdapter() {
+        try {
+            JTextField searchField = ui.getSearchField();
+            searchField.addKeyListener(new InputFieldListener(plugin)); // 打开搜索对话框后，点击 Shift 快捷键自动切换 Tab 页
+            searchField.addMouseListener(new MouseAdapter() {
 
-            public void mousePressed(MouseEvent e) {
-                if (plugin.notMavenSearchTab()) {
-                    return;
-                }
+                public void mousePressed(MouseEvent e) {
+                    if (plugin.notMavenSearchTab()) {
+                        return;
+                    }
 
-                if (e.getButton() == MouseEvent.BUTTON3) {
-                    int x = searchField.getX();
-                    int y = searchField.getY() - 30;
-                    itemPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
+                    if (e.getButton() == MouseEvent.BUTTON3) { // 右键，弹出菜单
+                        int x = searchField.getX();
+                        int y = searchField.getY() - 30;
+                        itemPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
+                    }
                 }
+            });
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+    }
+
+    /**
+     * 将编辑器中选中的文本，复制到 Tab 页的输入框中
+     *
+     * @param plugin 搜索接口
+     */
+    private void setEditorSelectText(MavenSearchPlugin plugin) {
+        MavenSearchPluginContext context = plugin.getContext();
+        SearchEverywhereUI ui = context.getSearchEverywhereUI();
+        try {
+            ProgressIndicator progress = JavaDialectFactory.get().getField(ui, "mySearchProgressIndicator");
+
+            // 等待 idea 默认的搜索功能执行完毕
+            long startMillis = System.currentTimeMillis();
+            while (progress != null && progress.isRunning() && !progress.isCanceled() && System.currentTimeMillis() - startMillis <= 3000) {
+                Dates.sleep(100);
             }
-        });
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+
+        // 在已打开的编辑器中，如果选中了文本，则自动对文本进行查询
+        Editor editor = context.getActionEvent().getDataContext().getData(CommonDataKeys.EDITOR);
+        if (editor != null) {
+            String editorSelectText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
+            if (StringUtils.isNotBlank(editorSelectText)) {
+                // 只能使用 EdtExecutorService.getInstance() 不能递归调用 plugin.execute() 方法
+                EdtExecutorService.getInstance().execute(new MavenSearchEDTJob(() -> {
+
+                    // 编辑器中选中的文本
+                    String pattern = MavenSearchUtils.parse(editorSelectText);
+                    if (log.isDebugEnabled()) {
+                        log.debug("Idea editor selected text: {} --> {}", editorSelectText, pattern);
+                    }
+
+                    // 复制选中的文本到搜索栏
+                    plugin.setSearchFieldText(pattern);
+
+                    // 自动切换 Tab 页
+                    if (context.isAutoSwitchTab() && MavenSearchUtils.isXML(editorSelectText)) {
+                        ui.switchToTab(plugin.getContributor().getSearchProviderId());
+                    }
+                }));
+            }
+        }
     }
 }
