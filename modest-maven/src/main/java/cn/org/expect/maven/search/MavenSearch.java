@@ -3,12 +3,19 @@ package cn.org.expect.maven.search;
 import java.io.File;
 
 import cn.org.expect.maven.concurrent.EDTJob;
-import cn.org.expect.maven.intellij.idea.concurrent.MavenSearchPluginExecutorService;
+import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.db.MavenSearchDatabase;
 
 public interface MavenSearch {
+
+    /**
+     * 返回组件的名字
+     *
+     * @return 名字
+     */
+    String getName();
 
     /**
      * 返回上下文信息
@@ -109,7 +116,7 @@ public interface MavenSearch {
      *
      * @return 返回true表示正在查询
      */
-    MavenSearchPluginExecutorService getService();
+    MavenSearchExecutorService getService();
 
     /**
      * 返回 Maven 仓库信息

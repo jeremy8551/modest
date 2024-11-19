@@ -6,6 +6,13 @@ import java.util.function.Predicate;
 public interface MavenSearchExecutorService extends ExecutorService {
 
     /**
+     * 设置线程池
+     *
+     * @param service 线程池
+     */
+    void setSearchService(Object service);
+
+    /**
      * 返回第一个匹配的任务
      *
      * @param cls       任务的 Class 信息

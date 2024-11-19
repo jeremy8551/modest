@@ -48,12 +48,13 @@ intellij {
 tasks {
     // Set the JVM compatibility versions
     withType<JavaCompile> {
+        options.encoding = "UTF-8"
         sourceCompatibility = "17"
         targetCompatibility = "17"
     }
 
     patchPluginXml {
-        sinceBuild.set("232")
+        sinceBuild.set("232") // TODO
         untilBuild.set("242.*")
     }
 

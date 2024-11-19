@@ -2,19 +2,24 @@ package cn.org.expect.maven.search;
 
 import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.maven.intellij.idea.concurrent.MavenSearchPluginExecutorService;
+import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.local.LocalRepository;
 import cn.org.expect.maven.repository.local.LocalRepositoryConfig;
 import cn.org.expect.maven.search.db.MavenSearchDatabase;
 import cn.org.expect.maven.search.db.MavenSearchDatabaseImpl;
 import cn.org.expect.util.Ensure;
-import com.intellij.util.Alarm;
 
 public abstract class AbstractMavenSearch implements MavenSearch {
 
+    /** 插件的ID */
+    private static String id;
+
+    /** 插件名 */
+    private static String name;
+
     /** IOC 容器 */
-    private final EasyContext ioc;
+    private static EasyContext IOC;
 
     /** IOC容器 */
     private final String remoteRepositoryName;
@@ -25,30 +30,54 @@ public abstract class AbstractMavenSearch implements MavenSearch {
     /** 数据库 */
     private volatile static MavenSearchDatabaseImpl DATABASE;
 
-    public AbstractMavenSearch(EasyContext ioc, String remoteRepositoryName, LocalRepositoryConfig config) {
+    public AbstractMavenSearch(String remoteRepositoryName, LocalRepositoryConfig config) {
         super();
-        this.ioc = Ensure.notNull(ioc);
         this.localRepository = new LocalRepository(config);
         this.remoteRepositoryName = remoteRepositoryName;
+    }
+
+    public static void setEasyContext(EasyContext ioc) {
+        AbstractMavenSearch.IOC = Ensure.notNull(ioc);
+    }
+
+    public static void setId(String id) {
+        AbstractMavenSearch.id = id;
+    }
+
+    public static void setName(String name) {
+        AbstractMavenSearch.name = name;
+    }
+
+    /**
+     * 返回域名id
+     *
+     * @return 字符串
+     */
+    public String getGroupId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public synchronized void execute(Runnable command) {
         if (command instanceof MavenSearchAware) {
             ((MavenSearchAware) command).setSearch(this);
         }
-        this.ioc.getBean(ThreadSource.class).getExecutorService().execute(command);
+        IOC.getBean(ThreadSource.class).getExecutorService().execute(command);
     }
 
-    public void setService(Alarm alarm) {
-        this.ioc.getBean(MavenSearchPluginExecutorService.class).setSearchEverywhereService(alarm);
+    public void setService(Object service) {
+        IOC.getBean(MavenSearchExecutorService.class).setSearchService(service);
     }
 
-    public MavenSearchPluginExecutorService getService() {
-        return this.ioc.getBean(MavenSearchPluginExecutorService.class);
+    public MavenSearchExecutorService getService() {
+        return IOC.getBean(MavenSearchExecutorService.class);
     }
 
     public MavenRepository getRemoteRepository() {
-        return this.ioc.getBean(MavenRepository.class, this.remoteRepositoryName);
+        return IOC.getBean(MavenRepository.class, this.remoteRepositoryName);
     }
 
     public LocalRepository getLocalRepository() {

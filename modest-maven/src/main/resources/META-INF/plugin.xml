@@ -1,28 +1,61 @@
 <!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
     <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
-    <id>cn.org.expect.intellijidea.plugin.maven</id>
+    <id>cn.org.expect.intellij.idea.plugin.maven</id>
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
     <name>Maven+</name>
-    <category>Build Tools</category>
+
+    <!-- 项目类别：构建插件 -->
+    <category>Plugins</category>
 
     <description>
         <![CDATA[
-      <p>Provide search in Central Maven Repository.</p>
-      The following features are available:
+        <p>Provide search in Maven Central Repository.</p>
+        Feature List:
         <ul>
-        <li>Online search artifact in Maven Central Repository.</li>
-        <li>Clean “*.lastUpdated” in Local Repository.</li>
-        <li>Open local repository directory.</li>
-        <li>Navigate the search result to Central Repository.</li>
-        <li>Navigate the search result to Local Repository.</li>
+        <li>Search artifacts in Maven Central Repository.</li>
+        <li>Copy Maven Dependency.</li>
+        <li>Copy Gradle Dependency.</li>
+        <li>Browse artifacts in Central Repository.</li>
+        <li>Browse artifacts in Local Repository.</li>
+        <li>Download artifacts from Central Repository.</li>
+        <li>View JDK version of jar in Local Repository.</li>
+        <li>Delete artifacts from Local Repository.</li>
+        <li>Delete “*.lastUpdated” from Local Repository.</li>
         </ul>
+        <a href="https://github.com/jeremy8551/modest">Project URL</a>
+
+        <br>
+        <p>提供在 Maven 中央仓库中搜索功能.</p>
+        功能介绍：
+        <ul>
+        <li>在 Maven 中央仓库中搜索依赖.</li>
+        <li>复制 Maven 依赖.</li>
+        <li>复制 Gradle 依赖.</li>
+        <li>使用浏览器访问 Maven 中央仓库中的工件.</li>
+        <li>在文件浏览器中访问 Maven 本地仓库中的工件.</li>
+        <li>从 Maven 中央仓库下载工件到本地仓库.</li>
+        <li>查看 Maven 本地仓库中 jar 文件的 JDK 版本号.</li>
+        <li>从 Maven 本地仓库中删除工件.</li>
+        <li>从 Maven 本地仓库中删除以 lastUpdated 结尾的文件.</li>
+        <a href="https://github.com/jeremy8551/modest">项目地址</a>
       ]]>
     </description>
 
-    <!-- 配置国际化资源 -->
+    <change-notes>
+        <![CDATA[
+        <h3>V1.0.0</h3>
+        <ul>
+            <li>initial release</li>
+        </ul>
+      ]]>
+    </change-notes>
+
+    <idea-version since-build="232.10300.40"></idea-version>
+
+    <!-- 配置国际化资源 TODO 资源文件名不对 -->
     <resource-bundle>messages.MavenPluginBundle</resource-bundle>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
@@ -37,21 +70,29 @@
     <depends>org.jetbrains.idea.maven.model</depends>
     <depends>org.jetbrains.idea.maven.server.api</depends>
 
+    <!-- 应用监听器 -->
+    <applicationListeners>
+        <listener class="cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication" topic="com.intellij.ide.AppLifecycleListener"/>
+    </applicationListeners>
+
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <applicationInitializedListener implementation="cn.org.expect.maven.intellij.idea.listener.MavenSearchPluginApplicationListener" id="Maven+"/>
         <!--<lang.findUsagesProvider implementationClass="cn.org.expect.intellijidea.plugin.maven.provider.MavenFindUsagesProvider" language=""/>-->
-        <searchEverywhereContributor implementation="cn.org.expect.maven.intellij.idea.MavenSearchPluginFactory"/>
+        <searchEverywhereContributor implementation="cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginFactory"/>
     </extensions>
 
     <actions>
         <!-- 打开本地Maven仓库 -->
-        <action id="OpenLocalRepository" class="cn.org.expect.maven.intellij.idea.action.OpenLocalRepository" text="Maven Local Repository" description="打开 Maven 本地仓库">
+        <action id="OpenLocalRepository" class="cn.org.expect.intellij.idea.plugin.maven.action.OpenLocalRepository" text="Open Maven Local Repository" description="打开 Maven 本地仓库">
         </action>
 
         <!-- 删除本地仓库中 *.lastUpdated 文件 -->
-        <action id="CleanRepositoryLastUpdated" class="cn.org.expect.maven.intellij.idea.action.CleanRepositoryLastUpdated" text="Maven Clean *.lastUpdated" description="删除 Maven 本地仓库中的 *.lastUpdated 文件">
+        <action id="CleanRepositoryLastUpdated" class="cn.org.expect.intellij.idea.plugin.maven.action.CleanRepositoryLastUpdated" text="Delete Maven Local Repository *.lastUpdated" description="删除 Maven 本地仓库中的 *.lastUpdated 文件">
+        </action>
+
+        <!-- 打开 Maven 配置的 settings.xml  -->
+        <action id="OpenMavenSettingsXml" class="cn.org.expect.intellij.idea.plugin.maven.action.OpenMavenSettingsXml" text="Open Maven Settings.xml" description="打开当前使用的 settings.xml 文件">
         </action>
 
         <!-- 绘制菜单 -->
@@ -59,6 +100,7 @@
             <separator/> <!--分隔符-->
             <reference ref="OpenLocalRepository"/>
             <reference ref="CleanRepositoryLastUpdated"/>
+            <reference ref="OpenMavenSettingsXml"/>
             <separator/> <!--分隔符-->
             <add-to-group group-id="ToolsMenu" anchor="first"/>
         </group>
