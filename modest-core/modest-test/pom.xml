@@ -9,7 +9,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>modest-ioc-test</artifactId>
+    <artifactId>modest-test</artifactId>
 
     <dependencies>
         <dependency>
@@ -33,6 +33,7 @@
         <dependency>
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-ioc</artifactId>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

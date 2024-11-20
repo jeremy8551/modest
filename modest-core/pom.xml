@@ -20,7 +20,7 @@
         <module>modest-crypto</module>
         <module>modest-printer</module>
         <module>modest-ioc</module>
-        <module>modest-ioc-test</module>
+        <module>modest-test</module>
         <module>modest-io</module>
         <module>modest-cn</module>
         <module>modest-os</module>
@@ -74,7 +74,6 @@
                         <module>modest-crypto</module>
                         <module>modest-printer</module>
                         <module>modest-ioc</module>
-                        <module>modest-ioc-test</module>
                         <module>modest-io</module>
                         <module>modest-cn</module>
                         <module>modest-os</module>

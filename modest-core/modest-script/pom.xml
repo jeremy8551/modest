@@ -99,7 +99,7 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-ioc-test</artifactId>
+            <artifactId>modest-test</artifactId>
         </dependency>
 
         <dependency>
