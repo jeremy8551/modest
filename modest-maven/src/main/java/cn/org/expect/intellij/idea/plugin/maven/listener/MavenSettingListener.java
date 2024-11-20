@@ -27,7 +27,7 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
         if (INSTANCE == null) {
             synchronized (MavenSettingListener.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new MavenSettingListener(event);
+                    INSTANCE = new MavenSettingListener(event, config);
                 }
             }
         }
@@ -40,8 +40,10 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
 
     private volatile LocalRepositoryConfig config;
 
-    protected MavenSettingListener(AnActionEvent event) {
+    protected MavenSettingListener(AnActionEvent event, LocalRepositoryConfig config) {
         this.event = Ensure.notNull(event);
+        this.config = Ensure.notNull(config);
+
         MavenProjectsManager manager = this.execute(this.event);
         if (manager != null) {
             MavenGeneralSettings settings = manager.getGeneralSettings();
@@ -84,7 +86,6 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
             if (StringUtils.isNotBlank(filepath)) {
                 this.config.setRepository(new File(filepath)); // 获取 Maven 本地仓库路径
             }
-
             return manager;
         }
         return null;
