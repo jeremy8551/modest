@@ -9,6 +9,7 @@ import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.MavenArtifactOperation;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.MavenSearchResult;
@@ -22,7 +23,7 @@ import okhttp3.Response;
 /**
  * 中央仓库
  */
-@EasyBean("central")
+@EasyBean("Central Repository")
 public class CentralRepository implements MavenRepository {
     protected final static Log log = LogFactory.getLog(CentralRepository.class);
 
@@ -41,6 +42,27 @@ public class CentralRepository implements MavenRepository {
         this.extra = new PatternResultAnalysis();
         this.terminate = false;
         this.database = new CentralRepositoryDatabase(threadSource);
+    }
+
+    public MavenArtifactOperation getSupported() {
+        return new MavenArtifactOperation() {
+
+            public boolean supportBrowser() {
+                return true;
+            }
+
+            public boolean supportDownload() {
+                return true;
+            }
+
+            public boolean supportDelete() {
+                return true;
+            }
+
+            public boolean supportOpenInFileSystem() {
+                return true;
+            }
+        };
     }
 
     public MavenRepositoryDatabase getDatabase() {

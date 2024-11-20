@@ -7,6 +7,7 @@ import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationResultSet;
 import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchContext;
 import cn.org.expect.maven.search.MavenSearchMessage;
@@ -57,8 +58,7 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     public MavenSearchPluginContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
         this.inputIntervalTime = 300;
-        this.repositoryId = "central";
-//        this.repositoryName = "local";
+        this.repositoryId = MavenRepository.DEFAULT_SELECTED_REPOSITORY;
         this.autoSwitchTab = true;
         this.tabIndex = 0;
         this.tabName = MavenSearchMessage.get("maven.search.tab.name");

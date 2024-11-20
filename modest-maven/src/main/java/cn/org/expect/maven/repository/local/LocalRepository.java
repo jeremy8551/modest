@@ -6,6 +6,7 @@ import java.util.List;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.MavenArtifactOperation;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.MavenSearchResult;
@@ -17,7 +18,7 @@ import cn.org.expect.util.StringUtils;
 /**
  * 本地仓库
  */
-@EasyBean("local")
+@EasyBean("Local Repository")
 public class LocalRepository implements MavenRepository {
 
     private final LocalRepositoryDatabase database;
@@ -28,6 +29,27 @@ public class LocalRepository implements MavenRepository {
         this.config = Ensure.notNull(config);
         File dir = this.config.getRepository();
         this.database = new LocalRepositoryDatabase(dir);
+    }
+
+    public MavenArtifactOperation getSupported() {
+        return new MavenArtifactOperation() {
+
+            public boolean supportBrowser() {
+                return false;
+            }
+
+            public boolean supportDownload() {
+                return false;
+            }
+
+            public boolean supportDelete() {
+                return false;
+            }
+
+            public boolean supportOpenInFileSystem() {
+                return true;
+            }
+        };
     }
 
     public MavenRepositoryDatabase getDatabase() {

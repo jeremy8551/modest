@@ -14,16 +14,20 @@ public abstract class AbstractMavenSearch implements MavenSearch {
     private final EasyContext ioc;
 
     /** Maven 仓库 */
-    private final MavenRepository repository;
+    private MavenRepository repository;
 
     /** 本地 Maven 仓库接口 */
     private final LocalRepository localRepository;
 
-    public AbstractMavenSearch(String remoteRepositoryName) {
+    public AbstractMavenSearch(String repositoryId) {
         super();
         this.ioc = DefaultEasyContext.getInstance();
         this.localRepository = this.ioc.getBean(LocalRepository.class);
-        this.repository = this.ioc.getBean(MavenRepository.class, remoteRepositoryName);
+        this.repository = this.ioc.getBean(MavenRepository.class, repositoryId);
+    }
+
+    public void setRepository(String id) {
+        this.repository = this.ioc.getBean(MavenRepository.class, id);
     }
 
     /**

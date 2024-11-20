@@ -6,19 +6,29 @@ import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.navigation.NavigationCellRenderer;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.search.MavenSearchUtils;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.ExtendedInfo;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
+import com.intellij.ide.actions.searcheverywhere.ScopeChooserAction;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
+import com.intellij.ide.util.scopeChooser.ScopeDescriptor;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileFilter;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.search.SearchScope;
 import com.intellij.util.Processor;
+import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -200,7 +210,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
     /**
      * 定义是否可以在“查找”工具窗口中显示找到的结果，对应搜索窗口右上角的图标
      *
-     * @return
+     * @return 返回true表示可以
      */
     public boolean showInFindResults() {
         return false;
@@ -210,13 +220,70 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         return false;
     }
 
-    public List<AnAction> getActions(@NotNull Runnable onChanged) {
+    public @NotNull List<AnAction> getActions(@NotNull Runnable onChanged) {
         if (log.isTraceEnabled()) {
             log.trace("getActions({}) ", onChanged);
         }
 
         this.onChanged = onChanged;
-        return new ArrayList<>();
+
+        List<ScopeDescriptor> descriptors = new ArrayList<>();
+        for (EasyBeanInfo beanInfo : this.plugin.getEasyContext().getBeanInfoList(MavenRepository.class)) {
+            descriptors.add(new ScopeDescriptor(new MavenSearchScope(beanInfo.getName())));
+        }
+
+        ArrayList<AnAction> result = new ArrayList<>();
+        result.add(new ScopeChooserAction() {
+
+            public boolean isEverywhere() {
+                return true;
+            }
+
+            public void setEverywhere(boolean everywhere) {
+            }
+
+            public boolean canToggleEverywhere() {
+                return true;
+            }
+
+            public @NotNull AnAction[] getChildren(AnActionEvent e) {
+                return new AnAction[0];
+            }
+
+            protected void onScopeSelected(@NotNull ScopeDescriptor o) {
+                plugin.setRepository(o.getDisplayName());
+                onChanged.run();
+            }
+
+            protected @NotNull ScopeDescriptor getSelectedScope() {
+                MavenRepository repository = plugin.getRepository();
+                if (repository != null) {
+                    String repositoryId = MavenRepository.DEFAULT_SELECTED_REPOSITORY;
+                    List<EasyBeanInfo> beanInfoList = plugin.getEasyContext().getBeanInfoList(MavenRepository.class);
+                    for (EasyBeanInfo beanInfo : beanInfoList) {
+                        if (beanInfo.getType().equals(repository.getClass())) {
+                            repositoryId = beanInfo.getName();
+                        }
+                    }
+
+                    for (ScopeDescriptor descriptor : descriptors) {
+                        if (descriptor.getDisplayName().equals(repositoryId)) {
+                            return descriptor;
+                        }
+                    }
+                }
+                return descriptors.get(0);
+            }
+
+            protected void onProjectScopeToggled() {
+            }
+
+            protected boolean processScopes(Processor<? super ScopeDescriptor> processor) {
+                return ContainerUtil.process(descriptors, processor);
+            }
+        });
+
+        return result;
     }
 
     public void dispose() {
@@ -225,5 +292,51 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
 
     public Runnable getRunnable() {
         return onChanged;
+    }
+
+    public static class MavenSearchScope extends GlobalSearchScope {
+
+        private final String name;
+
+        private final Icon icon;
+
+        public MavenSearchScope(@NotNull String name) {
+            super();
+            this.name = name;
+            this.icon = null;
+        }
+
+        public @NotNull String getDisplayName() {
+            return this.name;
+        }
+
+        public Icon getIcon() {
+            return this.icon;
+        }
+
+        public boolean isSearchInModuleContent(@NotNull Module aModule) {
+            return true;
+        }
+
+        public boolean isSearchInLibraries() {
+            return true;
+        }
+
+        public @NotNull SearchScope intersectWith(@NotNull SearchScope scope2) {
+            return scope2;
+        }
+
+        public @NotNull GlobalSearchScope union(@NotNull SearchScope scope) {
+            return this;
+        }
+
+        public boolean contains(VirtualFile file) {
+            System.out.println("contains " + file.getPath());
+            return true;
+        }
+
+        public @NotNull VirtualFileFilter and(@NotNull VirtualFileFilter other) {
+            return super.and(other);
+        }
     }
 }

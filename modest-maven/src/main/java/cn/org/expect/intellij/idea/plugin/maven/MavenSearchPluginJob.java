@@ -17,6 +17,7 @@ import cn.org.expect.maven.concurrent.MavenSearchEDTJob;
 import cn.org.expect.maven.concurrent.MavenSearchJob;
 import cn.org.expect.maven.concurrent.MavenSearchMoreJob;
 import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.MavenArtifactOperation;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
@@ -98,7 +99,6 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         // 必须要有以下菜单
         listPopupMenu.add(copyMaven);
         listPopupMenu.add(copyGradle);
-        listPopupMenu.add(openInBrowser);
 
         JPopupMenu itemPopupMenu = new JPopupMenu();
         JMenuItem repeat = new JMenuItem(MavenSearchMessage.get("maven.search.btn.refresh.query.text"));
@@ -315,25 +315,47 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
                         int x = JBList.getX() + 30;
                         int y = JBList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
 
+                        MavenArtifactOperation operation = plugin.getRepository().getSupported();
                         if (plugin.getLocalRepository().exists(artifact)) { // 工件在本地仓库中存在
-                            listPopupMenu.add(openFileSystem);
-                            listPopupMenu.add(deleteFile);
+                            if (operation.supportBrowser()) {
+                                listPopupMenu.add(openInBrowser);
+                            }
+
+                            if (operation.supportOpenInFileSystem()) {
+                                listPopupMenu.add(openFileSystem);
+                            }
+
+                            if (operation.supportDelete()) {
+                                listPopupMenu.add(deleteFile);
+                            }
+
                             listPopupMenu.remove(downloadFile);
                             listPopupMenu.remove(cancelDownload);
                         } else {
+                            if (operation.supportBrowser()) {
+                                listPopupMenu.add(openInBrowser);
+                            }
+
                             listPopupMenu.remove(openFileSystem);
                             listPopupMenu.remove(deleteFile);
 
                             if (plugin.getService().isRunning(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(artifact))) {
                                 listPopupMenu.remove(downloadFile);
-                                listPopupMenu.add(cancelDownload);
+
+                                if (operation.supportDownload()) {
+                                    listPopupMenu.add(cancelDownload);
+                                }
                             } else {
-                                listPopupMenu.add(downloadFile);
+                                if (operation.supportDownload()) {
+                                    listPopupMenu.add(downloadFile);
+                                }
                                 listPopupMenu.remove(cancelDownload);
                             }
                             listPopupMenu.remove(deleteFile);
                         }
-                        listPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
+
+                        // 在鼠标位置显示弹出菜单
+                        listPopupMenu.show(JBList, x, y);
                     }
                     return;
                 }
