@@ -24,7 +24,6 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.vfs.VirtualFileFilter;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.search.SearchScope;
 import com.intellij.util.Processor;
@@ -76,6 +75,10 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @return 过滤后的字符串
      */
     public @NotNull String filterControlSymbols(String pattern) {
+        if (log.isDebugEnabled()) {
+            log.debug("filterControlSymbols({}) ", pattern);
+        }
+
         if (pattern != null && pattern.length() > 0) {
             this.plugin.asyncSearch(MavenSearchUtils.parse(pattern)); // TODO 在 SearchField 上添加监听器，如果有输入文本，则执行查询
         }
@@ -247,6 +250,9 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
             }
 
             public @NotNull AnAction[] getChildren(AnActionEvent e) {
+                if (log.isDebugEnabled()) {
+                    log.debug("getChildren({}) ", e);
+                }
                 return new AnAction[0];
             }
 
@@ -278,7 +284,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
             protected void onProjectScopeToggled() {
             }
 
-            protected boolean processScopes(Processor<? super ScopeDescriptor> processor) {
+            protected boolean processScopes(@NotNull Processor<? super ScopeDescriptor> processor) {
                 return ContainerUtil.process(descriptors, processor);
             }
         });
@@ -322,21 +328,31 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
             return true;
         }
 
+        /**
+         * 交集
+         *
+         * @param scope2 搜索范围
+         * @return 集合
+         */
         public @NotNull SearchScope intersectWith(@NotNull SearchScope scope2) {
             return scope2;
         }
 
+        /**
+         * 并集
+         *
+         * @param scope 搜素范围
+         * @return 集合
+         */
         public @NotNull GlobalSearchScope union(@NotNull SearchScope scope) {
             return this;
         }
 
         public boolean contains(VirtualFile file) {
-            System.out.println("contains " + file.getPath());
+            if (log.isDebugEnabled()) {
+                log.debug("contains({}) ", file);
+            }
             return true;
-        }
-
-        public @NotNull VirtualFileFilter and(@NotNull VirtualFileFilter other) {
-            return super.and(other);
         }
     }
 }
