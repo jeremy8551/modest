@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchUtils;
-import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
@@ -69,7 +69,7 @@ public class MavenSearchPatternJob extends MavenSearchJob {
         MavenRepositoryDatabase database = search.getDatabase();
         MavenSearchResult result = database.select(patternFinal);
         try {
-            if (result == null || result.size() == 0) {
+            if (result == null || result.size() == 0 || result.isExpire(search.getContext().getExpireTimeMillis())) {
                 if (!MavenSearchUtils.isExtraSearch(patternFinal)) {
                     MavenSearchResult resultSet = this.getRemoteRepository().query(StringUtils.trimBlank(StringUtils.replaceAll(patternFinal, ".", "%2E")), 1);
                     if (resultSet == null) {
@@ -92,7 +92,7 @@ public class MavenSearchPatternJob extends MavenSearchJob {
                     MavenArtifact last = extraResult.getList().get(0);
                     List<MavenArtifact> list = new ArrayList<>();
                     list.add(last);
-                    SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, 1, 1);
+                    SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, 1, 1, System.currentTimeMillis());
                     database.insert(patternFinal, newResult);
                     return newResult;
                 } else {

@@ -18,6 +18,7 @@ import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.maven.concurrent.MavenSearchDownloadJob;
 import cn.org.expect.maven.concurrent.MavenSearchEDTJob;
 import cn.org.expect.maven.concurrent.MavenSearchExtraJob;
+import cn.org.expect.maven.concurrent.MavenSearchMoreJob;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
@@ -75,7 +76,12 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
 
         // 设置 more 按钮
         try {
-            model.setHasMore(plugin.getContributor(), (hasMore && model.getSize() > 0 && plugin.isAllTab()) || (plugin.isSelfTab() && foundNumber > size));
+            model.setHasMore(plugin.getContributor(), //
+                    !plugin.getService().isRunning(MavenSearchMoreJob.class, t -> true)  // 现在没有 more 功能运行
+                            && ((hasMore && model.getSize() > 0 && plugin.isAllTab()) // ALL标签页，有 more 按钮
+                            || (plugin.isSelfTab() && foundNumber > size) // 录数数 大于 查询结果
+                    ) //
+            );
             model.freezeElements();
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
@@ -114,8 +120,11 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
                     SearchNavigationHead head = (SearchNavigationHead) object;
                     if (selectHead.getArtifact().equals(head.getArtifact()) && head.getArtifact().isUnfold()) {
                         MavenArtifact artifact = selectHead.getArtifact();
-                        if (artifact.isUnfold() && plugin.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId()) == null) {
-                            head.setIcon(MavenSearchPluginIcon.LEFT_WAITING); // 设置左侧等待图标
+                        if (artifact.isUnfold()) {
+                            MavenSearchResult result = plugin.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId());
+                            if (result == null || result.isExpire(plugin.getContext().getExpireTimeMillis())) {
+                                head.setIcon(MavenSearchPluginIcon.LEFT_WAITING); // 设置左侧等待图标
+                            }
                         }
 
                         selectedIndex = i;
@@ -164,7 +173,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
             String artifactId = artifact.getArtifactId();
 
             MavenSearchResult itemResult = plugin.getDatabase().select(groupId, artifactId);
-            if (itemResult != null) {
+            if (itemResult != null && !itemResult.isExpire(plugin.getContext().getExpireTimeMillis())) {
                 head.setIcon(MavenSearchPluginIcon.LEFT_HAS_QUERY);
             }
 

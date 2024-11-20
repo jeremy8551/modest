@@ -26,12 +26,12 @@ public class MavenSearchExtraJob extends MavenSearchJob {
 
     public int execute() throws Exception {
         if (log.isDebugEnabled()) {
-            log.debug("{} search groupId: {}, artifactId: {} ..", this.getName(), groupId, artifactId);
+            log.debug("{} search groupId: {}, artifactId: {} ..", this.getName(), this.groupId, this.artifactId);
         }
 
         MavenSearch search = this.getSearch();
-        MavenSearchResult result = search.getDatabase().select(groupId, artifactId);
-        if (result != null) {
+        MavenSearchResult result = search.getDatabase().select(this.groupId, this.artifactId);
+        if (result != null && !result.isExpire(search.getContext().getExpireTimeMillis())) {
             search.showSearchResult();
             return 0;
         }

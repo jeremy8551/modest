@@ -212,6 +212,8 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     public void setStatusbarText(MavenSearchAdvertiser type, String message) {
         if (this.isSelfTab()) {
             this.getIdeaUI().setStatusBar(type, message);
+        } else { // 如果标签页不是自身，则将状态栏恢复到原来的样式
+            this.getIdeaUI().setStatusBar(null, "");
         }
     }
 
@@ -223,7 +225,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
     }
 
-    public synchronized void showSearchResult() {
+    public void showSearchResult() {
         MavenSearchResult result = this.context.getSearchResult();
         this.showSearchResult(result);
     }

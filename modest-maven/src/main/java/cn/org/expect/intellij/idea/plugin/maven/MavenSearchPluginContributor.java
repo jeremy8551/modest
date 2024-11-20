@@ -11,6 +11,7 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenRepository;
+import cn.org.expect.maven.repository.MavenSearchResult;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.ExtendedInfo;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
@@ -99,7 +100,9 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
                 artifact.setFold(false);
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
-                if (this.plugin.getDatabase().select(groupId, artifactId) == null) {
+
+                MavenSearchResult result = this.plugin.getDatabase().select(groupId, artifactId);
+                if (result == null || result.isExpire(this.plugin.getContext().getExpireTimeMillis())) {
                     head.setIcon(MavenSearchPluginIcon.LEFT_WAITING); // 更改为：等待图标
                     this.plugin.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
                 } else {

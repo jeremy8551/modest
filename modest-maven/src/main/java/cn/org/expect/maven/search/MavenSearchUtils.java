@@ -68,7 +68,6 @@ public class MavenSearchUtils {
         return StringUtils.indexOf(str, "<artifactId>", 0, true) != -1 || StringUtils.indexOf(str, "<groupId>", 0, true) != -1;
     }
 
-
     /**
      * 获取指定 URL 目录下的文件列表
      */

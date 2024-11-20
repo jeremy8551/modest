@@ -49,6 +49,6 @@ public class PatternResultAnalysis {
             MavenArtifact item = this.build(doc);
             list.add(item);
         }
-        return new SimpleMavenSearchResult(list, start + list.size() + 1, numFound);
+        return new SimpleMavenSearchResult(list, start + list.size() + 1, numFound, System.currentTimeMillis());
     }
 }

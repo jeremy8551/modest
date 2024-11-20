@@ -116,7 +116,7 @@ public class CentralRepository implements MavenRepository {
                 start = next.getStart();
             } while (result.getFoundNumber() > start);
             list.sort(EXTRA_RESULT_COMPARATOR);
-            return new SimpleMavenSearchResult(list, start, result.getFoundNumber());
+            return new SimpleMavenSearchResult(list, start, result.getFoundNumber(), System.currentTimeMillis());
         } else {
             list.sort(EXTRA_RESULT_COMPARATOR);
             return result;

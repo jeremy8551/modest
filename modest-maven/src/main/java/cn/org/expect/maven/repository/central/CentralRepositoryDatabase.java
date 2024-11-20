@@ -35,13 +35,20 @@ public class CentralRepositoryDatabase implements MavenRepositoryDatabase {
         this.serializer = new CentralRepositoryDatabaseSerializer(Settings.getUserHome(), this.patternMap, this.extraMap);
     }
 
-    public void insert(String id, MavenSearchResult resultSet) {
-        this.patternMap.put(id, resultSet);
+    public void insert(String pattern, MavenSearchResult result) {
+        this.patternMap.put(pattern, result);
         this.store();
     }
 
-    public MavenSearchResult select(String id) {
-        return this.patternMap.get(id);
+    public MavenSearchResult select(String pattern) {
+        return this.patternMap.get(pattern);
+    }
+
+    public void delete(String pattern) {
+        if (StringUtils.isNotBlank(pattern)) {
+            this.patternMap.remove(pattern);
+            this.store();
+        }
     }
 
     public void insert(String groupId, String artifactId, MavenSearchResult result) {
@@ -56,13 +63,6 @@ public class CentralRepositoryDatabase implements MavenRepositoryDatabase {
             return map.get(artifactId);
         }
         return null;
-    }
-
-    public void delete(String id) {
-        if (StringUtils.isNotBlank(id)) {
-            this.patternMap.remove(id);
-            this.store();
-        }
     }
 
     public void clear() {

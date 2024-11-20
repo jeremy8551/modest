@@ -83,7 +83,7 @@ public class LocalRepositoryDatabase implements MavenRepositoryDatabase {
             }
         }
 
-        return new SimpleMavenSearchResult(new ArrayList<>(mas), mas.size(), mas.size());
+        return new SimpleMavenSearchResult(new ArrayList<>(mas), mas.size(), mas.size(), System.currentTimeMillis());
     }
 
     public void insert(String id, MavenSearchResult resultSet) {

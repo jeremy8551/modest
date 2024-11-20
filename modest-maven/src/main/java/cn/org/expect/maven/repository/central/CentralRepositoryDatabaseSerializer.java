@@ -98,7 +98,7 @@ public class CentralRepositoryDatabaseSerializer {
     }
 
     private Map<String, Map<String, MavenSearchResult>> deserializeArtifactTable(String jsonStr) {
-        Map<String, Map<String, MavenSearchResult>> map = new ConcurrentHashMap<String, Map<String, MavenSearchResult>>();
+        Map<String, Map<String, MavenSearchResult>> map = new ConcurrentHashMap<>();
         JSONObject json = new JSONObject(jsonStr);
         Iterator<String> keys = json.keys();
         while (keys.hasNext()) {
@@ -112,6 +112,8 @@ public class CentralRepositoryDatabaseSerializer {
                 JSONObject aObj = obj.getJSONObject(aid);
                 int start = aObj.getInt("start");
                 int foundNumber = aObj.getInt("foundNumber");
+                long queryTime = obj.getLong("queryTime");
+
                 List<MavenArtifact> list = new ArrayList<>();
                 JSONArray listArray = aObj.getJSONArray("list");
                 for (int i = 0; i < listArray.length(); i++) {
@@ -126,8 +128,8 @@ public class CentralRepositoryDatabaseSerializer {
                     list.add(new MavenArtifactImpl(groupId, artifactId, version, type, timestamp, versionCount));
                 }
 
-                Map<String, MavenSearchResult> groupMap = map.computeIfAbsent(gid, k -> new LinkedHashMap<String, MavenSearchResult>());
-                groupMap.put(aid, new SimpleMavenSearchResult(list, start, foundNumber));
+                Map<String, MavenSearchResult> groupMap = map.computeIfAbsent(gid, k -> new LinkedHashMap<>());
+                groupMap.put(aid, new SimpleMavenSearchResult(list, start, foundNumber, queryTime));
             }
         }
         return map;
@@ -143,6 +145,7 @@ public class CentralRepositoryDatabaseSerializer {
             JSONObject obj = json.getJSONObject(pattern);
             int start = obj.getInt("start");
             int foundNumber = obj.getInt("foundNumber");
+            long queryTime = obj.getLong("queryTime");
 
             List<MavenArtifact> list = new ArrayList<>();
             JSONArray listArray = obj.getJSONArray("list");
@@ -158,7 +161,7 @@ public class CentralRepositoryDatabaseSerializer {
                 list.add(new MavenArtifactImpl(groupId, artifactId, version, type, timestamp, versionCount));
             }
 
-            map.put(pattern, new SimpleMavenSearchResult(list, start, foundNumber));
+            map.put(pattern, new SimpleMavenSearchResult(list, start, foundNumber, queryTime));
         }
         return map;
     }

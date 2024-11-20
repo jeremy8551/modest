@@ -55,6 +55,9 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 查询结果的排序权重 */
     private volatile int elementPriority;
 
+    /** 失效时间（单位毫秒） */
+    private volatile long expireTimeMillis;
+
     public MavenSearchPluginContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
         this.inputIntervalTime = 300;
@@ -65,6 +68,7 @@ public class MavenSearchPluginContext implements MavenSearchContext {
         this.tabName = "Repository";
         this.elementPriority = 50;
         this.tabVisible = true;
+        this.expireTimeMillis = 1000 * 3600 * 24; // 默认一天有效
     }
 
     public AnActionEvent getActionEvent() {
@@ -191,5 +195,13 @@ public class MavenSearchPluginContext implements MavenSearchContext {
 
     public void setTabVisible(boolean tabVisible) {
         this.tabVisible = tabVisible;
+    }
+
+    public long getExpireTimeMillis() {
+        return expireTimeMillis;
+    }
+
+    public void setExpireTimeMillis(long expireTimeMillis) {
+        this.expireTimeMillis = expireTimeMillis;
     }
 }

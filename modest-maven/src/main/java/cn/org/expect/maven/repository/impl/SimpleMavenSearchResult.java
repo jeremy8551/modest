@@ -20,14 +20,18 @@ public class SimpleMavenSearchResult implements MavenSearchResult {
     /** 总记录数 */
     private final int foundNumber;
 
+    /** 查询时间 */
+    private final long queryTime;
+
     public SimpleMavenSearchResult() {
-        this(new ArrayList<>(0), 0, 0);
+        this(new ArrayList<>(0), 0, 0, System.currentTimeMillis());
     }
 
-    public SimpleMavenSearchResult(List<MavenArtifact> list, int start, int foundNumber) {
+    public SimpleMavenSearchResult(List<MavenArtifact> list, int start, int foundNumber, long queryTime) {
         this.list = Ensure.notNull(list);
         this.start = start;
         this.foundNumber = foundNumber;
+        this.queryTime = queryTime;
     }
 
     public List<MavenArtifact> getList() {
@@ -40,6 +44,10 @@ public class SimpleMavenSearchResult implements MavenSearchResult {
 
     public int getFoundNumber() {
         return foundNumber;
+    }
+
+    public long getQueryTime() {
+        return queryTime;
     }
 
     public int size() {

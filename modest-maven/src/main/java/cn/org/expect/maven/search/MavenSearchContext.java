@@ -52,4 +52,11 @@ public interface MavenSearchContext {
      * @return 标识，如: central、aliyun
      */
     String getRepositoryId();
+
+    /**
+     * 返回查询结果的超时时间，单位毫秒
+     *
+     * @return 超时时间
+     */
+    long getExpireTimeMillis();
 }

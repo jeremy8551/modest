@@ -52,4 +52,21 @@ public interface MavenSearchResult {
      * @return 返回true表示添加成功 false表示失败
      */
     boolean addArtifact(MavenArtifact artifact);
+
+    /**
+     * 返回查询时间
+     *
+     * @return 查询时间
+     */
+    long getQueryTime();
+
+    /**
+     * 判断查询结果是否过期
+     *
+     * @param expireTimeMillis 过期时间，单位毫秒
+     * @return 返回true表示过期，false表示未过期
+     */
+    default boolean isExpire(long expireTimeMillis) {
+        return System.currentTimeMillis() - this.getQueryTime() >= expireTimeMillis;
+    }
 }

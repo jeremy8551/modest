@@ -262,6 +262,8 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
             plugin.getIdeaUI().getSearchField().setText("");
             plugin.getContext().setNavigationResultSet(null);
             plugin.getContext().setSearchResult(null);
+            plugin.getContext().setSelectNavigationHead(null);
+            plugin.getContext().setSelectNavigationItem(null);
             plugin.showSearchResult(); // 刷新一个空结果
             plugin.sendNotification(MavenSearchNotification.NORMAL, clearCache.getText());
         });
@@ -292,13 +294,13 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
                         return;
                     }
 
-                    // 左键点击导航项，隐藏右键菜单
-                    Object selectedObject = listModel.getElementAt(selectedIndex);
-                    if (selectedObject instanceof SearchNavigationItem) {
-                        if (listPopupMenu.isVisible()) {
-                            listPopupMenu.setVisible(false);
-                        }
-                    }
+//                    // 左键点击导航项，隐藏右键菜单
+//                    Object selectedObject = listModel.getElementAt(selectedIndex);
+//                    if (selectedObject instanceof SearchNavigationItem) {
+//                        if (listPopupMenu.isVisible()) {
+//                            listPopupMenu.setVisible(false);
+//                        }
+//                    }
                     return;
                 }
 
