@@ -31,8 +31,6 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
 
     private final MavenSearchPlugin plugin;
 
-    private final MavenSearchResult result;
-
     private final List<SearchNavigation> searchNavigationList;
 
     private final List<SearchEverywhereFoundElementInfo> elementInfoList;
@@ -40,24 +38,26 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
     public MavenSearchRepaintJob(MavenSearchPlugin plugin, MavenSearchResult result) {
         super(null);
         this.plugin = Ensure.notNull(plugin);
-        this.result = Ensure.notNull(result);
         this.searchNavigationList = new ArrayList<>(30);
         this.elementInfoList = new ArrayList<>();
-        this.setRunnable(this::paint);
+        this.setRunnable(() -> this.paint(result));
     }
 
-    protected void paint() {
-        if (result == null) {
-            log.warn("repaint fail, result is null!");
-            return;
-        }
-
+    protected void paint(MavenSearchResult result) {
         // 从 SearchEveryWhere UI 中读取 JList 与 Model
         JBList<Object> JBList = plugin.getIdeaUI().getJBList();
         SearchListModel model = plugin.getIdeaUI().getSearchListModel();
+        boolean hasMore = this.hasMore(model);
 
         // 处理查询结果
-        this.processSearchResult();
+        int foundNumber = 0;
+        int size = 0;
+
+        if (result != null) {
+            foundNumber = result.getFoundNumber();
+            size = result.size();
+            this.processSearchResult(result);
+        }
 
         /**
          * 将查询结果转为导航记录，目标是提供给 {@link MavenSearchPluginChooseContributor} 使用
@@ -75,7 +75,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
 
         // 设置 more 按钮
         try {
-            model.setHasMore(plugin.getContributor(), result.getFoundNumber() > result.size());
+            model.setHasMore(plugin.getContributor(), (hasMore && model.getSize() > 0 && plugin.isAllTab()) || (plugin.isSelfTab() && foundNumber > size));
             model.freezeElements();
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
@@ -94,7 +94,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
         }
 
         // 设置广告信息
-        plugin.setStatusbarText(MavenSearchAdvertiser.NORMAL, MavenSearchMessage.get("maven.search.status.text", result.getFoundNumber(), result.size()));
+        plugin.setStatusbarText(MavenSearchAdvertiser.NORMAL, MavenSearchMessage.get("maven.search.status.text", foundNumber, size));
     }
 
     /**
@@ -150,11 +150,11 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
     /**
      * 将查询结果转为导航记录
      */
-    public void processSearchResult() {
+    public void processSearchResult(MavenSearchResult result) {
         int priority = this.plugin.getContext().getElementPriority();
         MavenSearchPluginContributor contributor = plugin.getContributor();
 
-        java.util.List<MavenArtifact> list = this.result.getList();
+        java.util.List<MavenArtifact> list = result.getList();
         for (MavenArtifact artifact : list) {
             SearchNavigationHead head = new SearchNavigationHead(artifact);
             this.elementInfoList.add(new SearchEverywhereFoundElementInfo(head, priority, contributor));
@@ -239,5 +239,14 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
                 log.error(e.getLocalizedMessage(), e);
             }
         }
+    }
+
+    protected boolean hasMore(SearchListModel model) {
+        for (int i = model.getSize() - 1; i >= 0; i--) {
+            if (model.isMoreElement(i)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

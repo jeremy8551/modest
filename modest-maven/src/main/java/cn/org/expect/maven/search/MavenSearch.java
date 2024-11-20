@@ -25,14 +25,24 @@ public interface MavenSearch {
     MavenSearchContext getContext();
 
     /**
-     * 多线程执行模糊搜索
+     * 根据输入设备中的文本，异步进行查询
+     */
+    void asyncSearch();
+
+    /**
+     * 刷新查询结果（异步执行删除缓存，再重新查询）
+     */
+    void asyncRefresh();
+
+    /**
+     * 异步执行模糊搜索
      *
      * @param pattern 字符串
      */
     void asyncSearch(String pattern);
 
     /**
-     * 多线程执行精确搜索
+     * 异步执行精确搜索
      *
      * @param groupId    域名
      * @param artifactId 工件名
@@ -80,11 +90,6 @@ public interface MavenSearch {
     void setStatusbarText(MavenSearchAdvertiser type, String message);
 
     /**
-     * 清空查询结果列表
-     */
-    void clearSearchResult();
-
-    /**
      * 使用最新的查询结果，渲染 UI 界面
      */
     void showSearchResult();
@@ -98,7 +103,8 @@ public interface MavenSearch {
 
     /**
      * 多线程执行任务 <br>
-     * 如果想要使用官方的 EDT 线程，需要让 task 实现 {@linkplain EDTJob} 接口
+     * 如果想要使用官方的 EDT 线程，需要让 task 实现 {@linkplain EDTJob} 接口 <br>
+     * 想要刷新 Idea 查询结果的 JList，需要与 Idea 使用同一个数据库连接池：{@link com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI#rebuildListAlarm}，否则多线程刷新 JList 时会出现混乱，感谢我主 耶稣基督 带领我发现解决这个问题
      *
      * @param command 任务
      */

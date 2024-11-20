@@ -44,6 +44,7 @@ public class MavenSearchInputJob extends MavenSearchJob {
         while (!this.terminate) {
             try {
                 MavenSearchPatternJob job = this.queue.take();
+                String pattern = job.getPattern();
                 MavenSearch search = job.getSearch();
 
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
@@ -51,7 +52,6 @@ public class MavenSearchInputJob extends MavenSearchJob {
 
                 // 如果队列为空，表示在等待期间没有添加查询任务，则直接执行查询
                 if (this.queue.isEmpty()) {
-                    String pattern = job.getPattern();
                     search.setProgressText(MavenSearchMessage.get("maven.search.progress.text"));
                     search.setStatusbarText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern)));
                     search.execute(job);

@@ -249,18 +249,20 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
 
         // 重新执行查询
         repeat.addActionListener(e -> {
-            plugin.repeat();
+            plugin.asyncRefresh();
             plugin.sendNotification(MavenSearchNotification.NORMAL, repeat.getText());
         });
 
         // 清空所有缓存
         clearCache.addActionListener(e -> {
             plugin.getDatabase().clear();
-            plugin.clearSearchResult(); // 刷新一个空结果
             plugin.setProgressText("");
             plugin.setStatusbarText(null, "");
+            plugin.getContext().setSearchText(null);
             plugin.getIdeaUI().getSearchField().setText("");
             plugin.getContext().setNavigationResultSet(null);
+            plugin.getContext().setSearchResult(null);
+            plugin.showSearchResult(); // 刷新一个空结果
             plugin.sendNotification(MavenSearchNotification.NORMAL, clearCache.getText());
         });
 
@@ -275,7 +277,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
                 if (e.getButton() == MouseEvent.BUTTON1) {
 
                     // 点击 more 按钮
-                    if (!plugin.notMavenSearchTab() && selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) {
+                    if (plugin.isSelfTab() && selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) {
                         String pattern = context.getSearchText();
                         MavenSearchResult result = plugin.getDatabase().select(pattern);
                         if (result != null) { // 判断是否满足执行点击更多链接的条件
@@ -365,15 +367,11 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         // 在搜索输入框下方，显示菜单
         try {
             JTextField searchField = ui.getSearchField();
-            searchField.addKeyListener(new InputFieldListener(plugin)); // 打开搜索对话框后，点击 Shift 快捷键自动切换 Tab 页
+            searchField.addKeyListener(new InputFieldListener(plugin, searchField)); // 打开搜索对话框后，点击 Shift 快捷键自动切换 Tab 页
             searchField.addMouseListener(new MouseAdapter() {
 
                 public void mousePressed(MouseEvent e) {
-                    if (plugin.notMavenSearchTab()) {
-                        return;
-                    }
-
-                    if (e.getButton() == MouseEvent.BUTTON3) { // 右键，弹出菜单
+                    if (plugin.isSelfTab() && e.getButton() == MouseEvent.BUTTON3) { // 输入框右键，弹出菜单
                         int x = searchField.getX();
                         int y = searchField.getY() - 30;
                         itemPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
@@ -424,8 +422,15 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
                     // 自动切换 Tab 页
                     if (context.isAutoSwitchTab() && MavenSearchUtils.isXML(editorSelectText)) {
                         plugin.getIdeaUI().switchToTab(plugin.getContributor().getSearchProviderId());
+                        plugin.asyncSearch();
                     }
                 }));
+            } else {
+                // 如果未选中任何内容，则自动搜索输入框中的文本
+                String text = plugin.getIdeaUI().getSearchField().getText();
+                if (StringUtils.isNotBlank(text) && plugin.canSearch()) {
+                    plugin.asyncSearch();
+                }
             }
         }
     }

@@ -11,7 +11,6 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenRepository;
-import cn.org.expect.maven.search.MavenSearchUtils;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.ExtendedInfo;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
@@ -78,10 +77,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         if (log.isDebugEnabled()) {
             log.debug("filterControlSymbols({}) ", pattern);
         }
-
-        if (pattern != null && pattern.length() > 0) {
-            this.plugin.asyncSearch(MavenSearchUtils.parse(pattern)); // TODO 在 SearchField 上添加监听器，如果有输入文本，则执行查询
-        }
         return pattern;
     }
 
@@ -143,17 +138,16 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
     }
 
     public ExtendedInfo createExtendedInfo() {
-        if (plugin.notMavenSearchTab()) {
-            return null;
-        }
-
-        return new ExtendedInfo(this.plugin.getIdeaUI()::getAdvertiserText, (o -> new AnAction() {
-            public void actionPerformed(@NotNull AnActionEvent event) {
-                if (log.isDebugEnabled()) {
-                    log.debug("ExtendedInfo actionPerformed()");
+        if (plugin.isSelfTab()) {
+            return new ExtendedInfo(this.plugin.getIdeaUI()::getAdvertiserText, (o -> new AnAction() {
+                public void actionPerformed(@NotNull AnActionEvent event) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("ExtendedInfo actionPerformed()");
+                    }
                 }
-            }
-        }));
+            }));
+        }
+        return null;
     }
 
     public boolean isMultiSelectionSupported() {
@@ -219,10 +213,21 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         return false;
     }
 
+    /**
+     * 是否支持查询空字符串
+     *
+     * @return 返回true表示支持
+     */
     public boolean isEmptyPatternSupported() {
         return false;
     }
 
+    /**
+     * 搜索界面UI右上角的按钮：可以选择不同的 Maven仓库
+     *
+     * @param onChanged 重建 JList 的事件
+     * @return 处理逻辑（包含UI）集合
+     */
     public @NotNull List<AnAction> getActions(@NotNull Runnable onChanged) {
         if (log.isTraceEnabled()) {
             log.trace("getActions({}) ", onChanged);
@@ -249,16 +254,26 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
                 return true;
             }
 
+            /**
+             * 在下拉列表中，光标覆盖选项时出发的事件
+             * @param e 事件
+             * @return 事件的处理逻辑
+             */
             public @NotNull AnAction[] getChildren(AnActionEvent e) {
-                if (log.isDebugEnabled()) {
-                    log.debug("getChildren({}) ", e);
+                if (log.isTraceEnabled()) {
+                    log.trace("getChildren({}) ", e);
                 }
                 return new AnAction[0];
             }
 
-            protected void onScopeSelected(@NotNull ScopeDescriptor o) {
-                plugin.setRepository(o.getDisplayName());
-                onChanged.run();
+            /**
+             * 在下拉列表中，选中某一个选项触发的事件
+             * @param descriptor 选项信息
+             */
+            protected void onScopeSelected(@NotNull ScopeDescriptor descriptor) {
+                plugin.setRepository(descriptor.getDisplayName());
+                onChanged.run(); // 更新：搜索框右侧的广告信息
+                plugin.asyncSearch();
             }
 
             protected @NotNull ScopeDescriptor getSelectedScope() {
@@ -294,10 +309,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
 
     public void dispose() {
         super.dispose();
-    }
-
-    public Runnable getRunnable() {
-        return onChanged;
     }
 
     public static class MavenSearchScope extends GlobalSearchScope {

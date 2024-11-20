@@ -15,8 +15,8 @@ import com.intellij.openapi.actionSystem.KeyboardShortcut;
 import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.keymap.KeymapUtil;
 
-public class MavenSearchUtils {
-    private final static Log log = LogFactory.getLog(MavenSearchUtils.class);
+public class MavenSearchPluginUtils {
+    private final static Log log = LogFactory.getLog(MavenSearchPluginUtils.class);
 
     public static NotificationType toNotification(MavenSearchNotification type) {
         if (type == null) {

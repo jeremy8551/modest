@@ -58,7 +58,7 @@ public class IdeaSearchUI {
             return;
         }
 
-        Icon icon = MavenSearchUtils.getIcon(type);
+        Icon icon = MavenSearchPluginUtils.getIcon(type);
         String fontColor = MavenSearchAdvertiser.ERROR == type ? "red" : "orange";
         String text = new MessageFormatter("<html><span style='color:{};'>{}</span></html>").fill(fontColor, message);
 
@@ -72,6 +72,7 @@ public class IdeaSearchUI {
                 JBLabel label = JavaDialectFactory.get().getField(info, "text");
                 label.setIcon(icon);
                 label.setText(text);
+                label.repaint();
                 return;
             }
 

@@ -88,10 +88,11 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     }
 
     public synchronized void setSearchResult(MavenSearchResult result) {
-        Ensure.notNull(result);
-        List<MavenArtifact> list = result.getList();
-        for (MavenArtifact artifact : list) {
-            artifact.setFold(true);
+        if (result != null) {
+            List<MavenArtifact> list = result.getList();
+            for (MavenArtifact artifact : list) {
+                artifact.setFold(true);
+            }
         }
         this.mavenSearchResult = result;
     }

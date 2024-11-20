@@ -4,7 +4,7 @@ import java.io.File;
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchUtils;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginUtils;
 import cn.org.expect.maven.repository.MavenArtifact;
 import com.intellij.util.TextWithIcon;
 
@@ -30,7 +30,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
     }
 
     public TextWithIcon getRightIcon() {
-        String version = MavenSearchUtils.parseJDKVersion(this.jarfile);
+        String version = MavenSearchPluginUtils.parseJDKVersion(this.jarfile);
         return new TextWithIcon(version == null ? "" : version + " ", this.icon);
     }
 }

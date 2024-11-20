@@ -29,8 +29,8 @@ public class MavenSearchPluginChooseContributor implements ChooseByNameContribut
      * @return 在搜索结果 ALL 选项卡中显示的记录
      */
     public synchronized String @NotNull [] getNames(Project project, boolean includeNonProjectItems) {
-        if (log.isDebugEnabled()) {
-            log.debug("getNames({}, {}) ", project.getName(), includeNonProjectItems);
+        if (log.isTraceEnabled()) {
+            log.trace("getNames({}, {}) ", project.getName(), includeNonProjectItems);
         }
 
         SearchNavigationResultSet resultSet = this.plugin.getContext().getNavigationResultSet();
@@ -47,11 +47,12 @@ public class MavenSearchPluginChooseContributor implements ChooseByNameContribut
         }
 
         SearchNavigationResultSet resultSet = this.plugin.getContext().getNavigationResultSet();
-        SearchNavigation navigation = resultSet.getNavigation(name);
-        if (navigation != null) {
-            return navigation.getItems();
-        } else {
-            return new NavigationItem[]{new EmptySearchNavigation()};
+        if (resultSet != null) {
+            SearchNavigation navigation = resultSet.getNavigation(name);
+            if (navigation != null) {
+                return navigation.getItems();
+            }
         }
+        return new NavigationItem[]{new EmptySearchNavigation()};
     }
 }
