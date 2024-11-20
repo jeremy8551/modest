@@ -10,4 +10,11 @@ public interface LocalRepositoryConfig {
      * @return 目录
      */
     File getRepository();
+
+    /**
+     * 设置本地仓库目录
+     *
+     * @param dir 目录
+     */
+    void setRepository(File dir);
 }

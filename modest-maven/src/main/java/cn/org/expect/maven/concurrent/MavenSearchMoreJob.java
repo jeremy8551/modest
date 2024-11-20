@@ -6,7 +6,7 @@ import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.maven.search.MavenSearch;
-import cn.org.expect.maven.search.db.MavenSearchDatabase;
+import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.util.StringUtils;
 
 public class MavenSearchMoreJob extends MavenSearchPatternJob {
@@ -21,7 +21,7 @@ public class MavenSearchMoreJob extends MavenSearchPatternJob {
         }
 
         MavenSearch search = this.getSearch();
-        MavenSearchDatabase database = search.getDatabase();
+        MavenRepositoryDatabase database = search.getDatabase();
         MavenSearchResult result = database.select(this.pattern);
         if (result != null && result.getFoundNumber() > result.size()) { // 还有未加载的数据
             int start = result.getStart();

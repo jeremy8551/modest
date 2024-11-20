@@ -1,25 +1,23 @@
-package cn.org.expect.maven.search.db;
+package cn.org.expect.maven.repository.central;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 
+import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.MavenRepository;
+import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.search.MavenSearch;
-import cn.org.expect.util.Ensure;
+import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 
-public class MavenSearchDatabaseImpl implements MavenSearchDatabase {
-    protected final static Log log = LogFactory.getLog(MavenSearchDatabaseImpl.class);
+public class CentralRepositoryDatabase implements MavenRepositoryDatabase {
+    protected final static Log log = LogFactory.getLog(CentralRepositoryDatabase.class);
 
-    protected MavenSearch search;
-
-    /** 本地仓库 */
-    private final MavenRepository localRepository;
+    /** 线程池 */
+    protected ExecutorService executorService;
 
     /** 模糊搜索词 pattern 与 {@linkplain MavenSearchResult} 的映射 */
     protected final Map<String, MavenSearchResult> patternMap;
@@ -28,14 +26,13 @@ public class MavenSearchDatabaseImpl implements MavenSearchDatabase {
     protected final Map<String, Map<String, MavenSearchResult>> extraMap;
 
     /** 序列化与反序列化工具 */
-    protected final DatabaseSerializer serializer;
+    protected final CentralRepositoryDatabaseSerializer serializer;
 
-    public MavenSearchDatabaseImpl(MavenSearch search) {
+    public CentralRepositoryDatabase(ThreadSource threadSource) {
         this.patternMap = new ConcurrentHashMap<>();
         this.extraMap = new ConcurrentHashMap<>();
-        this.search = Ensure.notNull(search);
-        this.localRepository = search.getLocalRepository();
-        this.serializer = new DatabaseSerializer(new File(this.localRepository.getAddress()), this.patternMap, this.extraMap);
+        this.executorService = threadSource.getExecutorService();
+        this.serializer = new CentralRepositoryDatabaseSerializer(Settings.getUserHome(), this.patternMap, this.extraMap);
     }
 
     public void insert(String id, MavenSearchResult resultSet) {
@@ -75,6 +72,6 @@ public class MavenSearchDatabaseImpl implements MavenSearchDatabase {
     }
 
     public void store() {
-        this.search.execute(() -> this.serializer.save(new File(this.localRepository.getAddress()), this.patternMap, this.extraMap));
+        this.executorService.execute(() -> this.serializer.save(this.patternMap, this.extraMap));
     }
 }

@@ -11,36 +11,23 @@ import cn.org.expect.util.Ensure;
 import cn.org.expect.util.Settings;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class DefaultLocalRepositoryConfig implements LocalRepositoryConfig {
-    private final static Log log = LogFactory.getLog(DefaultLocalRepositoryConfig.class);
+public class SimpleLocalRepositoryConfig implements LocalRepositoryConfig {
+    private final static Log log = LogFactory.getLog(SimpleLocalRepositoryConfig.class);
 
-    private static volatile File REPOSITORY;
+    private volatile File repository;
 
-    private static volatile DefaultLocalRepositoryConfig INSTANCE;
-
-    public static LocalRepositoryConfig getInstance(AnActionEvent event) {
-        if (INSTANCE == null) {
-            synchronized (DefaultLocalRepositoryConfig.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = new DefaultLocalRepositoryConfig(event);
-                }
-            }
-        }
-        return INSTANCE;
-    }
-
-    protected DefaultLocalRepositoryConfig(AnActionEvent event) {
+    public SimpleLocalRepositoryConfig(AnActionEvent event) {
         // 如果idea中安装了 Maven 插件
         if (ClassUtils.forName("org.jetbrains.idea.maven.project.MavenProjectsManager") != null) {
-            MavenSettingListener.start(event);
+            MavenSettingListener.start(event, this);
         }
 
         // 如果 idea 中没有安装 maven 插件
-        if (REPOSITORY == null) {
+        if (this.repository == null) {
             this.findLocalRepository();
         }
 
-        if (REPOSITORY == null) {
+        if (this.repository == null) {
             log.warn("No Maven local repository found!");
         }
     }
@@ -50,16 +37,16 @@ public class DefaultLocalRepositoryConfig implements LocalRepositoryConfig {
         if (m2.exists() && m2.isDirectory()) {
             File repository = new File(m2, "repository");
             if (repository.exists() && repository.isDirectory()) {
-                DefaultLocalRepositoryConfig.REPOSITORY = repository;
+                this.repository = repository;
             }
         }
     }
 
     public File getRepository() {
-        return REPOSITORY;
+        return this.repository;
     }
 
-    public static void setRepository(File dir) {
-        DefaultLocalRepositoryConfig.REPOSITORY = Ensure.notNull(dir);
+    public void setRepository(File dir) {
+        this.repository = Ensure.notNull(dir);
     }
 }

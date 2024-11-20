@@ -1,14 +1,9 @@
 package cn.org.expect.intellij.idea.plugin.maven.listener;
 
 import java.io.File;
-import java.io.IOException;
 
-import cn.org.expect.intellij.idea.plugin.maven.DefaultLocalRepositoryConfig;
-import cn.org.expect.log.Log;
-import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.search.db.DatabaseSerializer;
+import cn.org.expect.maven.repository.local.LocalRepositoryConfig;
 import cn.org.expect.util.Ensure;
-import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -20,7 +15,6 @@ import org.jetbrains.idea.maven.project.MavenProjectsManager;
  * Idea 的 Maven 插件监听器，如果 Settings 中 Maven 本地仓库位置发生变化时进行通知
  */
 public class MavenSettingListener implements MavenGeneralSettings.Listener, Disposable {
-    private final static Log log = LogFactory.getLog(MavenSettingListener.class);
 
     private static volatile MavenSettingListener INSTANCE;
 
@@ -29,7 +23,7 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
      *
      * @param event 事件
      */
-    public static void start(AnActionEvent event) {
+    public static void start(AnActionEvent event, LocalRepositoryConfig config) {
         if (INSTANCE == null) {
             synchronized (MavenSettingListener.class) {
                 if (INSTANCE == null) {
@@ -37,9 +31,14 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
                 }
             }
         }
+
+        INSTANCE.setEvent(event);
+        INSTANCE.setConfig(config);
     }
 
-    private final AnActionEvent event;
+    private volatile AnActionEvent event;
+
+    private volatile LocalRepositoryConfig config;
 
     protected MavenSettingListener(AnActionEvent event) {
         this.event = Ensure.notNull(event);
@@ -52,44 +51,16 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
         }
     }
 
-    public void changed() {
-        File oldDir = DatabaseSerializer.getStoreDir(DefaultLocalRepositoryConfig.getInstance(this.event).getRepository());
-        this.execute(this.event);
-        File newDir = DatabaseSerializer.getStoreDir(DefaultLocalRepositoryConfig.getInstance(this.event).getRepository());
-
-        if (log.isDebugEnabled()) {
-            log.debug("move cache files from {} to {}", oldDir, newDir);
-        }
-
-        // 本地仓库路径变更后，需要迁移缓存文件
-        if (newDir != null && oldDir != null && !newDir.equals(oldDir)) {
-            File file1 = new File(oldDir, DatabaseSerializer.PATTERN_TABLE);
-            File file2 = new File(oldDir, DatabaseSerializer.ARTIFACT_TABLE);
-            try {
-                if (this.move(file1, newDir) && this.move(file2, newDir)) {
-                    FileUtils.deleteDirectory(oldDir);
-                }
-            } catch (Throwable e) {
-                log.error(e.getLocalizedMessage(), e);
-            }
-        }
+    public void setEvent(AnActionEvent event) {
+        this.event = event;
     }
 
-    private boolean move(File file, File newDir) throws IOException {
-        if (file.exists()) {
-            File newfile = new File(newDir, file.getName());
-            if (newfile.exists()) {
-                if (FileUtils.copy(file, newfile) && file.delete()) {
-                    return true;
-                }
-            } else {
-                if (file.renameTo(newfile)) {
-                    return true;
-                }
-            }
-        }
+    public void setConfig(LocalRepositoryConfig config) {
+        this.config = config;
+    }
 
-        return !file.exists();
+    public void changed() {
+        this.execute(this.event);
     }
 
     protected MavenProjectsManager execute(AnActionEvent event) {
@@ -111,7 +82,7 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
             }
 
             if (StringUtils.isNotBlank(filepath)) {
-                DefaultLocalRepositoryConfig.setRepository(new File(filepath)); // 获取 Maven 本地仓库路径
+                this.config.setRepository(new File(filepath)); // 获取 Maven 本地仓库路径
             }
 
             return manager;

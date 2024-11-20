@@ -8,6 +8,13 @@ import cn.org.expect.concurrent.Terminate;
 public interface MavenRepository extends Terminate {
 
     /**
+     * 返回数据库
+     *
+     * @return 数据库
+     */
+    MavenRepositoryDatabase getDatabase();
+
+    /**
      * 返回 Maven 仓库的 URL 地址
      *
      * @return URL地址

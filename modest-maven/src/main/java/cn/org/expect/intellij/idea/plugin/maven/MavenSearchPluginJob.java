@@ -81,7 +81,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         SearchEverywhereUI ui = manager.getCurrentlyShownUI(); // TODO 修改注册项后，再打开查询界面，这个位置报错 isShown
         plugin.getIdeaUI().setSearchEverywhereUI(ui);
         ui.addSearchListener(new SearchListener(plugin));
-        plugin.setService(JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
+        plugin.getService().setParameter("Alarm", JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
     }
 
     protected void setPopupMenuUI(MavenSearchPlugin plugin) {
@@ -165,7 +165,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
 
             MavenArtifact artifact = selectItem.getArtifact();
             List<String> list = new ArrayList<>();
-            list.add(plugin.getRemoteRepository().getAddress());
+            list.add(plugin.getRepository().getAddress());
             StringUtils.split(artifact.getGroupId(), '.', list);
             list.add(artifact.getArtifactId());
             list.add(artifact.getVersion());

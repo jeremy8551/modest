@@ -16,6 +16,7 @@ repositories {
 
 dependencies {
     implementation("cn.org.expect:modest-engine:1.0.0")
+    implementation("cn.org.expect:modest-test:1.0.0")
     implementation("org.jetbrains:annotations:23.0.0")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("org.json:json:20210307")

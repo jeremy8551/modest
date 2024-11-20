@@ -1,4 +1,4 @@
-package cn.org.expect.maven.search.db;
+package cn.org.expect.maven.repository.central;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -20,24 +20,22 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class DatabaseSerializer {
-    private final static Log log = LogFactory.getLog(DatabaseSerializer.class);
+public class CentralRepositoryDatabaseSerializer {
+    private final static Log log = LogFactory.getLog(CentralRepositoryDatabaseSerializer.class);
 
     public final static String PATTERN_TABLE = "PATTERN_TABLE.json";
 
     public final static String ARTIFACT_TABLE = "ARTIFACT_TABLE.json";
 
-    public DatabaseSerializer(File repository, Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
-        this.load(repository, pattern, artifact);
+    protected File parent;
+
+    public CentralRepositoryDatabaseSerializer(File parent, Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
+        this.parent = this.getStoreDir(parent);
+        this.load(pattern, artifact);
     }
 
-    public static File getStoreDir(File repository) {
-        if (repository != null && repository.exists() && repository.isDirectory()) {
-            File parent = repository.getParentFile();
-            if (parent == null) {
-                parent = repository;
-            }
-
+    private File getStoreDir(File parent) {
+        if (parent != null && parent.exists() && parent.isDirectory()) {
             File dir = new File(parent, ".maven_plus");
             if (FileUtils.createDirectory(dir)) {
                 return dir;
@@ -46,12 +44,12 @@ public class DatabaseSerializer {
         return null;
     }
 
-    public void save(File repository, Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
+    public void save(Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
         ObjectMapper mapper = new ObjectMapper();
-        File dir = DatabaseSerializer.getStoreDir(repository);
+        File dir = this.parent;
         if (dir != null) {
-            File file1 = new File(dir, DatabaseSerializer.PATTERN_TABLE);
-            File file2 = new File(dir, DatabaseSerializer.ARTIFACT_TABLE);
+            File file1 = new File(dir, CentralRepositoryDatabaseSerializer.PATTERN_TABLE);
+            File file2 = new File(dir, CentralRepositoryDatabaseSerializer.ARTIFACT_TABLE);
             if (log.isDebugEnabled()) {
                 log.debug("save database files: {}, {} ..", file1.getAbsolutePath(), file2.getAbsolutePath());
             }
@@ -68,11 +66,11 @@ public class DatabaseSerializer {
         }
     }
 
-    public void load(File repository, Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
+    public void load(Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
         try {
-            File dir = DatabaseSerializer.getStoreDir(repository);
+            File dir = this.parent;
             if (dir != null) {
-                File file1 = new File(dir, DatabaseSerializer.PATTERN_TABLE);
+                File file1 = new File(dir, PATTERN_TABLE);
                 boolean loadfile1 = false;
                 if (file1.exists() && file1.isFile()) {
                     String jsonStr = FileUtils.readline(file1, CharsetName.UTF_8, 0);
@@ -82,7 +80,7 @@ public class DatabaseSerializer {
                 }
 
                 boolean loadfile2 = false;
-                File file2 = new File(dir, DatabaseSerializer.ARTIFACT_TABLE);
+                File file2 = new File(dir, ARTIFACT_TABLE);
                 if (file2.exists() && file2.isFile()) {
                     String jsonStr = FileUtils.readline(file2, CharsetName.UTF_8, 0);
                     artifact.clear();

@@ -47,9 +47,9 @@ public interface MavenSearchContext {
     MavenSearchResult getSearchResult();
 
     /**
-     * 返回远程仓库标志
+     * 返回 Maven 仓库标志
      *
      * @return 标识，如: central、aliyun
      */
-    String getRemoteRepositoryName();
+    String getRepositoryId();
 }

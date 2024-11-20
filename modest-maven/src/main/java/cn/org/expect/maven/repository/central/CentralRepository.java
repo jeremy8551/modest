@@ -5,10 +5,12 @@ import java.util.Comparator;
 import java.util.List;
 
 import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenRepository;
+import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.util.StringUtils;
@@ -32,10 +34,17 @@ public class CentralRepository implements MavenRepository {
 
     protected volatile boolean terminate;
 
-    public CentralRepository() {
+    protected CentralRepositoryDatabase database;
+
+    public CentralRepository(ThreadSource threadSource) {
         this.pattern = new ExtraResultAnalysis();
         this.extra = new PatternResultAnalysis();
         this.terminate = false;
+        this.database = new CentralRepositoryDatabase(threadSource);
+    }
+
+    public MavenRepositoryDatabase getDatabase() {
+        return this.database;
     }
 
     public String getAddress() {

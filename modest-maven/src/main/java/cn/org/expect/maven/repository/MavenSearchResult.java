@@ -34,4 +34,22 @@ public interface MavenSearchResult {
      * @return 工件个数
      */
     int size();
+
+    /**
+     * 判断工件是否存在
+     *
+     * @param groupId    工件域名
+     * @param artifactId 工件ID
+     * @param version    版本号
+     * @return 返回true表示存在
+     */
+    boolean contains(String groupId, String artifactId, String version);
+
+    /**
+     * 添加一个工件
+     *
+     * @param artifact 工件
+     * @return 返回true表示添加成功 false表示失败
+     */
+    boolean addArtifact(MavenArtifact artifact);
 }

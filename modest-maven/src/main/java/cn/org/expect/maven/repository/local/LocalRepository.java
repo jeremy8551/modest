@@ -4,19 +4,34 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenRepository;
+import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 本地仓库
+ */
+@EasyBean("local")
 public class LocalRepository implements MavenRepository {
+
+    private final LocalRepositoryDatabase database;
 
     private final LocalRepositoryConfig config;
 
     public LocalRepository(LocalRepositoryConfig config) {
         this.config = Ensure.notNull(config);
+        File dir = this.config.getRepository();
+        this.database = new LocalRepositoryDatabase(dir);
+    }
+
+    public MavenRepositoryDatabase getDatabase() {
+        return this.database;
     }
 
     public String getAddress() {
@@ -25,11 +40,12 @@ public class LocalRepository implements MavenRepository {
     }
 
     public MavenSearchResult query(String pattern, int start) throws Exception {
-        throw new UnsupportedOperationException();
+        return this.database.select(pattern);
     }
 
     public MavenSearchResult query(String groupId, String artifactId) throws Exception {
-        throw new UnsupportedOperationException();
+        MavenSearchResult result = this.database.select(groupId, artifactId);
+        return result == null ? new SimpleMavenSearchResult() : result;
     }
 
     /**

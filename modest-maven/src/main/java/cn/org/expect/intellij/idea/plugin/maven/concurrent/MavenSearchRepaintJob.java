@@ -6,6 +6,7 @@ import java.util.List;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginChooseContributor;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenFoundElementInfoComparator;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
@@ -150,10 +151,13 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
      * 将查询结果转为导航记录
      */
     public void processSearchResult() {
+        int priority = this.plugin.getContext().getElementPriority();
+        MavenSearchPluginContributor contributor = plugin.getContributor();
+
         java.util.List<MavenArtifact> list = this.result.getList();
         for (MavenArtifact artifact : list) {
             SearchNavigationHead head = new SearchNavigationHead(artifact);
-            this.elementInfoList.add(new SearchEverywhereFoundElementInfo(head, MavenSearchNavigation.PRIORITY, plugin.getContributor()));
+            this.elementInfoList.add(new SearchEverywhereFoundElementInfo(head, priority, contributor));
             List<SearchNavigationItem> items = new ArrayList<>();
 
             String groupId = artifact.getGroupId();
@@ -175,7 +179,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
                         } else if (plugin.getLocalRepository().exists(itemArtifact)) {
                             item.setIcon(MavenSearchPluginIcon.RIGHT_LOCAL);
                         }
-                        this.elementInfoList.add(new SearchEverywhereFoundElementInfo(item, MavenSearchNavigation.PRIORITY, plugin.getContributor()));
+                        this.elementInfoList.add(new SearchEverywhereFoundElementInfo(item, priority, contributor));
                         items.add(item);
                     }
                 }

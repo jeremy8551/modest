@@ -24,19 +24,21 @@ import com.intellij.util.concurrency.EdtExecutorService;
 import org.jetbrains.annotations.NotNull;
 
 @EasyBean(singleton = true)
-public class MavenSearchPluginExecutorServiceImpl implements MavenSearchExecutorService {
-    private final static Log log = LogFactory.getLog(MavenSearchPluginExecutorServiceImpl.class);
+public class MavenSearchExecutorServiceImpl implements MavenSearchExecutorService {
+    private final static Log log = LogFactory.getLog(MavenSearchExecutorServiceImpl.class);
 
     private volatile Alarm service;
 
     private final List<Runnable> list;
 
-    public MavenSearchPluginExecutorServiceImpl() {
+    public MavenSearchExecutorServiceImpl() {
         this.list = new Vector<>();
     }
 
-    public void setSearchService(Object service) {
-        this.service = Ensure.notNull((Alarm) service);
+    public void setParameter(String name, Object value) {
+        if (value instanceof Alarm) {
+            this.service = Ensure.notNull((Alarm) value);
+        }
     }
 
     public <T> T getFirst(Class<T> cls, Predicate<T> condition) {

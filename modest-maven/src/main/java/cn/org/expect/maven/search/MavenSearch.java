@@ -5,13 +5,13 @@ import java.io.File;
 import cn.org.expect.maven.concurrent.EDTJob;
 import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
 import cn.org.expect.maven.repository.MavenRepository;
+import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.search.db.MavenSearchDatabase;
 
 public interface MavenSearch {
 
     /**
-     * 返回组件的名字
+     * 返回当前查询器的名字
      *
      * @return 名字
      */
@@ -116,7 +116,7 @@ public interface MavenSearch {
      *
      * @return Maven 仓库信息
      */
-    MavenRepository getRemoteRepository();
+    MavenRepository getRepository();
 
     /**
      * 返回本地 Maven 仓库信息
@@ -130,5 +130,5 @@ public interface MavenSearch {
      *
      * @return 数据库对象
      */
-    MavenSearchDatabase getDatabase();
+    MavenRepositoryDatabase getDatabase();
 }

@@ -9,7 +9,6 @@ import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchUtils;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.ExtendedInfo;
@@ -41,7 +40,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
     }
 
     public @NotNull String getSearchProviderId() {
-        return MavenSearchPluginContributor.class.getSimpleName() + ".Tab";
+        return MavenSearchPlugin.class.getSimpleName() + ".Tab";
     }
 
     protected boolean processElement(@NotNull ProgressIndicator progressIndicator, @NotNull Processor<? super FoundItemDescriptor<Object>> consumer, FilteringGotoByModel<?> model, Object element, int degree) {
@@ -68,7 +67,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      */
     public @NotNull String filterControlSymbols(String pattern) {
         if (pattern != null && pattern.length() > 0) {
-            this.plugin.asyncSearch(MavenSearchUtils.parse(pattern));
+            this.plugin.asyncSearch(MavenSearchUtils.parse(pattern)); // TODO 在 SearchField 上添加监听器，如果有输入文本，则执行查询
         }
         return pattern;
     }
@@ -127,7 +126,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         if (log.isDebugEnabled()) {
             log.debug("getElementPriority({}, {}) ", element, searchPattern);
         }
-        return 50;
+        return this.plugin.getContext().getElementPriority();
     }
 
     public ExtendedInfo createExtendedInfo() {
@@ -154,7 +153,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @return 广告文本
      */
     public String getAdvertisement() {
-        return this.plugin.getRemoteRepository().getAddress();
+        return this.plugin.getRepository().getAddress();
     }
 
     protected FilteringGotoByModel<?> createModel(Project project) {
@@ -168,7 +167,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @return true表示有单独的选项卡
      */
     public boolean isShownInSeparateTab() {
-        return true;
+        return this.plugin.getContext().isTabVisible();
     }
 
     /**
@@ -186,7 +185,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @return 标签页名
      */
     public String getGroupName() {
-        return MavenSearchMessage.get("maven.search.tab.name");
+        return this.plugin.getContext().getTabName();
     }
 
     /**
@@ -195,7 +194,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @return 排序编号
      */
     public int getSortWeight() {
-        return 0;
+        return this.plugin.getContext().getTabIndex();
     }
 
     /**
@@ -224,7 +223,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         super.dispose();
     }
 
-    public Runnable getOnChanged() {
+    public Runnable getRunnable() {
         return onChanged;
     }
 }

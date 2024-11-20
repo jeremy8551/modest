@@ -1,7 +1,8 @@
 package cn.org.expect.ioc.impl;
 
-import cn.org.expect.ioc.EasyBeanInfo;
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyBeanDefine;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
@@ -42,7 +43,7 @@ public class EasyBeanDefineImpl implements EasyBeanDefine {
      */
     public EasyBeanDefineImpl(Class<?> type) {
         this.type = Ensure.notNull(type);
-        cn.org.expect.annotation.EasyBean annotation = type.getAnnotation(cn.org.expect.annotation.EasyBean.class); // 取得类上配置的注解
+        EasyBean annotation = type.getAnnotation(EasyBean.class); // 取得类上配置的注解
         if (annotation != null) {
             this.setName(StringUtils.trimBlank(annotation.value()));
             this.setSingleton(annotation.singleton());

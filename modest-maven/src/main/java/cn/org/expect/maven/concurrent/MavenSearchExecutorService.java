@@ -6,11 +6,12 @@ import java.util.function.Predicate;
 public interface MavenSearchExecutorService extends ExecutorService {
 
     /**
-     * 设置线程池
+     * 设置参数
      *
-     * @param service 线程池
+     * @param name  参数名
+     * @param value 参数值
      */
-    void setSearchService(Object service);
+    void setParameter(String name, Object value);
 
     /**
      * 返回第一个匹配的任务

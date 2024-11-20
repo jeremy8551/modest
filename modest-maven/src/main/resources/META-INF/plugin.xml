@@ -92,7 +92,7 @@
         </action>
 
         <!-- 打开 Maven 配置的 settings.xml  -->
-        <action id="OpenMavenSettingsXml" class="cn.org.expect.intellij.idea.plugin.maven.action.OpenMavenSettingsXml" text="Open Maven Settings.xml" description="打开当前使用的 settings.xml 文件">
+        <action id="OpenMavenSettingsXml" class="cn.org.expect.intellij.idea.plugin.maven.action.OpenMavenSettingsXml" text="Open Maven settings.xml" description="打开当前使用的 settings.xml 文件">
         </action>
 
         <!-- 绘制菜单 -->

@@ -9,6 +9,7 @@ import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationResul
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchContext;
+import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.util.Ensure;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -21,7 +22,7 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     private long inputIntervalTime;
 
     /** 远程 Maven 仓库的标识符，就是 {@linkplain EasyBean#value()} */
-    private volatile String remoteRepositoryName;
+    private volatile String repositoryId;
 
     /** 最后一次执行模糊查询的文本 */
     private volatile String searchPattern;
@@ -41,11 +42,29 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 如果选中文本是 groupId:artifactId:version 时，是否自动切换tab */
     private volatile boolean autoSwitchTab;
 
+    /** 标签页所在的位置，从0开始 */
+    private volatile int tabIndex;
+
+    /** 标签名 */
+    private volatile String tabName;
+
+    /** true 表示显示标签页 */
+    private volatile boolean tabVisible;
+
+    /** 查询结果的排序权重 */
+    private volatile int elementPriority;
+
     public MavenSearchPluginContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
         this.inputIntervalTime = 300;
-        this.remoteRepositoryName = "central";
+        this.repositoryId = "central";
+//        this.repositoryName = "local";
         this.autoSwitchTab = true;
+        this.tabIndex = 0;
+        this.tabName = MavenSearchMessage.get("maven.search.tab.name");
+        this.tabName = "Repository";
+        this.elementPriority = 50;
+        this.tabVisible = true;
     }
 
     public AnActionEvent getActionEvent() {
@@ -125,12 +144,12 @@ public class MavenSearchPluginContext implements MavenSearchContext {
         this.navigationResultSet = navigationResultSet;
     }
 
-    public String getRemoteRepositoryName() {
-        return remoteRepositoryName;
+    public String getRepositoryId() {
+        return repositoryId;
     }
 
-    public void setRemoteRepositoryName(String remoteRepositoryName) {
-        this.remoteRepositoryName = remoteRepositoryName;
+    public void setRepositoryId(String repositoryId) {
+        this.repositoryId = repositoryId;
     }
 
     public void setAutoSwitchTab(boolean autoSwitchTab) {
@@ -139,5 +158,37 @@ public class MavenSearchPluginContext implements MavenSearchContext {
 
     public boolean isAutoSwitchTab() {
         return autoSwitchTab;
+    }
+
+    public int getTabIndex() {
+        return tabIndex;
+    }
+
+    public void setTabIndex(int tabIndex) {
+        this.tabIndex = tabIndex;
+    }
+
+    public String getTabName() {
+        return tabName;
+    }
+
+    public void setTabName(String tabName) {
+        this.tabName = tabName;
+    }
+
+    public int getElementPriority() {
+        return elementPriority;
+    }
+
+    public void setElementPriority(int elementPriority) {
+        this.elementPriority = elementPriority;
+    }
+
+    public boolean isTabVisible() {
+        return tabVisible;
+    }
+
+    public void setTabVisible(boolean tabVisible) {
+        this.tabVisible = tabVisible;
     }
 }

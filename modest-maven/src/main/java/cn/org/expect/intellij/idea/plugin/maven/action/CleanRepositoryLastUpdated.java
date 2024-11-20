@@ -3,12 +3,12 @@ package cn.org.expect.intellij.idea.plugin.maven.action;
 import java.io.File;
 import java.io.OutputStreamWriter;
 
-import cn.org.expect.intellij.idea.plugin.maven.DefaultLocalRepositoryConfig;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContext;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.search.MavenSearch;
+import cn.org.expect.maven.repository.local.LocalRepositoryConfig;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
@@ -34,11 +34,12 @@ public class CleanRepositoryLastUpdated extends AnAction {
         this.find = 0;
         this.success = 0;
 
+        MavenSearchPluginFactory.createEasyContext(event);
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);
-        MavenSearch search = new MavenSearchPlugin(context);
-        File repository = DefaultLocalRepositoryConfig.getInstance(event).getRepository();
+        MavenSearchPlugin plugin = new MavenSearchPlugin(context);
+        File repository = plugin.getEasyContext().getBean(LocalRepositoryConfig.class).getRepository();
         if (repository == null) {
-            search.sendNotification(MavenSearchNotification.ERROR, "Cannot find Maven local repository!");
+            plugin.sendNotification(MavenSearchNotification.ERROR, "Cannot find Maven local repository!");
             return;
         }
 
@@ -62,9 +63,9 @@ public class CleanRepositoryLastUpdated extends AnAction {
 
             String message = new MessageFormatter("Found {}, Delete {}").fill(this.find, this.success);
             if (this.success > 0) {
-                search.sendNotification(MavenSearchNotification.NORMAL, message, "View Log File", logfile);
+                plugin.sendNotification(MavenSearchNotification.NORMAL, message, "View Log File", logfile);
             } else {
-                search.sendNotification(MavenSearchNotification.NORMAL, message);
+                plugin.sendNotification(MavenSearchNotification.NORMAL, message);
             }
         }
     }

@@ -20,8 +20,6 @@ public class SearchListener extends SearchAdapter {
     }
 
     public void searchFinished(@NotNull Map<SearchEverywhereContributor<?>, Boolean> hasMoreContributors) {
-        if (plugin.notMavenSearchTab()) {
-            plugin.setStatusbarText(MavenSearchAdvertiser.NORMAL, "");
-        }
+        plugin.setStatusbarText(MavenSearchAdvertiser.NORMAL, "");
     }
 }

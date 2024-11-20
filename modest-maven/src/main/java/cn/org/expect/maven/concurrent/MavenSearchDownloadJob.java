@@ -36,7 +36,7 @@ public class MavenSearchDownloadJob extends MavenSearchJob {
         MavenSearch search = this.getSearch();
 
         List<String> list = new ArrayList<>();
-        list.add(search.getRemoteRepository().getAddress());
+        list.add(search.getRepository().getAddress());
         StringUtils.split(artifact.getGroupId(), '.', list);
         list.add(artifact.getArtifactId());
         list.add(artifact.getVersion());
@@ -87,7 +87,7 @@ public class MavenSearchDownloadJob extends MavenSearchJob {
                 buf.append("#").append(formattedDate).append(FileUtils.lineSeparator);
                 for (String name : files) {
                     if (name.toLowerCase().endsWith(".jar") || name.toLowerCase().endsWith(".pom")) {
-                        buf.append(name).append(">").append(search.getContext().getRemoteRepositoryName()).append("=").append(FileUtils.lineSeparator);
+                        buf.append(name).append(">").append(search.getContext().getRepositoryId()).append("=").append(FileUtils.lineSeparator);
                     }
                 }
                 FileUtils.write(remote, CharsetName.UTF_8, false, buf.toString());

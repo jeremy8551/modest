@@ -10,7 +10,7 @@ import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchUtils;
-import cn.org.expect.maven.search.db.MavenSearchDatabase;
+import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
@@ -29,11 +29,11 @@ public class MavenSearchPatternJob extends MavenSearchJob {
 
     public int execute() throws Exception {
         if (log.isDebugEnabled()) {
-            log.debug("{} search pattern: {}", this.getName(), pattern);
+            log.debug("{} search pattern: {}", this.getName(), this.pattern);
         }
 
         MavenSearch search = this.getSearch();
-        MavenSearchResult result = this.query(search, pattern);
+        MavenSearchResult result = this.query(search, this.pattern);
         if (this.terminate) {
             return 0;
         }
@@ -66,7 +66,7 @@ public class MavenSearchPatternJob extends MavenSearchJob {
             return null;
         }
 
-        MavenSearchDatabase database = search.getDatabase();
+        MavenRepositoryDatabase database = search.getDatabase();
         MavenSearchResult result = database.select(patternFinal);
         try {
             if (result == null || result.size() == 0) {

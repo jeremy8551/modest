@@ -38,7 +38,7 @@ public abstract class MavenSearchJob extends BaseJob implements Runnable, MavenS
         if (this.remoteRepository == null) {
             synchronized (this) {
                 if (this.remoteRepository == null) {
-                    this.remoteRepository = search.getRemoteRepository();
+                    this.remoteRepository = search.getRepository();
                 }
             }
         }

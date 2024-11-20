@@ -45,10 +45,13 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
 
     private final MavenSearchPluginContributor contributor;
 
+    private final MavenSearchPluginConfig config;
+
     public MavenSearchPlugin(MavenSearchPluginContext context) {
-        super(context.getRemoteRepositoryName(), DefaultLocalRepositoryConfig.getInstance(context.getActionEvent()));
+        super(context.getRepositoryId());
         this.ideaUI = new IdeaSearchUI();
         this.context = Ensure.notNull(context);
+        this.config = this.getEasyContext().getBean(MavenSearchPluginConfig.class);
         this.contributor = new MavenSearchPluginContributor(this);
     }
 
@@ -58,6 +61,19 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
 
     public MavenSearchPluginContext getContext() {
         return this.context;
+    }
+
+    /**
+     * 返回域名id
+     *
+     * @return 字符串
+     */
+    public String getGroupId() {
+        return this.config.getId();
+    }
+
+    public String getName() {
+        return this.config.getName();
     }
 
     /**

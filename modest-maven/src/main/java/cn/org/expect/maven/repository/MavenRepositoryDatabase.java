@@ -1,11 +1,9 @@
-package cn.org.expect.maven.search.db;
-
-import cn.org.expect.maven.repository.MavenSearchResult;
+package cn.org.expect.maven.repository;
 
 /**
  * 数据库接口
  */
-public interface MavenSearchDatabase {
+public interface MavenRepositoryDatabase {
 
     /**
      * 模糊搜索
