@@ -69,6 +69,7 @@
     <depends optional="true" config-file="plugin-maven.xml">org.jetbrains.idea.maven</depends>
     <depends>org.jetbrains.idea.maven.model</depends>
     <depends>org.jetbrains.idea.maven.server.api</depends>
+    <depends>com.intellij.modules.lang</depends>
 
     <!-- 应用监听器 -->
     <applicationListeners>
@@ -83,16 +84,16 @@
     </extensions>
 
     <actions>
-        <!-- 打开本地Maven仓库 -->
-        <action id="OpenLocalRepository" class="cn.org.expect.intellij.idea.plugin.maven.action.OpenLocalRepository" text="Open Maven Local Repository" description="打开 Maven 本地仓库">
+        <!-- 打开本地 Maven 仓库 -->
+        <action id="OpenLocalRepository" class="cn.org.expect.intellij.idea.plugin.maven.action.OpenLocalRepository">
         </action>
 
         <!-- 删除本地仓库中 *.lastUpdated 文件 -->
-        <action id="CleanRepositoryLastUpdated" class="cn.org.expect.intellij.idea.plugin.maven.action.CleanRepositoryLastUpdated" text="Delete Maven Local Repository *.lastUpdated" description="删除 Maven 本地仓库中的 *.lastUpdated 文件">
+        <action id="CleanRepositoryLastUpdated" class="cn.org.expect.intellij.idea.plugin.maven.action.CleanRepositoryLastUpdated">
         </action>
 
         <!-- 打开 Maven 配置的 settings.xml  -->
-        <action id="OpenMavenSettingsXml" class="cn.org.expect.intellij.idea.plugin.maven.action.OpenMavenSettingsXml" text="Open Maven settings.xml" description="打开当前使用的 settings.xml 文件">
+        <action id="OpenMavenSettingsXml" class="cn.org.expect.intellij.idea.plugin.maven.action.OpenMavenSettingsXml">
         </action>
 
         <!-- 绘制菜单 -->

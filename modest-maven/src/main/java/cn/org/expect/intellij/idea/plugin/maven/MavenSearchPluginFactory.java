@@ -6,9 +6,7 @@ import cn.org.expect.ioc.impl.EasyBeanDefineImpl;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.MavenSearch;
-import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.util.ClassUtils;
-import com.intellij.CommonBundle;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributorFactory;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
@@ -23,7 +21,6 @@ public class MavenSearchPluginFactory implements SearchEverywhereContributorFact
 
     public @NotNull SearchEverywhereContributor<Object> createContributor(@NotNull AnActionEvent event) {
         MavenSearchPluginFactory.createEasyContext(event);
-        MavenSearchMessage.setChineseCondition((key) -> "取消".equals(CommonBundle.getCancelButtonText())); // TODO 位置需要改
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);
         MavenSearchPlugin plugin = new MavenSearchPlugin(context);
         plugin.updateTabTooltip();

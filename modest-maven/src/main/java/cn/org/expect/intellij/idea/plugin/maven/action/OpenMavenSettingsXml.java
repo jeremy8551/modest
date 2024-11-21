@@ -1,8 +1,9 @@
 package cn.org.expect.intellij.idea.plugin.maven.action;
 
 import java.io.File;
+import java.util.Objects;
 
-import cn.org.expect.util.Ensure;
+import cn.org.expect.maven.search.MavenSearchMessage;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -19,8 +20,12 @@ import org.jetbrains.idea.maven.utils.MavenWslUtil;
  */
 public class OpenMavenSettingsXml extends AnAction {
 
+    public OpenMavenSettingsXml() {
+        super(MavenSearchMessage.get("maven.search.open.local.settings.xml.menu"));
+    }
+
     public void actionPerformed(@NotNull AnActionEvent event) {
-        Project project = Ensure.notNull(event.getProject());
+        Project project = Objects.requireNonNull(event.getProject());
         MavenProjectsManager manager = MavenProjectsManager.getInstance(project);
         if (manager != null) {
             MavenGeneralSettings settings = manager.getGeneralSettings();

@@ -26,7 +26,12 @@ public abstract class AbstractMavenSearch implements MavenSearch {
         this.repository = this.ioc.getBean(MavenRepository.class, repositoryId);
     }
 
-    public void setRepository(String id) {
+    /**
+     * 设置 Maven 仓库
+     *
+     * @param id 仓库编号
+     */
+    public void setRepositoryId(String id) {
         this.repository = this.ioc.getBean(MavenRepository.class, id);
     }
 

@@ -18,7 +18,7 @@ import cn.org.expect.util.StringUtils;
 /**
  * 本地仓库
  */
-@EasyBean("Local Repository")
+@EasyBean("local")
 public class LocalRepository implements MavenRepository {
 
     private final LocalRepositoryDatabase database;

@@ -23,7 +23,7 @@ import okhttp3.Response;
 /**
  * 中央仓库
  */
-@EasyBean("Central Repository")
+@EasyBean("central")
 public class CentralRepository implements MavenRepository {
     protected final static Log log = LogFactory.getLog(CentralRepository.class);
 

@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
 import cn.org.expect.util.MessageFormatter;
+import com.intellij.CommonBundle;
 
 public class MavenSearchMessage {
 
@@ -15,13 +16,9 @@ public class MavenSearchMessage {
     public final static ResourceBundle BUNDLE_CN = ResourceBundle.getBundle(BUNDLE_NAME, Locale.CHINESE);
 
     /** 函数式接口返回true，表示使用中文的资源文件 */
-    private static Predicate<String> USE_CHINESE;
+    private static final Predicate<String> USE_CHINESE = (key) -> "取消".equals(CommonBundle.getCancelButtonText());
 
     private MavenSearchMessage() {
-    }
-
-    public static void setChineseCondition(Predicate<String> useChinese) { // TODO 改成根据 zh_CN fr 使用对应的 Locale 对象
-        USE_CHINESE = useChinese;
     }
 
     public static String get(String key, Object... params) {
@@ -30,7 +27,7 @@ public class MavenSearchMessage {
     }
 
     private static String getMessage(String key) {
-        if (USE_CHINESE != null && USE_CHINESE.test(key)) {
+        if (USE_CHINESE.test(key)) {
             return BUNDLE_CN.getString(key);
         } else {
             return BUNDLE.getString(key);

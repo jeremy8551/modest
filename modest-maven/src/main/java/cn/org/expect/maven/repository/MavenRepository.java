@@ -1,18 +1,11 @@
 package cn.org.expect.maven.repository;
 
-import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.concurrent.Terminate;
-import cn.org.expect.maven.repository.central.CentralRepository;
 
 /**
  * Maven 仓库接口
  */
 public interface MavenRepository extends Terminate {
-
-    /**
-     * 默认的 Maven 仓库 ID
-     */
-    String DEFAULT_SELECTED_REPOSITORY = CentralRepository.class.getAnnotation(EasyBean.class).value();
 
     /**
      * 返回支持功能

@@ -6,8 +6,8 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.central.CentralRepository;
 import cn.org.expect.maven.search.MavenSearchContext;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.util.Ensure;
@@ -21,7 +21,7 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 连续输入文本的间隔时间 */
     private long inputIntervalTime;
 
-    /** 远程 Maven 仓库的标识符，就是 {@linkplain EasyBean#value()} */
+    /** Maven 仓库ID，就是 {@linkplain EasyBean#value()} */
     private volatile String repositoryId;
 
     /** 最后一次执行模糊查询的文本 */
@@ -63,11 +63,10 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     public MavenSearchPluginContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
         this.inputIntervalTime = 300;
-        this.repositoryId = MavenRepository.DEFAULT_SELECTED_REPOSITORY;
+        this.repositoryId = CentralRepository.class.getAnnotation(EasyBean.class).value();
         this.autoSwitchTab = true;
-        this.tabIndex = 0;
         this.tabName = MavenSearchMessage.get("maven.search.tab.name");
-        this.tabName = "Repository";
+        this.tabIndex = Integer.MAX_VALUE;
         this.elementPriority = 50;
         this.tabVisible = true;
         this.expireTimeMillis = 1000 * 3600 * 24; // 默认一天有效
