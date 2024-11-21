@@ -44,13 +44,13 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
 
     private final MavenSearchPluginContributor contributor;
 
-    private final MavenSearchPluginConfig config;
+    private final MavenSearchPluginSettings settings;
 
     public MavenSearchPlugin(MavenSearchPluginContext context) {
-        super(context.getRepositoryId());
+        super();
         this.ideaUI = new IdeaSearchUI();
         this.context = Ensure.notNull(context);
-        this.config = this.getEasyContext().getBean(MavenSearchPluginConfig.class);
+        this.settings = this.getEasyContext().getBean(MavenSearchPluginSettings.class);
         this.contributor = new MavenSearchPluginContributor(this);
     }
 
@@ -62,17 +62,8 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         return this.context;
     }
 
-    /**
-     * 返回域名id
-     *
-     * @return 字符串
-     */
-    public String getGroupId() {
-        return this.config.getId();
-    }
-
-    public String getName() {
-        return this.config.getName();
+    public MavenSearchPluginSettings getSettings() {
+        return this.settings;
     }
 
     /**
@@ -135,7 +126,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         NotificationType notificationType = MavenSearchPluginUtils.toNotification(type);
         Project project = context.getActionEvent().getProject();
         if (project != null) {
-            Notification notification = new Notification(this.getGroupId(), this.getName(), message, notificationType);
+            Notification notification = new Notification(this.getSettings().getId(), this.getSettings().getName(), message, notificationType);
             Notifications.Bus.notify(notification, project);
         }
     }
@@ -144,7 +135,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         Project project = context.getActionEvent().getProject();
         if (project != null) {
             NotificationType notificationType = MavenSearchPluginUtils.toNotification(type);
-            Notification notification = new Notification(this.getGroupId(), this.getName(), text, notificationType);
+            Notification notification = new Notification(this.getSettings().getId(), this.getSettings().getName(), text, notificationType);
             notification.addAction(new NotificationAction(actionName) {
 
                 public void actionPerformed(@NotNull AnActionEvent e, @NotNull Notification notification) {
@@ -199,7 +190,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
 
         String tabID = this.getIdeaUI().getSelectedTabID();
-        return (this.context.isSearchInAllTab() && tabID.endsWith(".All")) || this.contributor.getSearchProviderId().equals(tabID);
+        return (this.getSettings().isSearchInAllTab() && tabID.endsWith(".All")) || this.contributor.getSearchProviderId().equals(tabID);
     }
 
     /**

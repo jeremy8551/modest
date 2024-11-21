@@ -10,10 +10,14 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchNotification;
+import cn.org.expect.util.CharsetName;
+import cn.org.expect.util.FileUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.KeyboardShortcut;
 import com.intellij.openapi.actionSystem.Shortcut;
 import com.intellij.openapi.keymap.KeymapUtil;
+import org.json.JSONObject;
 
 public class MavenSearchPluginUtils {
     private final static Log log = LogFactory.getLog(MavenSearchPluginUtils.class);
@@ -130,5 +134,63 @@ public class MavenSearchPluginUtils {
             }
         }
         return null;
+    }
+
+    public final static String SETTINGS_TABLE = "MAVEN_SEARCH_PLUGIN_SETTINGS.json";
+
+    public static synchronized void save(MavenSearchPluginSettings settings) {
+        File file = new File(settings.getWorkHome(), SETTINGS_TABLE);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonStr = mapper.writeValueAsString(settings);
+
+            if (log.isDebugEnabled()) {
+                log.debug("save {}, {}, {}", settings.getClass().getSimpleName(), file.getAbsolutePath(), jsonStr);
+            }
+
+            FileUtils.write(file, CharsetName.UTF_8, false, jsonStr);
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public static synchronized void load(MavenSearchPluginSettings settings) {
+        File file = new File(settings.getWorkHome(), SETTINGS_TABLE);
+        try {
+            if (file.exists() && file.isFile()) {
+                String jsonStr = FileUtils.readline(file, CharsetName.UTF_8, 0);
+
+                if (log.isDebugEnabled()) {
+                    log.debug("load {}, {}", MavenSearchPluginSettings.class.getSimpleName(), jsonStr);
+                }
+
+                JSONObject jsonObject = new JSONObject(jsonStr);
+                //  String id = jsonObject.getString("id");
+                //  String name = jsonObject.getString("name");
+                //  String workHome = jsonObject.getString("workHome");
+                long inputIntervalTime = jsonObject.getLong("inputIntervalTime");
+                String repositoryId = jsonObject.getString("repositoryId");
+                boolean autoSwitchTab = jsonObject.getBoolean("autoSwitchTab");
+                int tabIndex = jsonObject.getInt("tabIndex");
+                boolean tabVisible = jsonObject.getBoolean("tabVisible");
+                int elementPriority = jsonObject.getInt("elementPriority");
+                long expireTimeMillis = jsonObject.getLong("expireTimeMillis");
+                boolean searchInAllTab = jsonObject.getBoolean("searchInAllTab");
+
+                //   settings.setId(id);
+                //   settings.setName(name);
+                //   settings.setWorkHome(new File(workHome));
+                settings.setInputIntervalTime(inputIntervalTime);
+                settings.setRepositoryId(repositoryId);
+                settings.setAutoSwitchTab(autoSwitchTab);
+                settings.setTabIndex(tabIndex);
+                settings.setTabVisible(tabVisible);
+                settings.setElementPriority(elementPriority);
+                settings.setExpireTimeMillis(expireTimeMillis);
+                settings.setSearchInAllTab(searchInAllTab);
+            }
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
     }
 }

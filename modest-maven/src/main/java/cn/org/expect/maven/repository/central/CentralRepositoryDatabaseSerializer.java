@@ -30,18 +30,8 @@ public class CentralRepositoryDatabaseSerializer {
     protected File parent;
 
     public CentralRepositoryDatabaseSerializer(File parent, Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
-        this.parent = this.getStoreDir(parent);
+        this.parent = parent;
         this.load(pattern, artifact);
-    }
-
-    private File getStoreDir(File parent) {
-        if (parent != null && parent.exists() && parent.isDirectory()) {
-            File dir = new File(parent, ".maven_plus");
-            if (FileUtils.createDirectory(dir)) {
-                return dir;
-            }
-        }
-        return null;
     }
 
     public void save(Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {

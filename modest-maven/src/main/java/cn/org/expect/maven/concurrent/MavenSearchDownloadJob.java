@@ -83,11 +83,11 @@ public class MavenSearchDownloadJob extends MavenSearchJob {
                 sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00")); // CST 是中国标准时间 (GMT+08:00)
                 String formattedDate = sdf.format(new Date());
 
-                StringBuilder buf = new StringBuilder("#NOTE: ").append(search.getName()).append(" Plugin for intellij Idea").append(FileUtils.lineSeparator);
+                StringBuilder buf = new StringBuilder("#NOTE: ").append(search.getSettings().getName()).append(" Plugin for intellij Idea").append(FileUtils.lineSeparator);
                 buf.append("#").append(formattedDate).append(FileUtils.lineSeparator);
                 for (String name : files) {
                     if (name.toLowerCase().endsWith(".jar") || name.toLowerCase().endsWith(".pom")) {
-                        buf.append(name).append(">").append(search.getContext().getRepositoryId()).append("=").append(FileUtils.lineSeparator);
+                        buf.append(name).append(">").append(search.getSettings().getRepositoryId()).append("=").append(FileUtils.lineSeparator);
                     }
                 }
                 FileUtils.write(remote, CharsetName.UTF_8, false, buf.toString());

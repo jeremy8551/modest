@@ -31,7 +31,7 @@ public class MavenSearchExtraJob extends MavenSearchJob {
 
         MavenSearch search = this.getSearch();
         MavenSearchResult result = search.getDatabase().select(this.groupId, this.artifactId);
-        if (result != null && !result.isExpire(search.getContext().getExpireTimeMillis())) {
+        if (result != null && !result.isExpire(search.getSettings().getExpireTimeMillis())) {
             search.showSearchResult();
             return 0;
         }

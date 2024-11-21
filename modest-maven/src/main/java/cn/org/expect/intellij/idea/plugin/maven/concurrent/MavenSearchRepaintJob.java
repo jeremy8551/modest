@@ -111,7 +111,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
                         MavenArtifact artifact = selectHead.getArtifact();
                         if (artifact.isUnfold()) {
                             MavenSearchResult result = plugin.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId());
-                            if (result == null || result.isExpire(plugin.getContext().getExpireTimeMillis())) {
+                            if (result == null || result.isExpire(plugin.getSettings().getExpireTimeMillis())) {
                                 head.setIcon(MavenSearchPluginIcon.LEFT_WAITING); // 设置左侧等待图标
                             }
                         }
@@ -149,7 +149,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
      * 将查询结果转为导航记录
      */
     public void processSearchResult(MavenSearchResult result) {
-        int priority = this.plugin.getContext().getElementPriority();
+        int priority = this.plugin.getSettings().getElementPriority();
         MavenSearchPluginContributor contributor = plugin.getContributor();
 
         java.util.List<MavenArtifact> list = result.getList();
@@ -161,7 +161,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
             String artifactId = artifact.getArtifactId();
 
             MavenSearchResult itemResult = plugin.getDatabase().select(groupId, artifactId);
-            if (itemResult != null && !itemResult.isExpire(plugin.getContext().getExpireTimeMillis())) {
+            if (itemResult != null && !itemResult.isExpire(plugin.getSettings().getExpireTimeMillis())) {
                 head.setIcon(MavenSearchPluginIcon.LEFT_HAS_QUERY);
             }
 

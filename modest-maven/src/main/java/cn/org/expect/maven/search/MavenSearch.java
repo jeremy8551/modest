@@ -11,11 +11,11 @@ import cn.org.expect.maven.repository.MavenSearchResult;
 public interface MavenSearch {
 
     /**
-     * 返回当前查询器的名字
+     * 返回配置信息
      *
-     * @return 名字
+     * @return 配置信息
      */
-    String getName();
+    MavenSearchSettings getSettings();
 
     /**
      * 返回上下文信息

@@ -38,7 +38,7 @@ public class CleanRepositoryLastUpdated extends AnAction {
         this.find = 0;
         this.success = 0;
 
-        MavenSearchPluginFactory.createEasyContext(event);
+        MavenSearchPluginFactory.loadLocalRepositoryConfig(event);
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);
         MavenSearchPlugin plugin = new MavenSearchPlugin(context);
         File repository = plugin.getEasyContext().getBean(LocalRepositoryConfig.class).getRepository();

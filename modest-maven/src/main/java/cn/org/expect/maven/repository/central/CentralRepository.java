@@ -14,6 +14,7 @@ import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
+import cn.org.expect.maven.search.MavenSearchSettings;
 import cn.org.expect.util.StringUtils;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
@@ -37,11 +38,11 @@ public class CentralRepository implements MavenRepository {
 
     protected CentralRepositoryDatabase database;
 
-    public CentralRepository(ThreadSource threadSource) {
+    public CentralRepository(MavenSearchSettings settings, ThreadSource threadSource) {
         this.pattern = new ExtraResultAnalysis();
         this.extra = new PatternResultAnalysis();
         this.terminate = false;
-        this.database = new CentralRepositoryDatabase(threadSource);
+        this.database = new CentralRepositoryDatabase(settings, threadSource);
     }
 
     public MavenArtifactOperation getSupported() {

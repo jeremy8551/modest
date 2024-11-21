@@ -10,7 +10,7 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.util.Settings;
+import cn.org.expect.maven.search.MavenSearchSettings;
 import cn.org.expect.util.StringUtils;
 
 public class CentralRepositoryDatabase implements MavenRepositoryDatabase {
@@ -28,11 +28,11 @@ public class CentralRepositoryDatabase implements MavenRepositoryDatabase {
     /** 序列化与反序列化工具 */
     protected final CentralRepositoryDatabaseSerializer serializer;
 
-    public CentralRepositoryDatabase(ThreadSource threadSource) {
+    public CentralRepositoryDatabase(MavenSearchSettings settings, ThreadSource threadSource) {
         this.patternMap = new ConcurrentHashMap<>();
         this.extraMap = new ConcurrentHashMap<>();
         this.executorService = threadSource.getExecutorService();
-        this.serializer = new CentralRepositoryDatabaseSerializer(Settings.getUserHome(), this.patternMap, this.extraMap);
+        this.serializer = new CentralRepositoryDatabaseSerializer(settings.getWorkHome(), this.patternMap, this.extraMap);
     }
 
     public void insert(String pattern, MavenSearchResult result) {

@@ -19,20 +19,6 @@ public interface MavenSearchContext {
     void setSearchText(String searchPattern);
 
     /**
-     * 返回连续输入的间隔，单位毫秒
-     *
-     * @return 毫秒
-     */
-    long getInputIntervalTime();
-
-    /**
-     * 设置连续输入的间隔，单位毫秒
-     *
-     * @param continueInputIntervalTime 毫秒
-     */
-    void setInputIntervalTime(long continueInputIntervalTime);
-
-    /**
      * 保存搜索结果
      *
      * @param result 搜索结果
@@ -45,18 +31,4 @@ public interface MavenSearchContext {
      * @return 搜索结果
      */
     MavenSearchResult getSearchResult();
-
-    /**
-     * 返回 Maven 仓库标志
-     *
-     * @return 标识，如: central、aliyun
-     */
-    String getRepositoryId();
-
-    /**
-     * 返回查询结果的超时时间，单位毫秒
-     *
-     * @return 超时时间
-     */
-    long getExpireTimeMillis();
 }

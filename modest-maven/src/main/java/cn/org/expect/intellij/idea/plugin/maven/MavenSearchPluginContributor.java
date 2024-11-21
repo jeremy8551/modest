@@ -6,7 +6,6 @@ import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.navigation.NavigationCellRenderer;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
-import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
@@ -14,7 +13,6 @@ import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.util.CollectionUtils;
-import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.ExtendedInfo;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
@@ -23,12 +21,8 @@ import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.ide.util.scopeChooser.ScopeDescriptor;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.module.Module;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.psi.search.GlobalSearchScope;
-import com.intellij.psi.search.SearchScope;
 import com.intellij.util.Processor;
 import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
@@ -107,7 +101,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
                 String artifactId = artifact.getArtifactId();
 
                 MavenSearchResult result = this.plugin.getDatabase().select(groupId, artifactId);
-                if (result == null || result.isExpire(this.plugin.getContext().getExpireTimeMillis())) {
+                if (result == null || result.isExpire(this.plugin.getSettings().getExpireTimeMillis())) {
                     head.setIcon(MavenSearchPluginIcon.LEFT_WAITING); // 更改为：等待图标
                     this.plugin.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
                 } else {
@@ -142,7 +136,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         if (log.isDebugEnabled()) {
             log.debug("getElementPriority({}, {}) ", element, searchPattern);
         }
-        return this.plugin.getContext().getElementPriority();
+        return this.plugin.getSettings().getElementPriority();
     }
 
     public ExtendedInfo createExtendedInfo() {
@@ -182,7 +176,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @return true表示有单独的选项卡
      */
     public boolean isShownInSeparateTab() {
-        return this.plugin.getContext().isTabVisible();
+        return this.plugin.getSettings().isTabVisible();
     }
 
     /**
@@ -200,7 +194,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @return 标签页名
      */
     public String getGroupName() {
-        return this.plugin.getContext().getTabName();
+        return MavenSearchMessage.get("maven.search.tab.name");
     }
 
     /**
@@ -209,7 +203,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @return 排序编号
      */
     public int getSortWeight() {
-        return this.plugin.getContext().getTabIndex();
+        return this.plugin.getSettings().getTabIndex();
     }
 
     /**
@@ -243,10 +237,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
 
         this.onChanged = onChanged;
 
-        List<ScopeDescriptor> descriptors = new ArrayList<>();
-        for (EasyBeanInfo beanInfo : this.plugin.getEasyContext().getBeanInfoList(MavenRepository.class)) {
-            descriptors.add(new ScopeDescriptor(new MavenSearchScope(beanInfo.getName())));
-        }
+        List<MavenSearchScopeDescriptor> descriptors = MavenSearchScopeDescriptor.getList();
 
         ArrayList<AnAction> result = new ArrayList<>();
         result.add(new ScopeChooserAction() {
@@ -290,23 +281,13 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
             protected @NotNull ScopeDescriptor getSelectedScope() {
                 MavenRepository repository = plugin.getRepository();
                 if (repository != null) {
-                    String repositoryId = null;
-                    List<EasyBeanInfo> beanInfoList = plugin.getEasyContext().getBeanInfoList(MavenRepository.class);
-                    for (EasyBeanInfo beanInfo : beanInfoList) {
-                        if (beanInfo.getType().equals(repository.getClass())) {
-                            repositoryId = beanInfo.getName();
-                        }
-                    }
-
-                    if (StringUtils.isNotBlank(repositoryId)) {
-                        for (ScopeDescriptor descriptor : descriptors) {
-                            if (repositoryId.equals(((MavenSearchScope) descriptor.getScope()).getRepositoryId())) {
-                                return descriptor;
-                            }
+                    Class<?> type = repository.getClass();
+                    for (MavenSearchScopeDescriptor descriptor : descriptors) {
+                        if (type.equals(descriptor.getScope().getType())) {
+                            return descriptor;
                         }
                     }
                 }
-
                 return CollectionUtils.firstElement(descriptors);
             }
 
@@ -324,69 +305,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
 
     public void dispose() {
         super.dispose();
-    }
-
-    public static class MavenSearchScope extends GlobalSearchScope {
-
-        private final String repositoryId;
-
-        private final String description;
-
-        private final Icon icon;
-
-        public MavenSearchScope(@NotNull String repositoryId) {
-            super();
-            this.repositoryId = repositoryId;
-            this.description = MavenSearchMessage.get("maven.search.repository." + repositoryId + ".id");
-            this.icon = null;
-        }
-
-        public @NotNull String getRepositoryId() {
-            return repositoryId;
-        }
-
-        public @NotNull String getDisplayName() {
-            return this.description;
-        }
-
-        public Icon getIcon() {
-            return this.icon;
-        }
-
-        public boolean isSearchInModuleContent(@NotNull Module aModule) {
-            return true;
-        }
-
-        public boolean isSearchInLibraries() {
-            return true;
-        }
-
-        /**
-         * 交集
-         *
-         * @param scope2 搜索范围
-         * @return 集合
-         */
-        public @NotNull SearchScope intersectWith(@NotNull SearchScope scope2) {
-            return scope2;
-        }
-
-        /**
-         * 并集
-         *
-         * @param scope 搜素范围
-         * @return 集合
-         */
-        public @NotNull GlobalSearchScope union(@NotNull SearchScope scope) {
-            return this;
-        }
-
-        public boolean contains(VirtualFile file) {
-            if (log.isDebugEnabled()) {
-                log.debug("contains({}) ", file);
-            }
-            return true;
-        }
     }
 
 //    public static class FixedWindowAction extends ToggleAction {

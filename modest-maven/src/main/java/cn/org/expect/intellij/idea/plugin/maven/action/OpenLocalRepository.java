@@ -23,7 +23,7 @@ public class OpenLocalRepository extends AnAction {
     }
 
     public void actionPerformed(@NotNull AnActionEvent event) {
-        MavenSearchPluginFactory.createEasyContext(event);
+        MavenSearchPluginFactory.loadLocalRepositoryConfig(event);
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);
         MavenSearchPlugin plugin = new MavenSearchPlugin(context);
         File repository = plugin.getEasyContext().getBean(LocalRepositoryConfig.class).getRepository();

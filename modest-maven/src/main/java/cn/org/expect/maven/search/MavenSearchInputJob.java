@@ -48,7 +48,7 @@ public class MavenSearchInputJob extends MavenSearchJob {
                 MavenSearch search = job.getSearch();
 
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
-                Dates.sleep(search.getContext().getInputIntervalTime());
+                Dates.sleep(search.getSettings().getInputIntervalTime());
 
                 // 如果队列为空，表示在等待期间没有添加查询任务，则直接执行查询
                 if (this.queue.isEmpty()) {

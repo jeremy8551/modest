@@ -10,6 +10,8 @@ import cn.org.expect.maven.repository.local.LocalRepository;
 
 public abstract class AbstractMavenSearch implements MavenSearch {
 
+    private final MavenSearchSettings settings;
+
     /** IOC 容器 */
     private final EasyContext ioc;
 
@@ -19,11 +21,12 @@ public abstract class AbstractMavenSearch implements MavenSearch {
     /** 本地 Maven 仓库接口 */
     private final LocalRepository localRepository;
 
-    public AbstractMavenSearch(String repositoryId) {
+    public AbstractMavenSearch() {
         super();
         this.ioc = DefaultEasyContext.getInstance();
+        this.settings = this.ioc.getBean(MavenSearchSettings.class);
         this.localRepository = this.ioc.getBean(LocalRepository.class);
-        this.repository = this.ioc.getBean(MavenRepository.class, repositoryId);
+        this.repository = this.ioc.getBean(MavenRepository.class, this.settings.getRepositoryId());
     }
 
     /**

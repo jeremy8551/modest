@@ -50,10 +50,15 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
             log.info(MavenSearchMessage.get("maven.search.thread.start", this.getName()));
         }
 
-        MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
-        this.setSearchEverywhereUI(plugin); // 加载 UI 组件
-        this.setPopupMenuUI(plugin); // 加载弹出菜单
-        this.setEditorSelectText(plugin);
+        // 如果 manager.getCurrentlyShownUI() 报错，则捕获异常直接退出
+        try {
+            MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
+            this.setSearchEverywhereUI(plugin); // 加载 UI 组件
+            this.setPopupMenuUI(plugin); // 加载弹出菜单
+            this.setEditorSelectText(plugin);
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
 
         if (log.isInfoEnabled()) {
             log.info(MavenSearchMessage.get("maven.search.thread.finish", this.getName()));
@@ -415,7 +420,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
                     plugin.getIdeaUI().getSearchField().setText(pattern);
 
                     // 自动切换 Tab 页
-                    if (context.isAutoSwitchTab() && MavenSearchUtils.isXML(editorSelectText)) {
+                    if (plugin.getSettings().isAutoSwitchTab() && MavenSearchUtils.isXML(editorSelectText)) {
                         plugin.getIdeaUI().switchToTab(plugin.getContributor().getSearchProviderId());
                         plugin.asyncSearch();
                     }

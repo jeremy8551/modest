@@ -69,7 +69,7 @@ public class MavenSearchPatternJob extends MavenSearchJob {
         MavenRepositoryDatabase database = search.getDatabase();
         MavenSearchResult result = database.select(patternFinal);
         try {
-            if (result == null || result.size() == 0 || result.isExpire(search.getContext().getExpireTimeMillis())) {
+            if (result == null || result.size() == 0 || result.isExpire(search.getSettings().getExpireTimeMillis())) {
                 if (!MavenSearchUtils.isExtraSearch(patternFinal)) {
                     MavenSearchResult resultSet = this.getRemoteRepository().query(StringUtils.trimBlank(StringUtils.replaceAll(patternFinal, ".", "%2E")), 1);
                     if (resultSet == null) {
