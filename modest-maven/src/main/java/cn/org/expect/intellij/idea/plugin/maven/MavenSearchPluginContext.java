@@ -5,7 +5,6 @@ import java.util.List;
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationResultSet;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenSearchResult;
@@ -38,7 +37,7 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     private volatile MavenSearchResult mavenSearchResult;
 
     /** 导航记录结果集 */
-    private volatile SearchNavigationResultSet navigationResultSet;
+//    private volatile SearchNavigationResultSet navigationResultSet;
 
     /** 如果选中文本是 groupId:artifactId:version 时，是否自动切换tab */
     private volatile boolean autoSwitchTab;
@@ -149,13 +148,13 @@ public class MavenSearchPluginContext implements MavenSearchContext {
         this.selectNavigationItem = selectNavigationItem;
     }
 
-    public SearchNavigationResultSet getNavigationResultSet() {
-        return navigationResultSet;
-    }
-
-    public void setNavigationResultSet(SearchNavigationResultSet navigationResultSet) {
-        this.navigationResultSet = navigationResultSet;
-    }
+//    public SearchNavigationResultSet getNavigationResultSet() {
+//        return navigationResultSet;
+//    }
+//
+//    public void setNavigationResultSet(SearchNavigationResultSet navigationResultSet) {
+//        this.navigationResultSet = navigationResultSet;
+//    }
 
     public String getRepositoryId() {
         return repositoryId;

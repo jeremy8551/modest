@@ -260,7 +260,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
             plugin.setStatusbarText(null, "");
             plugin.getContext().setSearchText(null);
             plugin.getIdeaUI().getSearchField().setText("");
-            plugin.getContext().setNavigationResultSet(null);
+//            plugin.getContext().setNavigationResultSet(null);
             plugin.getContext().setSearchResult(null);
             plugin.getContext().setSelectNavigationHead(null);
             plugin.getContext().setSelectNavigationItem(null);

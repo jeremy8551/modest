@@ -66,6 +66,9 @@ public class IdeaSearchUI {
             // 检查注册项是否启用，为true，表示使用扩展模式作为状态栏
             if (Registry.is("search.everywhere.footer.extended.info")) {
                 this.statusBarText = text;
+                if (StringUtils.isBlank(message)) {
+                    return;
+                }
 
                 // 更新状态栏中的文本信息
                 ExtendedInfoComponent info = JavaDialectFactory.get().getField(this.ui, "myExtendedInfoComponent");

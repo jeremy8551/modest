@@ -1,5 +1,6 @@
 package cn.org.expect.intellij.idea.plugin.maven.listener;
 
+import java.util.Collection;
 import java.util.Map;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
@@ -20,6 +21,10 @@ public class SearchListener extends SearchAdapter {
 
     public SearchListener(@NotNull MavenSearchPlugin plugin) {
         this.plugin = plugin;
+    }
+
+    public void searchStarted(@NotNull String pattern, @NotNull Collection<? extends SearchEverywhereContributor<?>> contributors) {
+//        plugin.getContext().setNavigationResultSet(null);
     }
 
     public void searchFinished(@NotNull Map<SearchEverywhereContributor<?>, Boolean> hasMoreContributors) {

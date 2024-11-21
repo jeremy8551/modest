@@ -1,8 +1,6 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
 import cn.org.expect.intellij.idea.plugin.maven.navigation.EmptySearchNavigation;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigation;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationResultSet;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.Ensure;
@@ -33,12 +31,12 @@ public class MavenSearchPluginChooseContributor implements ChooseByNameContribut
             log.trace("getNames({}, {}) ", project.getName(), includeNonProjectItems);
         }
 
-        SearchNavigationResultSet resultSet = this.plugin.getContext().getNavigationResultSet();
-        if (resultSet != null) {
-            return resultSet.getNavigationNames();
-        } else {
-            return new String[]{""};
-        }
+//        SearchNavigationResultSet resultSet = this.plugin.getContext().getNavigationResultSet();
+//        if (resultSet != null) {
+//            return resultSet.getNavigationNames();
+//        } else {
+        return new String[]{""};
+//        }
     }
 
     public synchronized NavigationItem @NotNull [] getItemsByName(String name, String pattern, Project project, boolean includeNonProjectItems) {
@@ -46,13 +44,13 @@ public class MavenSearchPluginChooseContributor implements ChooseByNameContribut
             log.trace("getItemsByName({}, {}, {}) ", name, project.getName(), includeNonProjectItems);
         }
 
-        SearchNavigationResultSet resultSet = this.plugin.getContext().getNavigationResultSet();
-        if (resultSet != null) {
-            SearchNavigation navigation = resultSet.getNavigation(name);
-            if (navigation != null) {
-                return navigation.getItems();
-            }
-        }
+//        SearchNavigationResultSet resultSet = this.plugin.getContext().getNavigationResultSet();
+//        if (resultSet != null) {
+//            SearchNavigation navigation = resultSet.getNavigation(name);
+//            if (navigation != null) {
+//                return navigation.getItems();
+//            }
+//        }
         return new NavigationItem[]{new EmptySearchNavigation()};
     }
 }
