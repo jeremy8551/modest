@@ -188,13 +188,18 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         return tabID.endsWith(".All");
     }
 
+    /**
+     * 是否能执行查询
+     *
+     * @return 返回true表示支持查询 false表示不支持
+     */
     public boolean canSearch() {
         if (this.getIdeaUI().getSearchEverywhereUI() == null) {
             return false;
         }
 
         String tabID = this.getIdeaUI().getSelectedTabID();
-        return tabID.endsWith(".All") || this.contributor.getSearchProviderId().equals(tabID);
+        return (this.context.isSearchInAllTab() && tabID.endsWith(".All")) || this.contributor.getSearchProviderId().equals(tabID);
     }
 
     /**

@@ -58,7 +58,11 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 失效时间（单位毫秒） */
     private volatile long expireTimeMillis;
 
+    /** true表示将UI固定在前端 */
     private volatile boolean pinWindow;
+
+    /** true表示支持在 All 标签页中执行查询操作 */
+    private volatile boolean searchInAllTab;
 
     public MavenSearchPluginContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
@@ -71,6 +75,8 @@ public class MavenSearchPluginContext implements MavenSearchContext {
         this.elementPriority = 50;
         this.tabVisible = true;
         this.expireTimeMillis = 1000 * 3600 * 24; // 默认一天有效
+        this.pinWindow = false;
+        this.searchInAllTab = false;
     }
 
     public AnActionEvent getActionEvent() {
@@ -213,5 +219,13 @@ public class MavenSearchPluginContext implements MavenSearchContext {
 
     public void setPinWindow(boolean pinWindow) {
         this.pinWindow = pinWindow;
+    }
+
+    public boolean isSearchInAllTab() {
+        return searchInAllTab;
+    }
+
+    public void setSearchInAllTab(boolean searchInAllTab) {
+        this.searchInAllTab = searchInAllTab;
     }
 }

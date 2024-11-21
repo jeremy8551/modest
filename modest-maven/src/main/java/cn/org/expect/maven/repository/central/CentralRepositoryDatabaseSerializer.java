@@ -112,7 +112,7 @@ public class CentralRepositoryDatabaseSerializer {
                 JSONObject aObj = obj.getJSONObject(aid);
                 int start = aObj.getInt("start");
                 int foundNumber = aObj.getInt("foundNumber");
-                long queryTime = obj.getLong("queryTime");
+                long queryTime = aObj.getLong("queryTime");
 
                 List<MavenArtifact> list = new ArrayList<>();
                 JSONArray listArray = aObj.getJSONArray("list");
