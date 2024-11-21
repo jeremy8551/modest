@@ -36,10 +36,13 @@ public class InputFieldListener extends KeyAdapter {
 
     public void keyReleased(KeyEvent e) {
         if (this.plugin.canSearch()) {
-            if (log.isDebugEnabled()) {
-                log.debug("keyReleased tabID: {}, text: {}", this.plugin.getIdeaUI().getSelectedTabID(), this.searchField.getText());
+            char key = e.getKeyChar();
+            if (Character.isLetterOrDigit(key)) { // 文本字符
+                if (log.isDebugEnabled()) {
+                    log.debug("keyReleased tabID: {}, text: {}", this.plugin.getIdeaUI().getSelectedTabID(), this.searchField.getText());
+                }
+                this.plugin.asyncSearch(this.searchField.getText());
             }
-            this.plugin.asyncSearch(this.searchField.getText());
         }
     }
 }

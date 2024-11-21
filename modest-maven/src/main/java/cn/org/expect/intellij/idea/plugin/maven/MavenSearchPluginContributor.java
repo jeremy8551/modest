@@ -74,17 +74,19 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @param pattern 搜索模型
      * @return 过滤后的字符串
      */
-    public @NotNull String filterControlSymbols(String pattern) {
-        if (log.isDebugEnabled()) {
-            log.debug("filterControlSymbols({}) ", pattern);
-        }
+    public @NotNull String filterControlSymbols(@NotNull String pattern) {
         return pattern;
     }
 
+    /**
+     * 选中查询结果触发的事件
+     *
+     * @param selectedObject 查询结果
+     * @param modifiers      快捷键
+     * @param searchText     搜索文本
+     * @return 默认返回 false
+     */
     public boolean processSelectedItem(Object selectedObject, int modifiers, String searchText) {
-        // 禁用来源的处理逻辑：自动打开 url
-        // super.processSelectedItem(selectedObject, modifiers, searchText);
-
         if (selectedObject instanceof SearchNavigationHead) {
             SearchNavigationHead head = (SearchNavigationHead) selectedObject;
             this.plugin.getContext().setSelectNavigationHead(head); // 保存选择记录

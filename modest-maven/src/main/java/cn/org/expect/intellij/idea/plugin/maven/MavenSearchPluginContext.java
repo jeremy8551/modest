@@ -36,9 +36,6 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 最近一次模糊搜索结果 */
     private volatile MavenSearchResult mavenSearchResult;
 
-    /** 导航记录结果集 */
-//    private volatile SearchNavigationResultSet navigationResultSet;
-
     /** 如果选中文本是 groupId:artifactId:version 时，是否自动切换tab */
     private volatile boolean autoSwitchTab;
 
@@ -147,14 +144,6 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     public void setSelectNavigationItem(SearchNavigationItem selectNavigationItem) {
         this.selectNavigationItem = selectNavigationItem;
     }
-
-//    public SearchNavigationResultSet getNavigationResultSet() {
-//        return navigationResultSet;
-//    }
-//
-//    public void setNavigationResultSet(SearchNavigationResultSet navigationResultSet) {
-//        this.navigationResultSet = navigationResultSet;
-//    }
 
     public String getRepositoryId() {
         return repositoryId;

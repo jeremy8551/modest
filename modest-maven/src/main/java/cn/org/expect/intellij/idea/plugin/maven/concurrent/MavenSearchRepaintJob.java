@@ -29,14 +29,11 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
 
     private final MavenSearchPlugin plugin;
 
-//    private final List<SearchNavigation> searchNavigationList;
-
     private final List<SearchEverywhereFoundElementInfo> elementInfoList;
 
     public MavenSearchRepaintJob(MavenSearchPlugin plugin, MavenSearchResult result) {
         super(null);
         this.plugin = Ensure.notNull(plugin);
-//        this.searchNavigationList = new ArrayList<>(30);
         this.elementInfoList = new ArrayList<>();
         this.setRunnable(() -> this.paint(result));
     }
@@ -56,9 +53,6 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
             size = result.size();
             this.processSearchResult(result);
         }
-
-        // 将查询结果转为导航记录，目标是提供给 {@link MavenSearchPluginChooseContributor} 使用
-//        plugin.getContext().setNavigationResultSet(new SearchNavigationResultSet(this.searchNavigationList));
 
         // 一定要先删除 more 按钮
         model.clearMoreItems();
@@ -113,7 +107,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
                 Object object = listModel.getElementAt(i);
                 if (object instanceof SearchNavigationHead) {
                     SearchNavigationHead head = (SearchNavigationHead) object;
-                    if (selectHead.getArtifact().equals(head.getArtifact()) && head.getArtifact().isUnfold()) {
+                    if (selectHead.getArtifact().equals(head.getArtifact())) {
                         MavenArtifact artifact = selectHead.getArtifact();
                         if (artifact.isUnfold()) {
                             MavenSearchResult result = plugin.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId());
@@ -146,8 +140,8 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
         if (selectedIndex == -1) {
             JBList.clearSelection();
         } else {
-            JBList.setSelectedIndex(selectedIndex);
-            JBList.ensureIndexIsVisible(selectedIndex);
+            JBList.setSelectedIndex(selectedIndex); // 选中
+            JBList.ensureIndexIsVisible(selectedIndex); // 设置 JList 显示 selectedIndex 位置
         }
     }
 
@@ -162,7 +156,6 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
         for (MavenArtifact artifact : list) {
             SearchNavigationHead head = new SearchNavigationHead(artifact);
             this.elementInfoList.add(new SearchEverywhereFoundElementInfo(head, priority, contributor));
-//            List<SearchNavigationItem> items = new ArrayList<>();
 
             String groupId = artifact.getGroupId();
             String artifactId = artifact.getArtifactId();
@@ -184,7 +177,6 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
                             item.setIcon(MavenSearchPluginIcon.RIGHT_LOCAL);
                         }
                         this.elementInfoList.add(new SearchEverywhereFoundElementInfo(item, priority, contributor));
-//                        items.add(item);
                     }
                 }
             }
@@ -193,8 +185,6 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
             if (plugin.getService().isRunning(MavenSearchExtraJob.class, job -> groupId.equals(job.getGroupId()) && artifactId.equals(job.getArtifactId()))) {
                 head.setIcon(MavenSearchPluginIcon.LEFT_WAITING);
             }
-
-//            this.searchNavigationList.add(new SearchNavigation(head, items));
         }
     }
 

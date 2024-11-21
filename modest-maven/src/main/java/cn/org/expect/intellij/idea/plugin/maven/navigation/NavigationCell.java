@@ -13,13 +13,13 @@ import org.jetbrains.annotations.NotNull;
 
 public class NavigationCell extends ColoredListCellRenderer<Object> {
 
-    private String text;
+    private final String text;
 
-    private Icon icon;
+    private final Icon icon;
 
-    private int style;
+    private final int style;
 
-    private Color fgColor;
+    private final Color fgColor;
 
     public NavigationCell(String text, int style, Color fgColor) {
         this.text = text;
