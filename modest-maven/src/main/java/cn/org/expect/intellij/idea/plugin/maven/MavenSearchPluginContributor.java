@@ -307,6 +307,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
             }
         });
 
+//        result.add(new FixedWindowAction(this.plugin));
         return result;
     }
 
@@ -369,4 +370,55 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
             return true;
         }
     }
+
+//    public static class FixedWindowAction extends ToggleAction {
+//
+//        private MavenSearchPlugin plugin;
+//
+//        private MavenSearchPluginContext context;
+//
+//        public FixedWindowAction(MavenSearchPlugin plugin) {
+//            super("pin Window", "pin Window", AllIcons.General.Pin_tab);
+//            int mask = SystemInfo.isMac ? 256 : 128;
+//            this.plugin = plugin;
+//            this.context = plugin.getContext();
+//            this.registerCustomShortcutSet(68, mask, plugin.getIdeaUI().getSearchEverywhereUI());
+//        }
+//
+//        public boolean isSelected(AnActionEvent e) {
+//            return this.context.isPinWindow();
+//        }
+//
+//        public void setSelected(AnActionEvent e, boolean state) {
+//            System.out.println("setSelected()");
+//            this.context.setPinWindow(state);
+//
+//            SearchEverywhereUI ui = this.plugin.getIdeaUI().getSearchEverywhereUI();
+//            Project project = context.getActionEvent().getProject();
+//
+//            ui.addAncestorListener(new AncestorListenerAdapter() {
+//                @Override
+//                public void ancestorRemoved(AncestorEvent event) {
+//                    System.out.println("ancestorRemoved");
+//
+//                    JFrame frame = new JFrame("Always On Top Panel");
+//                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//
+//                    frame.add(ui);
+//
+//                    // 设置 JFrame 属性
+//                    frame.setSize(ui.getWidth(), ui.getHeight());
+//                    frame.setAlwaysOnTop(true); // 窗口始终在最前
+//                    frame.setFocusableWindowState(true); // 窗口始终可获取焦点
+//                    frame.setLocationRelativeTo(null); // 居中显示
+//                    frame.setVisible(true);
+//                }
+//            });
+//        }
+//
+//        public void actionPerformed(@NotNull AnActionEvent e) {
+//            System.out.println("actionPerformed()");
+//            super.actionPerformed(e);
+//        }
+//    }
 }

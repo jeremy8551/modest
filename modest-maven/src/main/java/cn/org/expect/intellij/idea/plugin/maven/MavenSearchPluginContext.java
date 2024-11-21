@@ -58,6 +58,8 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 失效时间（单位毫秒） */
     private volatile long expireTimeMillis;
 
+    private volatile boolean pinWindow;
+
     public MavenSearchPluginContext(AnActionEvent event) {
         this.event = Ensure.notNull(event);
         this.inputIntervalTime = 300;
@@ -203,5 +205,13 @@ public class MavenSearchPluginContext implements MavenSearchContext {
 
     public void setExpireTimeMillis(long expireTimeMillis) {
         this.expireTimeMillis = expireTimeMillis;
+    }
+
+    public boolean isPinWindow() {
+        return pinWindow;
+    }
+
+    public void setPinWindow(boolean pinWindow) {
+        this.pinWindow = pinWindow;
     }
 }
