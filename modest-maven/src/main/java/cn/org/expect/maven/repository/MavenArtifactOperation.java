@@ -3,11 +3,11 @@ package cn.org.expect.maven.repository;
 public interface MavenArtifactOperation {
 
     /**
-     * 是否支持在浏览器中访问
+     * 是否支持在中央仓库中浏览
      *
      * @return 返回 true 表示支持，false 表示不支持
      */
-    boolean supportBrowser();
+    boolean supportOpenInCentralRepository();
 
     /**
      * 是否支持下载工件

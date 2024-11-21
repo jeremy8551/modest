@@ -19,6 +19,7 @@ import cn.org.expect.maven.concurrent.MavenSearchMoreJob;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenArtifactOperation;
 import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.central.CentralRepository;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchNotification;
@@ -90,7 +91,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         JPopupMenu listPopupMenu = new JPopupMenu();
         JMenuItem copyMaven = new JMenuItem(MavenSearchMessage.get("maven.search.btn.copy.maven.dependency.text")); // 复制 Maven 依赖
         JMenuItem copyGradle = new JMenuItem(MavenSearchMessage.get("maven.search.btn.copy.gradle.dependency.text")); // 复制 Gradle 依赖
-        JMenuItem openInBrowser = new JMenuItem(MavenSearchMessage.get("maven.search.btn.open.in.browser.text")); // 在浏览器中打开
+        JMenuItem openInCentralRepository = new JMenuItem(MavenSearchMessage.get("maven.search.btn.open.in.browser.text")); // 在浏览器中打开
         JMenuItem openFileSystem = new JMenuItem(MavenSearchMessage.get("maven.search.btn.open.in.filesystem.text")); // 打开本地仓库目录
         JMenuItem downloadFile = new JMenuItem(MavenSearchMessage.get("maven.search.btn.download.local.repository.text")); // 下载按钮
         JMenuItem cancelDownload = new JMenuItem(MavenSearchMessage.get("maven.search.btn.cancel.download.local.repository.text")); // 取消下载按钮
@@ -155,8 +156,8 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
             plugin.sendNotification(MavenSearchNotification.NORMAL, copyGradle.getText());
         });
 
-        // 在浏览器中打开
-        openInBrowser.addActionListener(e -> {
+        // 在 Maven 中央仓库浏览
+        openInCentralRepository.addActionListener(e -> {
             SearchNavigationItem selectItem = context.getSelectNavigationItem();
             if (selectItem == null) {
                 log.warn("Not a selected Navigation Item!");
@@ -165,7 +166,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
 
             MavenArtifact artifact = selectItem.getArtifact();
             List<String> list = new ArrayList<>();
-            list.add(plugin.getRepository().getAddress());
+            list.add(plugin.getEasyContext().getBean(CentralRepository.class).getAddress());
             StringUtils.split(artifact.getGroupId(), '.', list);
             list.add(artifact.getArtifactId());
             list.add(artifact.getVersion());
@@ -293,14 +294,6 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
                         }
                         return;
                     }
-
-//                    // 左键点击导航项，隐藏右键菜单
-//                    Object selectedObject = listModel.getElementAt(selectedIndex);
-//                    if (selectedObject instanceof SearchNavigationItem) {
-//                        if (listPopupMenu.isVisible()) {
-//                            listPopupMenu.setVisible(false);
-//                        }
-//                    }
                     return;
                 }
 
@@ -321,8 +314,8 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
 
                         MavenArtifactOperation operation = plugin.getRepository().getSupported();
                         if (plugin.getLocalRepository().exists(artifact)) { // 工件在本地仓库中存在
-                            if (operation.supportBrowser()) {
-                                listPopupMenu.add(openInBrowser);
+                            if (operation.supportOpenInCentralRepository()) {
+                                listPopupMenu.add(openInCentralRepository);
                             }
 
                             if (operation.supportOpenInFileSystem()) {
@@ -336,8 +329,8 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
                             listPopupMenu.remove(downloadFile);
                             listPopupMenu.remove(cancelDownload);
                         } else {
-                            if (operation.supportBrowser()) {
-                                listPopupMenu.add(openInBrowser);
+                            if (operation.supportOpenInCentralRepository()) {
+                                listPopupMenu.add(openInCentralRepository);
                             }
 
                             listPopupMenu.remove(openFileSystem);

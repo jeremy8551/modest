@@ -34,8 +34,8 @@ public class LocalRepository implements MavenRepository {
     public MavenArtifactOperation getSupported() {
         return new MavenArtifactOperation() {
 
-            public boolean supportBrowser() {
-                return false;
+            public boolean supportOpenInCentralRepository() {
+                return true;
             }
 
             public boolean supportDownload() {

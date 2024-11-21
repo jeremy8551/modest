@@ -47,7 +47,7 @@ public class CentralRepository implements MavenRepository {
     public MavenArtifactOperation getSupported() {
         return new MavenArtifactOperation() {
 
-            public boolean supportBrowser() {
+            public boolean supportOpenInCentralRepository() {
                 return true;
             }
 
