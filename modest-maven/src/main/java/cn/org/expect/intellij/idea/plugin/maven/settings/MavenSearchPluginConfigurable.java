@@ -11,6 +11,7 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginSettings;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginUtils;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchScopeDescriptor;
+import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.XMLUtils;
 import com.intellij.ide.util.scopeChooser.ScopeDescriptor;
@@ -55,8 +56,9 @@ public class MavenSearchPluginConfigurable implements Configurable {
     }
 
     public JComponent createComponent() {
-        String name = this.settings.getName();
+        String pluginName = this.settings.getName();
         String tabName = MavenSearchPluginUtils.getTabName();
+        String allTabName = MavenSearchPluginUtils.getAllTabName();
 
         inputIntervalTime = new JBSlider(100, 2000); // 最小值 0，最大值 100
         inputIntervalTime.setMajorTickSpacing(200); // 主刻度间隔
@@ -72,7 +74,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
         repositoryId = new JComboBox<>(repositoryIdItems);
         repositoryId.addActionListener(e -> active.setRepositoryId(MavenSearchScopeDescriptor.toRepositoryId((String) repositoryId.getSelectedItem())));
 
-        autoSwitchTab = new JBCheckBox("自动切换到 " + tabName + " 选项卡");
+        autoSwitchTab = new JBCheckBox(MavenSearchMessage.get("maven.search.settings.auto.select.tab", tabName));
         autoSwitchTab.addActionListener(e -> active.setAutoSwitchTab(autoSwitchTab.isSelected()));
 
         tabIndex = new JBTextField(10);
@@ -83,10 +85,10 @@ public class MavenSearchPluginConfigurable implements Configurable {
             }
         });
 
-        tabVisible = new JBCheckBox("使用 " + tabName + " 选项卡执行 " + name + " 搜索功能");
+        tabVisible = new JBCheckBox(MavenSearchMessage.get("maven.search.settings.select.tab", tabName, pluginName));
         tabVisible.addActionListener(e -> active.setTabVisible(tabVisible.isSelected()));
 
-        searchInAllTab = new JBCheckBox("使用 All 选项卡执行 " + name + " 搜索功能");
+        searchInAllTab = new JBCheckBox(MavenSearchMessage.get("maven.search.settings.select.tab", allTabName, pluginName));
         searchInAllTab.addActionListener(e -> active.setSearchInAllTab(searchInAllTab.isSelected()));
 
         expireTimeMillisMemo = new JBLabel("");
@@ -123,18 +125,20 @@ public class MavenSearchPluginConfigurable implements Configurable {
         gbc.fill = GridBagConstraints.NONE; // 水平填充
         gbc.weightx = 1.0; // 保持一致的列宽
 
-        this.addSeparator(panel, gbc, "Tab 设置");
-        this.addRow(panel, gbc, true, tabVisible, "双击 shift 弹出 SearchEverywhere 界面，使用 " + tabName + " 选项卡搜索 Maven 仓库.");
-        this.addRow(panel, gbc, true, searchInAllTab, "双击 shift 弹出 SearchEverywhere 界面，可以使用 All 选项卡搜索 Maven 仓库.");
-        this.addRow(panel, gbc, true, autoSwitchTab, "选中 pom.xml 中的依赖信息，双击 shift 自动切换 " + tabName + " 选项卡执行搜索.");
-        this.addRow(panel, gbc, true, "位置索引", tabIndex, new JBLabel("整数"), "双击 shift 弹出 SearchEverywhere 界面，" + tabName + " 选项卡所在位置，0 表示标签页面板的第一个位置");
+        String intUnit = MavenSearchMessage.get("maven.search.settings.unit.integer");
+
+        this.addSeparator(panel, gbc, MavenSearchMessage.get("maven.search.settings.group.tab"));
+        this.addRow(panel, gbc, true, tabVisible, MavenSearchMessage.get("maven.search.settings.select.tab.description", tabName));
+        this.addRow(panel, gbc, true, searchInAllTab, MavenSearchMessage.get("maven.search.settings.select.tab.description", allTabName));
+        this.addRow(panel, gbc, true, autoSwitchTab, MavenSearchMessage.get("maven.search.settings.auto.select.tab.description", tabName));
+        this.addRow(panel, gbc, true, MavenSearchMessage.get("maven.search.settings.tab.position"), tabIndex, new JBLabel(intUnit), MavenSearchMessage.get("maven.search.settings.tab.position.description", tabName));
 
         this.addRow(panel, gbc);
-        this.addSeparator(panel, gbc, "搜索设置");
-        this.addRow(panel, gbc, true, "默认搜索", repositoryId, null, tabName + " 选项卡默认使用的 Maven 仓库.");
-        this.addRow(panel, gbc, true, "防抖时间(毫秒)", inputIntervalTime, null, "双击 shift 弹出 SearchEverywhere 界面，在搜索框中输入文本，在一定时间内没有变化才会执行 " + name + " 搜索.");
-        this.addRow(panel, gbc, true, "超时时间(毫秒)", expireTimeMillis, expireTimeMillisMemo, name + " 搜索结果保留的最长时间，支持表达式：24*3600*1000");
-        this.addRow(panel, gbc, true, "排序权重", elementPriority, new JBLabel("整数"), "SearchEverywhere 对搜索结果排序时，" + name + " 搜索结果的权重.");
+        this.addSeparator(panel, gbc, MavenSearchMessage.get("maven.search.settings.group.search"));
+        this.addRow(panel, gbc, true, MavenSearchMessage.get("maven.search.settings.tab.default.select.repository"), repositoryId, null, MavenSearchMessage.get("maven.search.settings.tab.default.select.repository.description", tabName));
+        this.addRow(panel, gbc, true, MavenSearchMessage.get("maven.search.settings.debounce.time"), inputIntervalTime, null, MavenSearchMessage.get("maven.search.settings.debounce.time.description", pluginName));
+        this.addRow(panel, gbc, true, MavenSearchMessage.get("maven.search.settings.result.expire.time"), expireTimeMillis, expireTimeMillisMemo, MavenSearchMessage.get("maven.search.settings.result.expire.time.description", pluginName));
+        this.addRow(panel, gbc, true, MavenSearchMessage.get("maven.search.settings.result.priority"), elementPriority, new JBLabel(intUnit), MavenSearchMessage.get("maven.search.settings.result.priority.description", pluginName));
 
         // 添加占位组件
         gbc.gridx = 0;

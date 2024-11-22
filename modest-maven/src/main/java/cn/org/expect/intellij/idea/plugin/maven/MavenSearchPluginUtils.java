@@ -203,8 +203,12 @@ public class MavenSearchPluginUtils {
         long seconds = duration.getSeconds() % 60;
         return String.format("%02d:%02d:%02d", hours, minutes, seconds); // 格式化为 hh:mm:ss
     }
-    
+
     public static String getTabName() {
         return MavenSearchMessage.get("maven.search.tab.name");
+    }
+
+    public static String getAllTabName() {
+        return "All";
     }
 }
