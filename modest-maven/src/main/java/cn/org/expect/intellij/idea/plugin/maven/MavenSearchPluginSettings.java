@@ -5,6 +5,15 @@ import cn.org.expect.maven.search.MavenSearchSettings;
 
 public interface MavenSearchPluginSettings extends MavenSearchSettings {
 
+    /** 默认一天有效 */
+    int DEFAULT_EXPIRE_TIME_MILLIS = 1000 * 3600 * 24;
+
+    /** 50 */
+    int DEFAULT_ELEMENT_PRIORITY = 50;
+
+    /** 在最右侧 */
+    int DEFAULT_TAB_INDEX = Integer.MAX_VALUE;
+
     /**
      * 设置插件ID
      *

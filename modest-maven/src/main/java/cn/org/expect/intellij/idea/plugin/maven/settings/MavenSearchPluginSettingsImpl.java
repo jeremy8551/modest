@@ -57,10 +57,10 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
         this.inputIntervalTime = 300;
         this.repositoryId = CentralRepository.class.getAnnotation(EasyBean.class).value();
         this.autoSwitchTab = true;
-        this.tabIndex = Integer.MAX_VALUE;
-        this.elementPriority = 50;
+        this.tabIndex = MavenSearchPluginSettings.DEFAULT_TAB_INDEX;
+        this.elementPriority = MavenSearchPluginSettings.DEFAULT_ELEMENT_PRIORITY;
         this.tabVisible = true;
-        this.expireTimeMillis = 1000 * 3600 * 24; // 默认一天有效
+        this.expireTimeMillis = MavenSearchPluginSettings.DEFAULT_EXPIRE_TIME_MILLIS;
         this.searchInAllTab = false;
     }
 

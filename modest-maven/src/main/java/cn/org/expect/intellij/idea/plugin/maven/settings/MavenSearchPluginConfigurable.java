@@ -65,9 +65,8 @@ public class MavenSearchPluginConfigurable implements Configurable {
 
         tabIndex = new JTextField(10);
         tabIndex.addFocusListener(new FocusAdapter() {
-
             public void focusLost(FocusEvent e) {
-                active.setTabIndex(StringUtils.parseInt(tabIndex.getText(), Integer.MAX_VALUE));
+                active.setTabIndex(StringUtils.parseInt(tabIndex.getText(), MavenSearchPluginSettings.DEFAULT_TAB_INDEX));
                 tabIndex.setText(String.valueOf(active.getTabIndex()));
             }
         });
@@ -79,10 +78,20 @@ public class MavenSearchPluginConfigurable implements Configurable {
         searchInAllTab.addActionListener(e -> active.setSearchInAllTab(searchInAllTab.isSelected()));
 
         expireTimeMillis = new JTextField(10);
-        expireTimeMillis.addActionListener(e -> active.setExpireTimeMillis(Long.parseLong(expireTimeMillis.getText())));
+        expireTimeMillis.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                active.setExpireTimeMillis(StringUtils.parseInt(expireTimeMillis.getText(), MavenSearchPluginSettings.DEFAULT_EXPIRE_TIME_MILLIS));
+                expireTimeMillis.setText(String.valueOf(active.getExpireTimeMillis()));
+            }
+        });
 
         elementPriority = new JTextField(10);
-        elementPriority.addActionListener(e -> active.setElementPriority(Integer.parseInt(elementPriority.getText())));
+        elementPriority.addFocusListener(new FocusAdapter() {
+            public void focusLost(FocusEvent e) {
+                active.setElementPriority(StringUtils.parseInt(elementPriority.getText(), MavenSearchPluginSettings.DEFAULT_ELEMENT_PRIORITY));
+                elementPriority.setText(String.valueOf(active.getElementPriority()));
+            }
+        });
 
         this.autowired(this.active);
 
@@ -114,12 +123,11 @@ public class MavenSearchPluginConfigurable implements Configurable {
     /**
      * 填充数据
      *
-     * @param settings 上下文信息
+     * @param settings 配置信息
      */
     public void autowired(MavenSearchPluginSettings settings) {
         inputIntervalTime.setValue((int) settings.getInputIntervalTime());
-        List<MavenSearchScopeDescriptor> scopeList = MavenSearchScopeDescriptor.getList();
-        repositoryId.setSelectedItem(scopeList.stream().filter(s -> s.getScope().getRepositoryId().equals(settings.getRepositoryId())).findAny().get().getDisplayName());
+        repositoryId.setSelectedItem(MavenSearchScopeDescriptor.getList().stream().filter(s -> s.getScope().getRepositoryId().equals(settings.getRepositoryId())).findAny().get().getDisplayName());
         autoSwitchTab.setSelected(settings.isAutoSwitchTab());
         tabIndex.setText(String.valueOf(settings.getTabIndex()));
         tabVisible.setSelected(settings.isTabVisible());
@@ -150,9 +158,6 @@ public class MavenSearchPluginConfigurable implements Configurable {
      */
     public void reset() {
         this.autowired(this.settings);
-    }
-
-    public void disposeUIResources() {
     }
 }
 
