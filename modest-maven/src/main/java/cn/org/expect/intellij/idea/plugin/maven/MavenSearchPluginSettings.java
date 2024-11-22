@@ -12,7 +12,7 @@ public interface MavenSearchPluginSettings extends MavenSearchSettings {
     int DEFAULT_ELEMENT_PRIORITY = 50;
 
     /** 在最右侧 */
-    int DEFAULT_TAB_INDEX = Integer.MAX_VALUE;
+    int DEFAULT_TAB_INDEX = 10000;
 
     /**
      * 设置插件ID

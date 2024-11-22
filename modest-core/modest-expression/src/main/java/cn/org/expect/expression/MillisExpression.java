@@ -10,7 +10,7 @@ import cn.org.expect.util.StringUtils;
  */
 public class MillisExpression {
 
-    private long value;
+    private final long value;
 
     /**
      * 将字符串转为毫秒 <br>
@@ -65,5 +65,4 @@ public class MillisExpression {
             return 0;
         }
     }
-
 }

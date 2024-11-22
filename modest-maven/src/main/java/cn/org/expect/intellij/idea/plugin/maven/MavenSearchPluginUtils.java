@@ -2,6 +2,7 @@ package cn.org.expect.intellij.idea.plugin.maven;
 
 import java.io.File;
 import java.io.InputStream;
+import java.time.Duration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import javax.swing.*;
@@ -9,6 +10,7 @@ import javax.swing.*;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
+import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
@@ -192,5 +194,17 @@ public class MavenSearchPluginUtils {
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         }
+    }
+
+    public static String format(long millis) {
+        Duration duration = Duration.ofMillis(millis); // 将毫秒数转换为 Duration
+        long hours = duration.toHours(); // 提取小时、分钟、秒
+        long minutes = duration.toMinutes() % 60;
+        long seconds = duration.getSeconds() % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds); // 格式化为 hh:mm:ss
+    }
+    
+    public static String getTabName() {
+        return MavenSearchMessage.get("maven.search.tab.name");
     }
 }

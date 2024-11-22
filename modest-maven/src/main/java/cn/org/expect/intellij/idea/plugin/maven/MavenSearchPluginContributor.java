@@ -11,7 +11,6 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.util.CollectionUtils;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.ExtendedInfo;
@@ -83,7 +82,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @param searchText     搜索文本
      * @return 默认返回 false
      */
-    public boolean processSelectedItem(Object selectedObject, int modifiers, String searchText) {
+    public boolean processSelectedItem(@NotNull Object selectedObject, int modifiers, @NotNull String searchText) {
         if (selectedObject instanceof SearchNavigationHead) {
             SearchNavigationHead head = (SearchNavigationHead) selectedObject;
             this.plugin.getContext().setSelectNavigationHead(head); // 保存选择记录
@@ -124,7 +123,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @param dataId  数据编号
      * @return 返回数据
      */
-    public Object getDataForItem(Object element, String dataId) {
+    public Object getDataForItem(@NotNull Object element, @NotNull String dataId) {
         if (log.isDebugEnabled()) {
             log.debug("getDataForItem({}, {})", element, dataId);
         }
@@ -132,7 +131,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         return super.getDataForItem(element, dataId);
     }
 
-    public int getElementPriority(Object element, String searchPattern) {
+    public int getElementPriority(@NotNull Object element, @NotNull String searchPattern) {
         if (log.isDebugEnabled()) {
             log.debug("getElementPriority({}, {}) ", element, searchPattern);
         }
@@ -165,7 +164,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         return this.plugin.getRepository().getAddress();
     }
 
-    protected FilteringGotoByModel<?> createModel(Project project) {
+    protected @NotNull FilteringGotoByModel<?> createModel(Project project) {
         return new MavenSearchPluginModel(project, this.contributor);
     }
 
@@ -184,7 +183,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return 标签页名
      */
-    public String getFullGroupName() {
+    public @NotNull String getFullGroupName() {
         return this.getGroupName();
     }
 
@@ -193,8 +192,8 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      *
      * @return 标签页名
      */
-    public String getGroupName() {
-        return MavenSearchMessage.get("maven.search.tab.name");
+    public @NotNull String getGroupName() {
+        return MavenSearchPluginUtils.getTabName();
     }
 
     /**
@@ -259,7 +258,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
              * @param e 事件
              * @return 事件的处理逻辑
              */
-            public @NotNull AnAction[] getChildren(AnActionEvent e) {
+            public AnAction @NotNull [] getChildren(AnActionEvent e) {
                 if (log.isTraceEnabled()) {
                     log.trace("getChildren({}) ", e);
                 }

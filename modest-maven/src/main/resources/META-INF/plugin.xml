@@ -69,7 +69,6 @@
     <depends optional="true" config-file="plugin-maven.xml">org.jetbrains.idea.maven</depends>
     <depends>org.jetbrains.idea.maven.model</depends>
     <depends>org.jetbrains.idea.maven.server.api</depends>
-    <depends>com.intellij.modules.lang</depends>
 
     <!-- 应用监听器 -->
     <applicationListeners>
