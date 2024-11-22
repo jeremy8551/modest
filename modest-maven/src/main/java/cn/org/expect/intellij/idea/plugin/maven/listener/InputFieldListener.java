@@ -27,7 +27,7 @@ public class InputFieldListener extends KeyAdapter {
                 plugin.asyncRefresh();
             }
         } else {
-            if (e.getKeyCode() == KeyEvent.VK_F2) { // F2 搜索
+            if (e.getKeyCode() == KeyEvent.VK_F2 && plugin.getSettings().isTabVisible()) { // F2 搜索
                 String tabID = plugin.getContributor().getSearchProviderId();
                 plugin.getIdeaUI().switchToTab(tabID);
             }

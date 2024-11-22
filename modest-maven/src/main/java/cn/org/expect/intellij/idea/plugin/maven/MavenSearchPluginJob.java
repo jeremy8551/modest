@@ -266,7 +266,6 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
             plugin.setStatusbarText(null, "");
             plugin.getContext().setSearchText(null);
             plugin.getIdeaUI().getSearchField().setText("");
-//            plugin.getContext().setNavigationResultSet(null);
             plugin.getContext().setSearchResult(null);
             plugin.getContext().setSelectNavigationHead(null);
             plugin.getContext().setSelectNavigationItem(null);
@@ -420,7 +419,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
                     plugin.getIdeaUI().getSearchField().setText(pattern);
 
                     // 自动切换 Tab 页
-                    if (plugin.getSettings().isAutoSwitchTab() && MavenSearchUtils.isXML(editorSelectText)) {
+                    if (plugin.getSettings().isAutoSwitchTab() && plugin.getSettings().isTabVisible() && MavenSearchUtils.isXML(editorSelectText)) {
                         plugin.getIdeaUI().switchToTab(plugin.getContributor().getSearchProviderId());
                         plugin.asyncSearch();
                     }
