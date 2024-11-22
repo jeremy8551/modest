@@ -84,7 +84,7 @@
         <searchEverywhereContributor implementation="cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginFactory"/>
 
         <!-- settings -->
-        <projectConfigurable instance="cn.org.expect.intellij.idea.plugin.maven.settings.MavenSearchPluginConfigurable" displayName="Maven+ Settings" groupId="Other Settings"/>
+        <projectConfigurable instance="cn.org.expect.intellij.idea.plugin.maven.settings.MavenSearchPluginConfigurable" groupId="Other Settings"/>
     </extensions>
 
     <actions>

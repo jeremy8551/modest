@@ -52,7 +52,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
      * @return 配置名称
      */
     public String getDisplayName() {
-        return this.settings.getName() + " Settings";
+        return MavenSearchMessage.get("maven.search.settings.display", this.settings.getName());
     }
 
     public JComponent createComponent() {
