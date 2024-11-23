@@ -32,14 +32,14 @@ public class SearchListener extends SearchAdapter {
             log.debug("{}.searchStarted()", SearchListener.class.getSimpleName());
         }
 
-        String currentTabID = plugin.getIdeaUI().getSelectedTabID();
-        if (!currentTabID.equals(this.lastSelectTabID)) {
-            this.lastSelectTabID = currentTabID;
+        String tabID = this.plugin.getIdeaUI().getSelectedTabID();
+        if (!tabID.equals(this.lastSelectTabID)) {
+            this.lastSelectTabID = tabID;
 
-            if (plugin.canSearch()) {
-                plugin.asyncSearch();
+            if (this.plugin.canSearch()) {
+                this.plugin.asyncSearch();
             } else {
-                plugin.showSearchResult(null);
+                this.plugin.showSearchResult(null);
             }
         }
     }

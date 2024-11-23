@@ -1,8 +1,11 @@
 package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
@@ -21,6 +24,7 @@ import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.util.Ensure;
+import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.ui.components.JBList;
@@ -44,6 +48,18 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
         SearchListModel model = plugin.getIdeaUI().getSearchListModel();
         boolean hasMore = this.hasMore(model);
 
+        // 如果是在 All Tab 中执行搜索，需要备份各个搜索类别的 more 值
+        boolean isAllTab = plugin.isAllTab();
+        Map<SearchEverywhereContributor<?>, Boolean> moreContributors = null;
+        if (isAllTab) {
+            moreContributors = new HashMap<>();
+            Map<SearchEverywhereContributor<?>, Collection<SearchEverywhereFoundElementInfo>> found = model.getFoundElementsMap();
+            for (SearchEverywhereContributor<?> contributor : found.keySet()) {
+                boolean value = model.hasMoreElements(contributor);
+                moreContributors.put(contributor, value);
+            }
+        }
+
         // 处理查询结果
         int foundNumber = 0;
         int size = 0;
@@ -65,6 +81,12 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
 
         // 设置 more 按钮
         try {
+            if (isAllTab) {
+                for (Map.Entry<SearchEverywhereContributor<?>, Boolean> entry : moreContributors.entrySet()) {
+                    model.setHasMore(entry.getKey(), entry.getValue());
+                }
+            }
+
             model.setHasMore(plugin.getContributor(), //
                     !plugin.getService().isRunning(MavenSearchMoreJob.class, t -> true)  // 现在没有 more 功能运行
                             && ((hasMore && model.getSize() > 0 && plugin.isAllTab()) // ALL标签页，有 more 按钮

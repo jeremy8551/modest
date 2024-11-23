@@ -89,7 +89,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
         tabVisible.addActionListener(e -> active.setTabVisible(tabVisible.isSelected()));
 
         searchInAllTab = new JBCheckBox(MavenSearchMessage.get("maven.search.settings.select.tab", allTabName, pluginName));
-        searchInAllTab.addActionListener(e -> active.setSearchInAllTab(searchInAllTab.isSelected()));
+        searchInAllTab.addActionListener(e -> active.setUseAllTab(searchInAllTab.isSelected()));
 
         expireTimeMillisMemo = new JBLabel("");
         expireTimeMillis = new JBTextField(10);
@@ -286,7 +286,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
         autoSwitchTab.setSelected(settings.isAutoSwitchTab());
         tabIndex.setText(String.valueOf(settings.getTabIndex()));
         tabVisible.setSelected(settings.isTabVisible());
-        searchInAllTab.setSelected(settings.isSearchInAllTab());
+        searchInAllTab.setSelected(settings.isUseAllTab());
         expireTimeMillis.setText(String.valueOf(settings.getExpireTimeMillis()));
         expireTimeMillisMemo.setText(MavenSearchPluginUtils.format(settings.getExpireTimeMillis()));
         elementPriority.setText(String.valueOf(settings.getElementPriority()));

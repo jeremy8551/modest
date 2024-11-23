@@ -1,4 +1,4 @@
-package cn.org.expect.intellij.idea.plugin.maven;
+package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
+import cn.org.expect.intellij.idea.plugin.maven.IdeaSearchUI;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContext;
 import cn.org.expect.intellij.idea.plugin.maven.listener.InputFieldListener;
 import cn.org.expect.intellij.idea.plugin.maven.listener.SearchListener;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
@@ -296,7 +299,6 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
                             plugin.setStatusbarText(MavenSearchAdvertiser.RUNNING, message);
                             plugin.execute(new MavenSearchMoreJob(pattern));
                         }
-                        return;
                     }
                     return;
                 }

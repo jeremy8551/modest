@@ -1,5 +1,6 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginJob;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.impl.EasyBeanDefineImpl;
 import cn.org.expect.maven.repository.local.LocalRepositoryConfig;

@@ -157,11 +157,11 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
         this.expireTimeMillis = expireTimeMillis;
     }
 
-    public boolean isSearchInAllTab() {
+    public boolean isUseAllTab() {
         return searchInAllTab;
     }
 
-    public void setSearchInAllTab(boolean searchInAllTab) {
+    public void setUseAllTab(boolean searchInAllTab) {
 //        if (log.isDebugEnabled()) {
 //            log.debug("setSearchInAllTab({})", searchInAllTab);
 //        }

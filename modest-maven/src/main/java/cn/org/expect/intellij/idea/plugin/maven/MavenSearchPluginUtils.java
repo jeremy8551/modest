@@ -189,7 +189,7 @@ public class MavenSearchPluginUtils {
                 settings.setTabVisible(tabVisible);
                 settings.setElementPriority(elementPriority);
                 settings.setExpireTimeMillis(expireTimeMillis);
-                settings.setSearchInAllTab(searchInAllTab);
+                settings.setUseAllTab(searchInAllTab);
             }
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);

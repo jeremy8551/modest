@@ -143,11 +143,11 @@ public class MavenSearchExecutorServiceImpl implements MavenSearchExecutorServic
     }
 
     public @NotNull <T> Future<T> submit(@NotNull Runnable task, T result) {
-        throw new UnsupportedOperationException(); // TODO
+        throw new UnsupportedOperationException();
     }
 
     public @NotNull <T> List<Future<T>> invokeAll(@NotNull Collection<? extends Callable<T>> tasks, long timeout, @NotNull TimeUnit unit) throws InterruptedException {
-        throw new UnsupportedOperationException(); // TODO
+        throw new UnsupportedOperationException();
     }
 
     public @NotNull <T> T invokeAny(@NotNull Collection<? extends Callable<T>> tasks) throws InterruptedException, ExecutionException {

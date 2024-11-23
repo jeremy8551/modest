@@ -75,14 +75,14 @@ public interface MavenSearchPluginSettings extends MavenSearchSettings {
      *
      * @return
      */
-    boolean isSearchInAllTab();
+    boolean isUseAllTab();
 
     /**
      * true表示支持在 All 标签页中执行查询操作
      *
      * @param searchInAllTab
      */
-    void setSearchInAllTab(boolean searchInAllTab);
+    void setUseAllTab(boolean searchInAllTab);
 
     /**
      * 查询结果的排序权重
@@ -122,7 +122,7 @@ public interface MavenSearchPluginSettings extends MavenSearchSettings {
         context.setId(this.getId());
         context.setName(this.getName());
         context.setWorkHome(this.getWorkHome());
-        context.setSearchInAllTab(this.isSearchInAllTab());
+        context.setUseAllTab(this.isUseAllTab());
         context.setElementPriority(this.getElementPriority());
         context.setTabVisible(this.isTabVisible());
         context.setTabIndex(this.getTabIndex());
@@ -139,7 +139,7 @@ public interface MavenSearchPluginSettings extends MavenSearchSettings {
      * @param context 输入参数
      */
     default MavenSearchPluginSettings merge(MavenSearchPluginSettings context) {
-        this.setSearchInAllTab(context.isSearchInAllTab());
+        this.setUseAllTab(context.isUseAllTab());
         this.setElementPriority(context.getElementPriority());
         this.setTabVisible(context.isTabVisible());
         this.setTabIndex(context.getTabIndex());
@@ -158,7 +158,7 @@ public interface MavenSearchPluginSettings extends MavenSearchSettings {
      */
     default boolean isEquals(MavenSearchPluginSettings settings) {
         return settings != null //
-                && settings.isSearchInAllTab() == this.isSearchInAllTab() //
+                && settings.isUseAllTab() == this.isUseAllTab() //
                 && settings.getElementPriority() == this.getElementPriority() //
                 && settings.isTabVisible() == this.isTabVisible() //
                 && settings.getTabIndex() == this.getTabIndex() //
