@@ -5,6 +5,7 @@ import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.openapi.project.Project;
+import org.jetbrains.annotations.NotNull;
 
 public class MavenSearchPluginModel extends FilteringGotoByModel<Object> {
 
@@ -28,11 +29,11 @@ public class MavenSearchPluginModel extends FilteringGotoByModel<Object> {
         return "Search artifact in Maven Repository ..";
     }
 
-    public String getNotInMessage() {
+    public @NotNull String getNotInMessage() {
         return this.getNotFoundMessage();
     }
 
-    public String getNotFoundMessage() {
+    public @NotNull String getNotFoundMessage() {
         return "No matching results";
     }
 
@@ -47,7 +48,7 @@ public class MavenSearchPluginModel extends FilteringGotoByModel<Object> {
     public void saveInitialCheckBoxState(boolean state) {
     }
 
-    public String[] getSeparators() {
+    public String @NotNull [] getSeparators() {
         return new String[]{":"};
     }
 

@@ -287,7 +287,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
                 if (e.getButton() == MouseEvent.BUTTON1) {
 
                     // 点击 more 按钮
-                    if (plugin.isSelfTab() && selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) {
+                    if (plugin.canSearch() && selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) {
                         String pattern = context.getSearchText();
                         MavenSearchResult result = plugin.getDatabase().select(pattern);
                         if (result != null) { // 判断是否满足执行点击更多链接的条件
