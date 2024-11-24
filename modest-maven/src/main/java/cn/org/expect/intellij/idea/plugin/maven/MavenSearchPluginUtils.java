@@ -177,7 +177,7 @@ public class MavenSearchPluginUtils {
                 boolean tabVisible = jsonObject.getBoolean("tabVisible");
                 int elementPriority = jsonObject.getInt("elementPriority");
                 long expireTimeMillis = jsonObject.getLong("expireTimeMillis");
-                boolean searchInAllTab = jsonObject.getBoolean("searchInAllTab");
+                boolean searchInAllTab = jsonObject.getBoolean("useAllTab");
 
                 //   settings.setId(id);
                 //   settings.setName(name);
