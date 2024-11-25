@@ -11,6 +11,7 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginFactory;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchEDTJob;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchExecutorServiceImpl;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginPinJob;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import com.intellij.icons.AllIcons;
@@ -64,16 +65,16 @@ public class MavenSearchPluginPinAction extends ToggleAction {
             List<SearchEverywhereContributor<?>> contributors = createContributors(event, project);
             SearchEverywhereSpellingCorrector spellingCorrector = SearchEverywhereSpellingCorrector.getInstance(project);
             SearchEverywhereUI newUI = (SearchEverywhereUI) method.invoke(manager, project, contributors, spellingCorrector);
-            this.plugin.execute(new MavenSearchEDTJob(() -> newUI.switchToTab(tabID)));
             MavenSearchPluginPinAction.PIN.setPin(newUI);
-            plugin.getIdeaUI().waitFor(1200, t -> !tabID.equals(newUI.getSelectedTabID()));
+            this.plugin.execute(new MavenSearchEDTJob(() -> newUI.switchToTab(tabID)));
+            plugin.getIdeaUI().waitFor(2000, t -> !tabID.equals(newUI.getSelectedTabID()));
 
             // 执行任务
             for (SearchEverywhereContributor<?> contributor : contributors) {
                 if (contributor instanceof MavenSearchPluginContributor) {
                     MavenSearchPlugin searchPlugin = ((MavenSearchPluginContributor) contributor).getPlugin();
                     searchPlugin.getContext().clone(this.plugin.getContext());
-                    searchPlugin.getService().setParameter("Alarm", null);
+                    searchPlugin.getService().setParameter(MavenSearchExecutorServiceImpl.PARAMETER, null);
                     searchPlugin.execute(new MavenSearchPluginPinJob(this.plugin));
                 }
             }

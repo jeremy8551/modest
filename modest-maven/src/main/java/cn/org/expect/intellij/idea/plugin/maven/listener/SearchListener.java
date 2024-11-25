@@ -38,24 +38,28 @@ public class SearchListener extends SearchAdapter {
             log.debug("{}.searchStarted()", SearchListener.class.getSimpleName());
         }
 
+        boolean canSearch = this.plugin.canSearch();
+        if (canSearch) {
+            Runnable command = this.queue.poll(); // 取一个任务
+            if (command != null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("{}.run {} ", SearchListener.class.getSimpleName(), command);
+                }
+                command.run();
+                return;
+            }
+        }
+
         // 切换选项卡时，不会自动执行搜索。如果连续二次执行搜索是不是在不同的选项卡，则需要重新执行搜索
         String tabID = this.plugin.getIdeaUI().getSelectedTabID();
         if (!tabID.equals(this.lastSelectTabID)) {
             this.lastSelectTabID = tabID;
 
-            if (this.plugin.canSearch()) {
-                Runnable command = this.queue.poll(); // 取一个任务
-                if (command == null) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("{}.async ", SearchListener.class.getSimpleName());
-                    }
-                    this.plugin.asyncSearch();
-                } else {
-                    if (log.isDebugEnabled()) {
-                        log.debug("{}.run {} ", SearchListener.class.getSimpleName(), command);
-                    }
-                    command.run();
+            if (canSearch) {
+                if (log.isDebugEnabled()) {
+                    log.debug("{}.async ", SearchListener.class.getSimpleName());
                 }
+                this.plugin.asyncSearch();
             } else {
                 if (log.isDebugEnabled()) {
                     log.debug("{}.show {}", SearchListener.class.getSimpleName(), tabID);

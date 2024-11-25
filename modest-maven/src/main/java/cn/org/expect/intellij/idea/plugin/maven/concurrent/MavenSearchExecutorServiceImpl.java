@@ -25,6 +25,8 @@ import org.jetbrains.annotations.NotNull;
 public class MavenSearchExecutorServiceImpl implements MavenSearchExecutorService {
     private final static Log log = LogFactory.getLog(MavenSearchExecutorServiceImpl.class);
 
+    public final static String PARAMETER = "Alarm";
+
     private volatile Alarm service;
 
     private final List<Runnable> list;
@@ -38,7 +40,7 @@ public class MavenSearchExecutorServiceImpl implements MavenSearchExecutorServic
             this.service = null;
             return;
         }
-        
+
         if (value instanceof Alarm) {
             this.service = (Alarm) value;
         }

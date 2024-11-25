@@ -41,7 +41,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.concurrency.EdtExecutorService;
 
-public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
+public class MavenSearchPluginJob extends MavenSearchJob {
 
     protected final Queue<Runnable> QUEUE = new ArrayDeque<>();
 
@@ -79,7 +79,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         MavenSearchPluginContext context = plugin.getContext();
         AnActionEvent event = context.getActionEvent();
         SearchEverywhereUI ui = this.getSearchEverywhereUI(event); // TODO 修改注册项后，再打开查询界面，这个位置报错 isShown
-        plugin.getService().setParameter("Alarm", JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
+        plugin.getService().setParameter(MavenSearchExecutorServiceImpl.PARAMETER, JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
         plugin.getIdeaUI().setSearchEverywhereUI(ui);
         this.addSearchListener(ui, plugin);
     }
@@ -398,11 +398,11 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
 
         // 在已打开的编辑器中，如果选中了文本，则自动对文本进行查询
         Editor editor = plugin.getContext().getActionEvent().getDataContext().getData(CommonDataKeys.EDITOR);
-        if (editor != null) {
-            String editorSelectText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
-            if (StringUtils.isNotBlank(editorSelectText)) {
-                // 只能使用 EdtExecutorService.getInstance() 不能递归调用 plugin.execute() 方法
-                EdtExecutorService.getInstance().execute(new MavenSearchEDTJob(() -> {
+        // 只能使用 EdtExecutorService.getInstance() 不能递归调用 plugin.execute() 方法
+        EdtExecutorService.getInstance().execute(new MavenSearchEDTJob(() -> {
+            if (editor != null) {
+                String editorSelectText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
+                if (StringUtils.isNotBlank(editorSelectText)) {
 
                     // 编辑器中选中的文本
                     String pattern = MavenSearchUtils.parse(editorSelectText);
@@ -418,14 +418,14 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
                         plugin.getIdeaUI().switchToTab(plugin.getContributor().getSearchProviderId());
                         plugin.asyncSearch();
                     }
-                }));
-            } else {
-                // 如果未选中任何内容，则自动搜索输入框中的文本
-                String text = plugin.getIdeaUI().getSearchField().getText();
-                if (StringUtils.isNotBlank(text) && plugin.canSearch()) {
-                    plugin.asyncSearch();
+                } else {
+                    // 如果未选中任何内容，则自动搜索输入框中的文本
+                    String text = plugin.getIdeaUI().getSearchField().getText();
+                    if (StringUtils.isNotBlank(text) && plugin.canSearch()) {
+                        plugin.asyncSearch();
+                    }
                 }
             }
-        }
+        }));
     }
 }
