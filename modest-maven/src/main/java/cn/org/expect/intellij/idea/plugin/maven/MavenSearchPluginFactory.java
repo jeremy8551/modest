@@ -1,5 +1,6 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
+import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginJob;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.impl.EasyBeanDefineImpl;
@@ -12,11 +13,17 @@ import org.jetbrains.annotations.NotNull;
 public class MavenSearchPluginFactory implements SearchEverywhereContributorFactory<Object> {
 
     public @NotNull SearchEverywhereContributor<Object> createContributor(@NotNull AnActionEvent event) {
+        MavenSearchPluginPinAction.PIN.dispose();
         MavenSearchPluginFactory.loadLocalRepositoryConfig(event);
+        MavenSearchPluginContributor contributor = this.create(event);
+        contributor.getPlugin().execute(new MavenSearchPluginJob());
+        return contributor;
+    }
+
+    public @NotNull MavenSearchPluginContributor create(@NotNull AnActionEvent event) {
         MavenSearchPluginContext context = new MavenSearchPluginContext(event);
         MavenSearchPlugin plugin = new MavenSearchPlugin(context);
         plugin.updateTabTooltip();
-        plugin.execute(new MavenSearchPluginJob());
         return plugin.getContributor();
     }
 

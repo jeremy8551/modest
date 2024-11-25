@@ -47,6 +47,16 @@ public interface MavenSearchResult {
     long getQueryTime();
 
     /**
+     * 重置操作
+     */
+    default void reset() {
+        List<MavenArtifact> list = this.getList();
+        for (MavenArtifact artifact : list) {
+            artifact.setFold(true);
+        }
+    }
+
+    /**
      * 判断查询结果是否过期
      *
      * @param timeMillis 过期时间，单位毫秒

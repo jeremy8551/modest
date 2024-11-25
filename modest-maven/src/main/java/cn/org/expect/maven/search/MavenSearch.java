@@ -2,7 +2,7 @@ package cn.org.expect.maven.search;
 
 import java.io.File;
 
-import cn.org.expect.maven.concurrent.EDTJob;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.EDTJob;
 import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;

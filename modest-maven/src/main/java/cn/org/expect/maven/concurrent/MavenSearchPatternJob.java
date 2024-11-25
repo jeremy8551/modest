@@ -55,6 +55,7 @@ public class MavenSearchPatternJob extends MavenSearchJob {
         }
 
         // 保存查询结果
+        result.reset();
         search.getContext().setSearchResult(result);
         search.showSearchResult(result);
         return 0;

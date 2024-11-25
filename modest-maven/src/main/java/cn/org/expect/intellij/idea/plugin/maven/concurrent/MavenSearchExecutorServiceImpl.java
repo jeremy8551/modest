@@ -14,10 +14,8 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.concurrent.Terminate;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.concurrent.EDTJob;
 import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
 import cn.org.expect.maven.concurrent.MavenSearchJob;
-import cn.org.expect.util.Ensure;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.Alarm;
 import com.intellij.util.concurrency.EdtExecutorService;
@@ -36,8 +34,13 @@ public class MavenSearchExecutorServiceImpl implements MavenSearchExecutorServic
     }
 
     public void setParameter(String name, Object value) {
+        if (value == null) {
+            this.service = null;
+            return;
+        }
+        
         if (value instanceof Alarm) {
-            this.service = Ensure.notNull((Alarm) value);
+            this.service = (Alarm) value;
         }
     }
 

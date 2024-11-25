@@ -1,11 +1,13 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
+import java.util.function.Predicate;
 import javax.swing.*;
 
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
+import cn.org.expect.util.Dates;
 import cn.org.expect.util.MessageFormatter;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
@@ -23,8 +25,11 @@ public class IdeaSearchUI {
     /** Idea搜索功能UI */
     protected volatile SearchEverywhereUI ui;
 
-    /** 状态栏信息 */
-    private volatile String statusBarText;
+    /** 扩展模式状态栏信息 */
+    private volatile String extendedInfoText;
+
+    /** 状态栏更新请求 */
+    private volatile StatusBar statusBar;
 
     public IdeaSearchUI() {
     }
@@ -58,6 +63,7 @@ public class IdeaSearchUI {
             return;
         }
 
+        this.statusBar = new StatusBar(type, message);
         Icon icon = MavenSearchPluginUtils.getIcon(type);
         String fontColor = MavenSearchAdvertiser.ERROR == type ? "red" : "orange";
         String text = new MessageFormatter("<html><span style='color:{};'>{}</span></html>").fill(fontColor, message);
@@ -65,7 +71,7 @@ public class IdeaSearchUI {
         try {
             // 检查注册项是否启用，为true，表示使用扩展模式作为状态栏
             if (Registry.is("search.everywhere.footer.extended.info")) {
-                this.statusBarText = text;
+                this.extendedInfoText = text;
                 if (StringUtils.isBlank(message)) {
                     return;
                 }
@@ -127,6 +133,23 @@ public class IdeaSearchUI {
         return JavaDialectFactory.get().getField(this.ui, "mySearchProgressIndicator");
     }
 
+    /**
+     * 等待 idea 默认的搜索功能执行完毕
+     *
+     * @param timeout 超时时间，单位毫秒
+     */
+    public void waitFor(long timeout, Predicate<?> func) {
+        try {
+            ProgressIndicator indicator = this.getProgressIndicator();
+            long startMillis = System.currentTimeMillis();
+            while (indicator != null && indicator.isRunning() && !indicator.isCanceled() && System.currentTimeMillis() - startMillis <= timeout && (func == null || func.test(null))) {
+                Dates.sleep(100);
+            }
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+    }
+
     public void switchToTab(String tabID) {
         if (this.ui == null) {
             return;
@@ -135,7 +158,29 @@ public class IdeaSearchUI {
         this.ui.switchToTab(tabID);
     }
 
+    public StatusBar getStatusBar() {
+        return statusBar;
+    }
+
     public String getAdvertiserText(Object obj) {
-        return this.statusBarText;
+        return this.extendedInfoText;
+    }
+
+    public static class StatusBar {
+        private MavenSearchAdvertiser type;
+        private String message;
+
+        public StatusBar(MavenSearchAdvertiser type, String message) {
+            this.type = type;
+            this.message = message;
+        }
+
+        public MavenSearchAdvertiser getType() {
+            return type;
+        }
+
+        public String getMessage() {
+            return message;
+        }
     }
 }

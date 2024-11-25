@@ -1,7 +1,7 @@
 package cn.org.expect.maven.search;
 
 import cn.org.expect.concurrent.ThreadSource;
-import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
 import cn.org.expect.maven.repository.MavenRepository;
@@ -15,27 +15,40 @@ public abstract class AbstractMavenSearch implements MavenSearch {
     /** IOC 容器 */
     private final EasyContext ioc;
 
-    /** Maven 仓库 */
+    /** Maven仓库ID */
+    private volatile String repositoryId;
+
+    /** Maven仓库 */
     private MavenRepository repository;
 
-    /** 本地 Maven 仓库接口 */
+    /** 本地Maven仓库接口 */
     private final LocalRepository localRepository;
 
     public AbstractMavenSearch() {
         super();
-        this.ioc = DefaultEasyContext.getInstance();
+        this.ioc = MavenSearchPluginApplication.get();
         this.settings = this.ioc.getBean(MavenSearchSettings.class);
         this.localRepository = this.ioc.getBean(LocalRepository.class);
-        this.repository = this.ioc.getBean(MavenRepository.class, this.settings.getRepositoryId());
+        this.setRepositoryId(this.settings.getRepositoryId());
     }
 
     /**
-     * 设置 Maven 仓库
+     * 设置Maven仓库ID
      *
-     * @param id 仓库编号
+     * @param id Maven仓库ID
      */
     public void setRepositoryId(String id) {
         this.repository = this.ioc.getBean(MavenRepository.class, id);
+        this.repositoryId = id;
+    }
+
+    /**
+     * 返回Maven仓库ID
+     *
+     * @return Maven仓库ID
+     */
+    public String getRepositoryId() {
+        return repositoryId;
     }
 
     /**
@@ -72,12 +85,12 @@ public abstract class AbstractMavenSearch implements MavenSearch {
      * @return 模糊查询工具
      */
     public synchronized MavenSearchInputJob getInput() {
-        MavenSearchInputJob thread = this.getService().getFirst(MavenSearchInputJob.class, job -> true); // MavenSearchInputJob 对象只能是单例模式
-        if (thread == null) {
-            thread = new MavenSearchInputJob();
-            this.getService().execute(thread);
+        MavenSearchInputJob job = this.getService().getFirst(MavenSearchInputJob.class, first -> true); // MavenSearchInputJob 对象只能是单例模式
+        if (job == null) {
+            job = new MavenSearchInputJob();
+            this.getService().execute(job);
         }
-        return thread;
+        return job;
     }
 
     /**

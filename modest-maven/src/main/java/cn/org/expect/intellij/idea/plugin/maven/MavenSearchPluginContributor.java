@@ -4,26 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
+import cn.org.expect.intellij.idea.plugin.maven.action.MavenRepositoryChooserAction;
+import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.NavigationCellRenderer;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.util.CollectionUtils;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.ExtendedInfo;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
-import com.intellij.ide.actions.searcheverywhere.ScopeChooserAction;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
-import com.intellij.ide.util.scopeChooser.ScopeDescriptor;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.Processor;
-import com.intellij.util.containers.ContainerUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -36,12 +34,17 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
 
     private final MavenSearchPlugin plugin;
 
-    private volatile Runnable onChanged;
+    private final MavenSearchPluginPinAction pinAction;
 
     public MavenSearchPluginContributor(@NotNull MavenSearchPlugin plugin) {
         super(plugin.getContext().getActionEvent());
         this.contributor = new MavenSearchPluginChooseContributor(plugin);
         this.plugin = plugin;
+        this.pinAction = new MavenSearchPluginPinAction(this.plugin);
+    }
+
+    public MavenSearchPlugin getPlugin() {
+        return plugin;
     }
 
     public @NotNull String getSearchProviderId() {
@@ -113,20 +116,26 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
             return false;
         }
 
+        // 保存选择记录
+        if (selectedObject instanceof SearchNavigationItem) {
+            this.plugin.getContext().setSelectNavigationItem((SearchNavigationItem) selectedObject);
+            return false;
+        }
+
         return false;
     }
 
     /**
-     * 从参数 element 中读取数据
+     * 选中搜索结果时，从选种记录中读取数据
      *
      * @param element 元素
      * @param dataId  数据编号
      * @return 返回数据
      */
     public Object getDataForItem(@NotNull Object element, @NotNull String dataId) {
-        if (log.isDebugEnabled()) {
-            log.debug("getDataForItem({}, {})", element, dataId);
-        }
+//        if (log.isDebugEnabled()) {
+//            log.debug("getDataForItem({}, {})", element, dataId);
+//        }
 
         return super.getDataForItem(element, dataId);
     }
@@ -234,126 +243,13 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
             log.trace("getActions({}) ", onChanged);
         }
 
-        this.onChanged = onChanged;
-
-        List<MavenSearchScopeDescriptor> descriptors = MavenSearchScopeDescriptor.getList();
-
-        ArrayList<AnAction> result = new ArrayList<>();
-        result.add(new ScopeChooserAction() {
-
-            public boolean isEverywhere() {
-                return true;
-            }
-
-            public void setEverywhere(boolean everywhere) {
-            }
-
-            public boolean canToggleEverywhere() {
-                return true;
-            }
-
-            /**
-             * 在下拉列表中，光标覆盖选项时出发的事件
-             *
-             * @param e 事件
-             * @return 事件的处理逻辑
-             */
-            public AnAction @NotNull [] getChildren(AnActionEvent e) {
-                if (log.isTraceEnabled()) {
-                    log.trace("getChildren({}) ", e);
-                }
-                return new AnAction[0];
-            }
-
-            /**
-             * 在下拉列表中，选中某一个选项触发的事件
-             *
-             * @param descriptor 选项信息
-             */
-            protected void onScopeSelected(@NotNull ScopeDescriptor descriptor) {
-                String repositoryId = ((MavenSearchScope) descriptor.getScope()).getRepositoryId();
-                plugin.setRepositoryId(repositoryId);
-                onChanged.run(); // 更新：搜索框右侧的广告信息
-                plugin.asyncSearch();
-            }
-
-            protected @NotNull ScopeDescriptor getSelectedScope() {
-                MavenRepository repository = plugin.getRepository();
-                if (repository != null) {
-                    Class<?> type = repository.getClass();
-                    for (MavenSearchScopeDescriptor descriptor : descriptors) {
-                        if (type.equals(descriptor.getScope().getType())) {
-                            return descriptor;
-                        }
-                    }
-                }
-                return CollectionUtils.firstElement(descriptors);
-            }
-
-            protected void onProjectScopeToggled() {
-            }
-
-            protected boolean processScopes(@NotNull Processor<? super ScopeDescriptor> processor) {
-                return ContainerUtil.process(descriptors, processor);
-            }
-        });
-
-//        result.add(new FixedWindowAction(this.plugin));
-        return result;
+        List<AnAction> list = new ArrayList<>();
+        list.add(new MavenRepositoryChooserAction(this.plugin, onChanged));
+        list.add(this.pinAction);
+        return list;
     }
 
     public void dispose() {
         super.dispose();
     }
-
-//    public static class FixedWindowAction extends ToggleAction {
-//
-//        private MavenSearchPlugin plugin;
-//
-//        private MavenSearchPluginContext context;
-//
-//        public FixedWindowAction(MavenSearchPlugin plugin) {
-//            super("pin Window", "pin Window", AllIcons.General.Pin_tab);
-//            int mask = SystemInfo.isMac ? 256 : 128;
-//            this.plugin = plugin;
-//            this.context = plugin.getContext();
-//            this.registerCustomShortcutSet(68, mask, plugin.getIdeaUI().getSearchEverywhereUI());
-//        }
-//
-//        public boolean isSelected(AnActionEvent e) {
-//            return this.context.isPinWindow();
-//        }
-//
-//        public void setSelected(AnActionEvent e, boolean state) {
-//            System.out.println("setSelected()");
-//            this.context.setPinWindow(state);
-//
-//            SearchEverywhereUI ui = this.plugin.getIdeaUI().getSearchEverywhereUI();
-//            Project project = context.getActionEvent().getProject();
-//
-//            ui.addAncestorListener(new AncestorListenerAdapter() {
-//                @Override
-//                public void ancestorRemoved(AncestorEvent event) {
-//                    System.out.println("ancestorRemoved");
-//
-//                    JFrame frame = new JFrame("Always On Top Panel");
-//                    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//
-//                    frame.add(ui);
-//
-//                    // 设置 JFrame 属性
-//                    frame.setSize(ui.getWidth(), ui.getHeight());
-//                    frame.setAlwaysOnTop(true); // 窗口始终在最前
-//                    frame.setFocusableWindowState(true); // 窗口始终可获取焦点
-//                    frame.setLocationRelativeTo(null); // 居中显示
-//                    frame.setVisible(true);
-//                }
-//            });
-//        }
-//
-//        public void actionPerformed(@NotNull AnActionEvent e) {
-//            System.out.println("actionPerformed()");
-//            super.actionPerformed(e);
-//        }
-//    }
 }

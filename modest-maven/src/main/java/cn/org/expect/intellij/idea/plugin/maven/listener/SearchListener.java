@@ -2,11 +2,13 @@ package cn.org.expect.intellij.idea.plugin.maven.listener;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Queue;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
+import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchAdapter;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import org.jetbrains.annotations.NotNull;
@@ -22,8 +24,12 @@ public class SearchListener extends SearchAdapter {
     /** 记录上一次使用的 tab 标签页 */
     private String lastSelectTabID;
 
-    public SearchListener(@NotNull MavenSearchPlugin plugin) {
-        this.plugin = plugin;
+    /** 线程任务队列 */
+    private final Queue<Runnable> queue;
+
+    public SearchListener(MavenSearchPlugin plugin, Queue<Runnable> queue) {
+        this.plugin = Ensure.notNull(plugin);
+        this.queue = Ensure.notNull(queue);
         this.lastSelectTabID = "";
     }
 
@@ -32,14 +38,29 @@ public class SearchListener extends SearchAdapter {
             log.debug("{}.searchStarted()", SearchListener.class.getSimpleName());
         }
 
+        // 切换选项卡时，不会自动执行搜索。如果连续二次执行搜索是不是在不同的选项卡，则需要重新执行搜索
         String tabID = this.plugin.getIdeaUI().getSelectedTabID();
         if (!tabID.equals(this.lastSelectTabID)) {
             this.lastSelectTabID = tabID;
 
             if (this.plugin.canSearch()) {
-                this.plugin.asyncSearch();
+                Runnable command = this.queue.poll(); // 取一个任务
+                if (command == null) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("{}.async ", SearchListener.class.getSimpleName());
+                    }
+                    this.plugin.asyncSearch();
+                } else {
+                    if (log.isDebugEnabled()) {
+                        log.debug("{}.run {} ", SearchListener.class.getSimpleName(), command);
+                    }
+                    command.run();
+                }
             } else {
-                this.plugin.showSearchResult(null);
+                if (log.isDebugEnabled()) {
+                    log.debug("{}.show {}", SearchListener.class.getSimpleName(), tabID);
+                }
+                this.plugin.showSearchResult(null); // 切换到其他选项卡，需要删除搜索结果
             }
         }
     }

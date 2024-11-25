@@ -32,6 +32,7 @@ public class MavenSearchMoreJob extends MavenSearchPatternJob {
             if (next != null) {
                 list.addAll(next.getList());
                 SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, next.getStart(), foundNumber, System.currentTimeMillis());
+                newResult.reset();
                 database.insert(this.pattern, newResult); // 保存到数据库
                 search.getContext().setSearchResult(newResult); // 保存查询记录
                 search.showSearchResult();

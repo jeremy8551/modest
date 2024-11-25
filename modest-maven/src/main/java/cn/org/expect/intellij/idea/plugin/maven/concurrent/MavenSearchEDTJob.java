@@ -1,7 +1,8 @@
-package cn.org.expect.maven.concurrent;
+package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.concurrent.MavenSearchJob;
 
 public class MavenSearchEDTJob extends MavenSearchJob implements EDTJob {
     protected final static Log log = LogFactory.getLog(MavenSearchEDTJob.class);

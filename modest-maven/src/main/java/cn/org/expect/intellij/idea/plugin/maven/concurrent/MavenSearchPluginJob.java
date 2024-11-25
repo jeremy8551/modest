@@ -3,8 +3,10 @@ package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.IdeaSearchUI;
@@ -14,9 +16,7 @@ import cn.org.expect.intellij.idea.plugin.maven.listener.InputFieldListener;
 import cn.org.expect.intellij.idea.plugin.maven.listener.SearchListener;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.jdk.JavaDialectFactory;
-import cn.org.expect.maven.concurrent.EDTJob;
 import cn.org.expect.maven.concurrent.MavenSearchDownloadJob;
-import cn.org.expect.maven.concurrent.MavenSearchEDTJob;
 import cn.org.expect.maven.concurrent.MavenSearchJob;
 import cn.org.expect.maven.concurrent.MavenSearchMoreJob;
 import cn.org.expect.maven.repository.MavenArtifact;
@@ -38,14 +38,15 @@ import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.progress.ProgressIndicator;
 import com.intellij.ui.components.JBList;
 import com.intellij.util.concurrency.EdtExecutorService;
 
 public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
 
-    public MavenSearchPluginJob() {
-        super();
+    protected final Queue<Runnable> QUEUE = new ArrayDeque<>();
+
+    protected void addSearchListener(SearchEverywhereUI ui, MavenSearchPlugin plugin) {
+        ui.addSearchListener(new SearchListener(plugin, QUEUE));
     }
 
     public int execute() {
@@ -77,6 +78,13 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
     protected void setSearchEverywhereUI(MavenSearchPlugin plugin) {
         MavenSearchPluginContext context = plugin.getContext();
         AnActionEvent event = context.getActionEvent();
+        SearchEverywhereUI ui = this.getSearchEverywhereUI(event); // TODO 修改注册项后，再打开查询界面，这个位置报错 isShown
+        plugin.getService().setParameter("Alarm", JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
+        plugin.getIdeaUI().setSearchEverywhereUI(ui);
+        this.addSearchListener(ui, plugin);
+    }
+
+    public SearchEverywhereUI getSearchEverywhereUI(AnActionEvent event) {
         SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
         long startMillis = System.currentTimeMillis();
         while (!manager.isShown()) { // 等待 SearchEverywhere 显示
@@ -88,10 +96,7 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
         }
 
         // 得到当前已显示的 SearchEverywhere 对象
-        SearchEverywhereUI ui = manager.getCurrentlyShownUI(); // TODO 修改注册项后，再打开查询界面，这个位置报错 isShown
-        plugin.getIdeaUI().setSearchEverywhereUI(ui);
-        ui.addSearchListener(new SearchListener(plugin));
-        plugin.getService().setParameter("Alarm", JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
+        return manager.getCurrentlyShownUI(); // TODO 修改注册项后，再打开查询界面，这个位置报错 isShown
     }
 
     protected void setPopupMenuUI(MavenSearchPlugin plugin) {
@@ -314,7 +319,6 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
                         SearchNavigationItem item = (SearchNavigationItem) selectedObject;
                         MavenArtifact artifact = item.getArtifact();
 
-                        context.setSelectNavigationItem(item);
                         int x = JBList.getX() + 30;
                         int y = JBList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
 
@@ -390,21 +394,10 @@ public class MavenSearchPluginJob extends MavenSearchJob implements EDTJob {
      * @param plugin 搜索接口
      */
     private void setEditorSelectText(MavenSearchPlugin plugin) {
-        MavenSearchPluginContext context = plugin.getContext();
-        try {
-            ProgressIndicator progress = plugin.getIdeaUI().getProgressIndicator();
-
-            // 等待 idea 默认的搜索功能执行完毕
-            long startMillis = System.currentTimeMillis();
-            while (progress != null && progress.isRunning() && !progress.isCanceled() && System.currentTimeMillis() - startMillis <= 3000) {
-                Dates.sleep(100);
-            }
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
+        plugin.getIdeaUI().waitFor(2000, null);
 
         // 在已打开的编辑器中，如果选中了文本，则自动对文本进行查询
-        Editor editor = context.getActionEvent().getDataContext().getData(CommonDataKeys.EDITOR);
+        Editor editor = plugin.getContext().getActionEvent().getDataContext().getData(CommonDataKeys.EDITOR);
         if (editor != null) {
             String editorSelectText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
             if (StringUtils.isNotBlank(editorSelectText)) {

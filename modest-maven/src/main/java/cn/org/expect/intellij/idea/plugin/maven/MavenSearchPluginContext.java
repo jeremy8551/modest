@@ -1,12 +1,9 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
-import java.util.List;
-
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchContext;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -29,12 +26,8 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 最近一次模糊搜索结果 */
     private volatile MavenSearchResult mavenSearchResult;
 
-    /** true表示将UI固定在前端 */
-    private volatile boolean pinWindow;
-
     public MavenSearchPluginContext(AnActionEvent event) {
         this.event = event;
-        this.pinWindow = false;
     }
 
     public AnActionEvent getActionEvent() {
@@ -50,12 +43,6 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     }
 
     public synchronized void setSearchResult(MavenSearchResult result) {
-        if (result != null) {
-            List<MavenArtifact> list = result.getList();
-            for (MavenArtifact artifact : list) {
-                artifact.setFold(true);
-            }
-        }
         this.mavenSearchResult = result;
     }
 
@@ -99,11 +86,10 @@ public class MavenSearchPluginContext implements MavenSearchContext {
         this.selectNavigationItem = selectNavigationItem;
     }
 
-    public boolean isPinWindow() {
-        return pinWindow;
-    }
-
-    public void setPinWindow(boolean pinWindow) {
-        this.pinWindow = pinWindow;
+    public void clone(MavenSearchPluginContext context) {
+        this.setSearchText(context.getSearchText());
+        this.setSearchResult(context.getSearchResult());
+        this.setSelectNavigationItem(context.getSelectNavigationItem());
+        this.setSelectNavigationHead(context.getSelectNavigationHead());
     }
 }
