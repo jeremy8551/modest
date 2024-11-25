@@ -2,6 +2,7 @@ package cn.org.expect.intellij.idea.plugin.maven;
 
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationResultSet;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenSearchResult;
@@ -26,6 +27,9 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     /** 最近一次模糊搜索结果 */
     private volatile MavenSearchResult mavenSearchResult;
 
+    /** 最近一次模糊搜索的导航记录 */
+    private volatile SearchNavigationResultSet navigationResultSet;
+
     public MavenSearchPluginContext(AnActionEvent event) {
         this.event = event;
     }
@@ -48,6 +52,14 @@ public class MavenSearchPluginContext implements MavenSearchContext {
 
     public MavenSearchResult getSearchResult() {
         return this.mavenSearchResult;
+    }
+
+    public SearchNavigationResultSet getNavigationResultSet() {
+        return navigationResultSet;
+    }
+
+    public void setNavigationResultSet(SearchNavigationResultSet navigationResultSet) {
+        this.navigationResultSet = navigationResultSet;
     }
 
     /**
@@ -89,6 +101,7 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     public void clone(MavenSearchPluginContext context) {
         this.setSearchText(context.getSearchText());
         this.setSearchResult(context.getSearchResult());
+        this.setNavigationResultSet(context.getNavigationResultSet());
         this.setSelectNavigationItem(context.getSelectNavigationItem());
         this.setSelectNavigationHead(context.getSelectNavigationHead());
     }

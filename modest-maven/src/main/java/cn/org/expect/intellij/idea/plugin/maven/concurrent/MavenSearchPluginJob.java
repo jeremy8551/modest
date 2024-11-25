@@ -13,7 +13,7 @@ import cn.org.expect.intellij.idea.plugin.maven.IdeaSearchUI;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContext;
 import cn.org.expect.intellij.idea.plugin.maven.listener.InputFieldListener;
-import cn.org.expect.intellij.idea.plugin.maven.listener.SearchListener;
+import cn.org.expect.intellij.idea.plugin.maven.listener.MavenSearchPluginListener;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.maven.concurrent.MavenSearchDownloadJob;
@@ -46,7 +46,7 @@ public class MavenSearchPluginJob extends MavenSearchJob {
     protected final Queue<Runnable> QUEUE = new ArrayDeque<>();
 
     protected void addSearchListener(SearchEverywhereUI ui, MavenSearchPlugin plugin) {
-        ui.addSearchListener(new SearchListener(plugin, QUEUE));
+        ui.addSearchListener(new MavenSearchPluginListener(plugin, QUEUE));
     }
 
     public int execute() {
@@ -275,6 +275,7 @@ public class MavenSearchPluginJob extends MavenSearchJob {
             plugin.getContext().setSearchText(null);
             plugin.getIdeaUI().getSearchField().setText("");
             plugin.getContext().setSearchResult(null);
+            plugin.getContext().setNavigationResultSet(null);
             plugin.getContext().setSelectNavigationHead(null);
             plugin.getContext().setSelectNavigationItem(null);
             plugin.showSearchResult(); // 刷新一个空结果

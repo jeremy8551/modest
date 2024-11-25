@@ -176,7 +176,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
 
         String tabID = this.getIdeaUI().getSelectedTabID();
-        return tabID.endsWith(".All");
+        return tabID.endsWith("." + MavenSearchPluginUtils.getAllTabName());
     }
 
     /**

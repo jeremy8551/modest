@@ -3,6 +3,7 @@ package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 import cn.org.expect.intellij.idea.plugin.maven.IdeaSearchUI;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
+import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -30,6 +31,7 @@ public class MavenSearchPluginPinJob extends MavenSearchPluginJob {
         String pattern = this.oldPlugin.getIdeaUI().getSearchEverywhereUI().getSearchField().getText();
         IdeaSearchUI.StatusBar statusBar = this.oldPlugin.getIdeaUI().getStatusBar();
         String repositoryId = this.oldPlugin.getRepositoryId();
+        int size = this.oldPlugin.getIdeaUI().getSearchListModel().getSize();
 
         MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
         plugin.setRepositoryId(repositoryId);
@@ -38,7 +40,7 @@ public class MavenSearchPluginPinJob extends MavenSearchPluginJob {
         QUEUE.add(plugin::showSearchResult);
 
         // 显示UI界面
-        MavenSearchPluginPinAction.PIN.show(this.oldUI.getSize(), this.oldUI.getLocationOnScreen());
+        MavenSearchPluginPinAction.PIN.show(this.oldUI.getSize(), this.oldUI.getLocationOnScreen(), StringUtils.isBlank(pattern) && size == 0);
         this.oldUI.dispose(); // 销毁
         return 0;
     }

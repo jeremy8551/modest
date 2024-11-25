@@ -5,6 +5,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
+import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +42,7 @@ public class InputFieldListener extends KeyAdapter {
                 if (log.isDebugEnabled()) {
                     log.debug("keyReleased tabID: {}, text: {}", this.plugin.getIdeaUI().getSelectedTabID(), this.searchField.getText());
                 }
+                MavenSearchPluginPinAction.PIN.extend(); // 扩展 pin 窗口大小
                 this.plugin.asyncSearch(this.searchField.getText());
             }
         }

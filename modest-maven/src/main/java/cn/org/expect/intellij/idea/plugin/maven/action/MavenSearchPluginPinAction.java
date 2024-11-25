@@ -67,7 +67,7 @@ public class MavenSearchPluginPinAction extends ToggleAction {
             SearchEverywhereUI newUI = (SearchEverywhereUI) method.invoke(manager, project, contributors, spellingCorrector);
             MavenSearchPluginPinAction.PIN.setPin(newUI);
             this.plugin.execute(new MavenSearchEDTJob(() -> newUI.switchToTab(tabID)));
-            plugin.getIdeaUI().waitFor(2000, t -> !tabID.equals(newUI.getSelectedTabID()));
+            this.plugin.getIdeaUI().waitFor(2000, t -> !tabID.equals(newUI.getSelectedTabID()));
 
             // 执行任务
             for (SearchEverywhereContributor<?> contributor : contributors) {
@@ -110,7 +110,21 @@ public class MavenSearchPluginPinAction extends ToggleAction {
 
         private volatile SearchEverywhereUI ui;
 
+        private volatile boolean shotType;
+
         public PinTab() {
+        }
+
+        /**
+         * 如果 pin 窗口是最小的状态，则扩展窗口大小
+         */
+        public void extend() {
+            if (this.frame != null && this.shotType) {
+                Dimension dimension = this.frame.getSize();
+                this.frame.setSize(new Dimension(dimension.width, 700));
+                this.frame.setVisible(true);
+                this.shotType = false;
+            }
         }
 
         public void setPin(SearchEverywhereUI ui) {
@@ -126,11 +140,12 @@ public class MavenSearchPluginPinAction extends ToggleAction {
             return this.frame != null;
         }
 
-        public void show(Dimension dimension, Point location) {
+        public void show(Dimension dimension, Point location, boolean shotType) {
             if (this.frame != null) {
-                frame.setSize(dimension);
-                frame.setLocation(location);
-                frame.setVisible(true);
+                this.frame.setSize(dimension);
+                this.frame.setLocation(location);
+                this.frame.setVisible(true);
+                this.shotType = shotType;
             }
         }
 
