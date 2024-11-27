@@ -9,7 +9,7 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>modest-test</artifactId>
+    <artifactId>modest-ioc-test</artifactId>
 
     <dependencies>
         <dependency>

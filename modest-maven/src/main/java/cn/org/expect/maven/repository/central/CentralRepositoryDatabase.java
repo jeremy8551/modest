@@ -2,7 +2,6 @@ package cn.org.expect.maven.repository.central;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
 import cn.org.expect.concurrent.ThreadSource;
@@ -10,7 +9,7 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.search.MavenSearchSettings;
+import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
 public class CentralRepositoryDatabase implements MavenRepositoryDatabase {
@@ -28,11 +27,11 @@ public class CentralRepositoryDatabase implements MavenRepositoryDatabase {
     /** 序列化与反序列化工具 */
     protected final CentralRepositoryDatabaseSerializer serializer;
 
-    public CentralRepositoryDatabase(MavenSearchSettings settings, ThreadSource threadSource) {
-        this.patternMap = new ConcurrentHashMap<>();
-        this.extraMap = new ConcurrentHashMap<>();
+    public CentralRepositoryDatabase(ThreadSource threadSource, CentralRepositoryDatabaseSerializer serializer) {
         this.executorService = threadSource.getExecutorService();
-        this.serializer = new CentralRepositoryDatabaseSerializer(settings.getWorkHome(), this.patternMap, this.extraMap);
+        this.serializer = Ensure.notNull(serializer);
+        this.patternMap = this.serializer.getPattern();
+        this.extraMap = this.serializer.getArtifact();
     }
 
     public void insert(String pattern, MavenSearchResult result) {
@@ -72,6 +71,6 @@ public class CentralRepositoryDatabase implements MavenRepositoryDatabase {
     }
 
     public void store() {
-        this.executorService.execute(() -> this.serializer.save(this.patternMap, this.extraMap));
+        this.executorService.execute(this.serializer::save);
     }
 }

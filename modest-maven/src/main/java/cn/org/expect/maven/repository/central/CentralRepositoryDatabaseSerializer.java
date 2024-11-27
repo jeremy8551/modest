@@ -8,18 +8,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
+import cn.org.expect.maven.search.MavenSearchSettings;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+@EasyBean(singleton = true)
 public class CentralRepositoryDatabaseSerializer {
     private final static Log log = LogFactory.getLog(CentralRepositoryDatabaseSerializer.class);
 
@@ -29,9 +32,27 @@ public class CentralRepositoryDatabaseSerializer {
 
     protected File parent;
 
-    public CentralRepositoryDatabaseSerializer(File parent, Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
-        this.parent = parent;
-        this.load(pattern, artifact);
+    protected Map<String, MavenSearchResult> pattern;
+
+    protected Map<String, Map<String, MavenSearchResult>> artifact;
+
+    public CentralRepositoryDatabaseSerializer(MavenSearchSettings settings, Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
+        this.pattern = new ConcurrentHashMap<>();
+        this.artifact = new ConcurrentHashMap<>();
+        this.parent = settings.getWorkHome();
+        this.loadFile(this.pattern, this.artifact);
+    }
+
+    public Map<String, MavenSearchResult> getPattern() {
+        return pattern;
+    }
+
+    public Map<String, Map<String, MavenSearchResult>> getArtifact() {
+        return artifact;
+    }
+
+    public void save() {
+        this.save(this.pattern, this.artifact);
     }
 
     public void save(Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
@@ -56,7 +77,7 @@ public class CentralRepositoryDatabaseSerializer {
         }
     }
 
-    public void load(Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
+    public void loadFile(Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
         try {
             File dir = this.parent;
             if (dir != null) {

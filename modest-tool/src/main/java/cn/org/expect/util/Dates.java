@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * 日期工具类
@@ -147,6 +148,42 @@ public final class Dates {
             } while (true);
             return e;
         }
+    }
+
+    /**
+     * 等待某个条件执行完毕
+     *
+     * @param condition 等待条件，条件全满足结束等待
+     * @param wait      每次等待的时间（单位：毫秒），小于等于零表示不设置等待时间
+     * @param timeout   超时时间（单位：毫秒），小于等于零表示不设置超时时间
+     * @return 返回执行等待条件抛出的异常信息，超时返回 {@linkplain TimeoutException}，null表示没有异常
+     */
+    public static Throwable waitFor(WaitForCondition condition, long wait, long timeout) {
+        if (condition == null) {
+            throw new IllegalArgumentException();
+        }
+
+        long start = System.currentTimeMillis();
+        while (true) { // 未超时
+            try {
+                if (!condition.test()) {
+                    break;
+                }
+            } catch (Throwable e) {
+                return e;
+            }
+
+            // 等待
+            if (wait > 0) {
+                Dates.sleep(wait);
+            }
+
+            // 超时
+            if (timeout > 0 && System.currentTimeMillis() - start >= timeout) {
+                return new TimeoutException(String.valueOf(timeout));
+            }
+        }
+        return null;
     }
 
     /**

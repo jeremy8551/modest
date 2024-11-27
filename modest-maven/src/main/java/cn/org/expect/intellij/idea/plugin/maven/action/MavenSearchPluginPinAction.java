@@ -1,6 +1,8 @@
 package cn.org.expect.intellij.idea.plugin.maven.action;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,10 +12,12 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginFactory;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchEDTJob;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchExecutorServiceImpl;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginPinJob;
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.MavenSearchMessage;
+import cn.org.expect.util.Ensure;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.actions.searcheverywhere.ActionSearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
@@ -21,22 +25,32 @@ import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributorFact
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereSpellingCorrector;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
+import com.intellij.openapi.actionSystem.ActionUpdateThread;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.IdeFrame;
+import com.intellij.openapi.wm.WindowManager;
 import org.jetbrains.annotations.NotNull;
 
 public class MavenSearchPluginPinAction extends ToggleAction {
+    private final static Log log = LogFactory.getLog(MavenSearchPluginPinAction.class);
 
-    public final static PinTab PIN = new PinTab();
+    /** 组件 */
+    public final static PinWindow PIN = new PinWindow();
 
+    /** 搜索插件 */
     private final MavenSearchPlugin plugin;
 
     public MavenSearchPluginPinAction(MavenSearchPlugin plugin) {
         super(MavenSearchMessage.get("maven.search.btn.pin.text"), MavenSearchMessage.get("maven.search.btn.pin.description"), AllIcons.General.Pin_tab);
-        this.plugin = plugin;
+        this.plugin = Ensure.notNull(plugin);
 //        int mask = SystemInfo.isMac ? 256 : 128;
 //        this.registerCustomShortcutSet(68, mask, plugin.getIdeaUI().getSearchEverywhereUI());
+    }
+
+    public @NotNull ActionUpdateThread getActionUpdateThread() {
+        return ActionUpdateThread.BGT; // 在后台线程更新动作状态
     }
 
     public boolean isSelected(@NotNull AnActionEvent event) {
@@ -62,12 +76,11 @@ public class MavenSearchPluginPinAction extends ToggleAction {
             Method method = manager.getClass().getDeclaredMethod("createView", Project.class, List.class, SearchEverywhereSpellingCorrector.class);
             method.setAccessible(true);
 
-            List<SearchEverywhereContributor<?>> contributors = createContributors(event, project);
+            List<SearchEverywhereContributor<?>> contributors = this.createContributors(event, project);
             SearchEverywhereSpellingCorrector spellingCorrector = SearchEverywhereSpellingCorrector.getInstance(project);
             SearchEverywhereUI newUI = (SearchEverywhereUI) method.invoke(manager, project, contributors, spellingCorrector);
-            MavenSearchPluginPinAction.PIN.setPin(newUI);
-            this.plugin.execute(new MavenSearchEDTJob(() -> newUI.switchToTab(tabID)));
-            this.plugin.getIdeaUI().waitFor(2000, t -> !tabID.equals(newUI.getSelectedTabID()));
+            MavenSearchPluginPinAction.PIN.setPin(newUI, project);
+            newUI.switchToTab(tabID);
 
             // 执行任务
             for (SearchEverywhereContributor<?> contributor : contributors) {
@@ -75,65 +88,85 @@ public class MavenSearchPluginPinAction extends ToggleAction {
                     MavenSearchPlugin searchPlugin = ((MavenSearchPluginContributor) contributor).getPlugin();
                     searchPlugin.getContext().clone(this.plugin.getContext());
                     searchPlugin.getService().setParameter(MavenSearchExecutorServiceImpl.PARAMETER, null);
-                    searchPlugin.execute(new MavenSearchPluginPinJob(this.plugin));
+                    searchPlugin.execute(new MavenSearchPluginPinJob(this.plugin, () -> super.actionPerformed(event)));
                 }
             }
-
-            super.actionPerformed(event);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
     }
 
-    private static List<SearchEverywhereContributor<?>> createContributors(@NotNull AnActionEvent initEvent, Project project) {
+    protected List<SearchEverywhereContributor<?>> createContributors(@NotNull AnActionEvent event, Project project) {
         if (project == null) {
             ActionSearchEverywhereContributor.Factory factory = new ActionSearchEverywhereContributor.Factory();
-            return Collections.singletonList(factory.createContributor(initEvent));
+            return Collections.singletonList(factory.createContributor(event));
         }
 
         List<SearchEverywhereContributor<?>> list = new ArrayList<>();
         for (SearchEverywhereContributorFactory<?> factory : SearchEverywhereContributor.EP_NAME.getExtensionList()) {
             if (factory.isAvailable(project)) {
                 if (factory instanceof MavenSearchPluginFactory) {
-                    list.add(((MavenSearchPluginFactory) factory).create(initEvent));
+                    list.add(((MavenSearchPluginFactory) factory).create(event));
                 } else {
-                    list.add(factory.createContributor(initEvent));
+                    list.add(factory.createContributor(event));
                 }
             }
         }
         return list;
     }
 
-    public static class PinTab {
+    public static class PinWindow {
 
+        /** JFrame框架 */
         private volatile JFrame frame;
 
+        /** 搜索对话框 */
         private volatile SearchEverywhereUI ui;
 
-        private volatile boolean shotType;
+        /** true表示 pin 窗口是最小的状态 */
+        private volatile boolean mini;
 
-        public PinTab() {
+        /** true表示关闭 */
+        private volatile boolean show;
+
+        public PinWindow() {
+            this.show = false;
         }
 
         /**
          * 如果 pin 窗口是最小的状态，则扩展窗口大小
          */
-        public void extend() {
-            if (this.frame != null && this.shotType) {
+        public synchronized void extend() {
+            if (this.frame != null && this.mini) {
                 Dimension dimension = this.frame.getSize();
                 this.frame.setSize(new Dimension(dimension.width, 700));
                 this.frame.setVisible(true);
-                this.shotType = false;
+                this.mini = false;
             }
         }
 
-        public void setPin(SearchEverywhereUI ui) {
+        public void setPin(SearchEverywhereUI ui, Project project) {
             JFrame frame = new JFrame(SearchEverywhereUI.class.getSimpleName());
             frame.setVisible(false);
             frame.setUndecorated(true);
             frame.add(ui, BorderLayout.CENTER);
+            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+
+            try {
+                IdeFrame ideFrame = WindowManager.getInstance().getIdeFrame(project);
+                if (ideFrame != null) {
+                    JComponent main = ideFrame.getComponent();
+                    if (main != null) {
+                        frame.setLocationRelativeTo(main);
+                    }
+                }
+            } catch (Throwable e) {
+                log.error(e.getLocalizedMessage(), e);
+            }
+
             this.frame = frame;
             this.ui = ui;
+            this.show = true;
         }
 
         public boolean isPin() {
@@ -142,10 +175,18 @@ public class MavenSearchPluginPinAction extends ToggleAction {
 
         public void show(Dimension dimension, Point location, boolean shotType) {
             if (this.frame != null) {
+                this.mini = shotType;
+                this.frame.setAlwaysOnTop(true);
                 this.frame.setSize(dimension);
                 this.frame.setLocation(location);
                 this.frame.setVisible(true);
-                this.shotType = shotType;
+                this.frame.addWindowFocusListener(new WindowAdapter() {
+                    public void windowLostFocus(WindowEvent event) {
+                        if (frame != null) {
+                            frame.setVisible(show); // 在失去焦点时重新显示
+                        }
+                    }
+                });
             }
         }
 
@@ -160,6 +201,8 @@ public class MavenSearchPluginPinAction extends ToggleAction {
                 this.ui.dispose();
                 this.ui = null;
             }
+
+            this.show = false;
         }
 
         public SearchEverywhereUI getUI() {

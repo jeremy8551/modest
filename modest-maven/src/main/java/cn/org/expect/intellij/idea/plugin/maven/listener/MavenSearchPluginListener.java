@@ -10,6 +10,7 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.util.Ensure;
+import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchAdapter;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +31,11 @@ public class MavenSearchPluginListener extends SearchAdapter {
         this.queue = Ensure.notNull(queue);
     }
 
-    public void searchStarted(@NotNull String pattern, @NotNull Collection<? extends SearchEverywhereContributor<?>> contributors) {
+    public synchronized void searchStarted(@NotNull String pattern, @NotNull Collection<? extends SearchEverywhereContributor<?>> contributors) {
+        if (StringUtils.isBlank(pattern) && !this.plugin.getContributor().isEmptyPatternSupported()) {
+            return;
+        }
+
         if (log.isDebugEnabled()) {
             log.debug("{}.searchStarted({})", MavenSearchPluginListener.class.getSimpleName(), pattern);
         }
@@ -49,7 +54,7 @@ public class MavenSearchPluginListener extends SearchAdapter {
             }
 
             if (log.isDebugEnabled()) {
-                log.debug("{}.async ", MavenSearchPluginListener.class.getSimpleName());
+                log.debug("{}.async({})", MavenSearchPluginListener.class.getSimpleName(), this.plugin.getIdeaUI().getSearchField().getText());
             }
             this.plugin.asyncSearch();
         } else {
@@ -60,7 +65,7 @@ public class MavenSearchPluginListener extends SearchAdapter {
         }
     }
 
-    public void searchFinished(@NotNull Map<SearchEverywhereContributor<?>, Boolean> hasMoreContributors) {
+    public synchronized void searchFinished(@NotNull Map<SearchEverywhereContributor<?>, Boolean> hasMoreContributors) {
         if (log.isDebugEnabled()) {
             log.debug("{}.searchFinished()", MavenSearchPluginListener.class.getSimpleName());
         }

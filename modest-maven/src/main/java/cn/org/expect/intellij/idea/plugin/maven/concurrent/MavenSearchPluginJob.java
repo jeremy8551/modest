@@ -39,6 +39,7 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.ui.components.JBList;
+import com.intellij.util.Alarm;
 import com.intellij.util.concurrency.EdtExecutorService;
 
 public class MavenSearchPluginJob extends MavenSearchJob {
@@ -395,7 +396,8 @@ public class MavenSearchPluginJob extends MavenSearchJob {
      * @param plugin 搜索接口
      */
     private void setEditorSelectText(MavenSearchPlugin plugin) {
-        plugin.getIdeaUI().waitFor(2000, null);
+        // 等待 Idea 默认的搜索功能执行完毕
+        plugin.getIdeaUI().waitFor(2000);
 
         // 在已打开的编辑器中，如果选中了文本，则自动对文本进行查询
         Editor editor = plugin.getContext().getActionEvent().getDataContext().getData(CommonDataKeys.EDITOR);

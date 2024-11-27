@@ -1,6 +1,5 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
-import java.util.function.Predicate;
 import javax.swing.*;
 
 import cn.org.expect.jdk.JavaDialectFactory;
@@ -138,14 +137,10 @@ public class IdeaSearchUI {
      *
      * @param timeout 超时时间，单位毫秒
      */
-    public void waitFor(long timeout, Predicate<?> func) {
-        try {
-            ProgressIndicator indicator = this.getProgressIndicator();
-            long startMillis = System.currentTimeMillis();
-            while (indicator != null && indicator.isRunning() && !indicator.isCanceled() && System.currentTimeMillis() - startMillis <= timeout && (func == null || func.test(null))) {
-                Dates.sleep(100);
-            }
-        } catch (Throwable e) {
+    public void waitFor(long timeout) {
+        ProgressIndicator indicator = this.getProgressIndicator();
+        Throwable e = Dates.waitFor(() -> indicator != null && indicator.isRunning() && !indicator.isCanceled(), 100, timeout);
+        if (e != null && log.isErrorEnabled()) {
             log.error(e.getLocalizedMessage(), e);
         }
     }

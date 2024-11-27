@@ -20,7 +20,7 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-test</artifactId>
+            <artifactId>modest-ioc-test</artifactId>
         </dependency>
     </dependencies>
 </project>

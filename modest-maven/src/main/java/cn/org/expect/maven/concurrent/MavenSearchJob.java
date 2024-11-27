@@ -17,9 +17,12 @@ public abstract class MavenSearchJob extends BaseJob implements Runnable, MavenS
 
     private volatile MavenRepository remoteRepository;
 
+    private volatile boolean finish;
+
     public MavenSearchJob() {
         this.terminate = false;
         this.setName(this.getClass().getSimpleName());
+        this.finish = false;
     }
 
     public void setService(MavenSearchExecutorService service) {
@@ -53,6 +56,7 @@ public abstract class MavenSearchJob extends BaseJob implements Runnable, MavenS
     }
 
     public final void run() {
+        this.finish = false;
         try {
             if (this.terminate) {
                 return;
@@ -62,9 +66,14 @@ public abstract class MavenSearchJob extends BaseJob implements Runnable, MavenS
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         } finally {
+            this.finish = true;
             if (this.service != null) {
                 this.service.removeJob(this);
             }
         }
+    }
+
+    public boolean isFinish() {
+        return finish;
     }
 }

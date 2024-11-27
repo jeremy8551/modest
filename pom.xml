@@ -283,7 +283,7 @@
             <!-- modest 容器测试 -->
             <dependency>
                 <groupId>cn.org.expect</groupId>
-                <artifactId>modest-test</artifactId>
+                <artifactId>modest-ioc-test</artifactId>
                 <version>${revision}</version>
                 <scope>test</scope>
             </dependency>

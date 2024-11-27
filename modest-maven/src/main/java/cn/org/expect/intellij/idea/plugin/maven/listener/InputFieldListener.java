@@ -17,12 +17,16 @@ public class InputFieldListener extends KeyAdapter {
 
     private final MavenSearchPlugin plugin;
 
+    private volatile boolean isExt;
+
     public InputFieldListener(@NotNull MavenSearchPlugin plugin, JTextField searchField) {
         this.plugin = plugin;
         this.searchField = searchField;
     }
 
     public void keyPressed(KeyEvent e) {
+        this.isExt = e.isAltGraphDown() || e.isAltDown() || e.isActionKey() || e.isControlDown() || e.isMetaDown() || e.isShiftDown();
+
         if (plugin.isSelfTab()) {
             if (e.getKeyCode() == KeyEvent.VK_F5) { // F5 刷新
                 plugin.asyncRefresh();
@@ -36,12 +40,17 @@ public class InputFieldListener extends KeyAdapter {
     }
 
     public void keyReleased(KeyEvent e) {
+        if (this.isExt) { // 不监听组合键
+            return;
+        }
+
         if (this.plugin.canSearch()) {
             char key = e.getKeyChar();
             if (Character.isLetterOrDigit(key)) { // 文本字符
                 if (log.isDebugEnabled()) {
-                    log.debug("keyReleased tabID: {}, text: {}", this.plugin.getIdeaUI().getSelectedTabID(), this.searchField.getText());
+                    log.debug("keyReleased tabID: {}, text: {}, letter: {}, keyCode: {}", this.plugin.getIdeaUI().getSelectedTabID(), this.searchField.getText(), key, e.getKeyCode());
                 }
+
                 MavenSearchPluginPinAction.PIN.extend(); // 扩展 pin 窗口大小
                 this.plugin.asyncSearch(this.searchField.getText());
             }
