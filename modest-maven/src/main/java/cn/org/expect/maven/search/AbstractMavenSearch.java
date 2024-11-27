@@ -4,9 +4,11 @@ import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
+import cn.org.expect.maven.concurrent.MavenSearchInputJob;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.local.LocalRepository;
+import cn.org.expect.util.Dates;
 
 public abstract class AbstractMavenSearch implements MavenSearch {
 
@@ -59,10 +61,7 @@ public abstract class AbstractMavenSearch implements MavenSearch {
     }
 
     public synchronized void execute(Runnable command) {
-        if (command instanceof MavenSearchAware) {
-            ((MavenSearchAware) command).setSearch(this);
-        }
-        this.ioc.getBean(ThreadSource.class).getExecutorService().execute(command);
+        this.ioc.getBean(ThreadSource.class).getExecutorService().execute(this.aware(command));
     }
 
     public MavenSearchExecutorService getService() {
@@ -83,10 +82,16 @@ public abstract class AbstractMavenSearch implements MavenSearch {
      * @return 模糊查询工具
      */
     public synchronized MavenSearchInputJob getInput() {
-        MavenSearchInputJob job = this.getService().getFirst(MavenSearchInputJob.class, first -> true); // MavenSearchInputJob 对象只能是单例模式
+        MavenSearchInputJob job = this.getService().getFirst(MavenSearchInputJob.class, first -> true); // 只能是单例模式
         if (job == null) {
             job = new MavenSearchInputJob();
             this.getService().execute(job);
+
+            // 等待任务启动
+            Throwable e = Dates.waitFor(() -> this.getService().isRunning(MavenSearchInputJob.class, task -> !task.isRunning()), 100, 20 * 1000);
+            if (e != null) {
+                throw new RuntimeException(e.getLocalizedMessage(), e);
+            }
         }
         return job;
     }

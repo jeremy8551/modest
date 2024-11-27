@@ -79,62 +79,76 @@ public interface MavenSearch {
      *
      * @param message 文本信息
      */
-    void setProgressText(String message);
+    void setProgress(String message);
 
     /**
      * 设置状态栏的信息
      *
-     * @param type    文本类型
+     * @param type    文本的类型
      * @param message 文本信息
      */
-    void setStatusbarText(MavenSearchAdvertiser type, String message);
+    void setStatusBar(MavenSearchAdvertiser type, String message);
 
     /**
-     * 使用最新的查询结果，渲染 UI 界面
+     * 显示搜索结果
      */
     void showSearchResult();
 
     /**
-     * 使用参数指定的查询结果，渲染 UI 界面
+     * 显示搜索结果
      *
-     * @param result 查询结果
+     * @param result 搜索结果
      */
     void showSearchResult(MavenSearchResult result);
 
     /**
      * 多线程执行任务 <br>
      * 如果想要使用官方的 EDT 线程，需要让 task 实现 {@linkplain EDTJob} 接口 <br>
-     * 想要刷新 Idea 查询结果的 JList，需要与 Idea 使用同一个数据库连接池：{@link com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI#rebuildListAlarm}，否则多线程刷新 JList 时会出现混乱，感谢我主 耶稣基督 带领我发现解决这个问题
+     * 想要刷新 Idea 查询结果的 JList，需要与 Idea 使用同一个数据库连接池：{@link com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI#rebuildListAlarm}，否则多线程刷新 JList 时会出现混乱
      *
      * @param command 任务
      */
     void execute(Runnable command);
 
     /**
-     * 判断当前是否正在查询某个 Maven 工件
+     * 返回线程池
      *
-     * @return 返回true表示正在查询
+     * @return 线程池
      */
     MavenSearchExecutorService getService();
 
     /**
-     * 返回 Maven 仓库信息
+     * 返回 Maven仓库接口
      *
-     * @return Maven 仓库信息
+     * @return Maven Maven仓库接口
      */
     MavenRepository getRepository();
 
     /**
-     * 返回本地 Maven 仓库信息
+     * 返回本地Maven仓库接口
      *
-     * @return 本地 Maven 仓库信息
+     * @return 本地Maven仓库接口
      */
     MavenRepository getLocalRepository();
 
     /**
-     * 返回数据库对象
+     * 返回数据库接口
      *
-     * @return 数据库对象
+     * @return 数据库接口
      */
     MavenRepositoryDatabase getDatabase();
+
+    /**
+     * 如果参数对象是 {@linkplain MavenSearchAware}，则向参数对象设置搜索接口
+     *
+     * @param t   参数对象
+     * @param <T> 参数类型
+     * @return 参数对象
+     */
+    default <T> T aware(T t) {
+        if (t instanceof MavenSearchAware) {
+            ((MavenSearchAware) t).setSearch(this);
+        }
+        return t;
+    }
 }

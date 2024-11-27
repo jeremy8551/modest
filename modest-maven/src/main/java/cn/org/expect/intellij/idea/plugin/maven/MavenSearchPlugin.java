@@ -7,6 +7,7 @@ import java.io.File;
 import java.util.Map;
 
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
+import cn.org.expect.intellij.idea.plugin.maven.listener.MavenSearchPluginListener;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -16,7 +17,6 @@ import cn.org.expect.maven.search.AbstractMavenSearch;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchNotification;
-import cn.org.expect.maven.search.MavenSearchUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.MessageFormatter;
 import cn.org.expect.util.StringUtils;
@@ -46,12 +46,19 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
 
     private final MavenSearchPluginSettings settings;
 
+    private final MavenSearchPluginListener listener;
+
     public MavenSearchPlugin(MavenSearchPluginContext context) {
         super();
-        this.ideaUI = new IdeaSearchUI();
         this.context = Ensure.notNull(context);
+        this.ideaUI = new IdeaSearchUI();
         this.settings = this.getEasyContext().getBean(MavenSearchPluginSettings.class);
         this.contributor = new MavenSearchPluginContributor(this);
+        this.listener = new MavenSearchPluginListener(this);
+    }
+
+    public MavenSearchPluginListener getSearchListener() {
+        return listener;
     }
 
     public IdeaSearchUI getIdeaUI() {
@@ -77,32 +84,30 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
 
     public void asyncSearch() {
         String pattern = this.getIdeaUI().getSearchField().getText();
-        if (StringUtils.isNotBlank(pattern)) {
-            this.asyncSearch(MavenSearchUtils.parse(pattern));
-        }
+        this.asyncSearch(pattern, false);
     }
 
     public void asyncRefresh() {
-        String pattern = context.getSearchText();
-        if (StringUtils.isNotBlank(pattern)) {
-            this.getDatabase().delete(pattern);
-            this.asyncSearch(MavenSearchUtils.parse(pattern));
-        }
+        String pattern = this.context.getSearchText();
+        this.asyncSearch(pattern, true);
     }
 
     public void asyncSearch(String pattern) {
+        this.asyncSearch(pattern, false);
+    }
+
+    public void asyncSearch(String pattern, boolean delete) {
         if (StringUtils.isBlank(pattern)) {
             return;
         }
 
-        this.context.setSearchText(pattern);
         this.context.setSelectNavigationHead(null);
         this.context.setSelectNavigationItem(null);
 
         // 更新等待信息与状态栏
-        this.setProgressText(MavenSearchMessage.get("maven.search.progress.text"));
-        this.setStatusbarText(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern)));
-        this.getInput().search(this, pattern);
+        this.setProgress(MavenSearchMessage.get("maven.search.progress.text"));
+        this.setStatusBar(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern)));
+        this.getInput().search(this, pattern, delete);
     }
 
     public void asyncSearch(String groupId, String artifactId) {
@@ -111,7 +116,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
 
         String message = MavenSearchMessage.get("maven.search.extra.text", groupId, artifactId);
-        this.setStatusbarText(MavenSearchAdvertiser.RUNNING, message);
+        this.setStatusBar(MavenSearchAdvertiser.RUNNING, message);
         this.execute(new MavenSearchExtraJob(groupId, artifactId));
     }
 
@@ -205,7 +210,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
     }
 
-    public void setStatusbarText(MavenSearchAdvertiser type, String message) {
+    public void setStatusBar(MavenSearchAdvertiser type, String message) {
         if (this.isSelfTab()) {
             this.getIdeaUI().setStatusBar(type, message);
         } else { // 如果标签页不是自身，则将状态栏恢复到原来的样式
@@ -213,7 +218,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
     }
 
-    public void setProgressText(String message) {
+    public void setProgress(String message) {
         if (this.isSelfTab()) {
             JBList<Object> JBList = this.getIdeaUI().getJBList();
             JBList.setEmptyText(message);

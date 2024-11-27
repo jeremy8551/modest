@@ -36,12 +36,7 @@ public class MavenSearchExecutorServiceImpl implements MavenSearchExecutorServic
     }
 
     public void setParameter(String name, Object value) {
-        if (value == null) {
-            this.service = null;
-            return;
-        }
-
-        if (value instanceof Alarm) {
+        if (PARAMETER.equals(name)) {
             this.service = (Alarm) value;
         }
     }

@@ -8,7 +8,7 @@ import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class MavenSearchPluginPinJob extends MavenSearchPluginJob {
+public class MavenSearchPluginPinJob extends MavenSearchPluginJob implements EDTJob {
 
     /** 生成 pin 窗口的原生窗口使用的 MavenSearchPlugin */
     private final MavenSearchPlugin oldPlugin;
@@ -18,6 +18,7 @@ public class MavenSearchPluginPinJob extends MavenSearchPluginJob {
     private final Runnable actionPerformed;
 
     public MavenSearchPluginPinJob(MavenSearchPlugin plugin, Runnable actionPerformed) {
+        super();
         this.oldPlugin = plugin;
         this.oldUI = plugin.getIdeaUI().getSearchEverywhereUI();
         this.actionPerformed = actionPerformed;
@@ -37,13 +38,15 @@ public class MavenSearchPluginPinJob extends MavenSearchPluginJob {
         String repositoryId = this.oldPlugin.getRepositoryId();
         int size = this.oldPlugin.getIdeaUI().getSearchListModel().getSize();
 
+        // 设置搜索接口
         MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
         plugin.setRepositoryId(repositoryId);
         plugin.getIdeaUI().getSearchEverywhereUI().getSearchField().setText(pattern); // 复制搜索文本
 
+        // 设置下次执行搜索时运行的任务
         MavenSearchEDTJob job = new MavenSearchEDTJob(plugin::showSearchResult);
-        QUEUE.add(job);
-        Throwable e = Dates.waitFor(() -> !job.isFinish(), 100, 2000);
+        plugin.getSearchListener().add(job);
+        Throwable e = Dates.waitFor(() -> !job.isFinish(), 100, 3000);
         if (e != null && log.isErrorEnabled()) {
             log.error(e.getLocalizedMessage(), e);
         }

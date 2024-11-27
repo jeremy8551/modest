@@ -7,33 +7,34 @@ import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.maven.search.MavenSearch;
-import cn.org.expect.util.StringUtils;
 
 public class MavenSearchMoreJob extends MavenSearchPatternJob {
 
-    public MavenSearchMoreJob(String pattern) {
-        super(pattern);
+    public MavenSearchMoreJob() {
+        super("", false);
     }
 
     public int execute() throws Exception {
+        MavenSearch search = this.getSearch();
+        String pattern = search.getContext().getSearchText();
+
         if (log.isDebugEnabled()) {
-            log.debug("{} search more: {}", this.getName(), this.pattern);
+            log.debug("{} search more: {}", this.getName(), pattern);
         }
 
-        MavenSearch search = this.getSearch();
         MavenRepositoryDatabase database = search.getDatabase();
-        MavenSearchResult result = database.select(this.pattern);
+        MavenSearchResult result = database.select(pattern);
         if (result != null && result.getFoundNumber() > result.size()) { // 还有未加载的数据
             int start = result.getStart();
             int foundNumber = result.getFoundNumber();
             List<MavenArtifact> list = result.getList();
 
-            MavenSearchResult next = this.getRemoteRepository().query(StringUtils.trimBlank(StringUtils.replaceAll(this.pattern, ".", "%2E")), start);
+            MavenSearchResult next = this.getRemoteRepository().query(pattern, start);
             if (next != null) {
                 list.addAll(next.getList());
                 SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, next.getStart(), foundNumber, System.currentTimeMillis());
                 newResult.reset();
-                database.insert(this.pattern, newResult); // 保存到数据库
+                database.insert(pattern, newResult); // 保存到数据库
                 search.getContext().setSearchResult(newResult); // 保存查询记录
                 search.showSearchResult();
             }

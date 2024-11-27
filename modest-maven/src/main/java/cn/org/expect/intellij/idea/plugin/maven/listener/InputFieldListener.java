@@ -19,7 +19,7 @@ public class InputFieldListener extends KeyAdapter {
 
     private volatile boolean isExt;
 
-    public InputFieldListener(@NotNull MavenSearchPlugin plugin, JTextField searchField) {
+    public InputFieldListener(@NotNull MavenSearchPlugin plugin, @NotNull JTextField searchField) {
         this.plugin = plugin;
         this.searchField = searchField;
     }

@@ -75,7 +75,7 @@ public class CentralRepository implements MavenRepository {
 
     public MavenSearchResult query(String pattern, int start) {
         this.terminate = false;
-        String url = "https://search.maven.org/solrsearch/select?q=" + pattern + "&rows=200&wt=json&start=" + (start - 1); // 构建请求 URL
+        String url = "https://search.maven.org/solrsearch/select?q=" + StringUtils.trimBlank(StringUtils.replaceAll(pattern, ".", "%2E")) + "&rows=200&wt=json&start=" + (start - 1); // 构建请求 URL
         String responseBody = this.sendRequest(url);
 
         if (StringUtils.isBlank(responseBody) || this.terminate) {

@@ -95,8 +95,9 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
 
             model.setHasMore(plugin.getContributor(), //
                     !plugin.getService().isRunning(MavenSearchMoreJob.class, t -> true)  // 现在没有 more 功能运行
-                            && ((hasMore && model.getSize() > 0 && plugin.isAllTab()) // ALL标签页，有 more 按钮
-                            || (plugin.isSelfTab() && foundNumber > size) // 录数数 大于 查询结果
+                            && ( //
+                            (hasMore && model.getSize() > 0 && isAllTab) // ALL标签页，有 more 按钮
+                                    || (plugin.isSelfTab() && foundNumber > size) // 录数数 大于 查询结果
                     ) //
             );
             model.freezeElements();
@@ -117,7 +118,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
         }
 
         // 设置广告信息
-        plugin.setStatusbarText(MavenSearchAdvertiser.NORMAL, MavenSearchMessage.get("maven.search.status.text", foundNumber, size));
+        plugin.setStatusBar(MavenSearchAdvertiser.NORMAL, MavenSearchMessage.get("maven.search.status.text", foundNumber, size));
     }
 
     /**
@@ -238,7 +239,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
                     all.addAll(this.elementInfoList); // 将查询结果合并到 all 集合中
                     addAll = false;
                 }
-            } else {
+            } else if (!model.isMoreElement(i)) {
                 all.add(info);
             }
         }

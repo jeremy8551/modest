@@ -3,17 +3,14 @@ package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.IdeaSearchUI;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContext;
 import cn.org.expect.intellij.idea.plugin.maven.listener.InputFieldListener;
-import cn.org.expect.intellij.idea.plugin.maven.listener.MavenSearchPluginListener;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.maven.concurrent.MavenSearchDownloadJob;
@@ -21,7 +18,6 @@ import cn.org.expect.maven.concurrent.MavenSearchJob;
 import cn.org.expect.maven.concurrent.MavenSearchMoreJob;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenArtifactOperation;
-import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.repository.central.CentralRepository;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
@@ -39,22 +35,11 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.ui.components.JBList;
-import com.intellij.util.Alarm;
 import com.intellij.util.concurrency.EdtExecutorService;
 
 public class MavenSearchPluginJob extends MavenSearchJob {
 
-    protected final Queue<Runnable> QUEUE = new ArrayDeque<>();
-
-    protected void addSearchListener(SearchEverywhereUI ui, MavenSearchPlugin plugin) {
-        ui.addSearchListener(new MavenSearchPluginListener(plugin, QUEUE));
-    }
-
     public int execute() {
-        if (log.isInfoEnabled()) {
-            log.info(MavenSearchMessage.get("maven.search.thread.start", this.getName()));
-        }
-
         // 如果 manager.getCurrentlyShownUI() 报错，则捕获异常直接退出
         try {
             MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
@@ -63,10 +48,6 @@ public class MavenSearchPluginJob extends MavenSearchJob {
             this.setEditorSelectText(plugin);
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
-        }
-
-        if (log.isInfoEnabled()) {
-            log.info(MavenSearchMessage.get("maven.search.thread.finish", this.getName()));
         }
         return 0;
     }
@@ -82,7 +63,7 @@ public class MavenSearchPluginJob extends MavenSearchJob {
         SearchEverywhereUI ui = this.getSearchEverywhereUI(event); // TODO 修改注册项后，再打开查询界面，这个位置报错 isShown
         plugin.getService().setParameter(MavenSearchExecutorServiceImpl.PARAMETER, JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
         plugin.getIdeaUI().setSearchEverywhereUI(ui);
-        this.addSearchListener(ui, plugin);
+        ui.addSearchListener(plugin.getSearchListener());
     }
 
     public SearchEverywhereUI getSearchEverywhereUI(AnActionEvent event) {
@@ -220,7 +201,7 @@ public class MavenSearchPluginJob extends MavenSearchJob {
 
             MavenArtifact artifact = selectItem.getArtifact();
             String message = MavenSearchMessage.get("maven.search.download.url", artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion());
-            plugin.setStatusbarText(MavenSearchAdvertiser.RUNNING, message);
+            plugin.setStatusBar(MavenSearchAdvertiser.RUNNING, message);
             plugin.execute(new MavenSearchDownloadJob(artifact));
             plugin.showSearchResult();
         });
@@ -255,7 +236,7 @@ public class MavenSearchPluginJob extends MavenSearchJob {
 
             if (dir.exists()) {
                 if (log.isDebugEnabled()) {
-                    log.debug("delete local repository {} ..", dir.getAbsolutePath());
+                    log.debug("{} delete local repository {} ..", this.getName(), dir.getAbsolutePath());
                 }
                 FileUtils.delete(dir);
                 plugin.showSearchResult();
@@ -271,8 +252,8 @@ public class MavenSearchPluginJob extends MavenSearchJob {
         // 清空所有缓存
         clearCache.addActionListener(e -> {
             plugin.getDatabase().clear();
-            plugin.setProgressText("");
-            plugin.setStatusbarText(null, "");
+            plugin.setProgress("");
+            plugin.setStatusBar(null, "");
             plugin.getContext().setSearchText(null);
             plugin.getIdeaUI().getSearchField().setText("");
             plugin.getContext().setSearchResult(null);
@@ -290,23 +271,13 @@ public class MavenSearchPluginJob extends MavenSearchJob {
                 // 点击位置
                 int selectedIndex = JBList.locationToIndex(e.getPoint());
 
-                // 左键点击
-                if (e.getButton() == MouseEvent.BUTTON1) {
-
-                    // 点击 more 按钮
-                    if (plugin.canSearch() && selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) {
-                        String pattern = context.getSearchText();
-                        MavenSearchResult result = plugin.getDatabase().select(pattern);
-                        if (result != null) { // 判断是否满足执行点击更多链接的条件
-                            if (log.isDebugEnabled()) {
-                                log.debug("Click '... more' button ..");
-                            }
-
-                            String message = MavenSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern));
-                            plugin.setStatusbarText(MavenSearchAdvertiser.RUNNING, message);
-                            plugin.execute(new MavenSearchMoreJob(pattern));
-                        }
+                // 左键点击 more 按钮
+                if (e.getButton() == MouseEvent.BUTTON1 && plugin.canSearch() && selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("{} Click more button {}", getName(), selectedIndex);
                     }
+
+                    plugin.getSearchListener().add(new MavenSearchMoreJob());
                     return;
                 }
 
@@ -401,16 +372,17 @@ public class MavenSearchPluginJob extends MavenSearchJob {
 
         // 在已打开的编辑器中，如果选中了文本，则自动对文本进行查询
         Editor editor = plugin.getContext().getActionEvent().getDataContext().getData(CommonDataKeys.EDITOR);
+
         // 只能使用 EdtExecutorService.getInstance() 不能递归调用 plugin.execute() 方法
-        EdtExecutorService.getInstance().execute(new MavenSearchEDTJob(() -> {
-            if (editor != null) {
+        if (editor != null) {
+            EdtExecutorService.getInstance().execute(new MavenSearchEDTJob(() -> {
                 String editorSelectText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
                 if (StringUtils.isNotBlank(editorSelectText)) {
 
                     // 编辑器中选中的文本
                     String pattern = MavenSearchUtils.parse(editorSelectText);
                     if (log.isDebugEnabled()) {
-                        log.debug("Idea editor selected text: {} --> {}", editorSelectText, pattern);
+                        log.debug("{} Idea editor selected text: {} --> {}", getName(), editorSelectText, pattern);
                     }
 
                     // 复制选中的文本到搜索栏
@@ -423,12 +395,11 @@ public class MavenSearchPluginJob extends MavenSearchJob {
                     }
                 } else {
                     // 如果未选中任何内容，则自动搜索输入框中的文本
-                    String text = plugin.getIdeaUI().getSearchField().getText();
-                    if (StringUtils.isNotBlank(text) && plugin.canSearch()) {
+                    if (plugin.canSearch()) { // TODO 去掉
                         plugin.asyncSearch();
                     }
                 }
-            }
-        }));
+            }));
+        }
     }
 }

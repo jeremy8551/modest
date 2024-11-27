@@ -43,7 +43,7 @@ public interface MavenSearchExecutorService extends ExecutorService {
     <T> void terminate(Class<T> cls, Predicate<T> condition);
 
     /**
-     * 如果任务还没有执行，则删除任务
+     * 删除任务
      *
      * @param runnable 任务
      */
