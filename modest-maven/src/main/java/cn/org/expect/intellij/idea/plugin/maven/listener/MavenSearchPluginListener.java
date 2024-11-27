@@ -12,7 +12,6 @@ import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinActio
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchAdapter;
@@ -38,7 +37,7 @@ public class MavenSearchPluginListener extends SearchAdapter {
     }
 
     public void add(Runnable command) {
-        this.queue.add(this.plugin.aware(command));
+        this.queue.add(command);
     }
 
     public String getName() {
@@ -111,7 +110,9 @@ public class MavenSearchPluginListener extends SearchAdapter {
         }
 
         // 在搜索UI界面中，如果选中的不是当前插件的 Tab，则将状态栏中的文本更换为广告
-        plugin.setStatusBar(MavenSearchAdvertiser.NORMAL, "");
+        if (!this.plugin.isSelfTab()) {
+            this.plugin.setStatusBar(null, "");
+        }
     }
 
     /**

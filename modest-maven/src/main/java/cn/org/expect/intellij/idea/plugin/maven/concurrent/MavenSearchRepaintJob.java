@@ -3,7 +3,7 @@ package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +51,16 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
         this.elementInfoList = new ArrayList<>();
         this.useContext = false;
         this.result = result;
-        this.setRunnable(this::paint);
+        this.setRunnable(this::show);
+    }
+
+    /**
+     * 需要同步锁保证同时只有一个渲染任务在执行
+     */
+    protected void show() {
+        synchronized (MavenSearchRepaintJob.class) {
+            this.paint();
+        }
     }
 
     protected void paint() {
@@ -67,7 +76,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
         boolean isAllTab = plugin.isAllTab();
         Map<SearchEverywhereContributor<?>, Boolean> moreContributors = null;
         if (isAllTab) {
-            moreContributors = new HashMap<>();
+            moreContributors = new LinkedHashMap<>();
             Map<SearchEverywhereContributor<?>, Collection<SearchEverywhereFoundElementInfo>> found = model.getFoundElementsMap();
             for (SearchEverywhereContributor<?> contributor : found.keySet()) {
                 boolean value = model.hasMoreElements(contributor);
