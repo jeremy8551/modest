@@ -14,6 +14,7 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginFactory;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchExecutorServiceImpl;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginPinJob;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.MavenSearchMessage;
@@ -88,6 +89,7 @@ public class MavenSearchPluginPinAction extends ToggleAction {
                     MavenSearchPlugin searchPlugin = ((MavenSearchPluginContributor) contributor).getPlugin();
                     searchPlugin.getContext().clone(this.plugin.getContext());
                     searchPlugin.getService().setParameter(MavenSearchExecutorServiceImpl.PARAMETER, null);
+                    searchPlugin.getSearchListener().add(new MavenSearchRepaintJob()); // 设置下次执行搜索时运行的任务
                     searchPlugin.execute(new MavenSearchPluginPinJob(this.plugin, () -> super.actionPerformed(event)));
                 }
             }

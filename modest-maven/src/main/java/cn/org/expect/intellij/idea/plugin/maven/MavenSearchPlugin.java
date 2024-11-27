@@ -6,13 +6,11 @@ import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.util.Map;
 
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.intellij.idea.plugin.maven.listener.MavenSearchPluginListener;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.concurrent.MavenSearchExtraJob;
-import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.AbstractMavenSearch;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
@@ -224,15 +222,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
             JBList.setEmptyText(message);
             JBList.repaint();
         }
-    }
-
-    public void showSearchResult() {
-        MavenSearchResult result = this.context.getSearchResult();
-        this.showSearchResult(result);
-    }
-
-    public void showSearchResult(MavenSearchResult result) {
-        this.execute(new MavenSearchRepaintJob(this, result));
     }
 
     public void dispose() {

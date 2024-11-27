@@ -61,7 +61,6 @@ public class MavenSearchInputJob extends MavenSearchJob {
                 log.error(e.getLocalizedMessage(), e);
             }
         }
-
         return 0;
     }
 }

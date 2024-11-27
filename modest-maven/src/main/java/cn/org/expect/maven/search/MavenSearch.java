@@ -6,7 +6,6 @@ import cn.org.expect.intellij.idea.plugin.maven.concurrent.EDTJob;
 import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;
-import cn.org.expect.maven.repository.MavenSearchResult;
 
 public interface MavenSearch {
 
@@ -88,18 +87,6 @@ public interface MavenSearch {
      * @param message 文本信息
      */
     void setStatusBar(MavenSearchAdvertiser type, String message);
-
-    /**
-     * 显示搜索结果
-     */
-    void showSearchResult();
-
-    /**
-     * 显示搜索结果
-     *
-     * @param result 搜索结果
-     */
-    void showSearchResult(MavenSearchResult result);
 
     /**
      * 多线程执行任务 <br>

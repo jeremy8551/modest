@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenRepositoryChooserAction;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.NavigationCellRenderer;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
@@ -49,6 +50,10 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
 
     public @NotNull String getSearchProviderId() {
         return MavenSearchPlugin.class.getSimpleName() + ".Tab";
+    }
+
+    public MavenSearchPluginPinAction getPinAction() {
+        return pinAction;
     }
 
     protected boolean processElement(@NotNull ProgressIndicator progressIndicator, @NotNull Processor<? super FoundItemDescriptor<Object>> consumer, FilteringGotoByModel<?> model, Object element, int degree) {
@@ -107,11 +112,11 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
                     head.setIcon(MavenSearchPluginIcon.LEFT_WAITING); // 更改为：等待图标
                     this.plugin.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
                 } else {
-                    this.plugin.showSearchResult();
+                    this.plugin.execute(new MavenSearchRepaintJob());
                 }
             } else { // 设置为：折叠
                 artifact.setFold(true);
-                this.plugin.showSearchResult();
+                this.plugin.execute(new MavenSearchRepaintJob());
             }
             return false;
         }

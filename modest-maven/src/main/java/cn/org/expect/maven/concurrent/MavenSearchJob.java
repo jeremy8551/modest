@@ -44,7 +44,7 @@ public abstract class MavenSearchJob extends BaseJob implements Runnable, MavenS
     }
 
     public MavenSearch getSearch() {
-        return search;
+        return this.search;
     }
 
     protected MavenRepository getRemoteRepository() {
@@ -69,7 +69,7 @@ public abstract class MavenSearchJob extends BaseJob implements Runnable, MavenS
         }
     }
 
-    public final void run() {
+    public void run() {
         String split = StringUtils.left("", 100, '-');
         if (log.isInfoEnabled()) {
             log.info(split + "\n" + MavenSearchMessage.get("maven.search.thread.start", this.getName()));

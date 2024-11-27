@@ -9,6 +9,7 @@ import java.util.Queue;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
@@ -37,7 +38,7 @@ public class MavenSearchPluginListener extends SearchAdapter {
     }
 
     public void add(Runnable command) {
-        this.queue.add(command);
+        this.queue.add(this.plugin.aware(command));
     }
 
     public String getName() {
@@ -75,7 +76,7 @@ public class MavenSearchPluginListener extends SearchAdapter {
             if (log.isDebugEnabled()) {
                 log.debug("{}.show", this.getName());
             }
-            this.plugin.showSearchResult(null); // 切换到其他选项卡，需要删除搜索结果
+            this.plugin.execute(new MavenSearchRepaintJob(null)); // 切换到其他选项卡，需要删除搜索结果
         }
     }
 

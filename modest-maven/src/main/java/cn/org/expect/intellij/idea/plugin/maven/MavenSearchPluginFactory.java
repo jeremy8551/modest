@@ -1,7 +1,7 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginJob;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginInitJob;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.impl.EasyBeanDefineImpl;
 import cn.org.expect.maven.repository.local.LocalRepositoryConfig;
@@ -16,7 +16,7 @@ public class MavenSearchPluginFactory implements SearchEverywhereContributorFact
         MavenSearchPluginPinAction.PIN.dispose();
         MavenSearchPluginFactory.loadLocalRepositoryConfig(event);
         MavenSearchPluginContributor contributor = this.create(event);
-        contributor.getPlugin().execute(new MavenSearchPluginJob());
+        contributor.getPlugin().execute(new MavenSearchPluginInitJob());
         return contributor;
     }
 

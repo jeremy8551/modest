@@ -23,7 +23,6 @@ import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
-import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
@@ -31,21 +30,34 @@ import com.intellij.ui.components.JBList;
 
 public class MavenSearchRepaintJob extends MavenSearchEDTJob {
 
-    private final MavenSearchPlugin plugin;
-
     private final List<SearchEverywhereFoundElementInfo> elementInfoList;
 
     private final List<SearchNavigation> searchNavigationList;
 
-    public MavenSearchRepaintJob(MavenSearchPlugin plugin, MavenSearchResult result) {
-        super(null);
-        this.plugin = Ensure.notNull(plugin);
-        this.searchNavigationList = new ArrayList<>(30);
-        this.elementInfoList = new ArrayList<>();
-        this.setRunnable(() -> this.paint(result));
+    /** 查询结果 */
+    private final MavenSearchResult result;
+
+    /** true表示渲染上下文信息中的搜索结果，false表示渲染外部输入的参数 */
+    private boolean useContext;
+
+    public MavenSearchRepaintJob() {
+        this(null);
+        this.useContext = true;
     }
 
-    protected void paint(MavenSearchResult result) {
+    public MavenSearchRepaintJob(MavenSearchResult result) {
+        super(null);
+        this.searchNavigationList = new ArrayList<>(30);
+        this.elementInfoList = new ArrayList<>();
+        this.useContext = false;
+        this.result = result;
+        this.setRunnable(this::paint);
+    }
+
+    protected void paint() {
+        MavenSearchPlugin plugin = this.getSearch();
+        MavenSearchResult result = this.useContext ? plugin.getContext().getSearchResult() : this.result;
+
         // 从 SearchEveryWhere UI 中读取 JList 与 Model
         JBList<Object> JBList = plugin.getIdeaUI().getJBList();
         SearchListModel model = plugin.getIdeaUI().getSearchListModel();
@@ -70,7 +82,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
         if (result != null) {
             foundNumber = result.getFoundNumber();
             size = result.size();
-            this.processSearchResult(result);
+            this.processSearchResult(plugin, result);
         }
 
         // 将查询结果转为导航记录，目标是提供给 {@link MavenSearchPluginChooseContributor} 使用
@@ -83,7 +95,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
         this.mergeTo(model);
 
         // 设置选中记录
-        this.setSelectNavigation(JBList, model);
+        this.setSelectNavigation(plugin, JBList, model);
 
         // 设置 more 按钮
         try {
@@ -127,7 +139,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
      * @param JBList    组件
      * @param listModel 组件的数据模型
      */
-    protected void setSelectNavigation(JBList<Object> JBList, SearchListModel listModel) {
+    protected void setSelectNavigation(MavenSearchPlugin plugin, JBList<Object> JBList, SearchListModel listModel) {
         int selectedIndex = -1;
 
         SearchNavigationHead selectHead = plugin.getContext().getSelectNavigationHead();
@@ -177,8 +189,8 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
     /**
      * 将查询结果转为导航记录
      */
-    public void processSearchResult(MavenSearchResult result) {
-        int priority = this.plugin.getSettings().getElementPriority();
+    public void processSearchResult(MavenSearchPlugin plugin, MavenSearchResult result) {
+        int priority = plugin.getSettings().getElementPriority();
         MavenSearchPluginContributor contributor = plugin.getContributor();
 
         java.util.List<MavenArtifact> list = result.getList();

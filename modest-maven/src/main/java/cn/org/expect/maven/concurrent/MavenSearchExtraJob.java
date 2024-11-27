@@ -1,5 +1,6 @@
 package cn.org.expect.maven.concurrent;
 
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.util.StringUtils;
@@ -32,14 +33,14 @@ public class MavenSearchExtraJob extends MavenSearchJob {
         MavenSearch search = this.getSearch();
         MavenSearchResult result = search.getDatabase().select(this.groupId, this.artifactId);
         if (result != null && !result.isExpire(search.getSettings().getExpireTimeMillis())) {
-            search.showSearchResult();
+            search.execute(new MavenSearchRepaintJob());
             return 0;
         }
 
-        result = this.getRemoteRepository().query(groupId, artifactId);
+        result = this.getRemoteRepository().query(this.groupId, this.artifactId);
         if (result != null) {
-            search.getDatabase().insert(groupId, artifactId, result);
-            search.showSearchResult();
+            search.getDatabase().insert(this.groupId, this.artifactId, result);
+            search.execute(new MavenSearchRepaintJob());
         }
         return 0;
     }

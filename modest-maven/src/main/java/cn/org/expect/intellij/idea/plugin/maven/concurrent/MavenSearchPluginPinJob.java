@@ -3,12 +3,11 @@ package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 import cn.org.expect.intellij.idea.plugin.maven.IdeaSearchUI;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
-import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class MavenSearchPluginPinJob extends MavenSearchPluginJob implements EDTJob {
+public class MavenSearchPluginPinJob extends MavenSearchPluginInitJob {
 
     /** 生成 pin 窗口的原生窗口使用的 MavenSearchPlugin */
     private final MavenSearchPlugin oldPlugin;
@@ -39,17 +38,9 @@ public class MavenSearchPluginPinJob extends MavenSearchPluginJob implements EDT
         int size = this.oldPlugin.getIdeaUI().getSearchListModel().getSize();
 
         // 设置搜索接口
-        MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
+        MavenSearchPlugin plugin = this.getSearch();
         plugin.setRepositoryId(repositoryId);
         plugin.getIdeaUI().getSearchEverywhereUI().getSearchField().setText(pattern); // 复制搜索文本
-
-        // 设置下次执行搜索时运行的任务
-        MavenSearchEDTJob job = new MavenSearchEDTJob(plugin::showSearchResult);
-        plugin.getSearchListener().add(job);
-        Throwable e = Dates.waitFor(() -> !job.isFinish(), 100, 3000);
-        if (e != null && log.isErrorEnabled()) {
-            log.error(e.getLocalizedMessage(), e);
-        }
 
         // 显示UI界面
         plugin.getIdeaUI().setStatusBar(statusBar.getType(), statusBar.getMessage()); // 复制状态栏

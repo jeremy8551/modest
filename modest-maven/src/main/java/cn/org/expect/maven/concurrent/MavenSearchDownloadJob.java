@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.search.MavenSearchUtils;
@@ -93,7 +94,7 @@ public class MavenSearchDownloadJob extends MavenSearchJob {
                 FileUtils.write(remote, CharsetName.UTF_8, false, buf.toString());
             }
 
-            search.showSearchResult();
+            search.execute(new MavenSearchRepaintJob());
         }
 
         return 0;
