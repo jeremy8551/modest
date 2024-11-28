@@ -31,6 +31,8 @@ import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.ToggleAction;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.IdeFrame;
+import com.intellij.openapi.wm.IdeGlassPane;
+import com.intellij.openapi.wm.IdeGlassPaneUtil;
 import com.intellij.openapi.wm.WindowManager;
 import org.jetbrains.annotations.NotNull;
 
@@ -63,9 +65,13 @@ public class MavenSearchPluginPinAction extends ToggleAction {
 
     public void actionPerformed(@NotNull AnActionEvent event) {
         if (MavenSearchPluginPinAction.PIN.isPin()) {
-            MavenSearchPluginPinAction.PIN.dispose(); // 取消 pin 操作
+            MavenSearchPluginPinAction.PIN.cancel(); // 取消 pin 操作
         } else {
-            this.pin(event); // 执行 pin 操作
+            if (MavenSearchPluginPinAction.PIN.isOpen()) {
+                MavenSearchPluginPinAction.PIN.active();
+            } else {
+                this.pin(event); // 执行 pin 操作
+            }
         }
     }
 
@@ -80,7 +86,7 @@ public class MavenSearchPluginPinAction extends ToggleAction {
             List<SearchEverywhereContributor<?>> contributors = this.createContributors(event, project);
             SearchEverywhereSpellingCorrector spellingCorrector = SearchEverywhereSpellingCorrector.getInstance(project);
             SearchEverywhereUI newUI = (SearchEverywhereUI) method.invoke(manager, project, contributors, spellingCorrector);
-            MavenSearchPluginPinAction.PIN.setPin(newUI, project);
+            MavenSearchPluginPinAction.PIN.setParameter(newUI, project);
 
             // 执行任务
             for (SearchEverywhereContributor<?> contributor : contributors) {
@@ -128,11 +134,19 @@ public class MavenSearchPluginPinAction extends ToggleAction {
         /** true表示 pin 窗口是最小的状态 */
         private volatile boolean mini;
 
-        /** true表示关闭 */
+        /** true表示显示 */
         private volatile boolean show;
+
+        private volatile boolean pin;
 
         public PinWindow() {
             this.show = false;
+            this.mini = false;
+            this.pin = false;
+        }
+
+        public boolean isOpen() {
+            return this.frame != null && this.ui != null;
         }
 
         /**
@@ -147,53 +161,78 @@ public class MavenSearchPluginPinAction extends ToggleAction {
             }
         }
 
-        public void setPin(SearchEverywhereUI ui, Project project) {
-            JFrame frame = new JFrame(SearchEverywhereUI.class.getSimpleName());
-            frame.setVisible(false);
-            frame.setUndecorated(true);
-            frame.add(ui, BorderLayout.CENTER);
-            frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-
-            try {
-                IdeFrame ideFrame = WindowManager.getInstance().getIdeFrame(project);
-                if (ideFrame != null) {
-                    JComponent main = ideFrame.getComponent();
-                    if (main != null) {
-                        frame.setLocationRelativeTo(main);
+        public synchronized void setParameter(SearchEverywhereUI ui, Project project) {
+            if (this.frame == null) {
+                JFrame frame = new JFrame();
+                frame.setVisible(false);
+                frame.setUndecorated(true);
+                frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                frame.addWindowFocusListener(new WindowAdapter() {
+                    public void windowLostFocus(WindowEvent event) { // 失去焦点
+                        frame.setVisible(show);
                     }
+                });
+
+                try {
+                    IdeFrame ideFrame = WindowManager.getInstance().getIdeFrame(project);
+                    IdeGlassPane ideGlassPane = IdeGlassPaneUtil.find(ideFrame.getComponent());
+                    frame.setGlassPane((Component) ideGlassPane);
+                } catch (Exception e) {
+                    log.error(e.getLocalizedMessage(), e);
                 }
-            } catch (Throwable e) {
-                log.error(e.getLocalizedMessage(), e);
+
+                this.frame = frame;
             }
 
-            this.frame = frame;
+            this.frame.add(ui, BorderLayout.CENTER);
             this.ui = ui;
-            this.show = true;
         }
 
         public boolean isPin() {
-            return this.frame != null;
+            return this.pin;
         }
 
-        public void show(Dimension dimension, Point location, boolean shotType) {
+        public void show(Dimension dimension, Point location, boolean mini) {
             if (this.frame != null) {
-                this.mini = shotType;
                 this.frame.setAlwaysOnTop(true);
                 this.frame.setSize(dimension);
                 this.frame.setLocation(location);
                 this.frame.setVisible(true);
-                this.frame.addWindowFocusListener(new WindowAdapter() {
-                    public void windowLostFocus(WindowEvent event) {
-                        if (frame != null) {
-                            frame.setVisible(show); // 在失去焦点时重新显示
-                        }
-                    }
-                });
+            }
+
+            if (this.ui != null) {
+                this.ui.repaint();
+            }
+
+            this.mini = mini;
+            this.show = true;
+            this.pin = true;
+        }
+
+        public void cancel() {
+            this.pin = false;
+            this.show = false;
+            this.mini = false;
+
+            if (this.frame != null) {
+                this.frame.setAlwaysOnTop(false);
+                this.frame.setVisible(true);
+            }
+        }
+
+        public void active() {
+            this.pin = true;
+            this.show = true;
+
+            if (this.frame != null) {
+                this.frame.setAlwaysOnTop(true);
+                this.frame.setVisible(true);
             }
         }
 
         public void dispose() {
             if (this.frame != null) {
+                this.frame.setAlwaysOnTop(false);
                 this.frame.setVisible(false);
                 this.frame.dispose();
                 this.frame = null;
@@ -205,6 +244,8 @@ public class MavenSearchPluginPinAction extends ToggleAction {
             }
 
             this.show = false;
+            this.mini = false;
+            this.pin = false;
         }
 
         public SearchEverywhereUI getUI() {

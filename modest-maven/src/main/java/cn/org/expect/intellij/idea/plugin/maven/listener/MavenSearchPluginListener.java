@@ -12,6 +12,7 @@ import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinActio
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchAdapter;
@@ -62,7 +63,6 @@ public class MavenSearchPluginListener extends SearchAdapter {
                 if (log.isDebugEnabled()) {
                     log.debug("{}.run {} ", this.getName(), command);
                 }
-
                 this.plugin.aware(command).run();
                 return;
             }
@@ -76,6 +76,13 @@ public class MavenSearchPluginListener extends SearchAdapter {
                 log.debug("{}.show", this.getName());
             }
             this.plugin.execute(new MavenSearchRepaintJob(null)); // 切换到其他选项卡，需要删除搜索结果
+        }
+    }
+
+    public void waitFor() {
+        Throwable e = Dates.waitFor(() -> this.queue.size() > 0, 100, 30000);
+        if (e != null) {
+            log.error(e.getLocalizedMessage(), e);
         }
     }
 

@@ -78,9 +78,11 @@ public class IdeaSearchUI {
                 // 更新状态栏中的文本信息
                 ExtendedInfoComponent info = JavaDialectFactory.get().getField(this.ui, "myExtendedInfoComponent");
                 JBLabel label = JavaDialectFactory.get().getField(info, "text");
-                label.setIcon(icon);
-                label.setText(text);
-                label.repaint();
+                if (label != null) {
+                    label.setIcon(icon);
+                    label.setText(text);
+                    label.repaint();
+                }
                 return;
             }
 

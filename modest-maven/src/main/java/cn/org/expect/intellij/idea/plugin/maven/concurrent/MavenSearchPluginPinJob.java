@@ -40,9 +40,20 @@ public class MavenSearchPluginPinJob extends MavenSearchPluginInitJob {
         // 设置搜索接口
         MavenSearchPlugin plugin = this.getSearch();
         plugin.setRepositoryId(repositoryId);
-        plugin.getIdeaUI().getSearchEverywhereUI().getSearchField().setText(pattern); // 复制搜索文本
-        plugin.getIdeaUI().setStatusBar(statusBar.getType(), statusBar.getMessage()); // 复制状态栏
+
+        // 复制搜索文本
+        if (StringUtils.isNotBlank(pattern)) {
+            plugin.getIdeaUI().getSearchEverywhereUI().getSearchField().setText(pattern);
+        }
+
+        // 复制状态栏
+        if (statusBar != null) {
+            plugin.getIdeaUI().setStatusBar(statusBar.getType(), statusBar.getMessage());
+        }
+
         MavenSearchPluginPinAction.PIN.show(this.oldUI.getSize(), this.oldUI.getLocationOnScreen(), StringUtils.isBlank(pattern) && size == 0);
+//        plugin.getSearchListener().waitFor();
+
         plugin.execute(new MavenSearchRepaintJob());
         this.actionPerformed.run(); // 设置pin按钮按下
         this.oldUI.dispose(); // 销毁

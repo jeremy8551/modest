@@ -14,6 +14,7 @@ import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchNotification;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
+import cn.org.expect.util.IO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.KeyboardShortcut;
@@ -77,7 +78,9 @@ public class MavenSearchPluginUtils {
 
     public static String parseJDKVersion(File file) {
         if (file != null && file.exists() && file.isFile()) {
-            try (JarFile jarfile = new JarFile(file)) {
+            JarFile jarfile = null;
+            try {
+                jarfile = new JarFile(file);
                 JarEntry entry = jarfile.stream().filter(e -> e.getName().endsWith(".class")).findFirst().orElse(null);
                 if (entry != null) {
                     try (InputStream in = jarfile.getInputStream(entry)) {
@@ -133,6 +136,8 @@ public class MavenSearchPluginUtils {
                 }
             } catch (Throwable e) {
                 log.error(e.getLocalizedMessage(), e);
+            } finally {
+                IO.closeQuietly(jarfile);
             }
         }
         return null;
