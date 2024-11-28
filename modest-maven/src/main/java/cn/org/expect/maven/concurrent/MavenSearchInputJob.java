@@ -30,7 +30,7 @@ public class MavenSearchInputJob extends MavenSearchJob {
      * @param delete  true表示先删除数据库中的记录再执行搜索，false表示直接执行搜索
      */
     public synchronized void search(MavenSearch search, String pattern, boolean delete) {
-        search.getService().terminate(MavenSearchPatternJob.class, job -> true); // 终止正在运行的任务
+        search.getService().terminate(MavenSearchPatternJob.class, job -> job.getClass().equals(MavenSearchPatternJob.class)); // 终止正在运行的任务
 
         try {
             MavenSearchPatternJob job = new MavenSearchPatternJob(pattern, delete);

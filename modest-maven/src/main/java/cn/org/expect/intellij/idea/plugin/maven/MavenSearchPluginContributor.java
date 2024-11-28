@@ -37,11 +37,14 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
 
     private final MavenSearchPluginPinAction pinAction;
 
+    private final NavigationCellRenderer renderer;
+
     public MavenSearchPluginContributor(@NotNull MavenSearchPlugin plugin) {
         super(plugin.getContext().getActionEvent());
         this.contributor = new MavenSearchPluginChooseContributor(plugin);
         this.plugin = plugin;
         this.pinAction = new MavenSearchPluginPinAction(this.plugin);
+        this.renderer = new NavigationCellRenderer(this);
     }
 
     public MavenSearchPlugin getPlugin() {
@@ -69,7 +72,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
     }
 
     public @NotNull ListCellRenderer<Object> getElementsRenderer() {
-        return new NavigationCellRenderer(this);
+        return this.renderer;
     }
 
     /**

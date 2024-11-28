@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
+import cn.org.expect.concurrent.BlankRunnable;
 import cn.org.expect.intellij.idea.plugin.maven.IdeaSearchUI;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContext;
@@ -276,7 +277,9 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                         log.debug("{} Click more button {}", getName(), selectedIndex);
                     }
 
-                    plugin.getSearchListener().add(new MavenSearchMoreJob());
+                    // 向监听器添加一个空任务，防止二次执行 MavenSearchMoreJob 任务
+                    plugin.getSearchListener().add(BlankRunnable.INSTANCE);
+                    plugin.execute(new MavenSearchMoreJob());
                     return;
                 }
 
