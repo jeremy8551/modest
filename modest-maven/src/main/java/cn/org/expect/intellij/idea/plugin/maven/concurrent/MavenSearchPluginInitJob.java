@@ -1,5 +1,6 @@
 package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -7,11 +8,12 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.concurrent.BlankRunnable;
 import cn.org.expect.intellij.idea.plugin.maven.IdeaSearchUI;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContext;
+import cn.org.expect.intellij.idea.plugin.maven.SearchDisplay;
 import cn.org.expect.intellij.idea.plugin.maven.listener.InputFieldListener;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.maven.concurrent.MavenSearchDownloadJob;
@@ -30,11 +32,9 @@ import cn.org.expect.util.StringUtils;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
-import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
-import com.intellij.ui.components.JBList;
 import com.intellij.util.concurrency.EdtExecutorService;
 
 public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
@@ -60,7 +60,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
     protected void setSearchEverywhereUI(MavenSearchPlugin plugin) {
         MavenSearchPluginContext context = plugin.getContext();
         AnActionEvent event = context.getActionEvent();
-        SearchEverywhereUI ui = this.getSearchEverywhereUI(event); // TODO 修改注册项后，再打开查询界面，这个位置报错 isShown
+        SearchEverywhereUI ui = this.getSearchEverywhereUI(event);
         plugin.getService().setParameter(MavenSearchExecutorServiceImpl.PARAMETER, JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
         plugin.getIdeaUI().setSearchEverywhereUI(ui);
         ui.addSearchListener(plugin.getSearchListener());
@@ -101,11 +101,6 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
         JMenuItem clearCache = new JMenuItem(MavenSearchMessage.get("maven.search.btn.clear.cache.text"));
         itemPopupMenu.add(repeat);
         itemPopupMenu.add(clearCache);
-
-        // 读取 JList 对象
-        IdeaSearchUI ui = plugin.getIdeaUI();
-        JBList<Object> JBList = ui.getJBList();
-        SearchListModel listModel = ui.getSearchListModel();
 
         // 复制 Maven 依赖
         copyMaven.addActionListener(e -> {
@@ -203,7 +198,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
             String message = MavenSearchMessage.get("maven.search.download.url", artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion());
             plugin.setStatusBar(MavenSearchAdvertiser.RUNNING, message);
             plugin.execute(new MavenSearchDownloadJob(artifact));
-            plugin.execute(new MavenSearchRepaintJob());
+            plugin.display();
         });
 
         // 取消下载
@@ -239,7 +234,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                     log.debug("{} delete local repository {} ..", this.getName(), dir.getAbsolutePath());
                 }
                 FileUtils.delete(dir);
-                plugin.execute(new MavenSearchRepaintJob());
+                plugin.display();
             }
         });
 
@@ -260,42 +255,45 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
             plugin.getContext().setNavigationResultSet(null);
             plugin.getContext().setSelectNavigationHead(null);
             plugin.getContext().setSelectNavigationItem(null);
-            plugin.execute(new MavenSearchRepaintJob()); // 刷新一个空结果
+            plugin.display(); // 刷新一个空结果
             plugin.sendNotification(MavenSearchNotification.NORMAL, clearCache.getText());
         });
 
-        // 监听鼠标事件
-        JBList.addMouseListener(new MouseAdapter() {
+        IdeaSearchUI ui = plugin.getIdeaUI();
+        SearchDisplay display = ui.getDisplay();
+        display.addMouseListener(new MouseAdapter() { // 监听鼠标事件
 
             public void mousePressed(MouseEvent e) {
-                // 点击位置
-                int selectedIndex = JBList.locationToIndex(e.getPoint());
+                int selectedIndex = display.locationToIndex(e.getPoint()); // 点击位置
 
                 // 左键点击 more 按钮
-                if (e.getButton() == MouseEvent.BUTTON1 && plugin.canSearch() && selectedIndex != -1 && listModel.isMoreElement(selectedIndex)) {
+                if (e.getButton() == MouseEvent.BUTTON1 && plugin.canSearch() && selectedIndex != -1 && display.isMore(selectedIndex)) {
                     if (log.isDebugEnabled()) {
                         log.debug("{} Click more button {}", getName(), selectedIndex);
                     }
 
-                    // 向监听器添加一个空任务，防止二次执行 MavenSearchMoreJob 任务
-                    plugin.getSearchListener().add(BlankRunnable.INSTANCE);
                     plugin.execute(new MavenSearchMoreJob());
                     return;
                 }
 
                 // 右键点击
                 if (e.getButton() == MouseEvent.BUTTON3) {
+                    Object selectedObject = display.getElement(selectedIndex); // 点击的导航记录
 
-                    // 点击版本
-                    Object selectedObject = listModel.getElementAt(selectedIndex);
+                    if (selectedObject instanceof SearchNavigationHead) {
+                        context.setSelectNavigationHead((SearchNavigationHead) selectedObject);
+                        return;
+                    }
+
                     if (selectedObject instanceof SearchNavigationItem) {
-                        JBList.setSelectedIndex(selectedIndex);
+                        context.setSelectNavigationItem((SearchNavigationItem) selectedObject);
+                        display.setSelectedIndex(selectedIndex);
 
                         SearchNavigationItem item = (SearchNavigationItem) selectedObject;
                         MavenArtifact artifact = item.getArtifact();
 
-                        int x = JBList.getX() + 30;
-                        int y = JBList.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
+                        int x = display.getX() + 30;
+                        int y = display.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
 
                         MavenArtifactOperation operation = plugin.getRepository().getSupported();
                         if (plugin.getLocalRepository().exists(artifact)) { // 工件在本地仓库中存在
@@ -337,9 +335,9 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                         }
 
                         // 在鼠标位置显示弹出菜单
-                        listPopupMenu.show(JBList, x, y);
+                        display.showMenu(listPopupMenu, x, y);
+                        return;
                     }
-                    return;
                 }
             }
         });
@@ -347,14 +345,16 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
         // 在搜索输入框下方，显示菜单
         try {
             JTextField searchField = ui.getSearchField();
-            searchField.addKeyListener(new InputFieldListener(plugin, searchField)); // 打开搜索对话框后，点击 Shift 快捷键自动切换 Tab 页
+            searchField.addKeyListener(new InputFieldListener(plugin, searchField));
             searchField.addMouseListener(new MouseAdapter() {
 
                 public void mousePressed(MouseEvent e) {
                     if (plugin.isSelfTab() && e.getButton() == MouseEvent.BUTTON3) { // 输入框右键，弹出菜单
-                        int x = searchField.getX();
-                        int y = searchField.getY() - 30;
-                        itemPopupMenu.show(JBList, x, y); // 在鼠标位置显示弹出菜单
+                        Point location = searchField.getLocation();
+                        Dimension size = searchField.getSize();
+                        int x = location.x;
+                        int y = Math.abs(location.y + size.height - 30);
+                        itemPopupMenu.show(searchField, x, y); // 在鼠标位置显示弹出菜单
                     }
                 }
             });
@@ -397,7 +397,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                     }
                 } else {
                     // 如果未选中任何内容，则自动搜索输入框中的文本
-                    if (plugin.canSearch()) { // TODO 去掉
+                    if (plugin.canSearch()) {
                         plugin.asyncSearch();
                     }
                 }

@@ -8,6 +8,10 @@ public class MavenSearchEDTJob extends MavenSearchPluginJob implements EDTJob {
 
     private Runnable runnable;
 
+    public MavenSearchEDTJob() {
+        this(null);
+    }
+
     public MavenSearchEDTJob(Runnable runnable) {
         super();
         this.runnable = runnable;

@@ -1,21 +1,16 @@
 package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 
+import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenFoundElementInfoComparator;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigation;
+import cn.org.expect.intellij.idea.plugin.maven.SearchDisplay;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
-import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.maven.concurrent.MavenSearchDownloadJob;
 import cn.org.expect.maven.concurrent.MavenSearchExtraJob;
 import cn.org.expect.maven.concurrent.MavenSearchMoreJob;
@@ -25,31 +20,14 @@ import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
-import com.intellij.ide.actions.searcheverywhere.SearchListModel;
-import com.intellij.ui.components.JBList;
 
 public class MavenSearchRepaintJob extends MavenSearchEDTJob {
 
-    private final List<SearchEverywhereFoundElementInfo> elementInfoList;
-
-    private final List<SearchNavigation> searchNavigationList;
-
     /** 查询结果 */
-    private final MavenSearchResult result;
-
-    /** true表示渲染上下文信息中的搜索结果，false表示渲染外部输入的参数 */
-    private boolean useContext;
-
-    public MavenSearchRepaintJob() {
-        this(null);
-        this.useContext = true;
-    }
+    protected final MavenSearchResult result;
 
     public MavenSearchRepaintJob(MavenSearchResult result) {
-        super(null);
-        this.searchNavigationList = new ArrayList<>(30);
-        this.elementInfoList = new ArrayList<>();
-        this.useContext = false;
+        super();
         this.result = result;
         this.setRunnable(this::show);
     }
@@ -57,7 +35,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
     /**
      * 需要同步锁保证同时只有一个渲染任务在执行
      */
-    protected void show() {
+    protected final void show() {
         synchronized (MavenSearchRepaintJob.class) {
             this.paint();
         }
@@ -65,77 +43,58 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
 
     protected void paint() {
         MavenSearchPlugin plugin = this.getSearch();
-        MavenSearchResult result = this.useContext ? plugin.getContext().getSearchResult() : this.result;
-
-        // 从 SearchEveryWhere UI 中读取 JList 与 Model
-        JBList<Object> JBList = plugin.getIdeaUI().getJBList();
-        SearchListModel model = plugin.getIdeaUI().getSearchListModel();
-        boolean hasMore = this.hasMore(model);
-
-        // 如果是在 All Tab 中执行搜索，需要备份各个搜索类别的 more 值
+        SearchDisplay display = plugin.getIdeaUI().getDisplay();
         boolean isAllTab = plugin.isAllTab();
-        Map<SearchEverywhereContributor<?>, Boolean> moreContributors = null;
-        if (isAllTab) {
-            moreContributors = new LinkedHashMap<>();
-            Map<SearchEverywhereContributor<?>, Collection<SearchEverywhereFoundElementInfo>> found = model.getFoundElementsMap();
-            for (SearchEverywhereContributor<?> contributor : found.keySet()) {
-                boolean value = model.hasMoreElements(contributor);
-                moreContributors.put(contributor, value);
-            }
+        boolean isSelfTab = plugin.isSelfTab();
+        Rectangle visibleRect = plugin.getContext().getVisibleRect();
+        plugin.getContext().setVisibleRect(null);
+
+        // 如果不是All与自身的Tab，则删除搜索结果中的导航记录
+        if (!isAllTab && !isSelfTab) {
+            display.clearOtherContributorItem();
+            return;
         }
+
+        MavenSearchResult result = this.result;
+        boolean hasMore = display.hasMore();
+
+        // 备份所有搜索类别的 more 值
+        Map<SearchEverywhereContributor<?>, Boolean> backup = isAllTab ? display.getContributorMores() : null;
 
         // 处理查询结果
         int foundNumber = 0;
         int size = 0;
+        List<SearchEverywhereFoundElementInfo> infos = new ArrayList<>();
 
+        // 将搜索结果转为  List<SearchEverywhereFoundElementInfo>
         if (result != null) {
             foundNumber = result.getFoundNumber();
             size = result.size();
-            this.processSearchResult(plugin, result);
+            this.process(plugin, result, infos);
         }
 
-        // 将查询结果转为导航记录，目标是提供给 {@link MavenSearchPluginChooseContributor} 使用
-//        this.plugin.getContext().setNavigationResultSet(new SearchNavigationResultSet(this.searchNavigationList));
+        display.clearMore(); // 一定要先删除 more 按钮
+        display.merge(infos, isAllTab); // 将导航记录合并到数据模型中
+        display.select(plugin.getContext().getSelectNavigationHead(), plugin.getContext().getSelectNavigationItem());
 
-        // 一定要先删除 more 按钮
-        model.clearMoreItems();
-
-        // 将导航记录合并到数据模型中
-        this.mergeTo(model);
-
-        // 设置选中记录
-        this.setSelectNavigation(plugin, JBList, model);
+        if (backup != null) {
+            display.setContributorMores(backup); // 恢复所有搜索类别的 more 值
+        }
 
         // 设置 more 按钮
-        try {
-            if (isAllTab) {
-                for (Map.Entry<SearchEverywhereContributor<?>, Boolean> entry : moreContributors.entrySet()) {
-                    model.setHasMore(entry.getKey(), entry.getValue());
-                }
-            }
+        display.setContributorMore(plugin.getContributor(),  //
+                !plugin.getService().isRunning(MavenSearchMoreJob.class, t -> true)  // 在 MavenSearchPluginListener 中会重复生成 more 按钮，判断如果正在执行 more 搜索，则不能显示 more 按钮
+                        && ( //
+                        (hasMore && display.size() > 0 && isAllTab) // ALL标签页，有 more 按钮
+                                || (isSelfTab && foundNumber > size) // 记录数 大于 查询结果
+                ) //
+        );
 
-            model.setHasMore(plugin.getContributor(), //
-                    !plugin.getService().isRunning(MavenSearchMoreJob.class, t -> true)  // 现在没有 more 功能运行
-                            && ( //
-                            (hasMore && model.getSize() > 0 && isAllTab) // ALL标签页，有 more 按钮
-                                    || (plugin.isSelfTab() && foundNumber > size) // 录数数 大于 查询结果
-                    ) //
-            );
-            model.freezeElements();
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-
-        // 渲染 JBList
-        try {
-            JBList.revalidate();
-            JBList.repaint();
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
+        display.paint(); // 渲染
+        display.setVisibleRange(visibleRect);
 
         if (log.isDebugEnabled()) {
-            log.debug("{}, size: {}, {}", MavenSearchRepaintJob.class.getSimpleName(), model.getSize(), JBList.getModel().getSize());
+            log.debug("{}, size: {}", this.getName(), display.size());
         }
 
         // 设置广告信息
@@ -143,69 +102,16 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
     }
 
     /**
-     * 选中记录
-     *
-     * @param JBList    组件
-     * @param listModel 组件的数据模型
-     */
-    protected void setSelectNavigation(MavenSearchPlugin plugin, JBList<Object> JBList, SearchListModel listModel) {
-        int selectedIndex = -1;
-
-        SearchNavigationHead selectHead = plugin.getContext().getSelectNavigationHead();
-        if (selectHead != null) {
-            for (int i = 0, size = listModel.getSize(); i < size; i++) {
-                Object object = listModel.getElementAt(i);
-                if (object instanceof SearchNavigationHead) {
-                    SearchNavigationHead head = (SearchNavigationHead) object;
-                    if (selectHead.getArtifact().equals(head.getArtifact())) {
-                        MavenArtifact artifact = selectHead.getArtifact();
-                        if (artifact.isUnfold()) {
-                            MavenSearchResult result = plugin.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId());
-                            if (result == null || result.isExpire(plugin.getSettings().getExpireTimeMillis())) {
-                                head.setIcon(MavenSearchPluginIcon.LEFT_WAITING); // 设置左侧等待图标
-                            }
-                        }
-
-                        selectedIndex = i;
-                        break;
-                    }
-                }
-            }
-        }
-
-        SearchNavigationItem selectItem = plugin.getContext().getSelectNavigationItem();
-        if (selectItem != null) {
-            for (int i = 0, size = listModel.getSize(); i < size; i++) {
-                Object object = listModel.getElementAt(i);
-                if (object instanceof SearchNavigationItem) {
-                    SearchNavigationItem item = (SearchNavigationItem) object;
-                    if (selectItem.getArtifact().equals(item.getArtifact())) {
-                        selectedIndex = i;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (selectedIndex == -1) {
-            JBList.clearSelection();
-        } else {
-            JBList.setSelectedIndex(selectedIndex); // 选中
-            JBList.ensureIndexIsVisible(selectedIndex); // 设置 JList 显示 selectedIndex 位置
-        }
-    }
-
-    /**
      * 将查询结果转为导航记录
      */
-    public void processSearchResult(MavenSearchPlugin plugin, MavenSearchResult result) {
+    public void process(MavenSearchPlugin plugin, MavenSearchResult result, List<SearchEverywhereFoundElementInfo> elementInfoList) {
         int priority = plugin.getSettings().getElementPriority();
         MavenSearchPluginContributor contributor = plugin.getContributor();
 
         java.util.List<MavenArtifact> list = result.getList();
         for (MavenArtifact artifact : list) {
             SearchNavigationHead head = new SearchNavigationHead(artifact);
-            this.elementInfoList.add(new SearchEverywhereFoundElementInfo(head, priority, contributor));
+            elementInfoList.add(new SearchEverywhereFoundElementInfo(head, priority, contributor));
             List<SearchNavigationItem> items = new ArrayList<>();
 
             String groupId = artifact.getGroupId();
@@ -227,7 +133,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
                         } else if (plugin.getLocalRepository().exists(itemArtifact)) {
                             item.setIcon(MavenSearchPluginIcon.RIGHT_LOCAL);
                         }
-                        this.elementInfoList.add(new SearchEverywhereFoundElementInfo(item, priority, contributor));
+                        elementInfoList.add(new SearchEverywhereFoundElementInfo(item, priority, contributor));
                         items.add(item);
                     }
                 }
@@ -237,64 +143,6 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
             if (plugin.getService().isRunning(MavenSearchExtraJob.class, job -> groupId.equals(job.getGroupId()) && artifactId.equals(job.getArtifactId()))) {
                 head.setIcon(MavenSearchPluginIcon.LEFT_WAITING);
             }
-
-            this.searchNavigationList.add(new SearchNavigation(head, items));
         }
-    }
-
-    /**
-     * 将导航记录添加到数据模型中
-     *
-     * @param model 数据模型
-     */
-    protected void mergeTo(SearchListModel model) {
-        List<SearchEverywhereFoundElementInfo> all = new ArrayList<>(model.getSize() + this.elementInfoList.size());
-        boolean addAll = true;
-
-        // 保存其他搜索类别的记录
-        for (int i = 0; i < model.getSize(); i++) {
-            SearchEverywhereFoundElementInfo info = model.getRawFoundElementAt(i);
-            Object element = info.getElement();
-            if (element instanceof MavenSearchNavigation) {
-                if (addAll) {
-                    all.addAll(this.elementInfoList); // 将查询结果合并到 all 集合中
-                    addAll = false;
-                }
-            } else if (!model.isMoreElement(i)) {
-                all.add(info);
-            }
-        }
-        if (addAll) {
-            all.addAll(this.elementInfoList);
-        }
-
-        this.setComparator(model, new MavenFoundElementInfoComparator());
-        try {
-            model.clear(); // 清空所有数据
-            model.addElements(all);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        } finally {
-            this.setComparator(model, SearchEverywhereFoundElementInfo.COMPARATOR.reversed());
-        }
-    }
-
-    private void setComparator(SearchListModel listModel, Comparator comparator) {
-        if (listModel.getClass().getSimpleName().equals("MixedSearchListModel")) {
-            try {
-                JavaDialectFactory.get().setField(listModel, "myElementsComparator", comparator);
-            } catch (Throwable e) {
-                log.error(e.getLocalizedMessage(), e);
-            }
-        }
-    }
-
-    protected boolean hasMore(SearchListModel model) {
-        for (int i = model.getSize() - 1; i >= 0; i--) {
-            if (model.isMoreElement(i)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.concurrent.BlankRunnable;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginFactory;
@@ -87,15 +86,14 @@ public class MavenSearchPluginPinAction extends ToggleAction {
             SearchEverywhereSpellingCorrector spellingCorrector = SearchEverywhereSpellingCorrector.getInstance(project);
             SearchEverywhereUI newUI = (SearchEverywhereUI) method.invoke(manager, project, contributors, spellingCorrector);
             MavenSearchPluginPinAction.PIN.setParameter(newUI, project);
+            newUI.switchToTab(tabID);
 
             // 执行任务
             for (SearchEverywhereContributor<?> contributor : contributors) {
                 if (contributor instanceof MavenSearchPluginContributor) {
                     MavenSearchPlugin searchPlugin = ((MavenSearchPluginContributor) contributor).getPlugin();
-                    searchPlugin.getSearchListener().add(BlankRunnable.INSTANCE); // 设置下次执行搜索时运行的任务
                     searchPlugin.getContext().clone(this.plugin.getContext());
                     searchPlugin.getService().setParameter(MavenSearchExecutorServiceImpl.PARAMETER, null);
-                    newUI.switchToTab(tabID);
                     searchPlugin.execute(new MavenSearchPluginPinJob(this.plugin, () -> super.actionPerformed(event)));
                 }
             }

@@ -97,7 +97,7 @@ public abstract class MavenSearchJob extends BaseJob implements Runnable, MavenS
             }
 
             if (log.isInfoEnabled()) {
-                log.info(MavenSearchMessage.get("maven.search.thread.finish", this.getName()) + "\n" + split + "\n\n");
+                log.info(MavenSearchMessage.get("maven.search.thread.finish", this.getName()));
             }
         }
     }

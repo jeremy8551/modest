@@ -1,18 +1,16 @@
 package cn.org.expect.intellij.idea.plugin.maven.listener;
 
-import java.util.ArrayDeque;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.util.Dates;
+import cn.org.expect.maven.repository.MavenRepositoryDatabase;
+import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchAdapter;
@@ -28,17 +26,9 @@ public class MavenSearchPluginListener extends SearchAdapter {
 
     private final MavenSearchPlugin plugin;
 
-    /** 线程任务队列 */
-    private final Queue<Runnable> queue;
-
     public MavenSearchPluginListener(MavenSearchPlugin plugin) {
         super();
-        this.queue = new ArrayDeque<>();
         this.plugin = Ensure.notNull(plugin);
-    }
-
-    public void add(Runnable command) {
-        this.queue.add(command);
     }
 
     public String getName() {
@@ -58,31 +48,20 @@ public class MavenSearchPluginListener extends SearchAdapter {
         MavenSearchPluginPinAction.PIN.extend();
 
         if (this.plugin.canSearch()) {
-            Runnable command = this.queue.poll(); // 取一个任务
-            if (command != null) {
-                if (log.isDebugEnabled()) {
-                    log.debug("{}.run {} ", this.getName(), command);
-                }
-                this.plugin.aware(command).run();
-                return;
-            }
-
             if (log.isDebugEnabled()) {
                 log.debug("{}.async", this.getName());
             }
-            this.plugin.asyncSearch();
+
+            MavenRepositoryDatabase database = this.plugin.getDatabase();
+            MavenSearchResult result = database.select(pattern);
+            if (result != null) {
+                this.plugin.display(result);
+            }
         } else {
             if (log.isDebugEnabled()) {
                 log.debug("{}.show", this.getName());
             }
-            this.plugin.execute(new MavenSearchRepaintJob(null)); // 切换到其他选项卡，需要删除搜索结果
-        }
-    }
-
-    public void waitFor() {
-        Throwable e = Dates.waitFor(() -> this.queue.size() > 0, 100, 30000);
-        if (e != null) {
-            log.error(e.getLocalizedMessage(), e);
+            this.plugin.display(); // 切换到其他选项卡，需要删除搜索结果
         }
     }
 

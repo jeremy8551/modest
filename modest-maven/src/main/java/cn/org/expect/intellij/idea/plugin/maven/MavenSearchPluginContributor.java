@@ -6,7 +6,6 @@ import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenRepositoryChooserAction;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.NavigationCellRenderer;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
@@ -115,11 +114,11 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
                     head.setIcon(MavenSearchPluginIcon.LEFT_WAITING); // 更改为：等待图标
                     this.plugin.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
                 } else {
-                    this.plugin.execute(new MavenSearchRepaintJob());
+                    this.plugin.display();
                 }
             } else { // 设置为：折叠
                 artifact.setFold(true);
-                this.plugin.execute(new MavenSearchRepaintJob());
+                this.plugin.display();
             }
             return false;
         }

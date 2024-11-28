@@ -30,6 +30,8 @@ public class IdeaSearchUI {
     /** 状态栏更新请求 */
     private volatile StatusBar statusBar;
 
+    private volatile SearchDisplay display;
+
     public IdeaSearchUI() {
     }
 
@@ -110,20 +112,21 @@ public class IdeaSearchUI {
         }
     }
 
-    public JBList<Object> getJBList() {
+    public SearchDisplay getDisplay() {
         if (this.ui == null) {
             return null;
         }
 
-        return JavaDialectFactory.get().getField(this.ui, "myResultsList");
-    }
-
-    public SearchListModel getSearchListModel() {
-        if (this.ui == null) {
-            return null;
+        if (this.display == null) {
+            synchronized (this) {
+                if (this.display == null) {
+                    JBList<Object> list = JavaDialectFactory.get().getField(this.ui, "myResultsList");
+                    SearchListModel listModel = JavaDialectFactory.get().getField(this.ui, "myListModel");
+                    this.display = new SearchDisplay(list, listModel);
+                }
+            }
         }
-
-        return JavaDialectFactory.get().getField(this.ui, "myListModel");
+        return this.display;
     }
 
     public ProgressIndicator getProgressIndicator() {

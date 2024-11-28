@@ -3,7 +3,6 @@ package cn.org.expect.maven.concurrent;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.MavenSearchResult;
@@ -64,7 +63,7 @@ public class MavenSearchPatternJob extends MavenSearchJob {
         // 保存查询结果
         result.reset();
         search.getContext().setSearchResult(result);
-        search.execute(new MavenSearchRepaintJob());
+        search.asyncDisplay();
         return 0;
     }
 

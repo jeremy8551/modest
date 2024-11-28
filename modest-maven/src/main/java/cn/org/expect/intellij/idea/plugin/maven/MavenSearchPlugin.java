@@ -6,11 +6,13 @@ import java.awt.datatransfer.StringSelection;
 import java.io.File;
 import java.util.Map;
 
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.intellij.idea.plugin.maven.listener.MavenSearchPluginListener;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.concurrent.MavenSearchExtraJob;
+import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.maven.search.AbstractMavenSearch;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
@@ -29,7 +31,6 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.LocalFileSystem;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.ui.components.JBList;
 import org.jetbrains.annotations.NotNull;
 
 public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable {
@@ -47,7 +48,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     private final MavenSearchPluginListener listener;
 
     public MavenSearchPlugin(MavenSearchPluginContext context) {
-        super();
+        super(MavenSearchPluginApplication.get());
         this.context = Ensure.notNull(context);
         this.ideaUI = new IdeaSearchUI();
         this.settings = this.getEasyContext().getBean(MavenSearchPluginSettings.class);
@@ -216,11 +217,17 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
     }
 
+    public void display(MavenSearchResult result) {
+        this.aware(new MavenSearchRepaintJob(result)).run();
+    }
+
+    public void asyncDisplay() {
+        this.execute(new MavenSearchRepaintJob(this.context.getSearchResult()));
+    }
+
     public void setProgress(String message) {
         if (this.isSelfTab()) {
-            JBList<Object> JBList = this.getIdeaUI().getJBList();
-            JBList.setEmptyText(message);
-            JBList.repaint();
+            this.getIdeaUI().getDisplay().setProgress(message);
         }
     }
 

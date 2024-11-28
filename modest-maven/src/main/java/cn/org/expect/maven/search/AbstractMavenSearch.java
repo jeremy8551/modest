@@ -1,7 +1,6 @@
 package cn.org.expect.maven.search;
 
 import cn.org.expect.concurrent.ThreadSource;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
 import cn.org.expect.maven.concurrent.MavenSearchInputJob;
@@ -9,6 +8,7 @@ import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.local.LocalRepository;
 import cn.org.expect.util.Dates;
+import cn.org.expect.util.Ensure;
 
 public abstract class AbstractMavenSearch implements MavenSearch {
 
@@ -24,9 +24,9 @@ public abstract class AbstractMavenSearch implements MavenSearch {
     /** 本地Maven仓库接口 */
     private final LocalRepository localRepository;
 
-    public AbstractMavenSearch() {
+    public AbstractMavenSearch(EasyContext ioc) {
         super();
-        this.ioc = MavenSearchPluginApplication.get();
+        this.ioc = Ensure.notNull(ioc);
         this.localRepository = this.ioc.getBean(LocalRepository.class);
         MavenSearchSettings settings = this.ioc.getBean(MavenSearchSettings.class);
         this.setRepositoryId(settings.getRepositoryId());
