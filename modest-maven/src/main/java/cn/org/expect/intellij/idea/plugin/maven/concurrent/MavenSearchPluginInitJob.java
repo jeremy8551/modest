@@ -133,14 +133,16 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                 return;
             }
 
-            String text = "";
-            text += "implementation '";
-            text += selectItem.getArtifact().getGroupId();
-            text += ":";
-            text += selectItem.getArtifact().getArtifactId();
-            text += ":";
-            text += selectItem.getArtifact().getVersion();
-            text += "'";
+            String text = selectItem.getArtifact().toGroovyDSL();
+            String filepath = plugin.getContext().getActionEvent().getProject().getBasePath();
+            if (FileUtils.isDirectory(filepath)) {
+                File dir = new File(filepath);
+                if (!FileUtils.find(dir, "build.gradle.kts").isEmpty()) {
+                    text = selectItem.getArtifact().toKotlinDSL();
+                } else if (!FileUtils.find(dir, "build.gradle").isEmpty()) {
+                    text = selectItem.getArtifact().toGroovyDSL();
+                }
+            }
 
             plugin.copyToClipboard(text);
             plugin.sendNotification(MavenSearchNotification.NORMAL, copyGradle.getText());

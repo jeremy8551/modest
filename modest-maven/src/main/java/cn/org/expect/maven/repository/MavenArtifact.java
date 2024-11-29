@@ -69,4 +69,38 @@ public interface MavenArtifact {
      * @param fold true表示折叠 false表示展开
      */
     void setFold(boolean fold);
+
+    /**
+     * 使用 Groovy 的Gradle依赖
+     *
+     * @return Gradle依赖
+     */
+    default String toGroovyDSL() {
+        String text = "";
+        text += "implementation '";
+        text += this.getGroupId();
+        text += ":";
+        text += this.getArtifactId();
+        text += ":";
+        text += this.getVersion();
+        text += "'";
+        return text;
+    }
+
+    /**
+     * 使用 Kotlin 的Gradle依赖
+     *
+     * @return Gradle依赖
+     */
+    default String toKotlinDSL() {
+        String text = "";
+        text += "implementation(\"";
+        text += this.getGroupId();
+        text += ":";
+        text += this.getArtifactId();
+        text += ":";
+        text += this.getVersion();
+        text += "\")";
+        return text;
+    }
 }
