@@ -12,17 +12,13 @@ public class MavenArtifactImpl implements MavenArtifact {
     private String groupId;
     private String version;
     private String type;
-    private long timestamp;
+    private Date timestamp;
     private int versionCount;
 
-    /** true表示折叠版本列表 */
+    /** true表示折叠，false表示展开 */
     private volatile boolean fold;
 
-    public MavenArtifactImpl() {
-        this("", "", "", "", 0, -1);
-    }
-
-    public MavenArtifactImpl(String groupId, String artifactId, String version, String type, long timestamp, int versionCount) {
+    public MavenArtifactImpl(String groupId, String artifactId, String version, String type, Date timestamp, int versionCount) {
         this.artifactId = artifactId;
         this.groupId = groupId;
         this.version = version;
@@ -44,8 +40,12 @@ public class MavenArtifactImpl implements MavenArtifact {
         return version;
     }
 
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public Date getTimestamp() {
-        return new Date(this.timestamp);
+        return this.timestamp;
     }
 
     public int getVersionCount() {

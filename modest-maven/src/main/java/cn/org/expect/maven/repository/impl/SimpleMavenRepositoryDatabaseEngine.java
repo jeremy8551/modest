@@ -1,20 +1,19 @@
-package cn.org.expect.maven.repository.central;
+package cn.org.expect.maven.repository.impl;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.MavenRepositoryDatabaseEngine;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
-import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.maven.search.MavenSearchSettings;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
@@ -22,24 +21,30 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-@EasyBean(singleton = true)
-public class CentralRepositoryDatabaseSerializer {
-    private final static Log log = LogFactory.getLog(CentralRepositoryDatabaseSerializer.class);
+public class SimpleMavenRepositoryDatabaseEngine implements MavenRepositoryDatabaseEngine {
+    private final static Log log = LogFactory.getLog(SimpleMavenRepositoryDatabaseEngine.class);
 
-    public final static String PATTERN_TABLE = "PATTERN_TABLE.json";
+    /** 模糊搜索表名 */
+    protected String patternTable;
 
-    public final static String ARTIFACT_TABLE = "ARTIFACT_TABLE.json";
+    /** 精确搜索表名 */
+    protected String artifactTable;
 
+    /** 表文件存储的目录 */
     protected File parent;
 
-    protected Map<String, MavenSearchResult> pattern;
+    /** 模糊搜索结果 */
+    protected final Map<String, MavenSearchResult> pattern;
 
-    protected Map<String, Map<String, MavenSearchResult>> artifact;
+    /** 精确搜索结果 */
+    protected final Map<String, Map<String, MavenSearchResult>> artifact;
 
-    public CentralRepositoryDatabaseSerializer(MavenSearchSettings settings, Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
+    public SimpleMavenRepositoryDatabaseEngine(MavenSearchSettings settings, String patternTableName, String artifactTableName) {
         this.pattern = new ConcurrentHashMap<>();
         this.artifact = new ConcurrentHashMap<>();
         this.parent = settings.getWorkHome();
+        this.patternTable = patternTableName;
+        this.artifactTable = artifactTableName;
         this.loadFile(this.pattern, this.artifact);
     }
 
@@ -51,6 +56,12 @@ public class CentralRepositoryDatabaseSerializer {
         return artifact;
     }
 
+    public void clear() {
+        this.pattern.clear();
+        this.artifact.clear();
+        this.save();
+    }
+
     public void save() {
         this.save(this.pattern, this.artifact);
     }
@@ -59,8 +70,8 @@ public class CentralRepositoryDatabaseSerializer {
         ObjectMapper mapper = new ObjectMapper();
         File dir = this.parent;
         if (dir != null) {
-            File file1 = new File(dir, CentralRepositoryDatabaseSerializer.PATTERN_TABLE);
-            File file2 = new File(dir, CentralRepositoryDatabaseSerializer.ARTIFACT_TABLE);
+            File file1 = new File(dir, this.patternTable);
+            File file2 = new File(dir, this.artifactTable);
             if (log.isDebugEnabled()) {
                 log.debug("save database files: {}, {} ..", file1.getAbsolutePath(), file2.getAbsolutePath());
             }
@@ -81,7 +92,7 @@ public class CentralRepositoryDatabaseSerializer {
         try {
             File dir = this.parent;
             if (dir != null) {
-                File file1 = new File(dir, PATTERN_TABLE);
+                File file1 = new File(dir, this.patternTable);
                 boolean loadfile1 = false;
                 if (file1.exists() && file1.isFile()) {
                     String jsonStr = FileUtils.readline(file1, CharsetName.UTF_8, 0);
@@ -91,7 +102,7 @@ public class CentralRepositoryDatabaseSerializer {
                 }
 
                 boolean loadfile2 = false;
-                File file2 = new File(dir, ARTIFACT_TABLE);
+                File file2 = new File(dir, this.artifactTable);
                 if (file2.exists() && file2.isFile()) {
                     String jsonStr = FileUtils.readline(file2, CharsetName.UTF_8, 0);
                     artifact.clear();
@@ -136,7 +147,7 @@ public class CentralRepositoryDatabaseSerializer {
                     long timestamp = item.getLong("timestamp");
                     int versionCount = item.getInt("versionCount");
 
-                    list.add(new MavenArtifactImpl(groupId, artifactId, version, type, timestamp, versionCount));
+                    list.add(new MavenArtifactImpl(groupId, artifactId, version, type, new Date(timestamp), versionCount));
                 }
 
                 Map<String, MavenSearchResult> groupMap = map.computeIfAbsent(gid, k -> new LinkedHashMap<>());
@@ -169,7 +180,7 @@ public class CentralRepositoryDatabaseSerializer {
                 long timestamp = item.getLong("timestamp");
                 int versionCount = item.getInt("versionCount");
 
-                list.add(new MavenArtifactImpl(groupId, artifactId, version, type, timestamp, versionCount));
+                list.add(new MavenArtifactImpl(groupId, artifactId, version, type, new Date(timestamp), versionCount));
             }
 
             map.put(pattern, new SimpleMavenSearchResult(list, start, foundNumber, queryTime));

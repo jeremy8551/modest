@@ -3,6 +3,7 @@ package cn.org.expect.maven.repository.local;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -170,7 +171,7 @@ public class LocalRepositoryDatabase implements MavenRepositoryDatabase {
 
             // 保存到缓存
             String ext = FileUtils.getFilenameExt(file.getName());
-            MavenArtifact artifact = new MavenArtifactImpl(groupId, artifactId, version, ext, file.lastModified(), 0);
+            MavenArtifact artifact = new MavenArtifactImpl(groupId, artifactId, version, ext, new Date(file.lastModified()), 0);
             Map<String, MavenSearchResult> group = this.map.computeIfAbsent(groupId, k -> new LinkedHashMap<>());
             MavenSearchResult searchResult = group.computeIfAbsent(artifactId, key -> new SimpleMavenSearchResult());
             searchResult.addArtifact(artifact);

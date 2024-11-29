@@ -6,7 +6,7 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginSettings;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.central.CentralRepository;
+import cn.org.expect.maven.repository.central.CentralMavenRepository;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.Settings;
 
@@ -55,7 +55,7 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
         this.id = "";
         this.name = "";
         this.inputIntervalTime = 300;
-        this.repositoryId = CentralRepository.class.getAnnotation(EasyBean.class).value();
+        this.repositoryId = CentralMavenRepository.class.getAnnotation(EasyBean.class).value();
         this.autoSwitchTab = true;
         this.tabIndex = MavenSearchPluginSettings.DEFAULT_TAB_INDEX;
         this.elementPriority = MavenSearchPluginSettings.DEFAULT_ELEMENT_PRIORITY;

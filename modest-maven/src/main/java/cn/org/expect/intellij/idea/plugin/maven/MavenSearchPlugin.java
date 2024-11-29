@@ -128,9 +128,9 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     }
 
     public void asyncSearch(String groupId, String artifactId) {
-        if (StringUtils.isBlank(groupId) || StringUtils.isBlank(artifactId)) {
-            throw new UnsupportedOperationException(groupId + ":" + artifactId);
-        }
+//        if (StringUtils.isBlank(groupId) || StringUtils.isBlank(artifactId)) {
+//            throw new UnsupportedOperationException(groupId + ":" + artifactId);
+//        }
 
         String message = MavenSearchMessage.get("maven.search.extra.text", groupId, artifactId);
         this.setStatusBar(MavenSearchAdvertiser.RUNNING, message);

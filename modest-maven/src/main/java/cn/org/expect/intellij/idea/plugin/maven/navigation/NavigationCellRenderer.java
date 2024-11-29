@@ -1,6 +1,7 @@
 package cn.org.expect.intellij.idea.plugin.maven.navigation;
 
 import java.awt.*;
+import java.util.Date;
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
@@ -27,7 +28,8 @@ public class NavigationCellRenderer extends SearchEverywherePsiRenderer {
             this.removeAll();
 
             String leftText = StringUtils.trimBlank(item.getPresentableText());
-            String middleText = StringUtils.left(Dates.format19(item.getArtifact().getTimestamp()), 16);
+            Date timestamp = item.getArtifact().getTimestamp();
+            String middleText = timestamp == null ? "" : StringUtils.left(Dates.format19(timestamp), 16);
 
             Component leftComponent = new NavigationCell(leftText, SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
             Component middleComponent = new NavigationCell(middleText, SimpleTextAttributes.STYLE_SMALLER, JBColor.GRAY).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);

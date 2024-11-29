@@ -1,19 +1,22 @@
-package cn.org.expect.maven.repository.central;
+package cn.org.expect.maven.repository.impl;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.concurrent.ThreadSource;
+import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;
+import cn.org.expect.maven.repository.MavenRepositoryDatabaseEngine;
 import cn.org.expect.maven.repository.MavenSearchResult;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
-public class CentralRepositoryDatabase implements MavenRepositoryDatabase {
-    protected final static Log log = LogFactory.getLog(CentralRepositoryDatabase.class);
+public class SimpleMavenRepositoryDatabase implements MavenRepositoryDatabase {
+    protected final static Log log = LogFactory.getLog(SimpleMavenRepositoryDatabase.class);
 
     /** 线程池 */
     protected ExecutorService executorService;
@@ -25,13 +28,13 @@ public class CentralRepositoryDatabase implements MavenRepositoryDatabase {
     protected final Map<String, Map<String, MavenSearchResult>> extraMap;
 
     /** 序列化与反序列化工具 */
-    protected final CentralRepositoryDatabaseSerializer serializer;
+    protected final MavenRepositoryDatabaseEngine engine;
 
-    public CentralRepositoryDatabase(ThreadSource threadSource, CentralRepositoryDatabaseSerializer serializer) {
-        this.executorService = threadSource.getExecutorService();
-        this.serializer = Ensure.notNull(serializer);
-        this.patternMap = this.serializer.getPattern();
-        this.extraMap = this.serializer.getArtifact();
+    public SimpleMavenRepositoryDatabase(Class<?> cls, EasyContext ioc) {
+        this.executorService = ioc.getBean(ThreadSource.class).getExecutorService();
+        this.engine = ioc.getBean(MavenRepositoryDatabaseEngine.class, Ensure.notBlank(cls.getAnnotation(EasyBean.class).value()));
+        this.patternMap = this.engine.getPattern();
+        this.extraMap = this.engine.getArtifact();
     }
 
     public void insert(String pattern, MavenSearchResult result) {
@@ -71,6 +74,6 @@ public class CentralRepositoryDatabase implements MavenRepositoryDatabase {
     }
 
     public void store() {
-        this.executorService.execute(this.serializer::save);
+        this.executorService.execute(this.engine::save);
     }
 }

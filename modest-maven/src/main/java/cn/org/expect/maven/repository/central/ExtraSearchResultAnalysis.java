@@ -1,6 +1,7 @@
 package cn.org.expect.maven.repository.central;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import cn.org.expect.log.Log;
@@ -15,18 +16,8 @@ import org.json.JSONObject;
 /**
  * 用于解析模糊查询返回的 Json 字符串
  */
-public class PatternResultAnalysis {
-    protected final static Log log = LogFactory.getLog(PatternResultAnalysis.class);
-
-    public MavenArtifact build(JSONObject json) {
-        String groupId = json.getString("g");
-        String artifactId = json.getString("a");
-        String version = json.getString("v");
-        String packaging = json.getString("p");
-        long timestamp = json.getLong("timestamp");
-
-        return new MavenArtifactImpl(groupId, artifactId, version, packaging, timestamp, -1);
-    }
+public class ExtraSearchResultAnalysis {
+    protected final static Log log = LogFactory.getLog(ExtraSearchResultAnalysis.class);
 
     public MavenSearchResult parse(String responseBody) {
         if (responseBody == null || responseBody.length() == 0) {
@@ -50,5 +41,14 @@ public class PatternResultAnalysis {
             list.add(item);
         }
         return new SimpleMavenSearchResult(list, start + list.size() + 1, numFound, System.currentTimeMillis());
+    }
+
+    public MavenArtifact build(JSONObject json) {
+        String groupId = json.getString("g");
+        String artifactId = json.getString("a");
+        String version = json.getString("v");
+        String packaging = json.getString("p");
+        long timestamp = json.getLong("timestamp");
+        return new MavenArtifactImpl(groupId, artifactId, version, packaging, new Date(timestamp), -1);
     }
 }

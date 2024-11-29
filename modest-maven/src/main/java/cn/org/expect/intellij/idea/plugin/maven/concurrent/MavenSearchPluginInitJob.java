@@ -15,12 +15,14 @@ import cn.org.expect.intellij.idea.plugin.maven.SearchDisplay;
 import cn.org.expect.intellij.idea.plugin.maven.listener.InputFieldListener;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.maven.concurrent.MavenSearchDownloadJob;
 import cn.org.expect.maven.concurrent.MavenSearchMoreJob;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenArtifactOperation;
-import cn.org.expect.maven.repository.central.CentralRepository;
+import cn.org.expect.maven.repository.MavenRepositoryDatabaseEngine;
+import cn.org.expect.maven.repository.central.CentralMavenRepository;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchNotification;
@@ -158,7 +160,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
 
             MavenArtifact artifact = selectItem.getArtifact();
             List<String> list = new ArrayList<>();
-            list.add(plugin.getEasyContext().getBean(CentralRepository.class).getAddress());
+            list.add(plugin.getEasyContext().getBean(CentralMavenRepository.class).getAddress());
             StringUtils.split(artifact.getGroupId(), '.', list);
             list.add(artifact.getArtifactId());
             list.add(artifact.getVersion());
@@ -249,6 +251,21 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
         // 清空所有缓存
         clearCache.addActionListener(e -> {
             plugin.getDatabase().clear();
+
+            // 清空所有数据库缓存
+            List<EasyBeanInfo> list = plugin.getEasyContext().getBeanInfoList(MavenRepositoryDatabaseEngine.class);
+            for (EasyBeanInfo beanInfo : list) {
+                if (beanInfo.singleton()) {
+                    MavenRepositoryDatabaseEngine engine = plugin.getEasyContext().getBean(beanInfo.getType());
+                    if (engine != null) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("{} clear()", engine.getClass().getName());
+                        }
+                        engine.clear();
+                    }
+                }
+            }
+
             plugin.setProgress("");
             plugin.setStatusBar(null, "");
             plugin.getContext().setSearchText(null);

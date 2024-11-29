@@ -94,7 +94,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
         display.setVisibleRange(visibleRect);
 
         if (log.isDebugEnabled()) {
-            log.debug("{}, size: {}", this.getName(), display.size());
+            log.debug("{} size: {}", this.getName(), display.size());
         }
 
         // 设置广告信息

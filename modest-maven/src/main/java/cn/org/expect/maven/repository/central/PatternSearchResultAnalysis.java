@@ -1,5 +1,7 @@
 package cn.org.expect.maven.repository.central;
 
+import java.util.Date;
+
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import org.json.JSONObject;
@@ -7,7 +9,7 @@ import org.json.JSONObject;
 /**
  * 用于解析精确查询返回的 Json 字符串
  */
-public class ExtraResultAnalysis extends PatternResultAnalysis {
+public class PatternSearchResultAnalysis extends ExtraSearchResultAnalysis {
 
     public MavenArtifact build(JSONObject json) {
         String groupId = json.getString("g");
@@ -17,6 +19,6 @@ public class ExtraResultAnalysis extends PatternResultAnalysis {
         long timestamp = json.getLong("timestamp");
         int versionCount = json.getInt("versionCount");
 
-        return new MavenArtifactImpl(groupId, artifactId, version, packaging, timestamp, versionCount);
+        return new MavenArtifactImpl(groupId, artifactId, version, packaging, new Date(timestamp), versionCount);
     }
 }
