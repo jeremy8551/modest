@@ -5,18 +5,24 @@ import java.io.File;
 import cn.org.expect.intellij.idea.plugin.maven.listener.MavenSettingListener;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.local.LocalRepositoryConfig;
+import cn.org.expect.maven.repository.local.LocalRepositorySettings;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.Settings;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class SimpleLocalRepositoryConfig implements LocalRepositoryConfig {
-    private final static Log log = LogFactory.getLog(SimpleLocalRepositoryConfig.class);
+public class SimpleLocalRepositorySettings implements LocalRepositorySettings {
+    private final static Log log = LogFactory.getLog(SimpleLocalRepositorySettings.class);
 
     private volatile File repository;
 
-    public SimpleLocalRepositoryConfig(AnActionEvent event) {
+    private volatile boolean downloadSourcesAutomatically;
+
+    private volatile boolean downloadDocsAutomatically;
+
+    private volatile boolean downloadAnnotationsAutomatically;
+
+    public SimpleLocalRepositorySettings(AnActionEvent event) {
         // 如果idea中安装了 Maven 插件
         if (ClassUtils.forName("org.jetbrains.idea.maven.project.MavenProjectsManager") != null) {
             MavenSettingListener.start(event, this);
@@ -48,5 +54,29 @@ public class SimpleLocalRepositoryConfig implements LocalRepositoryConfig {
 
     public void setRepository(File dir) {
         this.repository = Ensure.notNull(dir);
+    }
+
+    public boolean isDownloadSourcesAutomatically() {
+        return downloadSourcesAutomatically;
+    }
+
+    public void setDownloadSourcesAutomatically(boolean downloadSourcesAutomatically) {
+        this.downloadSourcesAutomatically = downloadSourcesAutomatically;
+    }
+
+    public boolean isDownloadDocsAutomatically() {
+        return downloadDocsAutomatically;
+    }
+
+    public void setDownloadDocsAutomatically(boolean downloadDocsAutomatically) {
+        this.downloadDocsAutomatically = downloadDocsAutomatically;
+    }
+
+    public boolean isDownloadAnnotationsAutomatically() {
+        return downloadAnnotationsAutomatically;
+    }
+
+    public void setDownloadAnnotationsAutomatically(boolean downloadAnnotationsAutomatically) {
+        this.downloadAnnotationsAutomatically = downloadAnnotationsAutomatically;
     }
 }

@@ -7,6 +7,7 @@ import cn.org.expect.maven.concurrent.MavenSearchInputJob;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.local.LocalRepository;
+import cn.org.expect.maven.repository.local.LocalRepositorySettings;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 
@@ -74,6 +75,10 @@ public abstract class AbstractMavenSearch implements MavenSearch {
 
     public LocalRepository getLocalRepository() {
         return this.localRepository;
+    }
+
+    public LocalRepositorySettings getLocalRepositorySettings() {
+        return this.localRepository.getSettings();
     }
 
     /**

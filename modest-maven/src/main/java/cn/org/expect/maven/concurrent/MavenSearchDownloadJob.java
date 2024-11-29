@@ -9,7 +9,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.local.LocalRepositorySettings;
 import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.search.MavenSearchUtils;
 import cn.org.expect.util.CharsetName;
@@ -20,6 +23,7 @@ import cn.org.expect.util.NetUtils;
 import cn.org.expect.util.StringUtils;
 
 public class MavenSearchDownloadJob extends MavenSearchJob {
+    private final static Log log = LogFactory.getLog(MavenSearchDownloadJob.class);
 
     private final MavenArtifact artifact;
 
@@ -34,6 +38,7 @@ public class MavenSearchDownloadJob extends MavenSearchJob {
 
     public int execute() throws Exception {
         MavenSearch search = this.getSearch();
+        LocalRepositorySettings settings = search.getLocalRepositorySettings();
 
         List<String> list = new ArrayList<>();
         list.add(search.getRepository().getAddress());
@@ -56,6 +61,16 @@ public class MavenSearchDownloadJob extends MavenSearchJob {
             for (String filename : files) {
                 if (this.terminate) {
                     break;
+                }
+
+                String docFilename = artifact.getArtifactId() + "-" + artifact.getVersion() + "-javadoc.jar";
+                if (!settings.isDownloadDocsAutomatically() && (filename.endsWith(docFilename) || filename.startsWith(docFilename))) {
+                    continue;
+                }
+
+                String sourceFilename = artifact.getArtifactId() + "-" + artifact.getVersion() + "-sources.jar";
+                if (!settings.isDownloadSourcesAutomatically() && (filename.endsWith(sourceFilename) || filename.startsWith(sourceFilename))) {
+                    continue;
                 }
 
                 String httpUrl = NetUtils.joinUri(parentUrl, filename);

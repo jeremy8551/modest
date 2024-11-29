@@ -23,11 +23,11 @@ public class LocalRepository implements MavenRepository {
 
     private final LocalRepositoryDatabase database;
 
-    private final LocalRepositoryConfig config;
+    private final LocalRepositorySettings settings;
 
-    public LocalRepository(LocalRepositoryConfig config) {
-        this.config = Ensure.notNull(config);
-        File dir = this.config.getRepository();
+    public LocalRepository(LocalRepositorySettings settings) {
+        this.settings = Ensure.notNull(settings);
+        File dir = this.settings.getRepository();
         this.database = new LocalRepositoryDatabase(dir);
     }
 
@@ -52,12 +52,16 @@ public class LocalRepository implements MavenRepository {
         };
     }
 
+    public LocalRepositorySettings getSettings() {
+        return this.settings;
+    }
+
     public MavenRepositoryDatabase getDatabase() {
         return this.database;
     }
 
     public String getAddress() {
-        File file = this.config.getRepository();
+        File file = this.settings.getRepository();
         return file == null ? "" : file.getAbsolutePath();
     }
 
@@ -77,7 +81,7 @@ public class LocalRepository implements MavenRepository {
      * @return 返回true表示工件存在 false表示不存在
      */
     public boolean exists(MavenArtifact artifact) {
-        File repository = this.config.getRepository();
+        File repository = this.settings.getRepository();
         if (repository != null && repository.exists() && repository.isDirectory()) {
             List<String> list = new ArrayList<>();
             list.add(repository.getAbsolutePath());
@@ -95,7 +99,7 @@ public class LocalRepository implements MavenRepository {
     }
 
     public File getJarfile(MavenArtifact artifact) {
-        File repository = this.config.getRepository();
+        File repository = this.settings.getRepository();
         if (repository != null && repository.exists() && repository.isDirectory()) {
             List<String> list = new ArrayList<>();
             list.add(repository.getAbsolutePath());
