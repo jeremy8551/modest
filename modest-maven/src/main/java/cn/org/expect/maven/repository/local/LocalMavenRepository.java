@@ -18,17 +18,17 @@ import cn.org.expect.util.StringUtils;
 /**
  * 本地仓库
  */
-@EasyBean("local")
-public class LocalRepository implements MavenRepository {
+@EasyBean(value = "local", priority = Integer.MAX_VALUE - 1)
+public class LocalMavenRepository implements MavenRepository {
 
-    private final LocalRepositoryDatabase database;
+    private final LocalMavenRepositoryDatabase database;
 
-    private final LocalRepositorySettings settings;
+    private final LocalMavenRepositorySettings settings;
 
-    public LocalRepository(LocalRepositorySettings settings) {
+    public LocalMavenRepository(LocalMavenRepositorySettings settings) {
         this.settings = Ensure.notNull(settings);
         File dir = this.settings.getRepository();
-        this.database = new LocalRepositoryDatabase(dir);
+        this.database = new LocalMavenRepositoryDatabase(dir);
     }
 
     public MavenArtifactOperation getSupported() {
@@ -52,7 +52,7 @@ public class LocalRepository implements MavenRepository {
         };
     }
 
-    public LocalRepositorySettings getSettings() {
+    public LocalMavenRepositorySettings getSettings() {
         return this.settings;
     }
 

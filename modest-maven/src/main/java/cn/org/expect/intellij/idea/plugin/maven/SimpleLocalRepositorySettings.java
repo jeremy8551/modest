@@ -5,13 +5,13 @@ import java.io.File;
 import cn.org.expect.intellij.idea.plugin.maven.listener.MavenSettingListener;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.local.LocalRepositorySettings;
+import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.Settings;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class SimpleLocalRepositorySettings implements LocalRepositorySettings {
+public class SimpleLocalRepositorySettings implements LocalMavenRepositorySettings {
     private final static Log log = LogFactory.getLog(SimpleLocalRepositorySettings.class);
 
     private volatile File repository;

@@ -1,7 +1,6 @@
 package cn.org.expect.maven.repository.gradle;
 
 import java.io.ByteArrayInputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,14 +27,11 @@ public class GradlePluginResultAnalysis {
 
     public final static String TYPE = "GradlePlugin";
 
-    private final SimpleDateFormat format;
-
     public GradlePluginResultAnalysis() {
-        this.format = new SimpleDateFormat("dd MMMM yyyy");
     }
 
     public MavenSearchResult parsePatternResult(String responseBody) {
-        if (responseBody == null || responseBody.length() == 0) {
+        if (StringUtils.isBlank(responseBody)) {
             return null;
         }
 
@@ -54,13 +50,19 @@ public class GradlePluginResultAnalysis {
         Document root = XMLUtils.getXmlDocument(new ByteArrayInputStream(StringUtils.toBytes(tableHtml, CharsetName.UTF_8)));
         NodeList nodes = root.getChildNodes();
         NodeList tableList = nodes.item(this.find(nodes, 0, "table")).getChildNodes();
-        NodeList tbody = tableList.item(this.find(tableList, 0, "tbody")).getChildNodes();
-        for (int i = 0; i < tbody.getLength(); i++) {
-            Node trNode = tbody.item(i);
+        NodeList tBody = tableList.item(this.find(tableList, 0, "tbody")).getChildNodes();
+        for (int i = 0; i < tBody.getLength(); i++) {
+            Node trNode = tBody.item(i);
             if ("tr".equalsIgnoreCase(trNode.getNodeName())) {
                 NodeList tdList = trNode.getChildNodes();
                 int index = this.find(tdList, 0, "td");
                 NodeList td1List = tdList.item(index).getChildNodes();
+
+                Node emNode = this.get(td1List, 0, "em");
+                if (emNode != null) {
+                    break; // <em>No plugins found.</em>
+                }
+
                 NodeList h3List = td1List.item(this.find(td1List, 0, "h3")).getChildNodes();
                 String pluginID = StringUtils.trimBlank(h3List.item(this.find(h3List, 0, "a")).getTextContent());
 
@@ -120,6 +122,16 @@ public class GradlePluginResultAnalysis {
             }
         }
         throw new UnsupportedOperationException(nodeName);
+    }
+
+    public Node get(NodeList nodes, int start, String nodeName) {
+        for (int i = start; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            if (nodeName.equalsIgnoreCase(node.getNodeName())) {
+                return node;
+            }
+        }
+        return null;
     }
 
     public Date parseDate(String str) {

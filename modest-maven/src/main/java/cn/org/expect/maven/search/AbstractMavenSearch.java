@@ -6,8 +6,8 @@ import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
 import cn.org.expect.maven.concurrent.MavenSearchInputJob;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;
-import cn.org.expect.maven.repository.local.LocalRepository;
-import cn.org.expect.maven.repository.local.LocalRepositorySettings;
+import cn.org.expect.maven.repository.local.LocalMavenRepository;
+import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 
@@ -23,12 +23,12 @@ public abstract class AbstractMavenSearch implements MavenSearch {
     private MavenRepository repository;
 
     /** 本地Maven仓库接口 */
-    private final LocalRepository localRepository;
+    private final LocalMavenRepository localRepository;
 
     public AbstractMavenSearch(EasyContext ioc) {
         super();
         this.ioc = Ensure.notNull(ioc);
-        this.localRepository = this.ioc.getBean(LocalRepository.class);
+        this.localRepository = this.ioc.getBean(LocalMavenRepository.class);
         MavenSearchSettings settings = this.ioc.getBean(MavenSearchSettings.class);
         this.setRepositoryId(settings.getRepositoryId());
     }
@@ -73,11 +73,11 @@ public abstract class AbstractMavenSearch implements MavenSearch {
         return this.repository;
     }
 
-    public LocalRepository getLocalRepository() {
+    public LocalMavenRepository getLocalRepository() {
         return this.localRepository;
     }
 
-    public LocalRepositorySettings getLocalRepositorySettings() {
+    public LocalMavenRepositorySettings getLocalRepositorySettings() {
         return this.localRepository.getSettings();
     }
 

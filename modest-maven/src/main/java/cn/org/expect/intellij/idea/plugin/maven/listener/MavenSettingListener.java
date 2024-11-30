@@ -4,7 +4,7 @@ import java.io.File;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.local.LocalRepositorySettings;
+import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.Disposable;
@@ -27,7 +27,7 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
      *
      * @param event 事件
      */
-    public static void start(AnActionEvent event, LocalRepositorySettings config) {
+    public static void start(AnActionEvent event, LocalMavenRepositorySettings config) {
         if (LISTENER == null) {
             synchronized (MavenSettingListener.class) {
                 if (LISTENER == null) {
@@ -42,9 +42,9 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
 
     private volatile AnActionEvent event;
 
-    private volatile LocalRepositorySettings config;
+    private volatile LocalMavenRepositorySettings config;
 
-    protected MavenSettingListener(AnActionEvent event, LocalRepositorySettings config) {
+    protected MavenSettingListener(AnActionEvent event, LocalMavenRepositorySettings config) {
         this.event = Ensure.notNull(event);
         this.config = Ensure.notNull(config);
 
@@ -61,7 +61,7 @@ public class MavenSettingListener implements MavenGeneralSettings.Listener, Disp
         this.event = event;
     }
 
-    public void setConfig(LocalRepositorySettings config) {
+    public void setConfig(LocalMavenRepositorySettings config) {
         this.config = config;
     }
 

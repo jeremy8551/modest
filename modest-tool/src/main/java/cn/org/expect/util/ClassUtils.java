@@ -1036,6 +1036,27 @@ public class ClassUtils {
     }
 
     /**
+     * 返回异常是否与参数 cls 匹配，如果不匹配，则判断异常的Cause是否匹配
+     *
+     * @param e    异常
+     * @param type 异常的类信息
+     * @param <E>  类信息
+     * @return 异常信息
+     */
+    public static <E> E getCause(Throwable e, Class<E> type) {
+        if (e == null || type == null) {
+            throw new NullPointerException();
+        }
+
+        if (e.getClass().equals(type)) {
+            return (E) e;
+        } else {
+            Throwable cause = e.getCause();
+            return cause == null ? null : getCause(cause, type);
+        }
+    }
+
+    /**
      * 在类路径classpath下查找包名最短的类（如果有多个，则只返回第一个）
      *
      * @param classLoader 类加载器

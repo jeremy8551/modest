@@ -14,7 +14,7 @@ public class MavenFinderThreadTest {
     EasyContext context;
 
     @Test
-    public void test() {
+    public void test() throws Exception {
         CentralMavenRepository finder = new CentralMavenRepository(this.context);
         finder.query("icu.etl", 1);
     }

@@ -13,7 +13,7 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.concurrent.MavenSearchExtraJob;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.repository.local.LocalRepositorySettings;
+import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
 import cn.org.expect.maven.search.AbstractMavenSearch;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
@@ -75,17 +75,17 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         return this.settings;
     }
 
-    public LocalRepositorySettings getLocalRepositorySettings() {
+    public LocalMavenRepositorySettings getLocalRepositorySettings() {
         MavenProjectsManager manager = MavenProjectsManager.getInstance(this.context.getActionEvent().getProject());
         MavenImportingSettings importingSettings = manager.getImportingSettings();
 
-        LocalRepositorySettings localRepositorySettings = super.getLocalRepositorySettings();
+        LocalMavenRepositorySettings localRepositorySettings = super.getLocalRepositorySettings();
         localRepositorySettings.setDownloadSourcesAutomatically(importingSettings.isDownloadSourcesAutomatically());
         localRepositorySettings.setDownloadDocsAutomatically(importingSettings.isDownloadDocsAutomatically());
         localRepositorySettings.setDownloadAnnotationsAutomatically(importingSettings.isDownloadAnnotationsAutomatically());
 
         if (log.isDebugEnabled()) {
-            log.debug("{} sources: {}, docs: {}, annotations: {}", LocalRepositorySettings.class.getSimpleName(), localRepositorySettings.isDownloadSourcesAutomatically(), localRepositorySettings.isDownloadDocsAutomatically(), localRepositorySettings.isDownloadAnnotationsAutomatically());
+            log.debug("{} sources: {}, docs: {}, annotations: {}", LocalMavenRepositorySettings.class.getSimpleName(), localRepositorySettings.isDownloadSourcesAutomatically(), localRepositorySettings.isDownloadDocsAutomatically(), localRepositorySettings.isDownloadAnnotationsAutomatically());
         }
         return localRepositorySettings;
     }

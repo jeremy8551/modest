@@ -23,12 +23,15 @@ public class MavenSearchScope extends GlobalSearchScope {
 
     private final Icon icon;
 
+    private final int priority;
+
     public MavenSearchScope(EasyBeanInfo beanInfo) {
         super();
         this.repositoryId = beanInfo.getName();
         this.description = MavenSearchMessage.get("maven.search.repository." + this.repositoryId + ".id");
         this.icon = null;
         this.type = beanInfo.getType();
+        this.priority = beanInfo.getPriority();
     }
 
     public Class<?> getType() {
@@ -45,6 +48,10 @@ public class MavenSearchScope extends GlobalSearchScope {
 
     public Icon getIcon() {
         return this.icon;
+    }
+
+    public int getPriority() {
+        return this.priority;
     }
 
     public boolean isSearchInModuleContent(@NotNull Module aModule) {

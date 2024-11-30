@@ -2,7 +2,7 @@ package cn.org.expect.maven.repository.local;
 
 import java.io.File;
 
-public interface LocalRepositorySettings {
+public interface LocalMavenRepositorySettings {
 
     /**
      * 返回本地仓库的目录

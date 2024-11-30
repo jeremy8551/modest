@@ -250,8 +250,6 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
 
         // 清空所有缓存
         clearCache.addActionListener(e -> {
-            plugin.getDatabase().clear();
-
             // 清空所有数据库缓存
             List<EasyBeanInfo> list = plugin.getEasyContext().getBeanInfoList(MavenRepositoryDatabaseEngine.class);
             for (EasyBeanInfo beanInfo : list) {

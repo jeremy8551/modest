@@ -12,7 +12,7 @@ import java.util.TimeZone;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.local.LocalRepositorySettings;
+import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
 import cn.org.expect.maven.search.MavenSearch;
 import cn.org.expect.maven.search.MavenSearchUtils;
 import cn.org.expect.util.CharsetName;
@@ -38,7 +38,7 @@ public class MavenSearchDownloadJob extends MavenSearchJob {
 
     public int execute() throws Exception {
         MavenSearch search = this.getSearch();
-        LocalRepositorySettings settings = search.getLocalRepositorySettings();
+        LocalMavenRepositorySettings settings = search.getLocalRepositorySettings();
 
         List<String> list = new ArrayList<>();
         list.add(search.getRepository().getAddress());

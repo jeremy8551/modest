@@ -21,7 +21,7 @@ import cn.org.expect.util.StringUtils;
 /**
  * gradle插件仓库
  */
-@EasyBean("gradle")
+@EasyBean(value = "gradle", priority = 1)
 public class GradlePluginMavenRepository extends AbstractMavenRepository {
 
     protected PatternSearchResultAnalysis pattern;
@@ -83,19 +83,17 @@ public class GradlePluginMavenRepository extends AbstractMavenRepository {
         }
     }
 
-    public MavenSearchResult query(String pattern, int start) {
+    public MavenSearchResult query(String pattern, int start) throws Exception {
         this.terminate = false;
-        String url = "https://plugins.gradle.org/search?term=" + escape(pattern) + "&page=" + (start - 1); // 构建请求 URL
-        String responseBody = this.sendRequest(url);
-
+        String responseBody = this.sendRequest("https://plugins.gradle.org/search?term=" + escape(pattern) + "&page=" + (start - 1));
         if (StringUtils.isBlank(responseBody) || this.terminate) {
             return null;
+        } else {
+            return this.analysis.parsePatternResult(responseBody);
         }
-
-        return this.analysis.parsePatternResult(responseBody);
     }
 
-    public MavenSearchResult query(String groupId, String artifactId) {
+    public MavenSearchResult query(String groupId, String artifactId) throws Exception {
         this.terminate = false;
         String responseBody = this.sendRequest("https://plugins.gradle.org/m2/" + artifactId.replace('.', '/') + "/" + artifactId + ".gradle.plugin/");
         if (this.terminate) {
@@ -107,7 +105,7 @@ public class GradlePluginMavenRepository extends AbstractMavenRepository {
         for (int i = list.size() - 1; i >= 0; i--) {
             MavenArtifactImpl artifact = list.get(i);
             result.add(artifact);
-            
+
             String html = this.sendRequest("https://plugins.gradle.org/plugin/" + artifactId + "/" + artifact.getVersion());
             Matcher compile = StringUtils.compile(html, "Created ([^\\.]+)\\.");
             if (compile != null) {

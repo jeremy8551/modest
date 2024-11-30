@@ -38,6 +38,10 @@ public class MavenSearchPatternJob extends MavenSearchJob {
             log.debug("{} search pattern: {}", this.getName(), this.pattern);
         }
 
+        if (StringUtils.isBlank(this.pattern)) {
+            return -1;
+        }
+
         MavenSearch search = this.getSearch();
         MavenSearchResult result = this.query(search, this.pattern);
         if (this.terminate) {
@@ -67,11 +71,7 @@ public class MavenSearchPatternJob extends MavenSearchJob {
         return 0;
     }
 
-    public MavenSearchResult query(MavenSearch search, String pattern) {
-        if (StringUtils.isBlank(pattern)) {
-            return null;
-        }
-
+    public MavenSearchResult query(MavenSearch search, String pattern) throws Exception {
         pattern = StringUtils.trimBlank(pattern);
         search.getContext().setSearchText(pattern);
         MavenRepositoryDatabase database = search.getDatabase();
@@ -79,20 +79,15 @@ public class MavenSearchPatternJob extends MavenSearchJob {
             database.delete(pattern);
         }
 
-        try {
-            MavenSearchResult result = database.select(pattern);
-            if (result == null || result.size() == 0 || result.isExpire(search.getSettings().getExpireTimeMillis())) {
-                if (MavenSearchUtils.isExtraSearch(pattern)) {
-                    return this.queryExtra(database, pattern); // 精确搜索
-                } else {
-                    return this.queryPattern(database, pattern); // 模糊搜索
-                }
+        MavenSearchResult result = database.select(pattern);
+        if (result == null || result.size() == 0 || result.isExpire(search.getSettings().getExpireTimeMillis())) {
+            if (MavenSearchUtils.isExtraSearch(pattern)) {
+                return this.queryExtra(database, pattern); // 精确搜索
+            } else {
+                return this.queryPattern(database, pattern); // 模糊搜索
             }
-            return result;
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-            return null;
         }
+        return result;
     }
 
     /**
@@ -104,11 +99,11 @@ public class MavenSearchPatternJob extends MavenSearchJob {
      * @throws Exception 发送错误
      */
     private @Nullable MavenSearchResult queryPattern(MavenRepositoryDatabase database, String pattern) throws Exception {
-        MavenSearchResult resultSet = this.getRemoteRepository().query(pattern, 1);
-        if (resultSet != null) {
-            database.insert(pattern, resultSet);
+        MavenSearchResult result = this.getRemoteRepository().query(pattern, 1);
+        if (result != null) {
+            database.insert(pattern, result);
         }
-        return resultSet;
+        return result;
     }
 
     /**

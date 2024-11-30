@@ -5,6 +5,7 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.search.MavenSearch;
+import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchAware;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.util.Ensure;
@@ -70,8 +71,8 @@ public abstract class MavenSearchJob extends BaseJob implements Runnable, MavenS
     }
 
     public void run() {
-        String split = StringUtils.left("", 100, '-');
         if (log.isInfoEnabled()) {
+            String split = StringUtils.left("", 100, '-');
             log.info(split + "\n" + MavenSearchMessage.get("maven.search.thread.start", this.getName()));
         }
 
@@ -82,7 +83,10 @@ public abstract class MavenSearchJob extends BaseJob implements Runnable, MavenS
                 this.execute();
             }
         } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
+            String message = e.getLocalizedMessage();
+            this.getSearch().setProgress(message);
+            this.getSearch().setStatusBar(MavenSearchAdvertiser.ERROR, message);
+            log.error(message, e);
         } finally {
             this.finish = true;
             this.running = false;

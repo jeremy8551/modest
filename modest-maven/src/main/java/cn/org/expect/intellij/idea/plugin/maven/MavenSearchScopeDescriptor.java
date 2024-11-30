@@ -16,6 +16,7 @@ public class MavenSearchScopeDescriptor extends ScopeDescriptor {
         for (EasyBeanInfo beanInfo : MavenSearchPluginApplication.get().getBeanInfoList(MavenRepository.class)) {
             list.add(new MavenSearchScopeDescriptor(new MavenSearchScope(beanInfo)));
         }
+        list.sort((o1, o2) -> o2.getScope().getPriority() - o1.getScope().getPriority());
         return list;
     }
 

@@ -21,8 +21,8 @@ import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 
-public class LocalRepositoryDatabase implements MavenRepositoryDatabase {
-    private final static Log log = LogFactory.getLog(LocalRepositoryDatabase.class);
+public class LocalMavenRepositoryDatabase implements MavenRepositoryDatabase {
+    private final static Log log = LogFactory.getLog(LocalMavenRepositoryDatabase.class);
 
     /** groupid、artifactId 与 {@linkplain MavenSearchResult} 的映射 */
     protected final Map<String, Map<String, MavenSearchResult>> map;
@@ -35,7 +35,7 @@ public class LocalRepositoryDatabase implements MavenRepositoryDatabase {
 
     private final GroupID groupId;
 
-    public LocalRepositoryDatabase(File repository) {
+    public LocalMavenRepositoryDatabase(File repository) {
         this.map = new LinkedHashMap<>();
         this.groupIds = new LinkedHashSet<>();
         this.artifactIds = new LinkedHashSet<>();

@@ -6,7 +6,7 @@ import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
 import cn.org.expect.maven.repository.MavenRepository;
 import cn.org.expect.maven.repository.MavenRepositoryDatabase;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.repository.local.LocalRepositorySettings;
+import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
 
 public interface MavenSearch {
 
@@ -122,7 +122,7 @@ public interface MavenSearch {
      *
      * @return 配置信息
      */
-    LocalRepositorySettings getLocalRepositorySettings();
+    LocalMavenRepositorySettings getLocalRepositorySettings();
 
     /**
      * 返回数据库接口

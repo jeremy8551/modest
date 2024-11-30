@@ -4,7 +4,7 @@ import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinActio
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginInitJob;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.impl.EasyBeanDefineImpl;
-import cn.org.expect.maven.repository.local.LocalRepositorySettings;
+import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributorFactory;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -34,7 +34,7 @@ public class MavenSearchPluginFactory implements SearchEverywhereContributorFact
      */
     public static void loadLocalRepositoryConfig(AnActionEvent event) {
         EasyContext ioc = MavenSearchPluginApplication.get();
-        if (!ioc.containsBeanInfo(LocalRepositorySettings.class, SimpleLocalRepositorySettings.class)) {
+        if (!ioc.containsBeanInfo(LocalMavenRepositorySettings.class, SimpleLocalRepositorySettings.class)) {
             EasyBeanDefineImpl bean = new EasyBeanDefineImpl(SimpleLocalRepositorySettings.class);
             bean.setBean(new SimpleLocalRepositorySettings(event));
             bean.setSingleton(true);

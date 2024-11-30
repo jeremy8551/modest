@@ -1,12 +1,13 @@
 package cn.org.expect.maven.repository;
 
-import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.Comparator;
 
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.impl.SimpleMavenRepositoryDatabase;
+import cn.org.expect.util.ClassUtils;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -33,7 +34,7 @@ public abstract class AbstractMavenRepository implements MavenRepository {
         return this.database;
     }
 
-    public String sendRequest(String url) {
+    public String sendRequest(String url) throws UnknownHostException {
         Throwable throwable = null;
         int times = 3;
         for (int i = 0; i < times; i++) {
@@ -44,6 +45,11 @@ public abstract class AbstractMavenRepository implements MavenRepository {
             try {
                 return this.sendURL(url);
             } catch (Throwable e) {
+                UnknownHostException cause = ClassUtils.getCause(e, UnknownHostException.class);
+                if (cause != null) {
+                    throw cause;
+                }
+
                 if (throwable == null) {
                     throwable = e;
                 }
@@ -57,7 +63,7 @@ public abstract class AbstractMavenRepository implements MavenRepository {
         }
     }
 
-    public synchronized String sendURL(String url) throws IOException {
+    public synchronized String sendURL(String url) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("send URL: {}", url);
         }

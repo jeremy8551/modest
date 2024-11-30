@@ -44,7 +44,7 @@ public class MavenRepositoryChooserAction extends ScopeChooserAction {
     }
 
     /**
-     * 在下拉列表中，光标覆盖选项时出发的事件
+     * 在下拉列表中，光标在选项上触发的事件
      *
      * @param e 事件
      * @return 事件的处理逻辑

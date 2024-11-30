@@ -6,17 +6,17 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.repository.AbstractMavenRepository;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenArtifactOperation;
 import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.repository.AbstractMavenRepository;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.util.StringUtils;
 
 /**
  * 中央仓库
  */
-@EasyBean("central")
+@EasyBean(value = "central", priority = Integer.MAX_VALUE)
 public class CentralMavenRepository extends AbstractMavenRepository {
     protected final static Log log = LogFactory.getLog(CentralMavenRepository.class);
 
@@ -55,11 +55,10 @@ public class CentralMavenRepository extends AbstractMavenRepository {
         return "https://repo1.maven.org/maven2/";
     }
 
-    public MavenSearchResult query(String pattern, int start) {
+    public MavenSearchResult query(String pattern, int start) throws Exception {
         this.terminate = false;
         String url = "https://search.maven.org/solrsearch/select?q=" + StringUtils.trimBlank(StringUtils.replaceAll(pattern, ".", "%2E")) + "&rows=200&wt=json&start=" + (start - 1); // 构建请求 URL
         String responseBody = this.sendRequest(url);
-
         if (StringUtils.isBlank(responseBody) || this.terminate) {
             return null;
         }
@@ -69,7 +68,7 @@ public class CentralMavenRepository extends AbstractMavenRepository {
         return result;
     }
 
-    public MavenSearchResult query(String groupId, String artifactId) {
+    public MavenSearchResult query(String groupId, String artifactId) throws Exception {
         this.terminate = false;
         String url = "https://search.maven.org/solrsearch/select?q=g:" + groupId + "+AND+a:" + artifactId + "&core=gav&rows=200&wt=json"; // 构建请求 URL
         String responseBody = this.sendRequest(url);
@@ -88,7 +87,6 @@ public class CentralMavenRepository extends AbstractMavenRepository {
                 }
 
                 responseBody = this.sendRequest(url + "&start=" + start);
-
                 if (this.terminate) {
                     break;
                 }
