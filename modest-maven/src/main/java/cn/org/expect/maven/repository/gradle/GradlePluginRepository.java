@@ -6,11 +6,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 
 import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.concurrent.EasyJob;
+import cn.org.expect.concurrent.EasyJobReaderImpl;
+import cn.org.expect.concurrent.EasyJobService;
+import cn.org.expect.concurrent.ThreadSource;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.EDTJob;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginJob;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.repository.AbstractArtifactRepository;
 import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.ArtifactOperation;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
+import cn.org.expect.maven.repository.HttpClient;
 import cn.org.expect.maven.repository.central.PatternSearchResultAnalysis;
 import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
@@ -109,18 +116,52 @@ public class GradlePluginRepository extends AbstractArtifactRepository {
             return null;
         }
 
+        if (log.isDebugEnabled()) {
+            log.debug("{} list: {}", this.getClass().getSimpleName(), list.size());
+        }
+
+        ThreadSource threadSource = this.getEasyContext().getBean(ThreadSource.class);
+        EasyJobService service = threadSource.getJobService(7);
+
+        List<EasyJob> jobList = new ArrayList<>();
         List<Artifact> result = new ArrayList<>();
         for (int i = list.size() - 1; i >= 0; i--) {
             MavenArtifactImpl artifact = list.get(i);
             result.add(artifact);
+            jobList.add(new GradleQueryJob(artifact));
+        }
+        service.execute(new EasyJobReaderImpl(jobList));
+        return new SimpleMavenSearchResult(result, list.size() + 1, list.size(), System.currentTimeMillis());
+    }
 
-            String html = this.sendRequest("https://plugins.gradle.org/plugin/" + artifactId + "/" + artifact.getVersion());
+    static class GradleQueryJob extends MavenSearchPluginJob implements EDTJob {
+
+        private final MavenArtifactImpl artifact;
+
+        private final HttpClient client = new HttpClient();
+
+        public GradleQueryJob(MavenArtifactImpl artifact) {
+            super();
+            this.artifact = artifact;
+        }
+
+        public int execute() throws Exception {
+            String html = this.client.sendRequest("https://plugins.gradle.org/plugin/" + this.artifact.getArtifactId() + "/" + this.artifact.getVersion());
             Matcher compile = StringUtils.compile(html, "Created ([^\\.]+)\\.");
             if (compile != null) {
                 String date = StringUtils.trimBlank(compile.group(1));
-                artifact.setTimestamp(Dates.parse(date));
+                this.artifact.setTimestamp(Dates.parse(date));
             }
+            return 0;
         }
-        return new SimpleMavenSearchResult(result, list.size() + 1, list.size(), System.currentTimeMillis());
+
+        public void terminate() {
+            super.terminate();
+            this.client.terminate();
+        }
+
+        public boolean isTerminate() {
+            return super.isTerminate();
+        }
     }
 }
