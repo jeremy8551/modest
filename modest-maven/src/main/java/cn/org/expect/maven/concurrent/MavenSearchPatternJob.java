@@ -46,10 +46,13 @@ public class MavenSearchPatternJob extends MavenSearchJob {
         ArtifactSearchResult result = this.query(search, this.pattern);
         if (this.terminate) {
             return 0;
+        } else {
+            search.getContext().setSearchResult(result);
         }
 
         // 查询失败
         if (result == null) {
+            search.display();
             String message = ArtifactSearchMessage.get("maven.search.send.url.fail", search.getRepository().getName());
             search.setProgress(message);
             search.setStatusBar(ArtifactSearchAdvertiser.ERROR, message);
@@ -58,7 +61,8 @@ public class MavenSearchPatternJob extends MavenSearchJob {
 
         // 查询结果为空
         if (result.size() == 0) {
-            String message = ArtifactSearchMessage.get("maven.search.noting.found");
+            search.display();
+            String message = ArtifactSearchMessage.get("maven.search.nothing.found");
             search.setProgress(message);
             search.setStatusBar(ArtifactSearchAdvertiser.NORMAL, message);
             return 0;
@@ -66,7 +70,6 @@ public class MavenSearchPatternJob extends MavenSearchJob {
 
         // 保存查询结果
         result.reset();
-        search.getContext().setSearchResult(result);
         search.asyncDisplay();
         return 0;
     }
