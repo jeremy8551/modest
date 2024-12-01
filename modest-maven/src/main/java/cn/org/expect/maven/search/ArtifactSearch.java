@@ -3,26 +3,26 @@ package cn.org.expect.maven.search;
 import java.io.File;
 
 import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
-import cn.org.expect.maven.repository.MavenRepository;
-import cn.org.expect.maven.repository.MavenRepositoryDatabase;
-import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.ArtifactRepository;
+import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
 
-public interface MavenSearch {
+public interface ArtifactSearch {
 
     /**
      * 返回配置信息
      *
      * @return 配置信息
      */
-    MavenSearchSettings getSettings();
+    ArtifactSearchSettings getSettings();
 
     /**
      * 返回上下文信息
      *
      * @return 上下文信息
      */
-    MavenSearchContext getContext();
+    ArtifactSearchContext getContext();
 
     /**
      * 根据输入设备中的文本，异步进行查询
@@ -62,7 +62,7 @@ public interface MavenSearch {
      * @param type 通知类型
      * @param text 通知内容
      */
-    void sendNotification(MavenSearchNotification type, String text, Object... array);
+    void sendNotification(ArtifactSearchNotification type, String text, Object... array);
 
     /**
      * 推送通知
@@ -72,7 +72,7 @@ public interface MavenSearch {
      * @param actionName 操作名称
      * @param file       打开的文件
      */
-    void sendNotification(MavenSearchNotification type, String text, String actionName, File file);
+    void sendNotification(ArtifactSearchNotification type, String text, String actionName, File file);
 
     /**
      * 在等待搜索结果时，显示进度的文本信息
@@ -87,7 +87,7 @@ public interface MavenSearch {
      * @param type    文本的类型
      * @param message 文本信息
      */
-    void setStatusBar(MavenSearchAdvertiser type, String message);
+    void setStatusBar(ArtifactSearchAdvertiser type, String message);
 
     /**
      * 多线程执行任务 <br>
@@ -108,14 +108,14 @@ public interface MavenSearch {
      *
      * @return Maven Maven仓库接口
      */
-    MavenRepository getRepository();
+    ArtifactRepository getRepository();
 
     /**
      * 返回本地Maven仓库接口
      *
      * @return 本地Maven仓库接口
      */
-    MavenRepository getLocalRepository();
+    ArtifactRepository getLocalRepository();
 
     /**
      * 返回本地仓库配置信息
@@ -129,14 +129,14 @@ public interface MavenSearch {
      *
      * @return 数据库接口
      */
-    MavenRepositoryDatabase getDatabase();
+    ArtifactRepositoryDatabase getDatabase();
 
     /**
      * 显示结果
      *
      * @param result 搜索结果
      */
-    void display(MavenSearchResult result);
+    void display(ArtifactSearchResult result);
 
     /**
      * 显示结果
@@ -153,15 +153,15 @@ public interface MavenSearch {
     }
 
     /**
-     * 如果参数对象是 {@linkplain MavenSearchAware}，则向参数对象设置搜索接口
+     * 如果参数对象是 {@linkplain ArtifactSearchAware}，则向参数对象设置搜索接口
      *
      * @param t   参数对象
      * @param <T> 参数类型
      * @return 参数对象
      */
     default <T> T aware(T t) {
-        if (t instanceof MavenSearchAware) {
-            ((MavenSearchAware) t).setSearch(this);
+        if (t instanceof ArtifactSearchAware) {
+            ((ArtifactSearchAware) t).setSearch(this);
         }
         return t;
     }

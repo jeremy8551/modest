@@ -34,9 +34,10 @@ public class MavenSearchPluginPinJob extends MavenSearchPluginInitJob implements
     public int execute() {
         super.execute();
 
+        String tabID = this.oldPlugin.getContributor().getSearchProviderId();
         String pattern = this.oldPlugin.getIdeaUI().getSearchEverywhereUI().getSearchField().getText();
         IdeaSearchUI.StatusBar statusBar = this.oldPlugin.getIdeaUI().getStatusBar();
-        String repositoryId = this.oldPlugin.getRepositoryId();
+        String repositoryId = this.oldPlugin.getRepository().getId();
         int size = this.oldPlugin.getIdeaUI().getDisplay().size();
         Rectangle visibleRect = this.oldPlugin.getIdeaUI().getDisplay().getVisibleRect();
 
@@ -55,7 +56,7 @@ public class MavenSearchPluginPinJob extends MavenSearchPluginInitJob implements
             plugin.getIdeaUI().setStatusBar(statusBar.getType(), statusBar.getMessage());
         }
 
-        plugin.display();
+        plugin.getIdeaUI().getSearchEverywhereUI().switchToTab(tabID);
         MavenSearchPluginPinAction.PIN.show(this.oldUI.getSize(), this.oldUI.getLocationOnScreen(), StringUtils.isBlank(pattern) && size == 0);
         this.actionPerformed.run(); // 设置pin按钮按下
         this.oldUI.dispose(); // 销毁

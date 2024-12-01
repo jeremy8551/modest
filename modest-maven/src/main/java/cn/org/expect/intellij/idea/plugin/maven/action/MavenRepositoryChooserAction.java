@@ -1,13 +1,15 @@
 package cn.org.expect.intellij.idea.plugin.maven.action;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchScope;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchScopeDescriptor;
+import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.MavenRepository;
+import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.util.CollectionUtils;
 import com.intellij.ide.actions.searcheverywhere.ScopeChooserAction;
 import com.intellij.ide.util.scopeChooser.ScopeDescriptor;
@@ -27,9 +29,13 @@ public class MavenRepositoryChooserAction extends ScopeChooserAction {
     private final Runnable onChanged;
 
     public MavenRepositoryChooserAction(MavenSearchPlugin plugin, Runnable onChanged) {
-        this.descriptors = MavenSearchScopeDescriptor.getList();
         this.plugin = plugin;
         this.onChanged = onChanged;
+        this.descriptors = new ArrayList<>();
+        List<EasyBeanInfo> list = ArtifactRepository.getEasyBeanInfo(plugin.getEasyContext());
+        for (EasyBeanInfo beanInfo : list) {
+            this.descriptors.add(new MavenSearchScopeDescriptor(new MavenSearchScope(beanInfo)));
+        }
     }
 
     public boolean isEverywhere() {
@@ -69,11 +75,10 @@ public class MavenRepositoryChooserAction extends ScopeChooserAction {
     }
 
     protected @NotNull ScopeDescriptor getSelectedScope() {
-        MavenRepository repository = plugin.getRepository();
+        ArtifactRepository repository = plugin.getRepository();
         if (repository != null) {
-            Class<?> type = repository.getClass();
             for (MavenSearchScopeDescriptor descriptor : descriptors) {
-                if (type.equals(descriptor.getScope().getType())) {
+                if (repository.getId().equals(descriptor.getScope().getRepositoryId())) {
                     return descriptor;
                 }
             }

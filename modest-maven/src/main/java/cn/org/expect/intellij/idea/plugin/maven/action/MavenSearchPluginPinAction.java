@@ -16,7 +16,7 @@ import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchExecutorSe
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginPinJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.search.MavenSearchMessage;
+import cn.org.expect.maven.search.ArtifactSearchMessage;
 import cn.org.expect.util.Ensure;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.actions.searcheverywhere.ActionSearchEverywhereContributor;
@@ -45,7 +45,7 @@ public class MavenSearchPluginPinAction extends ToggleAction {
     private final MavenSearchPlugin plugin;
 
     public MavenSearchPluginPinAction(MavenSearchPlugin plugin) {
-        super(MavenSearchMessage.get("maven.search.btn.pin.text"), MavenSearchMessage.get("maven.search.btn.pin.description"), AllIcons.General.Pin_tab);
+        super(ArtifactSearchMessage.get("maven.search.btn.pin.text"), ArtifactSearchMessage.get("maven.search.btn.pin.description"), AllIcons.General.Pin_tab);
         this.plugin = Ensure.notNull(plugin);
 //        int mask = SystemInfo.isMac ? 256 : 128;
 //        this.registerCustomShortcutSet(68, mask, plugin.getIdeaUI().getSearchEverywhereUI());
@@ -76,7 +76,6 @@ public class MavenSearchPluginPinAction extends ToggleAction {
 
     protected void pin(@NotNull AnActionEvent event) {
         Project project = event.getProject();
-        String tabID = this.plugin.getContributor().getSearchProviderId();
         try {
             SearchEverywhereManager manager = SearchEverywhereManager.getInstance(event.getProject());
             Method method = manager.getClass().getDeclaredMethod("createView", Project.class, List.class, SearchEverywhereSpellingCorrector.class);
@@ -86,7 +85,6 @@ public class MavenSearchPluginPinAction extends ToggleAction {
             SearchEverywhereSpellingCorrector spellingCorrector = SearchEverywhereSpellingCorrector.getInstance(project);
             SearchEverywhereUI newUI = (SearchEverywhereUI) method.invoke(manager, project, contributors, spellingCorrector);
             MavenSearchPluginPinAction.PIN.setParameter(newUI, project);
-            newUI.switchToTab(tabID);
 
             // 执行任务
             for (SearchEverywhereContributor<?> contributor : contributors) {

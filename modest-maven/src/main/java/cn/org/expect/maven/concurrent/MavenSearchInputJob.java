@@ -3,9 +3,9 @@ package cn.org.expect.maven.concurrent;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedTransferQueue;
 
-import cn.org.expect.maven.search.MavenSearch;
-import cn.org.expect.maven.search.MavenSearchAdvertiser;
-import cn.org.expect.maven.search.MavenSearchMessage;
+import cn.org.expect.maven.search.ArtifactSearch;
+import cn.org.expect.maven.search.ArtifactSearchAdvertiser;
+import cn.org.expect.maven.search.ArtifactSearchMessage;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 
@@ -29,7 +29,7 @@ public class MavenSearchInputJob extends MavenSearchJob {
      * @param pattern 字符串
      * @param delete  true表示先删除数据库中的记录再执行搜索，false表示直接执行搜索
      */
-    public synchronized void search(MavenSearch search, String pattern, boolean delete) {
+    public synchronized void search(ArtifactSearch search, String pattern, boolean delete) {
         search.getService().terminate(MavenSearchPatternJob.class, job -> job.getClass().equals(MavenSearchPatternJob.class)); // 终止正在运行的任务
 
         try {
@@ -46,15 +46,15 @@ public class MavenSearchInputJob extends MavenSearchJob {
             try {
                 MavenSearchPatternJob job = this.queue.take();
                 String pattern = job.getPattern();
-                MavenSearch search = job.getSearch();
+                ArtifactSearch search = job.getSearch();
 
                 // 如果线程等待期间又添加了其他查询条件，则直接执行最后一个查询条件
                 Dates.sleep(search.getSettings().getInputIntervalTime());
 
                 // 如果队列为空，表示在等待期间没有添加查询任务，则直接执行查询
                 if (this.queue.isEmpty()) {
-                    search.setProgress(MavenSearchMessage.get("maven.search.progress.text"));
-                    search.setStatusBar(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern)));
+                    search.setProgress(ArtifactSearchMessage.get("maven.search.progress.text", search.getRepository().getName()));
+                    search.setStatusBar(ArtifactSearchAdvertiser.RUNNING, ArtifactSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern), search.getRepository().getName()));
                     search.execute(job);
                 }
             } catch (Throwable e) {

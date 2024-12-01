@@ -3,7 +3,7 @@ package cn.org.expect.maven.repository;
 /**
  * 数据库接口
  */
-public interface MavenRepositoryDatabase {
+public interface ArtifactRepositoryDatabase {
 
     /**
      * 模糊搜索
@@ -11,7 +11,7 @@ public interface MavenRepositoryDatabase {
      * @param id 唯一编号
      * @return 搜索结果
      */
-    MavenSearchResult select(String id);
+    ArtifactSearchResult select(String id);
 
     /**
      * 保存搜索结果
@@ -19,7 +19,7 @@ public interface MavenRepositoryDatabase {
      * @param id        唯一编号
      * @param resultSet 搜索结果
      */
-    void insert(String id, MavenSearchResult resultSet);
+    void insert(String id, ArtifactSearchResult resultSet);
 
     /**
      * 删除搜索结果
@@ -35,7 +35,7 @@ public interface MavenRepositoryDatabase {
      * @param artifactId 工件ID
      * @param result     搜索结果
      */
-    void insert(String groupId, String artifactId, MavenSearchResult result);
+    void insert(String groupId, String artifactId, ArtifactSearchResult result);
 
     /**
      * 查询搜索结果
@@ -44,7 +44,7 @@ public interface MavenRepositoryDatabase {
      * @param artifactId 工件ID
      * @return 搜索结果
      */
-    MavenSearchResult select(String groupId, String artifactId);
+    ArtifactSearchResult select(String groupId, String artifactId);
 
     /**
      * 删除所有数据

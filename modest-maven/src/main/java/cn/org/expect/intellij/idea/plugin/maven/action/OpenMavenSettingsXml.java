@@ -3,7 +3,7 @@ package cn.org.expect.intellij.idea.plugin.maven.action;
 import java.io.File;
 import java.util.Objects;
 
-import cn.org.expect.maven.search.MavenSearchMessage;
+import cn.org.expect.maven.search.ArtifactSearchMessage;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -21,7 +21,7 @@ import org.jetbrains.idea.maven.utils.MavenWslUtil;
 public class OpenMavenSettingsXml extends AnAction {
 
     public OpenMavenSettingsXml() {
-        super(MavenSearchMessage.get("maven.search.open.local.settings.xml.menu"));
+        super(ArtifactSearchMessage.get("maven.search.open.local.settings.xml.menu"));
     }
 
     public void actionPerformed(@NotNull AnActionEvent event) {

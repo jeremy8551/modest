@@ -4,23 +4,20 @@ import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
 import cn.org.expect.maven.concurrent.MavenSearchInputJob;
-import cn.org.expect.maven.repository.MavenRepository;
-import cn.org.expect.maven.repository.MavenRepositoryDatabase;
+import cn.org.expect.maven.repository.ArtifactRepository;
+import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.local.LocalMavenRepository;
 import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 
-public abstract class AbstractMavenSearch implements MavenSearch {
+public abstract class AbstractMavenSearch implements ArtifactSearch {
 
     /** IOC 容器 */
     private final EasyContext ioc;
 
-    /** Maven仓库ID */
-    private volatile String repositoryId;
-
     /** Maven仓库 */
-    private MavenRepository repository;
+    private ArtifactRepository repository;
 
     /** 本地Maven仓库接口 */
     private final LocalMavenRepository localRepository;
@@ -29,27 +26,17 @@ public abstract class AbstractMavenSearch implements MavenSearch {
         super();
         this.ioc = Ensure.notNull(ioc);
         this.localRepository = this.ioc.getBean(LocalMavenRepository.class);
-        MavenSearchSettings settings = this.ioc.getBean(MavenSearchSettings.class);
+        ArtifactSearchSettings settings = this.ioc.getBean(ArtifactSearchSettings.class);
         this.setRepositoryId(settings.getRepositoryId());
     }
 
     /**
-     * 设置Maven仓库ID
+     * 设置仓库ID
      *
-     * @param id Maven仓库ID
+     * @param id 仓库ID
      */
     public void setRepositoryId(String id) {
-        this.repository = this.ioc.getBean(MavenRepository.class, id);
-        this.repositoryId = id;
-    }
-
-    /**
-     * 返回Maven仓库ID
-     *
-     * @return Maven仓库ID
-     */
-    public String getRepositoryId() {
-        return repositoryId;
+        this.repository = Ensure.notNull(this.ioc.getBean(ArtifactRepository.class, id), id);
     }
 
     /**
@@ -69,7 +56,7 @@ public abstract class AbstractMavenSearch implements MavenSearch {
         return this.ioc.getBean(MavenSearchExecutorService.class);
     }
 
-    public MavenRepository getRepository() {
+    public ArtifactRepository getRepository() {
         return this.repository;
     }
 
@@ -106,7 +93,7 @@ public abstract class AbstractMavenSearch implements MavenSearch {
      *
      * @return 数据库对象
      */
-    public MavenRepositoryDatabase getDatabase() {
+    public ArtifactRepositoryDatabase getDatabase() {
         return this.getRepository().getDatabase();
     }
 }

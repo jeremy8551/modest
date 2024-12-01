@@ -2,7 +2,7 @@ package cn.org.expect.maven.repository.central;
 
 import java.util.Date;
 
-import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import org.json.JSONObject;
 
@@ -11,7 +11,7 @@ import org.json.JSONObject;
  */
 public class PatternSearchResultAnalysis extends ExtraSearchResultAnalysis {
 
-    public MavenArtifact build(JSONObject json) {
+    public Artifact build(JSONObject json) {
         String groupId = json.getString("g");
         String artifactId = json.getString("a");
         String version = json.getString("latestVersion");

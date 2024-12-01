@@ -6,8 +6,8 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContext;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginFactory;
 import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
-import cn.org.expect.maven.search.MavenSearchMessage;
-import cn.org.expect.maven.search.MavenSearchNotification;
+import cn.org.expect.maven.search.ArtifactSearchMessage;
+import cn.org.expect.maven.search.ArtifactSearchNotification;
 import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public class OpenLocalRepository extends AnAction {
 
     public OpenLocalRepository() {
-        super(MavenSearchMessage.get("maven.search.open.local.repository.menu"));
+        super(ArtifactSearchMessage.get("maven.search.open.local.repository.menu"));
     }
 
     public void actionPerformed(@NotNull AnActionEvent event) {
@@ -28,11 +28,11 @@ public class OpenLocalRepository extends AnAction {
         MavenSearchPlugin plugin = new MavenSearchPlugin(context);
         File repository = plugin.getEasyContext().getBean(LocalMavenRepositorySettings.class).getRepository();
         if (repository == null) {
-            plugin.sendNotification(MavenSearchNotification.ERROR, MavenSearchMessage.get("maven.search.error.cannot.found.local.repository"));
+            plugin.sendNotification(ArtifactSearchNotification.ERROR, ArtifactSearchMessage.get("maven.search.error.cannot.found.local.repository"));
             return;
         }
 
-        plugin.sendNotification(MavenSearchNotification.NORMAL, repository.getAbsolutePath());
+        plugin.sendNotification(ArtifactSearchNotification.NORMAL, repository.getAbsolutePath());
         BrowserUtil.browse(repository);
     }
 }

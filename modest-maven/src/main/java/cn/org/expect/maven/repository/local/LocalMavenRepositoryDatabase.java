@@ -13,19 +13,19 @@ import java.util.Set;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenRepositoryDatabase;
-import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.Artifact;
+import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 
-public class LocalMavenRepositoryDatabase implements MavenRepositoryDatabase {
+public class LocalMavenRepositoryDatabase implements ArtifactRepositoryDatabase {
     private final static Log log = LogFactory.getLog(LocalMavenRepositoryDatabase.class);
 
-    /** groupid、artifactId 与 {@linkplain MavenSearchResult} 的映射 */
-    protected final Map<String, Map<String, MavenSearchResult>> map;
+    /** groupid、artifactId 与 {@linkplain ArtifactSearchResult} 的映射 */
+    protected final Map<String, Map<String, ArtifactSearchResult>> map;
 
     protected final Set<String> groupIds;
 
@@ -45,7 +45,7 @@ public class LocalMavenRepositoryDatabase implements MavenRepositoryDatabase {
 //        this.print();
     }
 
-    public MavenSearchResult select(String pattern) {
+    public ArtifactSearchResult select(String pattern) {
         List<String> list = StringUtils.splitByBlanks(pattern);
         List<String> parts = new ArrayList<>();
         for (String str : list) {
@@ -55,16 +55,16 @@ public class LocalMavenRepositoryDatabase implements MavenRepositoryDatabase {
             }
         }
 
-        Set<MavenArtifact> mas = new HashSet<>();
+        Set<Artifact> mas = new HashSet<>();
         for (String key : parts) {
-            Set<Map.Entry<String, Map<String, MavenSearchResult>>> entries = this.map.entrySet();
-            for (Map.Entry<String, Map<String, MavenSearchResult>> entry : entries) {
-                Map<String, MavenSearchResult> a2r = entry.getValue(); // artifactId - searchResult
+            Set<Map.Entry<String, Map<String, ArtifactSearchResult>>> entries = this.map.entrySet();
+            for (Map.Entry<String, Map<String, ArtifactSearchResult>> entry : entries) {
+                Map<String, ArtifactSearchResult> a2r = entry.getValue(); // artifactId - searchResult
                 String groupId = entry.getKey();
                 if (groupId.contains(key)) {
-                    Collection<MavenSearchResult> msrs = a2r.values();
-                    for (MavenSearchResult msr : msrs) {
-                        List<MavenArtifact> mal = msr.getList();
+                    Collection<ArtifactSearchResult> msrs = a2r.values();
+                    for (ArtifactSearchResult msr : msrs) {
+                        List<Artifact> mal = msr.getList();
                         if (mal.size() > 0) {
                             mas.add(mal.get(0));
                         }
@@ -73,8 +73,8 @@ public class LocalMavenRepositoryDatabase implements MavenRepositoryDatabase {
                     Set<String> arts = a2r.keySet();
                     for (String art : arts) {
                         if (art.contains(key)) {
-                            MavenSearchResult searchResult = a2r.get(art);
-                            List<MavenArtifact> mal = searchResult.getList();
+                            ArtifactSearchResult searchResult = a2r.get(art);
+                            List<Artifact> mal = searchResult.getList();
                             if (mal.size() > 0) {
                                 mas.add(mal.get(0));
                             }
@@ -87,17 +87,17 @@ public class LocalMavenRepositoryDatabase implements MavenRepositoryDatabase {
         return new SimpleMavenSearchResult(new ArrayList<>(mas), mas.size(), mas.size(), System.currentTimeMillis());
     }
 
-    public void insert(String id, MavenSearchResult resultSet) {
+    public void insert(String id, ArtifactSearchResult resultSet) {
     }
 
     public void delete(String id) {
     }
 
-    public void insert(String groupId, String artifactId, MavenSearchResult result) {
+    public void insert(String groupId, String artifactId, ArtifactSearchResult result) {
     }
 
-    public MavenSearchResult select(String groupId, String artifactId) {
-        Map<String, MavenSearchResult> map = this.map.get(groupId);
+    public ArtifactSearchResult select(String groupId, String artifactId) {
+        Map<String, ArtifactSearchResult> map = this.map.get(groupId);
         if (map != null) {
             return map.get(artifactId);
         }
@@ -109,12 +109,12 @@ public class LocalMavenRepositoryDatabase implements MavenRepositoryDatabase {
 
     protected void print() {
         if (log.isDebugEnabled()) {
-            Set<Map.Entry<String, Map<String, MavenSearchResult>>> entries = this.map.entrySet();
-            for (Map.Entry<String, Map<String, MavenSearchResult>> entry : entries) {
-                Set<Map.Entry<String, MavenSearchResult>> a2rs = entry.getValue().entrySet();
-                for (Map.Entry<String, MavenSearchResult> a2r : a2rs) {
-                    List<MavenArtifact> list = a2r.getValue().getList();
-                    for (MavenArtifact artifact : list) {
+            Set<Map.Entry<String, Map<String, ArtifactSearchResult>>> entries = this.map.entrySet();
+            for (Map.Entry<String, Map<String, ArtifactSearchResult>> entry : entries) {
+                Set<Map.Entry<String, ArtifactSearchResult>> a2rs = entry.getValue().entrySet();
+                for (Map.Entry<String, ArtifactSearchResult> a2r : a2rs) {
+                    List<Artifact> list = a2r.getValue().getList();
+                    for (Artifact artifact : list) {
                         log.debug("artifact: {} {} {}", artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion());
                     }
                 }
@@ -171,9 +171,9 @@ public class LocalMavenRepositoryDatabase implements MavenRepositoryDatabase {
 
             // 保存到缓存
             String ext = FileUtils.getFilenameExt(file.getName());
-            MavenArtifact artifact = new MavenArtifactImpl(groupId, artifactId, version, ext, new Date(file.lastModified()), 0);
-            Map<String, MavenSearchResult> group = this.map.computeIfAbsent(groupId, k -> new LinkedHashMap<>());
-            MavenSearchResult searchResult = group.computeIfAbsent(artifactId, key -> new SimpleMavenSearchResult());
+            Artifact artifact = new MavenArtifactImpl(groupId, artifactId, version, ext, new Date(file.lastModified()), 0);
+            Map<String, ArtifactSearchResult> group = this.map.computeIfAbsent(groupId, k -> new LinkedHashMap<>());
+            ArtifactSearchResult searchResult = group.computeIfAbsent(artifactId, key -> new SimpleMavenSearchResult());
             searchResult.addArtifact(artifact);
 
             if (log.isTraceEnabled()) {

@@ -1,9 +1,9 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
 import cn.org.expect.intellij.idea.plugin.maven.settings.MavenSearchPluginSettingsImpl;
-import cn.org.expect.maven.search.MavenSearchSettings;
+import cn.org.expect.maven.search.ArtifactSearchSettings;
 
-public interface MavenSearchPluginSettings extends MavenSearchSettings {
+public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
 
     /** 默认一天有效 */
     int DEFAULT_EXPIRE_TIME_MILLIS = 1000 * 3600 * 24;

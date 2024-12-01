@@ -1,8 +1,8 @@
 package cn.org.expect.maven.search;
 
-import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 
-public interface MavenSearchContext {
+public interface ArtifactSearchContext {
 
     /**
      * 返回最后一次模糊查询的文本
@@ -23,12 +23,12 @@ public interface MavenSearchContext {
      *
      * @param result 搜索结果
      */
-    void setSearchResult(MavenSearchResult result);
+    void setSearchResult(ArtifactSearchResult result);
 
     /**
      * 返回上一次保存的搜索结果
      *
      * @return 搜索结果
      */
-    MavenSearchResult getSearchResult();
+    ArtifactSearchResult getSearchResult();
 }

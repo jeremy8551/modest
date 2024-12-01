@@ -9,40 +9,40 @@ import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.MavenRepositoryDatabase;
-import cn.org.expect.maven.repository.MavenRepositoryDatabaseEngine;
-import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
+import cn.org.expect.maven.repository.ArtifactRepositoryDatabaseEngine;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
-public class SimpleMavenRepositoryDatabase implements MavenRepositoryDatabase {
+public class SimpleMavenRepositoryDatabase implements ArtifactRepositoryDatabase {
     protected final static Log log = LogFactory.getLog(SimpleMavenRepositoryDatabase.class);
 
     /** 线程池 */
     protected ExecutorService executorService;
 
-    /** 模糊搜索词 pattern 与 {@linkplain MavenSearchResult} 的映射 */
-    protected final Map<String, MavenSearchResult> patternMap;
+    /** 模糊搜索词 pattern 与 {@linkplain ArtifactSearchResult} 的映射 */
+    protected final Map<String, ArtifactSearchResult> patternMap;
 
-    /** groupid、artifactId 与 {@linkplain MavenSearchResult} 的映射 */
-    protected final Map<String, Map<String, MavenSearchResult>> extraMap;
+    /** groupid、artifactId 与 {@linkplain ArtifactSearchResult} 的映射 */
+    protected final Map<String, Map<String, ArtifactSearchResult>> extraMap;
 
     /** 序列化与反序列化工具 */
-    protected final MavenRepositoryDatabaseEngine engine;
+    protected final ArtifactRepositoryDatabaseEngine engine;
 
     public SimpleMavenRepositoryDatabase(Class<?> cls, EasyContext ioc) {
         this.executorService = ioc.getBean(ThreadSource.class).getExecutorService();
-        this.engine = ioc.getBean(MavenRepositoryDatabaseEngine.class, Ensure.notBlank(cls.getAnnotation(EasyBean.class).value()));
+        this.engine = ioc.getBean(ArtifactRepositoryDatabaseEngine.class, Ensure.notBlank(cls.getAnnotation(EasyBean.class).value()));
         this.patternMap = this.engine.getPattern();
         this.extraMap = this.engine.getArtifact();
     }
 
-    public void insert(String pattern, MavenSearchResult result) {
+    public void insert(String pattern, ArtifactSearchResult result) {
         this.patternMap.put(pattern, result);
         this.store();
     }
 
-    public MavenSearchResult select(String pattern) {
+    public ArtifactSearchResult select(String pattern) {
         return this.patternMap.get(pattern);
     }
 
@@ -53,14 +53,14 @@ public class SimpleMavenRepositoryDatabase implements MavenRepositoryDatabase {
         }
     }
 
-    public void insert(String groupId, String artifactId, MavenSearchResult result) {
-        Map<String, MavenSearchResult> group = this.extraMap.computeIfAbsent(groupId, k -> new HashMap<String, MavenSearchResult>());
+    public void insert(String groupId, String artifactId, ArtifactSearchResult result) {
+        Map<String, ArtifactSearchResult> group = this.extraMap.computeIfAbsent(groupId, k -> new HashMap<String, ArtifactSearchResult>());
         group.put(artifactId, result);
         this.store();
     }
 
-    public MavenSearchResult select(String groupId, String artifactId) {
-        Map<String, MavenSearchResult> map = this.extraMap.get(groupId);
+    public ArtifactSearchResult select(String groupId, String artifactId) {
+        Map<String, ArtifactSearchResult> map = this.extraMap.get(groupId);
         if (map != null) {
             return map.get(artifactId);
         }

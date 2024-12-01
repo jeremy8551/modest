@@ -5,7 +5,7 @@ import javax.swing.*;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.search.MavenSearchAdvertiser;
+import cn.org.expect.maven.search.ArtifactSearchAdvertiser;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.MessageFormatter;
 import cn.org.expect.util.StringUtils;
@@ -59,14 +59,14 @@ public class IdeaSearchUI {
         return this.ui.getSearchField();
     }
 
-    public void setStatusBar(MavenSearchAdvertiser type, String message) {
+    public void setStatusBar(ArtifactSearchAdvertiser type, String message) {
         if (this.ui == null) {
             return;
         }
 
         this.statusBar = new StatusBar(type, message);
         Icon icon = MavenSearchPluginUtils.getIcon(type);
-        String fontColor = MavenSearchAdvertiser.ERROR == type ? "red" : "orange";
+        String fontColor = ArtifactSearchAdvertiser.ERROR == type ? "red" : "orange";
         String text = new MessageFormatter("<html><span style='color:{};'>{}</span></html>").fill(fontColor, message);
 
         try {
@@ -167,15 +167,15 @@ public class IdeaSearchUI {
     }
 
     public static class StatusBar {
-        private MavenSearchAdvertiser type;
+        private ArtifactSearchAdvertiser type;
         private String message;
 
-        public StatusBar(MavenSearchAdvertiser type, String message) {
+        public StatusBar(ArtifactSearchAdvertiser type, String message) {
             this.type = type;
             this.message = message;
         }
 
-        public MavenSearchAdvertiser getType() {
+        public ArtifactSearchAdvertiser getType() {
             return type;
         }
 

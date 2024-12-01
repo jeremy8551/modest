@@ -7,8 +7,8 @@ import java.util.List;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.Artifact;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.util.CharsetName;
@@ -30,7 +30,7 @@ public class GradlePluginResultAnalysis {
     public GradlePluginResultAnalysis() {
     }
 
-    public MavenSearchResult parsePatternResult(String responseBody) {
+    public ArtifactSearchResult parsePatternResult(String responseBody) {
         if (StringUtils.isBlank(responseBody)) {
             return null;
         }
@@ -45,7 +45,7 @@ public class GradlePluginResultAnalysis {
             return null;
         }
 
-        List<MavenArtifact> list = new ArrayList<>(10);
+        List<Artifact> list = new ArrayList<>(10);
         String tableHtml = responseBody.substring(begin, end + str.length());
         Document root = XMLUtils.getXmlDocument(new ByteArrayInputStream(StringUtils.toBytes(tableHtml, CharsetName.UTF_8)));
         NodeList nodes = root.getChildNodes();
@@ -80,17 +80,17 @@ public class GradlePluginResultAnalysis {
     }
 
     public List<MavenArtifactImpl> parseExtraResult(String groupId, String artifactId, String responseBody) {
-        if (StringUtils.isBlank(responseBody)) {
-            return null;
+        int begin = responseBody.indexOf("<body>");
+        if (begin == -1) {
+            return new ArrayList<>(0);
         }
 
-        int begin = responseBody.indexOf("<body>");
         String str = "</body>";
-        int end = -1;
-        if (begin != -1) {
-            end = responseBody.indexOf(str, begin);
-        }
-        if (begin == -1 || end == -1) {
+        int end = responseBody.indexOf(str, begin);
+        if (end == -1) {
+            if (log.isErrorEnabled()) {
+                log.error("{} responseBody: {}", this.getClass().getSimpleName(), responseBody);
+            }
             return null;
         }
 

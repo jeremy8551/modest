@@ -4,7 +4,7 @@ import java.io.File;
 
 import cn.org.expect.annotation.EasyBean;
 
-public interface MavenSearchSettings {
+public interface ArtifactSearchSettings {
 
     /**
      * 设置插件名

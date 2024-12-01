@@ -11,10 +11,10 @@ import java.util.TimeZone;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
-import cn.org.expect.maven.search.MavenSearch;
-import cn.org.expect.maven.search.MavenSearchUtils;
+import cn.org.expect.maven.search.ArtifactSearch;
+import cn.org.expect.maven.search.ArtifactSearchUtils;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
@@ -25,19 +25,19 @@ import cn.org.expect.util.StringUtils;
 public class MavenSearchDownloadJob extends MavenSearchJob {
     private final static Log log = LogFactory.getLog(MavenSearchDownloadJob.class);
 
-    private final MavenArtifact artifact;
+    private final Artifact artifact;
 
-    public MavenSearchDownloadJob(MavenArtifact artifact) {
+    public MavenSearchDownloadJob(Artifact artifact) {
         super();
         this.artifact = Ensure.notNull(artifact);
     }
 
-    public MavenArtifact getArtifact() {
+    public Artifact getArtifact() {
         return artifact;
     }
 
     public int execute() throws Exception {
-        MavenSearch search = this.getSearch();
+        ArtifactSearch search = this.getSearch();
         LocalMavenRepositorySettings settings = search.getLocalRepositorySettings();
 
         List<String> list = new ArrayList<>();
@@ -57,7 +57,7 @@ public class MavenSearchDownloadJob extends MavenSearchJob {
             File parent = new File(FileUtils.joinPath(list.toArray(new String[0])));
             FileUtils.createDirectory(parent);
 
-            List<String> files = MavenSearchUtils.fetchFileList(parentUrl);
+            List<String> files = ArtifactSearchUtils.fetchFileList(parentUrl);
             for (String filename : files) {
                 if (this.terminate) {
                     break;

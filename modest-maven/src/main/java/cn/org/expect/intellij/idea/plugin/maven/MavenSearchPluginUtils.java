@@ -9,9 +9,9 @@ import javax.swing.*;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.search.MavenSearchAdvertiser;
-import cn.org.expect.maven.search.MavenSearchMessage;
-import cn.org.expect.maven.search.MavenSearchNotification;
+import cn.org.expect.maven.search.ArtifactSearchAdvertiser;
+import cn.org.expect.maven.search.ArtifactSearchMessage;
+import cn.org.expect.maven.search.ArtifactSearchNotification;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
@@ -25,19 +25,19 @@ import org.json.JSONObject;
 public class MavenSearchPluginUtils {
     private final static Log log = LogFactory.getLog(MavenSearchPluginUtils.class);
 
-    public static NotificationType toNotification(MavenSearchNotification type) {
+    public static NotificationType toNotification(ArtifactSearchNotification type) {
         if (type == null) {
             return NotificationType.INFORMATION;
         }
 
-        if (type == MavenSearchNotification.ERROR) {
+        if (type == ArtifactSearchNotification.ERROR) {
             return NotificationType.ERROR;
         }
 
         return NotificationType.INFORMATION;
     }
 
-    public static Icon getIcon(MavenSearchAdvertiser type) {
+    public static Icon getIcon(ArtifactSearchAdvertiser type) {
         if (type == null) {
             return null;
         }
@@ -210,7 +210,7 @@ public class MavenSearchPluginUtils {
     }
 
     public static String getTabName() {
-        return MavenSearchMessage.get("maven.search.tab.name");
+        return ArtifactSearchMessage.get("maven.search.tab.name");
     }
 
     public static String getAllTabName() {

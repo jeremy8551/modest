@@ -1,6 +1,7 @@
 package cn.org.expect.maven.repository;
 
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import cn.org.expect.util.ArrayUtils;
@@ -9,14 +10,14 @@ import cn.org.expect.util.StringUtils;
 /**
  * Maven 仓库搜索结果
  */
-public interface MavenSearchResult {
+public interface ArtifactSearchResult {
 
     /**
      * Maven 工件列表
      *
      * @return 集合
      */
-    List<MavenArtifact> getList();
+    List<Artifact> getList();
 
     /**
      * 下次查询的起始位置
@@ -50,8 +51,8 @@ public interface MavenSearchResult {
      * 重置操作
      */
     default void reset() {
-        List<MavenArtifact> list = this.getList();
-        for (MavenArtifact artifact : list) {
+        List<Artifact> list = this.getList();
+        for (Artifact artifact : list) {
             artifact.setFold(true);
         }
     }
@@ -75,7 +76,7 @@ public interface MavenSearchResult {
      * @return 返回true表示存在
      */
     default boolean contains(String groupId, String artifactId, String version) {
-        for (MavenArtifact artifact : this.getList()) {
+        for (Artifact artifact : this.getList()) {
             if (artifact.getGroupId().equals(groupId) && artifact.getArtifactId().equals(artifactId) && artifact.getVersion().equals(version)) {
                 return true;
             }
@@ -88,10 +89,10 @@ public interface MavenSearchResult {
      *
      * @param artifact 工件
      */
-    default void addArtifact(MavenArtifact artifact) {
-        List<MavenArtifact> list = this.getList();
+    default void addArtifact(Artifact artifact) {
+        List<Artifact> list = this.getList();
         for (int i = 0; i < list.size(); i++) {
-            MavenArtifact mavenArtifact = list.get(i);
+            Artifact mavenArtifact = list.get(i);
             if (mavenArtifact.getGroupId().equals(artifact.getGroupId()) //
                     && mavenArtifact.getArtifactId().equals(artifact.getArtifactId()) //
                     && mavenArtifact.getVersion().equals(artifact.getVersion()) //
@@ -118,13 +119,58 @@ public interface MavenSearchResult {
         list.sort(COMPARATOR.reversed());
     }
 
+    /**
+     * 模糊查询结果的排序规则：按时间戳倒序
+     */
+    default void sortByPattern() {
+        this.getList().sort(PATTERN_RESULT_COMPARATOR.reversed());
+    }
+
+    /**
+     * 精确查询结果的排序规则：按版本数、最新发布时间等排序
+     */
+    default void sortByTimeDesc() {
+        this.getList().sort((m1, m2) -> TIMESTAMP_COMPARATOR.compare(m2.getTimestamp(), m1.getTimestamp()));
+    }
+
+    Comparator<Date> TIMESTAMP_COMPARATOR = (o1, o2) -> {
+        if (o1 == null && o2 == null) {
+            return 0;
+        } else if (o1 == null) {
+            return -1;
+        } else if (o2 == null) {
+            return 1;
+        } else {
+            return o1.compareTo(o2);
+        }
+    };
+
+    Comparator<Artifact> PATTERN_RESULT_COMPARATOR = (o1, o2) -> {
+        int vv = o1.getVersionCount() - o2.getVersionCount(); // 版本数
+        if (vv != 0) {
+            return vv;
+        }
+
+        int tv = TIMESTAMP_COMPARATOR.compare(o1.getTimestamp(), o2.getTimestamp()); // 最新发布
+        if (tv != 0) {
+            return tv;
+        }
+
+        int gv = o1.getGroupId().compareTo(o2.getGroupId());
+        if (gv != 0) {
+            return gv;
+        }
+
+        return o1.getArtifactId().compareTo(o2.getArtifactId());
+    };
+
     /** 版本号文本的分隔符 */
     List<String> DELIMITERS = ArrayUtils.asList(".", "-");
 
     /**
      * 同一个工件有多个版本时的排序规则，按版本号排序
      */
-    Comparator<MavenArtifact> COMPARATOR = (a1, a2) -> {
+    Comparator<Artifact> COMPARATOR = (a1, a2) -> {
         String v1 = a1.getVersion();
         String v2 = a2.getVersion();
         String[] array1 = StringUtils.split(v1, DELIMITERS, false);

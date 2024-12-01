@@ -11,8 +11,8 @@ import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.Artifact;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.ExtendedInfo;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
@@ -98,7 +98,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
             this.plugin.getContext().setSelectNavigationHead(head); // 保存选择记录
             this.plugin.getContext().setSelectNavigationItem(null); // 清空子选项
 
-            MavenArtifact artifact = head.getArtifact();
+            Artifact artifact = head.getArtifact();
             if (log.isDebugEnabled()) {
                 log.debug("processSelectedItem({}, {}, {}) {}, fold: {}, version: {}", selectedObject, modifiers, searchText, artifact, artifact.isFold(), artifact.getVersionCount());
             }
@@ -109,7 +109,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
                 String groupId = artifact.getGroupId();
                 String artifactId = artifact.getArtifactId();
 
-                MavenSearchResult result = this.plugin.getDatabase().select(groupId, artifactId);
+                ArtifactSearchResult result = this.plugin.getDatabase().select(groupId, artifactId);
                 if (result == null || result.isExpire(this.plugin.getSettings().getExpireTimeMillis())) {
                     head.setIcon(MavenSearchPluginIcon.LEFT_WAITING); // 更改为：等待图标
                     this.plugin.asyncSearch(groupId, artifactId); // 后台查询 maven 工件

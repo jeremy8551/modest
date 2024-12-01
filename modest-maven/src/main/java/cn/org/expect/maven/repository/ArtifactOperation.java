@@ -1,6 +1,6 @@
 package cn.org.expect.maven.repository;
 
-public interface MavenArtifactOperation {
+public interface ArtifactOperation {
 
     /**
      * 是否支持在中央仓库中浏览

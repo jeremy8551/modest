@@ -1,6 +1,6 @@
 package cn.org.expect.maven.search;
 
-public enum MavenSearchNotification {
+public enum ArtifactSearchNotification {
 
     /** 正常通知 */
     NORMAL,

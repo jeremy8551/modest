@@ -12,12 +12,12 @@ import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.concurrent.MavenSearchExtraJob;
-import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
 import cn.org.expect.maven.search.AbstractMavenSearch;
-import cn.org.expect.maven.search.MavenSearchAdvertiser;
-import cn.org.expect.maven.search.MavenSearchMessage;
-import cn.org.expect.maven.search.MavenSearchNotification;
+import cn.org.expect.maven.search.ArtifactSearchAdvertiser;
+import cn.org.expect.maven.search.ArtifactSearchMessage;
+import cn.org.expect.maven.search.ArtifactSearchNotification;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.MessageFormatter;
 import cn.org.expect.util.StringUtils;
@@ -122,8 +122,8 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         this.context.setSelectNavigationItem(null);
 
         // 更新等待信息与状态栏
-        this.setProgress(MavenSearchMessage.get("maven.search.progress.text"));
-        this.setStatusBar(MavenSearchAdvertiser.RUNNING, MavenSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern)));
+        this.setProgress(ArtifactSearchMessage.get("maven.search.progress.text", this.getRepository().getName()));
+        this.setStatusBar(ArtifactSearchAdvertiser.RUNNING, ArtifactSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern), this.getRepository().getName()));
         this.getInput().search(this, pattern, delete);
     }
 
@@ -132,8 +132,8 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
 //            throw new UnsupportedOperationException(groupId + ":" + artifactId);
 //        }
 
-        String message = MavenSearchMessage.get("maven.search.extra.text", groupId, artifactId);
-        this.setStatusBar(MavenSearchAdvertiser.RUNNING, message);
+        String message = ArtifactSearchMessage.get("maven.search.extra.text", groupId, artifactId, this.getRepository().getName());
+        this.setStatusBar(ArtifactSearchAdvertiser.RUNNING, message);
         this.execute(new MavenSearchExtraJob(groupId, artifactId));
     }
 
@@ -143,7 +143,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         clipboard.setContents(selection, null);
     }
 
-    public void sendNotification(MavenSearchNotification type, String text, Object... array) {
+    public void sendNotification(ArtifactSearchNotification type, String text, Object... array) {
         String message = new MessageFormatter(text).fill(array);
         NotificationType notificationType = MavenSearchPluginUtils.toNotification(type);
         Project project = context.getActionEvent().getProject();
@@ -153,7 +153,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
     }
 
-    public void sendNotification(MavenSearchNotification type, String text, String actionName, File file) {
+    public void sendNotification(ArtifactSearchNotification type, String text, String actionName, File file) {
         Project project = context.getActionEvent().getProject();
         if (project != null) {
             NotificationType notificationType = MavenSearchPluginUtils.toNotification(type);
@@ -222,12 +222,12 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         SearchEverywhereManager manager = SearchEverywhereManager.getInstance(this.context.getActionEvent().getProject());
         Map<String, String> map = JavaDialectFactory.get().getField(manager, "myTabsShortcutsMap");
         if (map != null) {
-            String text = MavenSearchMessage.get("maven.search.tab.tooltip.text", MavenSearchPluginUtils.getShortcutText("pressed F2"));
+            String text = ArtifactSearchMessage.get("maven.search.tab.tooltip.text", this.getSettings().getName(), MavenSearchPluginUtils.getShortcutText("pressed F2"));
             map.put(this.contributor.getSearchProviderId(), text);
         }
     }
 
-    public void setStatusBar(MavenSearchAdvertiser type, String message) {
+    public void setStatusBar(ArtifactSearchAdvertiser type, String message) {
         if (this.isSelfTab()) {
             this.getIdeaUI().setStatusBar(type, message);
         } else { // 如果标签页不是自身，则将状态栏恢复到原来的样式
@@ -235,7 +235,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         }
     }
 
-    public void display(MavenSearchResult result) {
+    public void display(ArtifactSearchResult result) {
         this.aware(new MavenSearchRepaintJob(result)).run();
     }
 

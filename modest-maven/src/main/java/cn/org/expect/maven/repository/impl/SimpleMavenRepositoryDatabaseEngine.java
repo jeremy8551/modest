@@ -11,17 +11,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenRepositoryDatabaseEngine;
-import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.search.MavenSearchSettings;
+import cn.org.expect.maven.repository.Artifact;
+import cn.org.expect.maven.repository.ArtifactRepositoryDatabaseEngine;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
+import cn.org.expect.maven.search.ArtifactSearchSettings;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class SimpleMavenRepositoryDatabaseEngine implements MavenRepositoryDatabaseEngine {
+public class SimpleMavenRepositoryDatabaseEngine implements ArtifactRepositoryDatabaseEngine {
     private final static Log log = LogFactory.getLog(SimpleMavenRepositoryDatabaseEngine.class);
 
     /** 模糊搜索表名 */
@@ -34,12 +34,12 @@ public class SimpleMavenRepositoryDatabaseEngine implements MavenRepositoryDatab
     protected File parent;
 
     /** 模糊搜索结果 */
-    protected final Map<String, MavenSearchResult> pattern;
+    protected final Map<String, ArtifactSearchResult> pattern;
 
     /** 精确搜索结果 */
-    protected final Map<String, Map<String, MavenSearchResult>> artifact;
+    protected final Map<String, Map<String, ArtifactSearchResult>> artifact;
 
-    public SimpleMavenRepositoryDatabaseEngine(MavenSearchSettings settings, String patternTableName, String artifactTableName) {
+    public SimpleMavenRepositoryDatabaseEngine(ArtifactSearchSettings settings, String patternTableName, String artifactTableName) {
         this.pattern = new ConcurrentHashMap<>();
         this.artifact = new ConcurrentHashMap<>();
         this.parent = settings.getWorkHome();
@@ -48,11 +48,11 @@ public class SimpleMavenRepositoryDatabaseEngine implements MavenRepositoryDatab
         this.loadFile(this.pattern, this.artifact);
     }
 
-    public Map<String, MavenSearchResult> getPattern() {
+    public Map<String, ArtifactSearchResult> getPattern() {
         return pattern;
     }
 
-    public Map<String, Map<String, MavenSearchResult>> getArtifact() {
+    public Map<String, Map<String, ArtifactSearchResult>> getArtifact() {
         return artifact;
     }
 
@@ -66,7 +66,7 @@ public class SimpleMavenRepositoryDatabaseEngine implements MavenRepositoryDatab
         this.save(this.pattern, this.artifact);
     }
 
-    public void save(Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
+    public void save(Map<String, ArtifactSearchResult> pattern, Map<String, Map<String, ArtifactSearchResult>> artifact) {
         ObjectMapper mapper = new ObjectMapper();
         File dir = this.parent;
         if (dir != null) {
@@ -88,7 +88,7 @@ public class SimpleMavenRepositoryDatabaseEngine implements MavenRepositoryDatab
         }
     }
 
-    public void loadFile(Map<String, MavenSearchResult> pattern, Map<String, Map<String, MavenSearchResult>> artifact) {
+    public void loadFile(Map<String, ArtifactSearchResult> pattern, Map<String, Map<String, ArtifactSearchResult>> artifact) {
         try {
             File dir = this.parent;
             if (dir != null) {
@@ -119,8 +119,8 @@ public class SimpleMavenRepositoryDatabaseEngine implements MavenRepositoryDatab
         }
     }
 
-    private Map<String, Map<String, MavenSearchResult>> deserializeArtifactTable(String jsonStr) {
-        Map<String, Map<String, MavenSearchResult>> map = new ConcurrentHashMap<>();
+    private Map<String, Map<String, ArtifactSearchResult>> deserializeArtifactTable(String jsonStr) {
+        Map<String, Map<String, ArtifactSearchResult>> map = new ConcurrentHashMap<>();
         JSONObject json = new JSONObject(jsonStr);
         Iterator<String> keys = json.keys();
         while (keys.hasNext()) {
@@ -136,7 +136,7 @@ public class SimpleMavenRepositoryDatabaseEngine implements MavenRepositoryDatab
                 int foundNumber = aObj.getInt("foundNumber");
                 long queryTime = aObj.getLong("queryTime");
 
-                List<MavenArtifact> list = new ArrayList<>();
+                List<Artifact> list = new ArrayList<>();
                 JSONArray listArray = aObj.getJSONArray("list");
                 for (int i = 0; i < listArray.length(); i++) {
                     JSONObject item = listArray.getJSONObject(i);
@@ -150,15 +150,15 @@ public class SimpleMavenRepositoryDatabaseEngine implements MavenRepositoryDatab
                     list.add(new MavenArtifactImpl(groupId, artifactId, version, type, new Date(timestamp), versionCount));
                 }
 
-                Map<String, MavenSearchResult> groupMap = map.computeIfAbsent(gid, k -> new LinkedHashMap<>());
+                Map<String, ArtifactSearchResult> groupMap = map.computeIfAbsent(gid, k -> new LinkedHashMap<>());
                 groupMap.put(aid, new SimpleMavenSearchResult(list, start, foundNumber, queryTime));
             }
         }
         return map;
     }
 
-    private Map<String, MavenSearchResult> deserializePatternTable(String jsonStr) {
-        Map<String, MavenSearchResult> map = new LinkedHashMap<>();
+    private Map<String, ArtifactSearchResult> deserializePatternTable(String jsonStr) {
+        Map<String, ArtifactSearchResult> map = new LinkedHashMap<>();
         JSONObject json = new JSONObject(jsonStr);
         Iterator<String> keys = json.keys();
         while (keys.hasNext()) {
@@ -169,7 +169,7 @@ public class SimpleMavenRepositoryDatabaseEngine implements MavenRepositoryDatab
             int foundNumber = obj.getInt("foundNumber");
             long queryTime = obj.getLong("queryTime");
 
-            List<MavenArtifact> list = new ArrayList<>();
+            List<Artifact> list = new ArrayList<>();
             JSONArray listArray = obj.getJSONArray("list");
             for (int i = 0; i < listArray.length(); i++) {
                 JSONObject item = listArray.getJSONObject(i);

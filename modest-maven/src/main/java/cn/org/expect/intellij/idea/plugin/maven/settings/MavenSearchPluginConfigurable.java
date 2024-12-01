@@ -3,18 +3,16 @@ package cn.org.expect.intellij.idea.plugin.maven.settings;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.expression.MillisExpression;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginSettings;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginUtils;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchScopeDescriptor;
-import cn.org.expect.maven.search.MavenSearchMessage;
+import cn.org.expect.maven.repository.ArtifactRepository;
+import cn.org.expect.maven.search.ArtifactSearchMessage;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.XMLUtils;
-import com.intellij.ide.util.scopeChooser.ScopeDescriptor;
 import com.intellij.openapi.options.Configurable;
 import com.intellij.ui.components.JBCheckBox;
 import com.intellij.ui.components.JBLabel;
@@ -52,7 +50,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
      * @return 配置名称
      */
     public String getDisplayName() {
-        return MavenSearchMessage.get("maven.search.settings.display", this.settings.getName());
+        return ArtifactSearchMessage.get("maven.search.settings.display", this.settings.getName());
     }
 
     public JComponent createComponent() {
@@ -69,12 +67,11 @@ public class MavenSearchPluginConfigurable implements Configurable {
         inputIntervalTime.addChangeListener(e -> active.setInputIntervalTime(inputIntervalTime.getValue()));
 
         // 默认 Maven 仓库
-        List<MavenSearchScopeDescriptor> scopeList = MavenSearchScopeDescriptor.getList();
-        String[] repositoryIdItems = scopeList.stream().map(ScopeDescriptor::getDisplayName).toArray(String[]::new);
+        String[] repositoryIdItems = ArtifactRepository.getNames(MavenSearchPluginApplication.get());
         repositoryId = new JComboBox<>(repositoryIdItems);
-        repositoryId.addActionListener(e -> active.setRepositoryId(MavenSearchScopeDescriptor.toRepositoryId((String) repositoryId.getSelectedItem())));
+        repositoryId.addActionListener(e -> active.setRepositoryId(ArtifactRepository.getId((String) repositoryId.getSelectedItem())));
 
-        autoSwitchTab = new JBCheckBox(MavenSearchMessage.get("maven.search.settings.auto.select.tab", tabName));
+        autoSwitchTab = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.auto.select.tab", tabName));
         autoSwitchTab.addActionListener(e -> active.setAutoSwitchTab(autoSwitchTab.isSelected()));
 
         tabIndex = new JBTextField(10);
@@ -85,10 +82,10 @@ public class MavenSearchPluginConfigurable implements Configurable {
             }
         });
 
-        tabVisible = new JBCheckBox(MavenSearchMessage.get("maven.search.settings.select.tab", tabName, pluginName));
+        tabVisible = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.select.tab", tabName, pluginName));
         tabVisible.addActionListener(e -> active.setTabVisible(tabVisible.isSelected()));
 
-        searchInAllTab = new JBCheckBox(MavenSearchMessage.get("maven.search.settings.select.tab", allTabName, pluginName));
+        searchInAllTab = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.select.tab", allTabName, pluginName));
         searchInAllTab.addActionListener(e -> active.setUseAllTab(searchInAllTab.isSelected()));
 
         expireTimeMillisMemo = new JBLabel("");
@@ -125,20 +122,20 @@ public class MavenSearchPluginConfigurable implements Configurable {
         gbc.fill = GridBagConstraints.NONE; // 水平填充
         gbc.weightx = 1.0; // 保持一致的列宽
 
-        String intUnit = MavenSearchMessage.get("maven.search.settings.unit.integer");
+        String intUnit = ArtifactSearchMessage.get("maven.search.settings.unit.integer");
 
-        this.addSeparator(panel, gbc, MavenSearchMessage.get("maven.search.settings.group.tab"));
-        this.addRow(panel, gbc, true, tabVisible, MavenSearchMessage.get("maven.search.settings.select.tab.description", tabName));
-        this.addRow(panel, gbc, true, searchInAllTab, MavenSearchMessage.get("maven.search.settings.select.tab.description", allTabName));
-        this.addRow(panel, gbc, true, autoSwitchTab, MavenSearchMessage.get("maven.search.settings.auto.select.tab.description", tabName));
-        this.addRow(panel, gbc, true, MavenSearchMessage.get("maven.search.settings.tab.position"), tabIndex, new JBLabel(intUnit), MavenSearchMessage.get("maven.search.settings.tab.position.description", tabName));
+        this.addSeparator(panel, gbc, ArtifactSearchMessage.get("maven.search.settings.group.tab"));
+        this.addRow(panel, gbc, true, tabVisible, ArtifactSearchMessage.get("maven.search.settings.select.tab.description", tabName));
+        this.addRow(panel, gbc, true, searchInAllTab, ArtifactSearchMessage.get("maven.search.settings.select.tab.description", allTabName));
+        this.addRow(panel, gbc, true, autoSwitchTab, ArtifactSearchMessage.get("maven.search.settings.auto.select.tab.description", tabName));
+        this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.tab.position"), tabIndex, new JBLabel(intUnit), ArtifactSearchMessage.get("maven.search.settings.tab.position.description", tabName));
 
         this.addRow(panel, gbc);
-        this.addSeparator(panel, gbc, MavenSearchMessage.get("maven.search.settings.group.search"));
-        this.addRow(panel, gbc, true, MavenSearchMessage.get("maven.search.settings.tab.default.select.repository"), repositoryId, null, MavenSearchMessage.get("maven.search.settings.tab.default.select.repository.description", tabName));
-        this.addRow(panel, gbc, true, MavenSearchMessage.get("maven.search.settings.debounce.time"), inputIntervalTime, null, MavenSearchMessage.get("maven.search.settings.debounce.time.description", pluginName));
-        this.addRow(panel, gbc, true, MavenSearchMessage.get("maven.search.settings.result.expire.time"), expireTimeMillis, expireTimeMillisMemo, MavenSearchMessage.get("maven.search.settings.result.expire.time.description", pluginName));
-        this.addRow(panel, gbc, true, MavenSearchMessage.get("maven.search.settings.result.priority"), elementPriority, new JBLabel(intUnit), MavenSearchMessage.get("maven.search.settings.result.priority.description", pluginName));
+        this.addSeparator(panel, gbc, ArtifactSearchMessage.get("maven.search.settings.group.search"));
+        this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.tab.default.select.repository"), repositoryId, null, ArtifactSearchMessage.get("maven.search.settings.tab.default.select.repository.description", tabName));
+        this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.debounce.time"), inputIntervalTime, null, ArtifactSearchMessage.get("maven.search.settings.debounce.time.description", pluginName));
+        this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.result.expire.time"), expireTimeMillis, expireTimeMillisMemo, ArtifactSearchMessage.get("maven.search.settings.result.expire.time.description", pluginName));
+        this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.result.priority"), elementPriority, new JBLabel(intUnit), ArtifactSearchMessage.get("maven.search.settings.result.priority.description", pluginName));
 
         // 添加占位组件
         gbc.gridx = 0;
@@ -282,7 +279,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
      */
     public void autowired(MavenSearchPluginSettings settings) {
         inputIntervalTime.setValue((int) settings.getInputIntervalTime());
-        repositoryId.setSelectedItem(MavenSearchScopeDescriptor.getList().stream().filter(s -> s.getScope().getRepositoryId().equals(settings.getRepositoryId())).findAny().get().getDisplayName());
+        repositoryId.setSelectedItem(ArtifactRepository.getName(settings.getRepositoryId()));
         autoSwitchTab.setSelected(settings.isAutoSwitchTab());
         tabIndex.setText(String.valueOf(settings.getTabIndex()));
         tabVisible.setSelected(settings.isTabVisible());

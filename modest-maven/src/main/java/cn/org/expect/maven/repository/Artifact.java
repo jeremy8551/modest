@@ -1,12 +1,11 @@
 package cn.org.expect.maven.repository;
 
-import java.util.Comparator;
 import java.util.Date;
 
 /**
  * Maven仓库工件信息
  */
-public interface MavenArtifact {
+public interface Artifact {
 
     /**
      * 返回域名
@@ -119,7 +118,7 @@ public interface MavenArtifact {
         text += "'";
         return text;
     }
-    
+
     /**
      * 使用 Kotlin 的Gradle依赖
      *
@@ -134,16 +133,4 @@ public interface MavenArtifact {
         text += "\"";
         return text;
     }
-
-    Comparator<Date> TIMESTAMP_COMPARATOR = (o1, o2) -> {
-        if (o1 == null && o2 == null) {
-            return 0;
-        } else if (o1 == null) {
-            return -1;
-        } else if (o2 == null) {
-            return 1;
-        } else {
-            return o1.compareTo(o2);
-        }
-    };
 }

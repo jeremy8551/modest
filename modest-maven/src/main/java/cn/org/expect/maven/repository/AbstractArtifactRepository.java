@@ -1,7 +1,6 @@
 package cn.org.expect.maven.repository;
 
 import java.net.UnknownHostException;
-import java.util.Comparator;
 
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
@@ -13,8 +12,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
-public abstract class AbstractMavenRepository implements MavenRepository {
-    protected final static Log log = LogFactory.getLog(AbstractMavenRepository.class);
+public abstract class AbstractArtifactRepository implements ArtifactRepository {
+    protected final static Log log = LogFactory.getLog(AbstractArtifactRepository.class);
 
     /** Http请求 */
     protected volatile Call call;
@@ -23,14 +22,14 @@ public abstract class AbstractMavenRepository implements MavenRepository {
     protected volatile boolean terminate;
 
     /** 数据库接口 */
-    protected MavenRepositoryDatabase database;
+    protected ArtifactRepositoryDatabase database;
 
-    public AbstractMavenRepository(EasyContext ioc) {
+    public AbstractArtifactRepository(EasyContext ioc) {
         this.terminate = false;
         this.database = new SimpleMavenRepositoryDatabase(this.getClass(), ioc);
     }
 
-    public MavenRepositoryDatabase getDatabase() {
+    public ArtifactRepositoryDatabase getDatabase() {
         return this.database;
     }
 
@@ -65,7 +64,7 @@ public abstract class AbstractMavenRepository implements MavenRepository {
 
     public synchronized String sendURL(String url) throws Exception {
         if (log.isDebugEnabled()) {
-            log.debug("send URL: {}", url);
+            log.debug("{} send URL: {}", this.getClass().getSimpleName(), url);
         }
 
         try {
@@ -94,27 +93,4 @@ public abstract class AbstractMavenRepository implements MavenRepository {
             this.call.cancel();
         }
     }
-
-    /** 模糊查询结果的排序规则：按时间戳倒序 */
-    protected final static Comparator<MavenArtifact> PATTERN_RESULT_COMPARATOR = (o1, o2) -> {
-        int vv = o1.getVersionCount() - o2.getVersionCount(); // 版本数
-        if (vv != 0) {
-            return vv;
-        }
-
-        int tv = MavenArtifact.TIMESTAMP_COMPARATOR.compare(o1.getTimestamp(), o2.getTimestamp()); // 最新发布
-        if (tv != 0) {
-            return tv;
-        }
-
-        int gv = o1.getGroupId().compareTo(o2.getGroupId());
-        if (gv != 0) {
-            return gv;
-        }
-
-        return o1.getArtifactId().compareTo(o2.getArtifactId());
-    };
-
-    /** 精确查询结果的排序规则：按版本数、最新发布时间等排序 */
-    protected final static Comparator<MavenArtifact> EXTRA_RESULT_COMPARATOR = (m1, m2) -> -MavenArtifact.TIMESTAMP_COMPARATOR.compare(m1.getTimestamp(), m2.getTimestamp());
 }

@@ -7,10 +7,10 @@ import java.util.regex.Matcher;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.maven.repository.AbstractMavenRepository;
-import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenArtifactOperation;
-import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.AbstractArtifactRepository;
+import cn.org.expect.maven.repository.Artifact;
+import cn.org.expect.maven.repository.ArtifactOperation;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.central.PatternSearchResultAnalysis;
 import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
@@ -22,20 +22,20 @@ import cn.org.expect.util.StringUtils;
  * gradle插件仓库
  */
 @EasyBean(value = "gradle", priority = 1)
-public class GradlePluginMavenRepository extends AbstractMavenRepository {
+public class GradlePluginRepository extends AbstractArtifactRepository {
 
     protected PatternSearchResultAnalysis pattern;
 
     protected GradlePluginResultAnalysis analysis;
 
-    public GradlePluginMavenRepository(EasyContext ioc) {
+    public GradlePluginRepository(EasyContext ioc) {
         super(ioc);
         this.pattern = new PatternSearchResultAnalysis();
         this.analysis = new GradlePluginResultAnalysis();
     }
 
-    public MavenArtifactOperation getSupported() {
-        return new MavenArtifactOperation() {
+    public ArtifactOperation getSupported() {
+        return new ArtifactOperation() {
 
             public boolean supportOpenInCentralRepository() {
                 return false;
@@ -87,7 +87,7 @@ public class GradlePluginMavenRepository extends AbstractMavenRepository {
         }
     }
 
-    public MavenSearchResult query(String pattern, int start) throws Exception {
+    public ArtifactSearchResult query(String pattern, int start) throws Exception {
         this.terminate = false;
         String responseBody = this.sendRequest("https://plugins.gradle.org/search?term=" + escape(pattern) + "&page=" + (start - 1));
         if (StringUtils.isBlank(responseBody) || this.terminate) {
@@ -97,15 +97,19 @@ public class GradlePluginMavenRepository extends AbstractMavenRepository {
         }
     }
 
-    public MavenSearchResult query(String groupId, String artifactId) throws Exception {
+    public ArtifactSearchResult query(String groupId, String artifactId) throws Exception {
         this.terminate = false;
         String responseBody = this.sendRequest("https://plugins.gradle.org/m2/" + artifactId.replace('.', '/') + "/" + artifactId + ".gradle.plugin/");
-        if (this.terminate) {
+        if (this.terminate || StringUtils.isBlank(responseBody)) {
             return null;
         }
 
-        List<MavenArtifact> result = new ArrayList<>();
         List<MavenArtifactImpl> list = this.analysis.parseExtraResult(groupId, artifactId, responseBody);
+        if (list == null) {
+            return null;
+        }
+
+        List<Artifact> result = new ArrayList<>();
         for (int i = list.size() - 1; i >= 0; i--) {
             MavenArtifactImpl artifact = list.get(i);
             result.add(artifact);

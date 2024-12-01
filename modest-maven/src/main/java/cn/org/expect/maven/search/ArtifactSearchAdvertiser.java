@@ -1,6 +1,6 @@
 package cn.org.expect.maven.search;
 
-public enum MavenSearchAdvertiser {
+public enum ArtifactSearchAdvertiser {
 
     /** 正常 */
     NORMAL,

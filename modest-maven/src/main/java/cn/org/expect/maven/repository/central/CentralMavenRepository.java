@@ -4,10 +4,10 @@ import java.util.List;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.maven.repository.AbstractMavenRepository;
-import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenArtifactOperation;
-import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.AbstractArtifactRepository;
+import cn.org.expect.maven.repository.Artifact;
+import cn.org.expect.maven.repository.ArtifactOperation;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.util.StringUtils;
 
@@ -15,7 +15,7 @@ import cn.org.expect.util.StringUtils;
  * 中央仓库
  */
 @EasyBean(value = "central", priority = Integer.MAX_VALUE)
-public class CentralMavenRepository extends AbstractMavenRepository {
+public class CentralMavenRepository extends AbstractArtifactRepository {
 
     protected PatternSearchResultAnalysis pattern;
 
@@ -27,8 +27,8 @@ public class CentralMavenRepository extends AbstractMavenRepository {
         this.extra = new ExtraSearchResultAnalysis();
     }
 
-    public MavenArtifactOperation getSupported() {
-        return new MavenArtifactOperation() {
+    public ArtifactOperation getSupported() {
+        return new ArtifactOperation() {
 
             public boolean supportOpenInCentralRepository() {
                 return true;
@@ -52,7 +52,7 @@ public class CentralMavenRepository extends AbstractMavenRepository {
         return "https://repo1.maven.org/maven2/";
     }
 
-    public MavenSearchResult query(String pattern, int start) throws Exception {
+    public ArtifactSearchResult query(String pattern, int start) throws Exception {
         this.terminate = false;
         String url = "https://search.maven.org/solrsearch/select?q=" + StringUtils.trimBlank(StringUtils.replaceAll(pattern, ".", "%2E")) + "&rows=200&wt=json&start=" + (start - 1); // 构建请求 URL
         String responseBody = this.sendRequest(url);
@@ -60,12 +60,12 @@ public class CentralMavenRepository extends AbstractMavenRepository {
             return null;
         }
 
-        MavenSearchResult result = this.pattern.parse(responseBody);
-        result.getList().sort(PATTERN_RESULT_COMPARATOR.reversed());
+        ArtifactSearchResult result = this.pattern.parse(responseBody);
+        result.sortByPattern();
         return result;
     }
 
-    public MavenSearchResult query(String groupId, String artifactId) throws Exception {
+    public ArtifactSearchResult query(String groupId, String artifactId) throws Exception {
         this.terminate = false;
         String url = "https://search.maven.org/solrsearch/select?q=g:" + groupId + "+AND+a:" + artifactId + "&core=gav&rows=200&wt=json"; // 构建请求 URL
         String responseBody = this.sendRequest(url);
@@ -73,8 +73,8 @@ public class CentralMavenRepository extends AbstractMavenRepository {
             return null;
         }
 
-        MavenSearchResult result = this.extra.parse(responseBody);
-        List<MavenArtifact> list = result.getList();
+        ArtifactSearchResult result = this.extra.parse(responseBody);
+        List<Artifact> list = result.getList();
 
         int start = result.size(); // 起始位置
         if (result.getFoundNumber() > start) {
@@ -88,14 +88,14 @@ public class CentralMavenRepository extends AbstractMavenRepository {
                     break;
                 }
 
-                MavenSearchResult next = this.extra.parse(responseBody);
+                ArtifactSearchResult next = this.extra.parse(responseBody);
                 list.addAll(next.getList());
                 start = next.getStart();
             } while (result.getFoundNumber() > start);
-            list.sort(EXTRA_RESULT_COMPARATOR);
+            result.sortByTimeDesc();
             return new SimpleMavenSearchResult(list, start, result.getFoundNumber(), System.currentTimeMillis());
         } else {
-            list.sort(EXTRA_RESULT_COMPARATOR);
+            result.sortByTimeDesc();
             return result;
         }
     }

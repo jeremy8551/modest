@@ -14,19 +14,19 @@ import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.maven.concurrent.MavenSearchDownloadJob;
 import cn.org.expect.maven.concurrent.MavenSearchExtraJob;
 import cn.org.expect.maven.concurrent.MavenSearchMoreJob;
-import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.search.MavenSearchAdvertiser;
-import cn.org.expect.maven.search.MavenSearchMessage;
+import cn.org.expect.maven.repository.Artifact;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
+import cn.org.expect.maven.search.ArtifactSearchAdvertiser;
+import cn.org.expect.maven.search.ArtifactSearchMessage;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 
 public class MavenSearchRepaintJob extends MavenSearchEDTJob {
 
     /** 查询结果 */
-    protected final MavenSearchResult result;
+    protected final ArtifactSearchResult result;
 
-    public MavenSearchRepaintJob(MavenSearchResult result) {
+    public MavenSearchRepaintJob(ArtifactSearchResult result) {
         super();
         this.result = result;
         this.setRunnable(this::show);
@@ -55,7 +55,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
             return;
         }
 
-        MavenSearchResult result = this.result;
+        ArtifactSearchResult result = this.result;
         boolean hasMore = display.hasMore();
 
         // 备份所有搜索类别的 more 值
@@ -98,18 +98,18 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
         }
 
         // 设置广告信息
-        plugin.setStatusBar(MavenSearchAdvertiser.NORMAL, MavenSearchMessage.get("maven.search.status.text", foundNumber, size));
+        plugin.setStatusBar(ArtifactSearchAdvertiser.NORMAL, ArtifactSearchMessage.get("maven.search.status.text", foundNumber, size));
     }
 
     /**
      * 将查询结果转为导航记录
      */
-    public void process(MavenSearchPlugin plugin, MavenSearchResult result, List<SearchEverywhereFoundElementInfo> elementInfoList) {
+    public void process(MavenSearchPlugin plugin, ArtifactSearchResult result, List<SearchEverywhereFoundElementInfo> elementInfoList) {
         int priority = plugin.getSettings().getElementPriority();
         MavenSearchPluginContributor contributor = plugin.getContributor();
 
-        java.util.List<MavenArtifact> list = result.getList();
-        for (MavenArtifact artifact : list) {
+        java.util.List<Artifact> list = result.getList();
+        for (Artifact artifact : list) {
             SearchNavigationHead head = new SearchNavigationHead(artifact);
             elementInfoList.add(new SearchEverywhereFoundElementInfo(head, priority, contributor));
             List<SearchNavigationItem> items = new ArrayList<>();
@@ -117,7 +117,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
             String groupId = artifact.getGroupId();
             String artifactId = artifact.getArtifactId();
 
-            MavenSearchResult itemResult = plugin.getDatabase().select(groupId, artifactId);
+            ArtifactSearchResult itemResult = plugin.getDatabase().select(groupId, artifactId);
             if (itemResult != null && !itemResult.isExpire(plugin.getSettings().getExpireTimeMillis())) {
                 head.setIcon(MavenSearchPluginIcon.LEFT_HAS_QUERY);
             }
@@ -126,7 +126,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
             if (artifact.isUnfold()) {
                 if (itemResult != null) {
                     head.setIcon(MavenSearchPluginIcon.LEFT_UNFOLD);
-                    for (MavenArtifact itemArtifact : itemResult.getList()) {
+                    for (Artifact itemArtifact : itemResult.getList()) {
                         SearchNavigationItem item = new SearchNavigationItem(itemArtifact, plugin.getLocalRepository().getJarfile(itemArtifact));
                         if (plugin.getService().isRunning(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(itemArtifact))) { // 正在下载
                             item.setIcon(MavenSearchPluginIcon.RIGHT_DOWNLOAD);

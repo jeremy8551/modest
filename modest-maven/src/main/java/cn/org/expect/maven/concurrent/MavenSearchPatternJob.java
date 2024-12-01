@@ -3,14 +3,14 @@ package cn.org.expect.maven.concurrent;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenRepositoryDatabase;
-import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.Artifact;
+import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
-import cn.org.expect.maven.search.MavenSearch;
-import cn.org.expect.maven.search.MavenSearchAdvertiser;
-import cn.org.expect.maven.search.MavenSearchMessage;
-import cn.org.expect.maven.search.MavenSearchUtils;
+import cn.org.expect.maven.search.ArtifactSearch;
+import cn.org.expect.maven.search.ArtifactSearchAdvertiser;
+import cn.org.expect.maven.search.ArtifactSearchMessage;
+import cn.org.expect.maven.search.ArtifactSearchUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import org.jetbrains.annotations.Nullable;
@@ -42,25 +42,25 @@ public class MavenSearchPatternJob extends MavenSearchJob {
             return -1;
         }
 
-        MavenSearch search = this.getSearch();
-        MavenSearchResult result = this.query(search, this.pattern);
+        ArtifactSearch search = this.getSearch();
+        ArtifactSearchResult result = this.query(search, this.pattern);
         if (this.terminate) {
             return 0;
         }
 
         // 查询失败
         if (result == null) {
-            String message = MavenSearchMessage.get("maven.search.send.url.fail");
+            String message = ArtifactSearchMessage.get("maven.search.send.url.fail", search.getRepository().getName());
             search.setProgress(message);
-            search.setStatusBar(MavenSearchAdvertiser.ERROR, message);
+            search.setStatusBar(ArtifactSearchAdvertiser.ERROR, message);
             return 0;
         }
 
         // 查询结果为空
         if (result.size() == 0) {
-            String message = MavenSearchMessage.get("maven.search.noting.found");
+            String message = ArtifactSearchMessage.get("maven.search.noting.found");
             search.setProgress(message);
-            search.setStatusBar(MavenSearchAdvertiser.NORMAL, message);
+            search.setStatusBar(ArtifactSearchAdvertiser.NORMAL, message);
             return 0;
         }
 
@@ -71,17 +71,17 @@ public class MavenSearchPatternJob extends MavenSearchJob {
         return 0;
     }
 
-    public MavenSearchResult query(MavenSearch search, String pattern) throws Exception {
+    public ArtifactSearchResult query(ArtifactSearch search, String pattern) throws Exception {
         pattern = StringUtils.trimBlank(pattern);
         search.getContext().setSearchText(pattern);
-        MavenRepositoryDatabase database = search.getDatabase();
+        ArtifactRepositoryDatabase database = search.getDatabase();
         if (this.delete) {
             database.delete(pattern);
         }
 
-        MavenSearchResult result = database.select(pattern);
+        ArtifactSearchResult result = database.select(pattern);
         if (result == null || result.size() == 0 || result.isExpire(search.getSettings().getExpireTimeMillis())) {
-            if (MavenSearchUtils.isExtraSearch(pattern)) {
+            if (ArtifactSearchUtils.isExtraSearch(pattern)) {
                 return this.queryExtra(database, pattern); // 精确搜索
             } else {
                 return this.queryPattern(database, pattern); // 模糊搜索
@@ -98,8 +98,8 @@ public class MavenSearchPatternJob extends MavenSearchJob {
      * @return 搜索结果
      * @throws Exception 发送错误
      */
-    private @Nullable MavenSearchResult queryPattern(MavenRepositoryDatabase database, String pattern) throws Exception {
-        MavenSearchResult result = this.getRemoteRepository().query(pattern, 1);
+    private @Nullable ArtifactSearchResult queryPattern(ArtifactRepositoryDatabase database, String pattern) throws Exception {
+        ArtifactSearchResult result = this.getRemoteRepository().query(pattern, 1);
         if (result != null) {
             database.insert(pattern, result);
         }
@@ -114,13 +114,13 @@ public class MavenSearchPatternJob extends MavenSearchJob {
      * @return 搜索结果
      * @throws Exception 发生错误
      */
-    private @Nullable MavenSearchResult queryExtra(MavenRepositoryDatabase database, String pattern) throws Exception {
+    private @Nullable ArtifactSearchResult queryExtra(ArtifactRepositoryDatabase database, String pattern) throws Exception {
         String[] array = StringUtils.split(pattern, ':');
         String groupId = array[0];
         String artifactId = array[1];
 
         // 精确搜索
-        MavenSearchResult result = this.getRemoteRepository().query(groupId, artifactId);
+        ArtifactSearchResult result = this.getRemoteRepository().query(groupId, artifactId);
         if (result == null) {
             return null;
         }
@@ -129,8 +129,8 @@ public class MavenSearchPatternJob extends MavenSearchJob {
         database.insert(groupId, artifactId, result);
 
         // 如果有多个结果
-        List<MavenArtifact> list = new ArrayList<>();
-        List<MavenArtifact> artifacts = result.getList();
+        List<Artifact> list = new ArrayList<>();
+        List<Artifact> artifacts = result.getList();
         if (!artifacts.isEmpty()) {
             list.add(artifacts.get(0));
         }

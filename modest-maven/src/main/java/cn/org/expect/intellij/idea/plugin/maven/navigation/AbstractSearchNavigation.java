@@ -2,14 +2,14 @@ package cn.org.expect.intellij.idea.plugin.maven.navigation;
 
 import javax.swing.*;
 
-import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.util.Ensure;
 import com.intellij.navigation.ItemPresentation;
 import com.intellij.util.TextWithIcon;
 
 public abstract class AbstractSearchNavigation implements MavenSearchNavigation, ItemPresentation {
 
-    protected final MavenArtifact artifact;
+    protected final Artifact artifact;
 
     protected static volatile long NUMBER = 1;
 
@@ -17,13 +17,13 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
 
     protected volatile Icon icon;
 
-    public AbstractSearchNavigation(MavenArtifact artifact, Icon icon) {
+    public AbstractSearchNavigation(Artifact artifact, Icon icon) {
         this.id = NUMBER++;
         this.artifact = Ensure.notNull(artifact);
         this.icon = Ensure.notNull(icon);
     }
 
-    public MavenArtifact getArtifact() {
+    public Artifact getArtifact() {
         return artifact;
     }
 

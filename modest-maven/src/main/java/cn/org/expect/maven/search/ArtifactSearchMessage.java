@@ -1,5 +1,6 @@
 package cn.org.expect.maven.search;
 
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.function.Predicate;
@@ -7,7 +8,7 @@ import java.util.function.Predicate;
 import cn.org.expect.util.MessageFormatter;
 import com.intellij.CommonBundle;
 
-public class MavenSearchMessage {
+public class ArtifactSearchMessage {
 
     public final static String BUNDLE_NAME = "messages.MavenSearchPluginBundle";
 
@@ -18,12 +19,29 @@ public class MavenSearchMessage {
     /** 函数式接口返回true，表示使用中文的资源文件 */
     private static final Predicate<String> USE_CHINESE = (key) -> "取消".equals(CommonBundle.getCancelButtonText());
 
-    private MavenSearchMessage() {
+    private ArtifactSearchMessage() {
     }
 
     public static String get(String key, Object... params) {
         String message = getMessage(key);
         return new MessageFormatter(MessageFormatter.Placeholder.NORMAL, message).fill(params);
+    }
+
+    /**
+     * 根据属性值查询对应的 key
+     *
+     * @param value 属性值
+     * @return key
+     */
+    public static String getKey(String value) {
+        Enumeration<String> keys = BUNDLE.getKeys();
+        while (keys.hasMoreElements()) {
+            String key = keys.nextElement();
+            if (value.equals(BUNDLE.getString(key))) {
+                return key;
+            }
+        }
+        throw new UnsupportedOperationException(value);
     }
 
     private static String getMessage(String key) {

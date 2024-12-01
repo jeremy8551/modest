@@ -6,8 +6,8 @@ import java.util.List;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.Artifact;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import org.json.JSONArray;
@@ -19,7 +19,7 @@ import org.json.JSONObject;
 public class ExtraSearchResultAnalysis {
     protected final static Log log = LogFactory.getLog(ExtraSearchResultAnalysis.class);
 
-    public MavenSearchResult parse(String responseBody) {
+    public ArtifactSearchResult parse(String responseBody) {
         if (responseBody == null || responseBody.length() == 0) {
             return null;
         }
@@ -34,16 +34,16 @@ public class ExtraSearchResultAnalysis {
             log.debug("send Response, find: {}, return {}, response: {}", numFound, docs.length(), responseBody);
         }
 
-        List<MavenArtifact> list = new ArrayList<MavenArtifact>(docs.length());
+        List<Artifact> list = new ArrayList<>(docs.length());
         for (int i = 0; i < docs.length(); i++) {
             JSONObject doc = docs.getJSONObject(i);
-            MavenArtifact item = this.build(doc);
+            Artifact item = this.build(doc);
             list.add(item);
         }
         return new SimpleMavenSearchResult(list, start + list.size() + 1, numFound, System.currentTimeMillis());
     }
 
-    public MavenArtifact build(JSONObject json) {
+    public Artifact build(JSONObject json) {
         String groupId = json.getString("g");
         String artifactId = json.getString("a");
         String version = json.getString("v");

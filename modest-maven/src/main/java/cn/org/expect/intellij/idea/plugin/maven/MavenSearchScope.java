@@ -5,7 +5,7 @@ import javax.swing.*;
 import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.search.MavenSearchMessage;
+import cn.org.expect.maven.repository.ArtifactRepository;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -19,7 +19,7 @@ public class MavenSearchScope extends GlobalSearchScope {
 
     private final String description;
 
-    private Class<?> type;
+    private final Class<?> type;
 
     private final Icon icon;
 
@@ -28,7 +28,7 @@ public class MavenSearchScope extends GlobalSearchScope {
     public MavenSearchScope(EasyBeanInfo beanInfo) {
         super();
         this.repositoryId = beanInfo.getName();
-        this.description = MavenSearchMessage.get("maven.search.repository." + this.repositoryId + ".id");
+        this.description = ArtifactRepository.getName(this.repositoryId);
         this.icon = null;
         this.type = beanInfo.getType();
         this.priority = beanInfo.getPriority();

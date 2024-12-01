@@ -7,11 +7,11 @@ import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationResultSet;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.MavenSearchResult;
-import cn.org.expect.maven.search.MavenSearchContext;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
+import cn.org.expect.maven.search.ArtifactSearchContext;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class MavenSearchPluginContext implements MavenSearchContext {
+public class MavenSearchPluginContext implements ArtifactSearchContext {
     private final static Log log = LogFactory.getLog(MavenSearchPluginContext.class);
 
     /** 事件 */
@@ -27,7 +27,7 @@ public class MavenSearchPluginContext implements MavenSearchContext {
     private volatile SearchNavigationItem selectNavigationItem;
 
     /** 最近一次模糊搜索结果 */
-    private volatile MavenSearchResult mavenSearchResult;
+    private volatile ArtifactSearchResult mavenSearchResult;
 
     /** 最近一次模糊搜索的导航记录 */
     private volatile SearchNavigationResultSet navigationResultSet;
@@ -50,11 +50,11 @@ public class MavenSearchPluginContext implements MavenSearchContext {
         this.searchPattern = searchPattern;
     }
 
-    public synchronized void setSearchResult(MavenSearchResult result) {
+    public synchronized void setSearchResult(ArtifactSearchResult result) {
         this.mavenSearchResult = result;
     }
 
-    public MavenSearchResult getSearchResult() {
+    public ArtifactSearchResult getSearchResult() {
         return this.mavenSearchResult;
     }
 

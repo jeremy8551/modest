@@ -5,14 +5,14 @@ import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginUtils;
-import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.Artifact;
 import com.intellij.util.TextWithIcon;
 
 public class SearchNavigationItem extends AbstractSearchNavigation {
 
     protected File jarfile;
 
-    public SearchNavigationItem(MavenArtifact artifact, File jarfile) {
+    public SearchNavigationItem(Artifact artifact, File jarfile) {
         super(artifact, MavenSearchPluginIcon.RIGHT_REMOTE);
         this.jarfile = jarfile;
     }

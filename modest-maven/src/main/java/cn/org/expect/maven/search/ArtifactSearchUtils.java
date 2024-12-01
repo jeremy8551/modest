@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 
-public class MavenSearchUtils {
+public class ArtifactSearchUtils {
 
     /**
      * 解析模糊查询的文本，如果文本是一个 pom 依赖信息，则自动将文本信息转为 groupId:artifactId 格式的字符串

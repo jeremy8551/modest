@@ -2,11 +2,11 @@ package cn.org.expect.maven.repository.impl;
 
 import java.util.Date;
 
-import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringComparator;
 
-public class MavenArtifactImpl implements MavenArtifact {
+public class MavenArtifactImpl implements Artifact {
 
     private String artifactId;
     private String groupId;
@@ -69,8 +69,8 @@ public class MavenArtifactImpl implements MavenArtifact {
     }
 
     public boolean equals(Object obj) {
-        if (obj instanceof MavenArtifact) {
-            MavenArtifact artifact = (MavenArtifact) obj;
+        if (obj instanceof Artifact) {
+            Artifact artifact = (Artifact) obj;
             return StringComparator.compareTo(this.groupId, artifact.getGroupId()) == 0 //
                     && StringComparator.compareTo(this.artifactId, artifact.getArtifactId()) == 0 //
                     && StringComparator.compareTo(this.version, artifact.getVersion()) == 0 //

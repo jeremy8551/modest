@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenArtifactOperation;
-import cn.org.expect.maven.repository.MavenRepository;
-import cn.org.expect.maven.repository.MavenRepositoryDatabase;
-import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.ArtifactRepository;
+import cn.org.expect.maven.repository.Artifact;
+import cn.org.expect.maven.repository.ArtifactOperation;
+import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
@@ -19,7 +19,7 @@ import cn.org.expect.util.StringUtils;
  * 本地仓库
  */
 @EasyBean(value = "local", priority = Integer.MAX_VALUE - 1)
-public class LocalMavenRepository implements MavenRepository {
+public class LocalMavenRepository implements ArtifactRepository {
 
     private final LocalMavenRepositoryDatabase database;
 
@@ -31,8 +31,8 @@ public class LocalMavenRepository implements MavenRepository {
         this.database = new LocalMavenRepositoryDatabase(dir);
     }
 
-    public MavenArtifactOperation getSupported() {
-        return new MavenArtifactOperation() {
+    public ArtifactOperation getSupported() {
+        return new ArtifactOperation() {
 
             public boolean supportOpenInCentralRepository() {
                 return true;
@@ -56,7 +56,7 @@ public class LocalMavenRepository implements MavenRepository {
         return this.settings;
     }
 
-    public MavenRepositoryDatabase getDatabase() {
+    public ArtifactRepositoryDatabase getDatabase() {
         return this.database;
     }
 
@@ -65,12 +65,12 @@ public class LocalMavenRepository implements MavenRepository {
         return file == null ? "" : file.getAbsolutePath();
     }
 
-    public MavenSearchResult query(String pattern, int start) throws Exception {
+    public ArtifactSearchResult query(String pattern, int start) throws Exception {
         return this.database.select(pattern);
     }
 
-    public MavenSearchResult query(String groupId, String artifactId) throws Exception {
-        MavenSearchResult result = this.database.select(groupId, artifactId);
+    public ArtifactSearchResult query(String groupId, String artifactId) throws Exception {
+        ArtifactSearchResult result = this.database.select(groupId, artifactId);
         return result == null ? new SimpleMavenSearchResult() : result;
     }
 
@@ -80,7 +80,7 @@ public class LocalMavenRepository implements MavenRepository {
      * @param artifact 工件信息
      * @return 返回true表示工件存在 false表示不存在
      */
-    public boolean exists(MavenArtifact artifact) {
+    public boolean exists(Artifact artifact) {
         File repository = this.settings.getRepository();
         if (repository != null && repository.exists() && repository.isDirectory()) {
             List<String> list = new ArrayList<>();
@@ -98,7 +98,7 @@ public class LocalMavenRepository implements MavenRepository {
         return false;
     }
 
-    public File getJarfile(MavenArtifact artifact) {
+    public File getJarfile(Artifact artifact) {
         File repository = this.settings.getRepository();
         if (repository != null && repository.exists() && repository.isDirectory()) {
             List<String> list = new ArrayList<>();

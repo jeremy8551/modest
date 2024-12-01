@@ -9,8 +9,8 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.MavenRepositoryDatabase;
-import cn.org.expect.maven.repository.MavenSearchResult;
+import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchAdapter;
@@ -52,8 +52,8 @@ public class MavenSearchPluginListener extends SearchAdapter {
                 log.debug("{}.async", this.getName());
             }
 
-            MavenRepositoryDatabase database = this.plugin.getDatabase();
-            MavenSearchResult result = database.select(pattern);
+            ArtifactRepositoryDatabase database = this.plugin.getDatabase();
+            ArtifactSearchResult result = database.select(pattern);
             if (result != null) {
                 this.plugin.display(result);
             }

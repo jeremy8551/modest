@@ -2,7 +2,7 @@ package cn.org.expect.intellij.idea.plugin.maven.navigation;
 
 import javax.swing.*;
 
-import cn.org.expect.maven.repository.MavenArtifact;
+import cn.org.expect.maven.repository.Artifact;
 import com.intellij.navigation.NavigationItem;
 import com.intellij.util.TextWithIcon;
 
@@ -23,7 +23,7 @@ public interface MavenSearchNavigation extends NavigationItem {
      *
      * @return Maven 工件信息
      */
-    MavenArtifact getArtifact();
+    Artifact getArtifact();
 
     /**
      * 返回导航记录右侧的图标与文本

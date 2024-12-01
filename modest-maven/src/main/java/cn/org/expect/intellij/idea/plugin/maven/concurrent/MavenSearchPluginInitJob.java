@@ -20,15 +20,15 @@ import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.maven.concurrent.MavenSearchDownloadJob;
 import cn.org.expect.maven.concurrent.MavenSearchMoreJob;
-import cn.org.expect.maven.repository.MavenArtifact;
-import cn.org.expect.maven.repository.MavenArtifactOperation;
-import cn.org.expect.maven.repository.MavenRepositoryDatabaseEngine;
+import cn.org.expect.maven.repository.Artifact;
+import cn.org.expect.maven.repository.ArtifactOperation;
+import cn.org.expect.maven.repository.ArtifactRepositoryDatabaseEngine;
 import cn.org.expect.maven.repository.central.CentralMavenRepository;
-import cn.org.expect.maven.repository.gradle.GradlePluginMavenRepository;
-import cn.org.expect.maven.search.MavenSearchAdvertiser;
-import cn.org.expect.maven.search.MavenSearchMessage;
-import cn.org.expect.maven.search.MavenSearchNotification;
-import cn.org.expect.maven.search.MavenSearchUtils;
+import cn.org.expect.maven.repository.gradle.GradlePluginRepository;
+import cn.org.expect.maven.search.ArtifactSearchAdvertiser;
+import cn.org.expect.maven.search.ArtifactSearchMessage;
+import cn.org.expect.maven.search.ArtifactSearchNotification;
+import cn.org.expect.maven.search.ArtifactSearchUtils;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.NetUtils;
@@ -88,17 +88,17 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
     protected void setPopupMenuUI(MavenSearchPlugin plugin) {
         MavenSearchPluginContext context = plugin.getContext();
         JPopupMenu listPopupMenu = new JPopupMenu();
-        JMenuItem copyMaven = new JMenuItem(MavenSearchMessage.get("maven.search.btn.copy.maven.dependency.text")); // 复制 Maven 依赖
-        JMenuItem copyGradle = new JMenuItem(MavenSearchMessage.get("maven.search.btn.copy.gradle.dependency.text")); // 复制 Gradle 依赖
-        JMenuItem openInCentralRepository = new JMenuItem(MavenSearchMessage.get("maven.search.btn.open.in.browser.text")); // 在浏览器中打开
-        JMenuItem openFileSystem = new JMenuItem(MavenSearchMessage.get("maven.search.btn.open.in.filesystem.text")); // 打开本地仓库目录
-        JMenuItem downloadFile = new JMenuItem(MavenSearchMessage.get("maven.search.btn.download.local.repository.text")); // 下载按钮
-        JMenuItem cancelDownload = new JMenuItem(MavenSearchMessage.get("maven.search.btn.cancel.download.local.repository.text")); // 取消下载按钮
-        JMenuItem deleteFile = new JMenuItem(MavenSearchMessage.get("maven.search.btn.delete.local.repository.text")); // 删除本地仓库中的文件
+        JMenuItem copyMaven = new JMenuItem(ArtifactSearchMessage.get("maven.search.btn.copy.maven.dependency.text")); // 复制 Maven 依赖
+        JMenuItem copyGradle = new JMenuItem(ArtifactSearchMessage.get("maven.search.btn.copy.gradle.dependency.text")); // 复制 Gradle 依赖
+        JMenuItem openInCentralRepository = new JMenuItem(ArtifactSearchMessage.get("maven.search.btn.open.in.browser.text")); // 在浏览器中打开
+        JMenuItem openFileSystem = new JMenuItem(ArtifactSearchMessage.get("maven.search.btn.open.in.filesystem.text")); // 打开本地仓库目录
+        JMenuItem downloadFile = new JMenuItem(ArtifactSearchMessage.get("maven.search.btn.download.local.repository.text")); // 下载按钮
+        JMenuItem cancelDownload = new JMenuItem(ArtifactSearchMessage.get("maven.search.btn.cancel.download.local.repository.text")); // 取消下载按钮
+        JMenuItem deleteFile = new JMenuItem(ArtifactSearchMessage.get("maven.search.btn.delete.local.repository.text")); // 删除本地仓库中的文件
 
         JPopupMenu itemPopupMenu = new JPopupMenu();
-        JMenuItem repeat = new JMenuItem(MavenSearchMessage.get("maven.search.btn.refresh.query.text"));
-        JMenuItem clearCache = new JMenuItem(MavenSearchMessage.get("maven.search.btn.clear.cache.text"));
+        JMenuItem repeat = new JMenuItem(ArtifactSearchMessage.get("maven.search.btn.refresh.query.text"));
+        JMenuItem clearCache = new JMenuItem(ArtifactSearchMessage.get("maven.search.btn.clear.cache.text"));
         itemPopupMenu.add(repeat);
         itemPopupMenu.add(clearCache);
 
@@ -122,7 +122,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
             text += "</version>\n";
 
             plugin.copyToClipboard(text);
-            plugin.sendNotification(MavenSearchNotification.NORMAL, copyMaven.getText());
+            plugin.sendNotification(ArtifactSearchNotification.NORMAL, copyMaven.getText());
         });
 
         // 复制 Gradle 依赖
@@ -134,7 +134,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
             }
 
             String text = null;
-            boolean isGradlePlugin = GradlePluginMavenRepository.class.getAnnotation(EasyBean.class).value().equals(plugin.getRepositoryId());
+            boolean isGradlePlugin = GradlePluginRepository.class.getAnnotation(EasyBean.class).value().equals(plugin.getRepository().getId());
 
             AnActionEvent event = plugin.getContext().getActionEvent();
             String filepath = event.getProject() == null ? null : event.getProject().getBasePath();
@@ -167,7 +167,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
             }
 
             plugin.copyToClipboard(text);
-            plugin.sendNotification(MavenSearchNotification.NORMAL, copyGradle.getText());
+            plugin.sendNotification(ArtifactSearchNotification.NORMAL, copyGradle.getText());
         });
 
         // 在 Maven 中央仓库浏览
@@ -178,7 +178,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                 return;
             }
 
-            MavenArtifact artifact = selectItem.getArtifact();
+            Artifact artifact = selectItem.getArtifact();
             List<String> list = new ArrayList<>();
             list.add(plugin.getEasyContext().getBean(CentralMavenRepository.class).getAddress());
             StringUtils.split(artifact.getGroupId(), '.', list);
@@ -201,7 +201,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                 return;
             }
 
-            MavenArtifact artifact = selectItem.getArtifact();
+            Artifact artifact = selectItem.getArtifact();
             List<String> list = new ArrayList<>();
             list.add(filepath);
             StringUtils.split(artifact.getGroupId(), '.', list);
@@ -218,9 +218,9 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                 return;
             }
 
-            MavenArtifact artifact = selectItem.getArtifact();
-            String message = MavenSearchMessage.get("maven.search.download.url", artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion());
-            plugin.setStatusBar(MavenSearchAdvertiser.RUNNING, message);
+            Artifact artifact = selectItem.getArtifact();
+            String message = ArtifactSearchMessage.get("maven.search.download.url", artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion());
+            plugin.setStatusBar(ArtifactSearchAdvertiser.RUNNING, message);
             plugin.execute(new MavenSearchDownloadJob(artifact));
             plugin.display();
         });
@@ -233,7 +233,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                 return;
             }
 
-            MavenArtifact artifact = selectItem.getArtifact();
+            Artifact artifact = selectItem.getArtifact();
             plugin.getService().terminate(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(artifact));
         });
 
@@ -245,7 +245,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                 return;
             }
 
-            MavenArtifact artifact = selectItem.getArtifact();
+            Artifact artifact = selectItem.getArtifact();
             List<String> list = new ArrayList<>();
             list.add(plugin.getLocalRepository().getAddress());
             StringUtils.split(artifact.getGroupId(), '.', list);
@@ -265,16 +265,16 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
         // 重新执行查询
         repeat.addActionListener(e -> {
             plugin.asyncRefresh();
-            plugin.sendNotification(MavenSearchNotification.NORMAL, repeat.getText());
+            plugin.sendNotification(ArtifactSearchNotification.NORMAL, repeat.getText());
         });
 
         // 清空所有缓存
         clearCache.addActionListener(e -> {
             // 清空所有数据库缓存
-            List<EasyBeanInfo> list = plugin.getEasyContext().getBeanInfoList(MavenRepositoryDatabaseEngine.class);
+            List<EasyBeanInfo> list = plugin.getEasyContext().getBeanInfoList(ArtifactRepositoryDatabaseEngine.class);
             for (EasyBeanInfo beanInfo : list) {
                 if (beanInfo.singleton()) {
-                    MavenRepositoryDatabaseEngine engine = plugin.getEasyContext().getBean(beanInfo.getType());
+                    ArtifactRepositoryDatabaseEngine engine = plugin.getEasyContext().getBean(beanInfo.getType());
                     if (engine != null) {
                         if (log.isDebugEnabled()) {
                             log.debug("{} clear()", engine.getClass().getName());
@@ -293,7 +293,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
             plugin.getContext().setSelectNavigationHead(null);
             plugin.getContext().setSelectNavigationItem(null);
             plugin.display(); // 刷新一个空结果
-            plugin.sendNotification(MavenSearchNotification.NORMAL, clearCache.getText());
+            plugin.sendNotification(ArtifactSearchNotification.NORMAL, clearCache.getText());
         });
 
         IdeaSearchUI ui = plugin.getIdeaUI();
@@ -327,12 +327,12 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                         display.setSelectedIndex(selectedIndex);
 
                         SearchNavigationItem item = (SearchNavigationItem) selectedObject;
-                        MavenArtifact artifact = item.getArtifact();
+                        Artifact artifact = item.getArtifact();
 
                         int x = display.getX() + 30;
                         int y = display.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
 
-                        MavenArtifactOperation operation = plugin.getRepository().getSupported();
+                        ArtifactOperation operation = plugin.getRepository().getSupported();
 
                         // 复制Maven依赖按钮
                         if (operation.supportCopyMavenDependency()) {
@@ -429,7 +429,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
      */
     private void setEditorSelectText(MavenSearchPlugin plugin) {
         // 等待 Idea 默认的搜索功能执行完毕
-        plugin.getIdeaUI().waitFor(2000);
+//        plugin.getIdeaUI().waitFor(3000); TODO ？？
 
         // 在已打开的编辑器中，如果选中了文本，则自动对文本进行查询
         Editor editor = plugin.getContext().getActionEvent().getDataContext().getData(CommonDataKeys.EDITOR);
@@ -441,7 +441,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                 if (StringUtils.isNotBlank(editorSelectText)) {
 
                     // 编辑器中选中的文本
-                    String pattern = MavenSearchUtils.parse(editorSelectText);
+                    String pattern = ArtifactSearchUtils.parse(editorSelectText);
                     if (log.isDebugEnabled()) {
                         log.debug("{} Idea editor selected text: {} --> {}", getName(), editorSelectText, pattern);
                     }
@@ -450,7 +450,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                     plugin.getIdeaUI().getSearchField().setText(pattern);
 
                     // 自动切换 Tab 页
-                    if (plugin.getSettings().isAutoSwitchTab() && plugin.getSettings().isTabVisible() && MavenSearchUtils.isXML(editorSelectText)) {
+                    if (plugin.getSettings().isAutoSwitchTab() && plugin.getSettings().isTabVisible() && ArtifactSearchUtils.isXML(editorSelectText)) {
                         plugin.getIdeaUI().switchToTab(plugin.getContributor().getSearchProviderId());
                         plugin.asyncSearch();
                     }

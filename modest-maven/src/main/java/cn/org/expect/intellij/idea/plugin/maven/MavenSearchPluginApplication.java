@@ -9,7 +9,7 @@ import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.impl.EasyBeanDefineImpl;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.search.MavenSearch;
+import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.AppLifecycleListener;
@@ -66,7 +66,7 @@ public class MavenSearchPluginApplication implements AppLifecycleListener {
         EasyContext ioc = DefaultEasyContext.newInstance(MavenSearchPluginFactory.class.getClassLoader(), //
                 debug ? "sout+:info" : "", // 默认日志级别
                 debug ? ClassUtils.getPackageName(MavenSearchPluginApplication.class, 4) + ":debug" : "", //
-                debug ? ClassUtils.getPackageName(MavenSearch.class, 4) + ":debug" : "" //
+                debug ? ClassUtils.getPackageName(ArtifactSearch.class, 4) + ":debug" : "" //
         );
 
         // 设置插件ID与插件名
