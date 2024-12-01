@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.intellij.idea.plugin.maven.IdeaSearchUI;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContext;
@@ -23,6 +24,7 @@ import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenArtifactOperation;
 import cn.org.expect.maven.repository.MavenRepositoryDatabaseEngine;
 import cn.org.expect.maven.repository.central.CentralMavenRepository;
+import cn.org.expect.maven.repository.gradle.GradlePluginMavenRepository;
 import cn.org.expect.maven.search.MavenSearchAdvertiser;
 import cn.org.expect.maven.search.MavenSearchMessage;
 import cn.org.expect.maven.search.MavenSearchNotification;
@@ -94,10 +96,6 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
         JMenuItem cancelDownload = new JMenuItem(MavenSearchMessage.get("maven.search.btn.cancel.download.local.repository.text")); // 取消下载按钮
         JMenuItem deleteFile = new JMenuItem(MavenSearchMessage.get("maven.search.btn.delete.local.repository.text")); // 删除本地仓库中的文件
 
-        // 必须要有以下菜单
-        listPopupMenu.add(copyMaven);
-        listPopupMenu.add(copyGradle);
-
         JPopupMenu itemPopupMenu = new JPopupMenu();
         JMenuItem repeat = new JMenuItem(MavenSearchMessage.get("maven.search.btn.refresh.query.text"));
         JMenuItem clearCache = new JMenuItem(MavenSearchMessage.get("maven.search.btn.clear.cache.text"));
@@ -135,15 +133,37 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                 return;
             }
 
-            String text = selectItem.getArtifact().toGroovyDSL();
-            String filepath = plugin.getContext().getActionEvent().getProject().getBasePath();
+            String text = null;
+            boolean isGradlePlugin = GradlePluginMavenRepository.class.getAnnotation(EasyBean.class).value().equals(plugin.getRepositoryId());
+
+            AnActionEvent event = plugin.getContext().getActionEvent();
+            String filepath = event.getProject() == null ? null : event.getProject().getBasePath();
             if (FileUtils.isDirectory(filepath)) {
                 File dir = new File(filepath);
-                if (!FileUtils.find(dir, "build.gradle.kts").isEmpty()) {
-                    text = selectItem.getArtifact().toKotlinDSL();
-                } else if (!FileUtils.find(dir, "build.gradle").isEmpty()) {
-                    text = selectItem.getArtifact().toGroovyDSL();
+                boolean isKotlinDSL = !FileUtils.find(dir, "build.gradle.kts").isEmpty();
+                if (isGradlePlugin) {
+                    if (isKotlinDSL) {
+                        text = selectItem.getArtifact().toGradlePluginKotlinDependency();
+                    } else {
+                        text = selectItem.getArtifact().toGradlePluginGroovyDependency();
+                    }
+                } else {
+                    if (isKotlinDSL) {
+                        text = selectItem.getArtifact().toGradleKotlinDependency();
+                    } else {
+                        text = selectItem.getArtifact().toGradleGroovyDependency();
+                    }
                 }
+            } else {
+                if (isGradlePlugin) {
+                    text = selectItem.getArtifact().toGradlePluginGroovyDependency();
+                } else {
+                    text = selectItem.getArtifact().toGradleGroovyDependency();
+                }
+            }
+
+            if (log.isDebugEnabled()) {
+                log.debug("isGradlePlugin: {}, Copy: {}", isGradlePlugin, text);
             }
 
             plugin.copyToClipboard(text);
@@ -313,42 +333,64 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                         int y = display.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
 
                         MavenArtifactOperation operation = plugin.getRepository().getSupported();
-                        if (plugin.getLocalRepository().exists(artifact)) { // 工件在本地仓库中存在
-                            if (operation.supportOpenInCentralRepository()) {
-                                listPopupMenu.add(openInCentralRepository);
-                            }
 
-                            if (operation.supportOpenInFileSystem()) {
-                                listPopupMenu.add(openFileSystem);
-                            }
+                        // 复制Maven依赖按钮
+                        if (operation.supportCopyMavenDependency()) {
+                            listPopupMenu.add(copyMaven);
+                        } else {
+                            listPopupMenu.remove(copyMaven);
+                        }
 
-                            if (operation.supportDelete()) {
-                                listPopupMenu.add(deleteFile);
-                            }
+                        // 复制Gradle依赖
+                        if (operation.supportCopyGradleDependency()) {
+                            listPopupMenu.add(copyGradle);
+                        } else {
+                            listPopupMenu.remove(copyGradle);
+                        }
 
+                        if (operation.supportOpenInCentralRepository()) {
+                            listPopupMenu.add(openInCentralRepository);
+                        } else {
+                            listPopupMenu.remove(openInCentralRepository);
+                        }
+
+                        if (operation.supportOpenInFileSystem()) {
+                            listPopupMenu.add(openFileSystem);
+                        } else {
+                            listPopupMenu.remove(openFileSystem);
+                        }
+
+                        if (operation.supportDelete()) {
+                            listPopupMenu.add(deleteFile);
+                        } else {
+                            listPopupMenu.remove(deleteFile);
+                        }
+
+                        if (operation.supportDownload()) {
+                            listPopupMenu.add(downloadFile);
+                        } else {
+                            listPopupMenu.remove(downloadFile);
+                        }
+
+                        if (operation.supportDownload()) {
+                            listPopupMenu.add(cancelDownload);
+                        } else {
+                            listPopupMenu.remove(cancelDownload);
+                        }
+
+                        // 工件在本地仓库中存在
+                        if (plugin.getLocalRepository().exists(artifact)) {
                             listPopupMenu.remove(downloadFile);
                             listPopupMenu.remove(cancelDownload);
                         } else {
-                            if (operation.supportOpenInCentralRepository()) {
-                                listPopupMenu.add(openInCentralRepository);
-                            }
-
                             listPopupMenu.remove(openFileSystem);
                             listPopupMenu.remove(deleteFile);
 
                             if (plugin.getService().isRunning(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(artifact))) {
                                 listPopupMenu.remove(downloadFile);
-
-                                if (operation.supportDownload()) {
-                                    listPopupMenu.add(cancelDownload);
-                                }
                             } else {
-                                if (operation.supportDownload()) {
-                                    listPopupMenu.add(downloadFile);
-                                }
                                 listPopupMenu.remove(cancelDownload);
                             }
-                            listPopupMenu.remove(deleteFile);
                         }
 
                         // 在鼠标位置显示弹出菜单

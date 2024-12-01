@@ -29,4 +29,22 @@ public interface MavenArtifactOperation {
      * @return 返回 true 表示支持，false 表示不支持
      */
     boolean supportOpenInFileSystem();
+
+    /**
+     * 是否支持复制Maven依赖
+     *
+     * @return 返回 true 表示支持，false 表示不支持
+     */
+    default boolean supportCopyMavenDependency() {
+        return true;
+    }
+
+    /**
+     * 是否支持复制Gradle依赖
+     *
+     * @return 返回 true 表示支持，false 表示不支持
+     */
+    default boolean supportCopyGradleDependency() {
+        return true;
+    }
 }

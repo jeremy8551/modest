@@ -76,7 +76,7 @@ public interface MavenArtifact {
      *
      * @return Gradle依赖
      */
-    default String toGroovyDSL() {
+    default String toGradleGroovyDependency() {
         String text = "";
         text += "implementation '";
         text += this.getGroupId();
@@ -93,7 +93,7 @@ public interface MavenArtifact {
      *
      * @return Gradle依赖
      */
-    default String toKotlinDSL() {
+    default String toGradleKotlinDependency() {
         String text = "";
         text += "implementation(\"";
         text += this.getGroupId();
@@ -102,6 +102,36 @@ public interface MavenArtifact {
         text += ":";
         text += this.getVersion();
         text += "\")";
+        return text;
+    }
+
+    /**
+     * 使用 Groovy 的Gradle依赖
+     *
+     * @return Gradle依赖
+     */
+    default String toGradlePluginGroovyDependency() {
+        String text = "";
+        text += "id '";
+        text += this.getArtifactId();
+        text += "' version '";
+        text += this.getVersion();
+        text += "'";
+        return text;
+    }
+    
+    /**
+     * 使用 Kotlin 的Gradle依赖
+     *
+     * @return Gradle依赖
+     */
+    default String toGradlePluginKotlinDependency() {
+        String text = "";
+        text += "id(\"";
+        text += this.getArtifactId();
+        text += "\") version \"";
+        text += this.getVersion();
+        text += "\"";
         return text;
     }
 

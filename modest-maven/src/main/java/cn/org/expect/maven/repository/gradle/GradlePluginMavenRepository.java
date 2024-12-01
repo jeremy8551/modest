@@ -52,6 +52,10 @@ public class GradlePluginMavenRepository extends AbstractMavenRepository {
             public boolean supportOpenInFileSystem() {
                 return false;
             }
+
+            public boolean supportCopyMavenDependency() {
+                return false;
+            }
         };
     }
 

@@ -4,8 +4,6 @@ import java.util.List;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.log.Log;
-import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.AbstractMavenRepository;
 import cn.org.expect.maven.repository.MavenArtifact;
 import cn.org.expect.maven.repository.MavenArtifactOperation;
@@ -18,7 +16,6 @@ import cn.org.expect.util.StringUtils;
  */
 @EasyBean(value = "central", priority = Integer.MAX_VALUE)
 public class CentralMavenRepository extends AbstractMavenRepository {
-    protected final static Log log = LogFactory.getLog(CentralMavenRepository.class);
 
     protected PatternSearchResultAnalysis pattern;
 
