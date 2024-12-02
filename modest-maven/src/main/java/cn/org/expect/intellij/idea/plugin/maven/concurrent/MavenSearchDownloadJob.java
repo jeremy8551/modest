@@ -1,4 +1,4 @@
-package cn.org.expect.maven.concurrent;
+package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,6 +11,7 @@ import java.util.TimeZone;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.concurrent.MavenSearchJob;
 import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
 import cn.org.expect.maven.search.ArtifactSearch;
