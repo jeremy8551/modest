@@ -1,6 +1,5 @@
 package cn.org.expect.maven.repository.gradle;
 
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -19,10 +18,9 @@ import cn.org.expect.maven.repository.ArtifactOperation;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.HttpClient;
 import cn.org.expect.maven.repository.central.PatternSearchResultAnalysis;
-import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import cn.org.expect.maven.repository.impl.ArtifactSearchResultType;
+import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import cn.org.expect.maven.repository.impl.SimpleArtifactSearchResult;
-import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 
@@ -72,32 +70,69 @@ public class GradlePluginRepository extends AbstractArtifactRepository {
     }
 
     public String escape(String str) {
-        str = StringUtils.replaceAll(str, "%", "%25");
-        str = StringUtils.replaceAll(str, "+", "%2B");
-        str = StringUtils.replaceAll(str, "|", "%21");
-        str = StringUtils.replaceAll(str, "@", "%40");
-        str = StringUtils.replaceAll(str, "$", "%24");
-        str = StringUtils.replaceAll(str, "^", "%5E");
-        str = StringUtils.replaceAll(str, "&", "%26");
-        str = StringUtils.replaceAll(str, "(", "%28");
-        str = StringUtils.replaceAll(str, ")", "%29");
-        str = StringUtils.replaceAll(str, "=", "%3D");
-        str = StringUtils.replaceAll(str, "[", "%5B");
-        str = StringUtils.replaceAll(str, "]", "%5D");
-        str = StringUtils.replaceAll(str, "{", "%7B");
-        str = StringUtils.replaceAll(str, "}", "%7D");
-        str = str.replace(' ', '+');
-        try {
-            return URLEncoder.encode(str, CharsetName.UTF_8);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-            return str;
+        StringBuilder buf = new StringBuilder(str.length());
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c == '!') {
+                buf.append("%21");
+            } else if (c == '`') {
+                buf.append("%60");
+            } else if (c == ';') {
+                buf.append("%3B");
+            } else if (c == ':') {
+                buf.append("%3A");
+            } else if (c == '\'') {
+                buf.append("%27");
+            } else if (c == '|') {
+                buf.append("%7C");
+            } else if (c == '\\') {
+                buf.append("%5C");
+            } else if (c == ',') {
+                buf.append("%2C");
+            } else if (c == '/') {
+                buf.append("%2F");
+            } else if (c == '?') {
+                buf.append("%3F");
+            } else if (c == '#') {
+                buf.append("%23");
+            } else if (c == '%') {
+                buf.append("%25");
+            } else if (c == '+') {
+                buf.append("%2B");
+            } else if (c == '@') {
+                buf.append("%40");
+            } else if (c == '$') {
+                buf.append("%24");
+            } else if (c == '^') {
+                buf.append("%5E");
+            } else if (c == '&') {
+                buf.append("%26");
+            } else if (c == '(') {
+                buf.append("%28");
+            } else if (c == ')') {
+                buf.append("%29");
+            } else if (c == '=') {
+                buf.append("%3D");
+            } else if (c == '[') {
+                buf.append("%5B");
+            } else if (c == ']') {
+                buf.append("%5D");
+            } else if (c == '{') {
+                buf.append("%7B");
+            } else if (c == '}') {
+                buf.append("%7D");
+            } else if (c == ' ') {
+                buf.append('+');
+            } else if (StringUtils.isLetter(c) || StringUtils.isNumber(c) || StringUtils.isSymbol(c)) { // - " < > .
+                buf.append(c);
+            }
         }
+        return buf.toString();
     }
 
     public ArtifactSearchResult query(String pattern, int start) throws Exception {
         this.terminate = false;
-        String responseBody = this.sendRequest("https://plugins.gradle.org/search?term=" + escape(pattern) + "&page=" + (start - 1));
+        String responseBody = this.sendRequest("https://plugins.gradle.org/search?term=" + this.escape(pattern) + "&page=" + (start - 1));
         if (StringUtils.isBlank(responseBody) || this.terminate) {
             return null;
         } else {

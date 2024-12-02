@@ -55,7 +55,7 @@ public class CentralMavenRepository extends AbstractArtifactRepository {
 
     public ArtifactSearchResult query(String pattern, int start) throws Exception {
         this.terminate = false;
-        String url = "https://search.maven.org/solrsearch/select?q=" + StringUtils.trimBlank(StringUtils.replaceAll(pattern, ".", "%2E")) + "&rows=200&wt=json&start=" + (start - 1); // 构建请求 URL
+        String url = "https://search.maven.org/solrsearch/select?q=" + this.escape(pattern) + "&rows=200&wt=json&start=" + (start - 1); // 构建请求 URL
         String responseBody = this.sendRequest(url);
         if (StringUtils.isBlank(responseBody) || this.terminate) {
             return null;
@@ -99,5 +99,30 @@ public class CentralMavenRepository extends AbstractArtifactRepository {
             result.sortByTimeDesc();
             return result;
         }
+    }
+
+    public String escape(String str) {
+        StringBuilder buf = new StringBuilder(str.length());
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (StringUtils.inArray(c, '%', '^', '[', ']', '{', '}', '|', '`', '_')) {
+                continue;
+            } else if (c == '.') {
+                buf.append("%2E");
+            } else if (c == '\'') {
+                buf.append("%27");
+            } else if (c == '+') {
+                buf.append("%2B");
+            } else if (c == '&') {
+                buf.append("%26");
+            } else if (c == ' ') {
+                buf.append("%20");
+            } else if (StringUtils.isLetter(c) || StringUtils.isNumber(c)) {
+                buf.append(c);
+            } else if (StringUtils.inArray(c, '(', ')', '~', '!', '@', '#', '$', '*', '=', ';', ':', ',', '<', '>', '.', '/', '?', '"', '-')) {
+                buf.append(c);
+            }
+        }
+        return buf.toString();
     }
 }
