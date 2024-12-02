@@ -9,8 +9,10 @@ import cn.org.expect.util.Ensure;
 
 public class SimpleArtifactSearchResult implements ArtifactSearchResult {
 
+    /** 搜索结果类型 */
     private final ArtifactSearchResultType type;
 
+    /** 工件集合 */
     private final List<Artifact> list;
 
     /** 下次开始读取记录的位置，从1开始 */
@@ -23,7 +25,7 @@ public class SimpleArtifactSearchResult implements ArtifactSearchResult {
     private final long queryTime;
 
     /** true表示还有未读数据，false表示已全部读取 */
-    private volatile boolean hasMore;
+    private final boolean hasMore;
 
     public SimpleArtifactSearchResult(ArtifactSearchResultType type) {
         this(type, new ArrayList<>(0), 0, 0, System.currentTimeMillis(), false);
@@ -62,11 +64,7 @@ public class SimpleArtifactSearchResult implements ArtifactSearchResult {
         return this.list.size();
     }
 
-    public boolean hasMore() {
+    public boolean isHasMore() {
         return hasMore;
-    }
-
-    public void setMore(boolean hasMore) {
-        this.hasMore = hasMore;
     }
 }

@@ -24,7 +24,7 @@ public class MavenSearchMoreJob extends MavenSearchPatternJob {
 
         ArtifactRepositoryDatabase database = search.getDatabase();
         ArtifactSearchResult result = database.select(pattern);
-        if (result != null && result.hasMore()) { // 还有未加载的数据
+        if (result != null && result.isHasMore()) { // 还有未加载的数据
             int start = result.getStart();
             int foundNumber = result.getFoundNumber();
             List<Artifact> list = result.getList();

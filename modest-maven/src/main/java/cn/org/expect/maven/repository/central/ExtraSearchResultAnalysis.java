@@ -8,10 +8,11 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
-import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import cn.org.expect.maven.repository.impl.ArtifactSearchResultType;
+import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import cn.org.expect.maven.repository.impl.SimpleArtifactSearchResult;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -21,10 +22,15 @@ public class ExtraSearchResultAnalysis {
     protected final static Log log = LogFactory.getLog(ExtraSearchResultAnalysis.class);
 
     public ArtifactSearchResult parse(String responseBody) {
-        if (responseBody == null || responseBody.length() == 0) {
-            return null;
+        try {
+            return this.parse0(responseBody);
+        } catch (Exception e) {
+            log.error("responseBody: {}", responseBody);
+            throw e;
         }
+    }
 
+    private SimpleArtifactSearchResult parse0(String responseBody) {
         JSONObject json = new JSONObject(responseBody);
         JSONObject response = json.getJSONObject("response");
         int numFound = response.getInt("numFound"); // 总记录数
@@ -38,16 +44,22 @@ public class ExtraSearchResultAnalysis {
         List<Artifact> list = new ArrayList<>(docs.length());
         for (int i = 0; i < docs.length(); i++) {
             JSONObject doc = docs.getJSONObject(i);
-            Artifact item = this.build(doc);
+            Artifact item = this.parse(doc);
             list.add(item);
         }
         return new SimpleArtifactSearchResult(ArtifactSearchResultType.LIMIT_PAGE, list, start + list.size() + 1, numFound, System.currentTimeMillis(), numFound > list.size());
     }
 
-    public Artifact build(JSONObject json) {
+    public Artifact parse(JSONObject json) {
         String groupId = json.getString("g");
         String artifactId = json.getString("a");
-        String version = json.getString("v");
+        String version;
+        try {
+            version = json.getString("v");
+        } catch (JSONException e) {
+            version = json.getString("latestVersion");
+        }
+
         String packaging = json.getString("p");
         long timestamp = json.getLong("timestamp");
         return new MavenArtifactImpl(groupId, artifactId, version, packaging, new Date(timestamp), -1);

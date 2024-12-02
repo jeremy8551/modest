@@ -4,10 +4,12 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import javax.swing.*;
 
+import ai.grazie.utils.mpp.StringBuilder;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class InputFieldListener extends KeyAdapter {
@@ -45,15 +47,28 @@ public class InputFieldListener extends KeyAdapter {
         }
 
         if (this.plugin.canSearch()) {
-            char key = e.getKeyChar();
-            if (Character.isLetterOrDigit(key)) { // 文本字符
+            char c = e.getKeyChar();
+            if (StringUtils.isLetter(c) || StringUtils.isNumber(c) || StringUtils.isSymbol(c)) { // 文本字符
+                String text = this.escape(this.searchField.getText());
+
                 if (log.isDebugEnabled()) {
-                    log.debug("keyReleased tabID: {}, text: {}, letter: {}, keyCode: {}", this.plugin.getIdeaUI().getSelectedTabID(), this.searchField.getText(), key, e.getKeyCode());
+                    log.debug("keyReleased tabID: {}, text: {}, letter: {}, keyCode: {}", this.plugin.getIdeaUI().getSelectedTabID(), text, c, e.getKeyCode());
                 }
 
                 MavenSearchPluginPinAction.PIN.extend(); // 扩展 pin 窗口大小
-                this.plugin.asyncSearch(this.searchField.getText());
+                this.plugin.asyncSearch(text);
             }
         }
+    }
+
+    public String escape(String str) {
+        StringBuilder buf = new StringBuilder();
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (StringUtils.isLetter(c) || StringUtils.isNumber(c) || StringUtils.inArray(c, '.', '!', '@', '#', '*', '-', '_', '+', '=', '?', ':', '|')) {
+                buf.append(c);
+            }
+        }
+        return buf.toString();
     }
 }

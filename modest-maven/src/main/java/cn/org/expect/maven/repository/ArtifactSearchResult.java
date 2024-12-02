@@ -9,10 +9,15 @@ import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.StringUtils;
 
 /**
- * Maven 仓库搜索结果
+ * 搜索结果
  */
 public interface ArtifactSearchResult {
 
+    /**
+     * 搜索结果类型
+     *
+     * @return 类型
+     */
     ArtifactSearchResultType getType();
 
     /**
@@ -55,14 +60,7 @@ public interface ArtifactSearchResult {
      *
      * @return true表示还有未读数据，false表示已全部读取
      */
-    boolean hasMore();
-
-    /**
-     * 设置是否有未读数据
-     *
-     * @param hasMore true表示还有未读数据，false表示已全部读取
-     */
-    void setMore(boolean hasMore);
+    boolean isHasMore();
 
     /**
      * 重置操作

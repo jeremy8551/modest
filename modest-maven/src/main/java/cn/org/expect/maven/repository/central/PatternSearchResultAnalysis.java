@@ -11,7 +11,7 @@ import org.json.JSONObject;
  */
 public class PatternSearchResultAnalysis extends ExtraSearchResultAnalysis {
 
-    public Artifact build(JSONObject json) {
+    public Artifact parse(JSONObject json) {
         String groupId = json.getString("g");
         String artifactId = json.getString("a");
         String version = json.getString("latestVersion");
