@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class SimpleMavenRepositoryDatabaseEngine implements ArtifactRepositoryDatabaseEngine {
-    private final static Log log = LogFactory.getLog(SimpleMavenRepositoryDatabaseEngine.class);
+public class SimpleArtifactRepositoryDatabaseEngine implements ArtifactRepositoryDatabaseEngine {
+    private final static Log log = LogFactory.getLog(SimpleArtifactRepositoryDatabaseEngine.class);
 
     /** 模糊搜索表名 */
     protected String patternTable;
@@ -39,7 +39,7 @@ public class SimpleMavenRepositoryDatabaseEngine implements ArtifactRepositoryDa
     /** 精确搜索结果 */
     protected final Map<String, Map<String, ArtifactSearchResult>> artifact;
 
-    public SimpleMavenRepositoryDatabaseEngine(ArtifactSearchSettings settings, String patternTableName, String artifactTableName) {
+    public SimpleArtifactRepositoryDatabaseEngine(ArtifactSearchSettings settings, String patternTableName, String artifactTableName) {
         this.pattern = new ConcurrentHashMap<>();
         this.artifact = new ConcurrentHashMap<>();
         this.parent = settings.getWorkHome();
@@ -135,6 +135,8 @@ public class SimpleMavenRepositoryDatabaseEngine implements ArtifactRepositoryDa
                 int start = aObj.getInt("start");
                 int foundNumber = aObj.getInt("foundNumber");
                 long queryTime = aObj.getLong("queryTime");
+                boolean hasMore = aObj.getBoolean("hasMore");
+                ArtifactSearchResultType resultType = aObj.getEnum(ArtifactSearchResultType.class, "type");
 
                 List<Artifact> list = new ArrayList<>();
                 JSONArray listArray = aObj.getJSONArray("list");
@@ -151,7 +153,7 @@ public class SimpleMavenRepositoryDatabaseEngine implements ArtifactRepositoryDa
                 }
 
                 Map<String, ArtifactSearchResult> groupMap = map.computeIfAbsent(gid, k -> new LinkedHashMap<>());
-                groupMap.put(aid, new SimpleMavenSearchResult(list, start, foundNumber, queryTime));
+                groupMap.put(aid, new SimpleArtifactSearchResult(resultType, list, start, foundNumber, queryTime, hasMore));
             }
         }
         return map;
@@ -168,6 +170,8 @@ public class SimpleMavenRepositoryDatabaseEngine implements ArtifactRepositoryDa
             int start = obj.getInt("start");
             int foundNumber = obj.getInt("foundNumber");
             long queryTime = obj.getLong("queryTime");
+            boolean hasMore = obj.getBoolean("hasMore");
+            ArtifactSearchResultType resultType = obj.getEnum(ArtifactSearchResultType.class, "type");
 
             List<Artifact> list = new ArrayList<>();
             JSONArray listArray = obj.getJSONArray("list");
@@ -183,7 +187,7 @@ public class SimpleMavenRepositoryDatabaseEngine implements ArtifactRepositoryDa
                 list.add(new MavenArtifactImpl(groupId, artifactId, version, type, new Date(timestamp), versionCount));
             }
 
-            map.put(pattern, new SimpleMavenSearchResult(list, start, foundNumber, queryTime));
+            map.put(pattern, new SimpleArtifactSearchResult(resultType, list, start, foundNumber, queryTime, hasMore));
         }
         return map;
     }

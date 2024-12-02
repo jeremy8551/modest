@@ -9,7 +9,8 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
-import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
+import cn.org.expect.maven.repository.impl.ArtifactSearchResultType;
+import cn.org.expect.maven.repository.impl.SimpleArtifactSearchResult;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -40,7 +41,7 @@ public class ExtraSearchResultAnalysis {
             Artifact item = this.build(doc);
             list.add(item);
         }
-        return new SimpleMavenSearchResult(list, start + list.size() + 1, numFound, System.currentTimeMillis());
+        return new SimpleArtifactSearchResult(ArtifactSearchResultType.LIMIT_PAGE, list, start + list.size() + 1, numFound, System.currentTimeMillis(), numFound > list.size());
     }
 
     public Artifact build(JSONObject json) {

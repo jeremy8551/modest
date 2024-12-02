@@ -62,14 +62,10 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
         Map<SearchEverywhereContributor<?>, Boolean> backup = isAllTab ? display.getContributorMores() : null;
 
         // 处理查询结果
-        int foundNumber = 0;
-        int size = 0;
         List<SearchEverywhereFoundElementInfo> infos = new ArrayList<>();
 
         // 将搜索结果转为  List<SearchEverywhereFoundElementInfo>
         if (result != null) {
-            foundNumber = result.getFoundNumber();
-            size = result.size();
             this.process(plugin, result, infos);
         }
 
@@ -86,7 +82,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
                 !plugin.getService().isRunning(MavenSearchMoreJob.class, t -> true)  // 在 MavenSearchPluginListener 中会重复生成 more 按钮，判断如果正在执行 more 搜索，则不能显示 more 按钮
                         && ( //
                         (hasMore && display.size() > 0 && isAllTab) // ALL标签页，有 more 按钮
-                                || (isSelfTab && foundNumber > size) // 记录数 大于 查询结果
+                                || (isSelfTab && result != null && result.hasMore()) //
                 ) //
         );
 
@@ -98,7 +94,11 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
         }
 
         // 设置广告信息
-        plugin.setStatusBar(ArtifactSearchAdvertiser.NORMAL, ArtifactSearchMessage.get("maven.search.status.text", foundNumber, size));
+        if (result == null) {
+            plugin.setStatusBar(ArtifactSearchAdvertiser.NORMAL, ArtifactSearchMessage.get("maven.search.status.text", 0, 0));
+        } else {
+            plugin.setStatusBar(ArtifactSearchAdvertiser.NORMAL, ArtifactSearchMessage.get("maven.search.status.text", result.getFoundNumber(), result.size()));
+        }
     }
 
     /**

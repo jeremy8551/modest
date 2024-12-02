@@ -17,7 +17,8 @@ import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
-import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
+import cn.org.expect.maven.repository.impl.ArtifactSearchResultType;
+import cn.org.expect.maven.repository.impl.SimpleArtifactSearchResult;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 
@@ -84,7 +85,7 @@ public class LocalMavenRepositoryDatabase implements ArtifactRepositoryDatabase 
             }
         }
 
-        return new SimpleMavenSearchResult(new ArrayList<>(mas), mas.size(), mas.size(), System.currentTimeMillis());
+        return new SimpleArtifactSearchResult(ArtifactSearchResultType.ALL, new ArrayList<>(mas), mas.size(), mas.size(), System.currentTimeMillis(), false);
     }
 
     public void insert(String id, ArtifactSearchResult resultSet) {
@@ -173,7 +174,7 @@ public class LocalMavenRepositoryDatabase implements ArtifactRepositoryDatabase 
             String ext = FileUtils.getFilenameExt(file.getName());
             Artifact artifact = new MavenArtifactImpl(groupId, artifactId, version, ext, new Date(file.lastModified()), 0);
             Map<String, ArtifactSearchResult> group = this.map.computeIfAbsent(groupId, k -> new LinkedHashMap<>());
-            ArtifactSearchResult searchResult = group.computeIfAbsent(artifactId, key -> new SimpleMavenSearchResult());
+            ArtifactSearchResult searchResult = group.computeIfAbsent(artifactId, key -> new SimpleArtifactSearchResult(ArtifactSearchResultType.ALL));
             searchResult.addArtifact(artifact);
 
             if (log.isTraceEnabled()) {

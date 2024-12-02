@@ -6,7 +6,7 @@ import java.util.List;
 import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
-import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
+import cn.org.expect.maven.repository.impl.SimpleArtifactSearchResult;
 import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.maven.search.ArtifactSearchAdvertiser;
 import cn.org.expect.maven.search.ArtifactSearchMessage;
@@ -139,7 +139,7 @@ public class MavenSearchPatternJob extends MavenSearchJob {
         }
 
         // 保存模糊搜索结果
-        SimpleMavenSearchResult patternResult = new SimpleMavenSearchResult(list, 1, 1, System.currentTimeMillis());
+        SimpleArtifactSearchResult patternResult = new SimpleArtifactSearchResult(result.getType(), list, 1, 1, System.currentTimeMillis(), false);
         database.insert(pattern, patternResult);
         return patternResult;
     }

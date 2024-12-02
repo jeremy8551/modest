@@ -5,7 +5,7 @@ import java.util.List;
 import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
-import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
+import cn.org.expect.maven.repository.impl.SimpleArtifactSearchResult;
 import cn.org.expect.maven.search.ArtifactSearch;
 
 public class MavenSearchMoreJob extends MavenSearchPatternJob {
@@ -24,15 +24,30 @@ public class MavenSearchMoreJob extends MavenSearchPatternJob {
 
         ArtifactRepositoryDatabase database = search.getDatabase();
         ArtifactSearchResult result = database.select(pattern);
-        if (result != null && result.getFoundNumber() > result.size()) { // 还有未加载的数据
+        if (result != null && result.hasMore()) { // 还有未加载的数据
             int start = result.getStart();
             int foundNumber = result.getFoundNumber();
             List<Artifact> list = result.getList();
 
             ArtifactSearchResult next = this.getRemoteRepository().query(pattern, start);
             if (next != null) {
-                list.addAll(next.getList());
-                SimpleMavenSearchResult newResult = new SimpleMavenSearchResult(list, next.getStart(), foundNumber, System.currentTimeMillis());
+                List<Artifact> nextList = next.getList();
+                list.addAll(nextList);
+
+                boolean hasMore = true;
+                switch (result.getType()) {
+                    case ALL:
+                        hasMore = false;
+                        break;
+                    case LIMIT_PAGE:
+                        hasMore = foundNumber > list.size();
+                        break;
+                    case NO_TOTAL:
+                        hasMore = !nextList.isEmpty();
+                        break;
+                }
+
+                SimpleArtifactSearchResult newResult = new SimpleArtifactSearchResult(result.getType(), list, next.getStart(), Math.max(list.size(), foundNumber), System.currentTimeMillis(), hasMore);
                 newResult.reset();
                 database.insert(pattern, newResult); // 保存到数据库
                 search.getContext().setSearchResult(newResult); // 保存查询记录

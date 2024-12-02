@@ -8,7 +8,8 @@ import cn.org.expect.maven.repository.AbstractArtifactRepository;
 import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.ArtifactOperation;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
-import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
+import cn.org.expect.maven.repository.impl.ArtifactSearchResultType;
+import cn.org.expect.maven.repository.impl.SimpleArtifactSearchResult;
 import cn.org.expect.util.StringUtils;
 
 /**
@@ -93,7 +94,7 @@ public class CentralMavenRepository extends AbstractArtifactRepository {
                 start = next.getStart();
             } while (result.getFoundNumber() > start);
             result.sortByTimeDesc();
-            return new SimpleMavenSearchResult(list, start, result.getFoundNumber(), System.currentTimeMillis());
+            return new SimpleArtifactSearchResult(ArtifactSearchResultType.LIMIT_PAGE, list, start, result.getFoundNumber(), System.currentTimeMillis(), false);
         } else {
             result.sortByTimeDesc();
             return result;

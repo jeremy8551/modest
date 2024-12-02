@@ -1,7 +1,7 @@
 package cn.org.expect.maven.repository;
 
 import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.maven.repository.impl.SimpleMavenRepositoryDatabase;
+import cn.org.expect.maven.repository.impl.SimpleArtifactRepositoryDatabase;
 
 public abstract class AbstractArtifactRepository extends HttpClient implements ArtifactRepository {
 
@@ -13,7 +13,7 @@ public abstract class AbstractArtifactRepository extends HttpClient implements A
 
     public AbstractArtifactRepository(EasyContext ioc) {
         this.ioc = ioc;
-        this.database = new SimpleMavenRepositoryDatabase(this.getClass(), ioc);
+        this.database = new SimpleArtifactRepositoryDatabase(this.getClass(), ioc);
     }
 
     public EasyContext getEasyContext() {

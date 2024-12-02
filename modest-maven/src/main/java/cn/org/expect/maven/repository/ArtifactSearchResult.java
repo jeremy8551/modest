@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import cn.org.expect.maven.repository.impl.ArtifactSearchResultType;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.StringUtils;
 
@@ -11,6 +12,8 @@ import cn.org.expect.util.StringUtils;
  * Maven 仓库搜索结果
  */
 public interface ArtifactSearchResult {
+
+    ArtifactSearchResultType getType();
 
     /**
      * Maven 工件列表
@@ -46,6 +49,20 @@ public interface ArtifactSearchResult {
      * @return 查询时间
      */
     long getQueryTime();
+
+    /**
+     * 是否有未读数据
+     *
+     * @return true表示还有未读数据，false表示已全部读取
+     */
+    boolean hasMore();
+
+    /**
+     * 设置是否有未读数据
+     *
+     * @param hasMore true表示还有未读数据，false表示已全部读取
+     */
+    void setMore(boolean hasMore);
 
     /**
      * 重置操作

@@ -7,7 +7,9 @@ import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.util.Ensure;
 
-public class SimpleMavenSearchResult implements ArtifactSearchResult {
+public class SimpleArtifactSearchResult implements ArtifactSearchResult {
+
+    private final ArtifactSearchResultType type;
 
     private final List<Artifact> list;
 
@@ -20,15 +22,24 @@ public class SimpleMavenSearchResult implements ArtifactSearchResult {
     /** 查询时间 */
     private final long queryTime;
 
-    public SimpleMavenSearchResult() {
-        this(new ArrayList<>(0), 0, 0, System.currentTimeMillis());
+    /** true表示还有未读数据，false表示已全部读取 */
+    private volatile boolean hasMore;
+
+    public SimpleArtifactSearchResult(ArtifactSearchResultType type) {
+        this(type, new ArrayList<>(0), 0, 0, System.currentTimeMillis(), false);
     }
 
-    public SimpleMavenSearchResult(List<Artifact> list, int start, int foundNumber, long queryTime) {
+    public SimpleArtifactSearchResult(ArtifactSearchResultType type, List<Artifact> list, int start, int foundNumber, long queryTime, boolean hasMore) {
+        this.type = Ensure.notNull(type);
         this.list = Ensure.notNull(list);
         this.start = start;
         this.foundNumber = foundNumber;
         this.queryTime = queryTime;
+        this.hasMore = hasMore;
+    }
+
+    public ArtifactSearchResultType getType() {
+        return type;
     }
 
     public List<Artifact> getList() {
@@ -49,5 +60,13 @@ public class SimpleMavenSearchResult implements ArtifactSearchResult {
 
     public int size() {
         return this.list.size();
+    }
+
+    public boolean hasMore() {
+        return hasMore;
+    }
+
+    public void setMore(boolean hasMore) {
+        this.hasMore = hasMore;
     }
 }

@@ -15,8 +15,8 @@ import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
-public class SimpleMavenRepositoryDatabase implements ArtifactRepositoryDatabase {
-    protected final static Log log = LogFactory.getLog(SimpleMavenRepositoryDatabase.class);
+public class SimpleArtifactRepositoryDatabase implements ArtifactRepositoryDatabase {
+    protected final static Log log = LogFactory.getLog(SimpleArtifactRepositoryDatabase.class);
 
     /** 线程池 */
     protected ExecutorService executorService;
@@ -30,7 +30,7 @@ public class SimpleMavenRepositoryDatabase implements ArtifactRepositoryDatabase
     /** 序列化与反序列化工具 */
     protected final ArtifactRepositoryDatabaseEngine engine;
 
-    public SimpleMavenRepositoryDatabase(Class<?> cls, EasyContext ioc) {
+    public SimpleArtifactRepositoryDatabase(Class<?> cls, EasyContext ioc) {
         this.executorService = ioc.getBean(ThreadSource.class).getExecutorService();
         this.engine = ioc.getBean(ArtifactRepositoryDatabaseEngine.class, Ensure.notBlank(cls.getAnnotation(EasyBean.class).value()));
         this.patternMap = this.engine.getPattern();

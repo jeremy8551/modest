@@ -20,7 +20,8 @@ import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.HttpClient;
 import cn.org.expect.maven.repository.central.PatternSearchResultAnalysis;
 import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
-import cn.org.expect.maven.repository.impl.SimpleMavenSearchResult;
+import cn.org.expect.maven.repository.impl.ArtifactSearchResultType;
+import cn.org.expect.maven.repository.impl.SimpleArtifactSearchResult;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
@@ -100,7 +101,7 @@ public class GradlePluginRepository extends AbstractArtifactRepository {
         if (StringUtils.isBlank(responseBody) || this.terminate) {
             return null;
         } else {
-            return this.analysis.parsePatternResult(responseBody);
+            return this.analysis.parsePatternResult(responseBody, start);
         }
     }
 
@@ -131,7 +132,7 @@ public class GradlePluginRepository extends AbstractArtifactRepository {
             jobList.add(new GradleQueryJob(artifact));
         }
         service.execute(new EasyJobReaderImpl(jobList));
-        return new SimpleMavenSearchResult(result, list.size() + 1, list.size(), System.currentTimeMillis());
+        return new SimpleArtifactSearchResult(ArtifactSearchResultType.NO_TOTAL, result, list.size() + 1, list.size(), System.currentTimeMillis(), true);
     }
 
     static class GradleQueryJob extends MavenSearchPluginJob implements EDTJob {
