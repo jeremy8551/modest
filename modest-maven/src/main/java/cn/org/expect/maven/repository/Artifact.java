@@ -2,6 +2,8 @@ package cn.org.expect.maven.repository;
 
 import java.util.Date;
 
+import cn.org.expect.util.StringComparator;
+
 /**
  * Maven仓库工件信息
  */
@@ -69,6 +71,26 @@ public interface Artifact {
      * @param fold true表示折叠 false表示展开
      */
     void setFold(boolean fold);
+
+    /**
+     * 判断工件的 groupId 与 artifactId 是否相等
+     *
+     * @param artifact 工件
+     * @return 返回true表示相等，false表示不等
+     */
+    default boolean equalsId(Artifact artifact) {
+        return artifact != null && StringComparator.compareTo(this.getGroupId(), artifact.getGroupId()) == 0 && StringComparator.compareTo(this.getArtifactId(), artifact.getArtifactId()) == 0;
+    }
+
+    /**
+     * 判断工件的 groupId、artifactId、version 是否相等
+     *
+     * @param artifact 工件
+     * @return 返回true表示相等，false表示不等
+     */
+    default boolean equalsVersion(Artifact artifact) {
+        return this.equalsId(artifact) && StringComparator.compareTo(this.getVersion(), artifact.getVersion()) == 0;
+    }
 
     /**
      * 使用 Groovy 的Gradle依赖

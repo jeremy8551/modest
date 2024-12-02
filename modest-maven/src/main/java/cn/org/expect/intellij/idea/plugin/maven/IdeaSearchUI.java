@@ -167,8 +167,8 @@ public class IdeaSearchUI {
     }
 
     public static class StatusBar {
-        private ArtifactSearchAdvertiser type;
-        private String message;
+        private final ArtifactSearchAdvertiser type;
+        private final String message;
 
         public StatusBar(ArtifactSearchAdvertiser type, String message) {
             this.type = type;

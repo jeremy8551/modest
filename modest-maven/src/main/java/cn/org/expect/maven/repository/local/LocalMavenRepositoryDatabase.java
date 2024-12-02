@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -16,8 +15,8 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
-import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import cn.org.expect.maven.repository.impl.ArtifactSearchResultType;
+import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
 import cn.org.expect.maven.repository.impl.SimpleArtifactSearchResult;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
@@ -56,7 +55,7 @@ public class LocalMavenRepositoryDatabase implements ArtifactRepositoryDatabase 
             }
         }
 
-        Set<Artifact> mas = new HashSet<>();
+        Set<Artifact> mas = new LinkedHashSet<>();
         for (String key : parts) {
             Set<Map.Entry<String, Map<String, ArtifactSearchResult>>> entries = this.map.entrySet();
             for (Map.Entry<String, Map<String, ArtifactSearchResult>> entry : entries) {

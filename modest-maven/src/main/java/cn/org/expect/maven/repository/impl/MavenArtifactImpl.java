@@ -8,12 +8,12 @@ import cn.org.expect.util.StringComparator;
 
 public class MavenArtifactImpl implements Artifact {
 
-    private String artifactId;
-    private String groupId;
-    private String version;
-    private String type;
+    private final String artifactId;
+    private final String groupId;
+    private final String version;
+    private final String type;
     private Date timestamp;
-    private int versionCount;
+    private final int versionCount;
 
     /** true表示折叠，false表示展开 */
     private volatile boolean fold;
