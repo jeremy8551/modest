@@ -2,10 +2,10 @@ package cn.org.expect.intellij.idea.plugin.maven;
 
 import java.util.List;
 
+import cn.org.expect.intellij.idea.plugin.maven.ioc.MavenSearchIoc;
+import cn.org.expect.intellij.idea.plugin.maven.ioc.MavenSearchIocImpl;
 import cn.org.expect.intellij.idea.plugin.maven.log.IdeaLogBuilder;
 import cn.org.expect.intellij.idea.plugin.maven.settings.MavenSearchPluginSettingsImpl;
-import cn.org.expect.ioc.DefaultEasyContext;
-import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.impl.EasyBeanDefineImpl;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -23,7 +23,7 @@ import org.jetbrains.annotations.NotNull;
 public class MavenSearchPluginApplication implements AppLifecycleListener {
     private final Log log = LogFactory.getLog(MavenSearchPluginApplication.class);
 
-    private static volatile EasyContext INSTANCE;
+    private static volatile MavenSearchIoc INSTANCE;
 
     // Idea 启动后加载容器
     static {
@@ -41,7 +41,7 @@ public class MavenSearchPluginApplication implements AppLifecycleListener {
      *
      * @return 容器上下文信息
      */
-    public static EasyContext get() {
+    public static MavenSearchIoc get() {
         if (INSTANCE == null) {
             synchronized (MavenSearchPluginApplication.class) {
                 if (INSTANCE == null) {
@@ -57,13 +57,14 @@ public class MavenSearchPluginApplication implements AppLifecycleListener {
      *
      * @return 容器上下文信息
      */
-    private static EasyContext create() {
+    private static MavenSearchIoc create() {
         boolean debug = Boolean.parseBoolean(System.getProperty("idea.is.internal"));
         if (!debug) {
             LogFactory.getContext().setBuilder(new IdeaLogBuilder());
         }
 
-        EasyContext ioc = DefaultEasyContext.newInstance(MavenSearchPluginFactory.class.getClassLoader(), //
+        // 容器接口
+        MavenSearchIoc ioc = new MavenSearchIocImpl(MavenSearchPluginFactory.class.getClassLoader(), //
                 debug ? "sout+:info" : "", // 默认日志级别
                 debug ? ClassUtils.getPackageName(MavenSearchPluginApplication.class, 4) + ":debug" : "", //
                 debug ? ClassUtils.getPackageName(ArtifactSearch.class, 4) + ":debug" : "" //

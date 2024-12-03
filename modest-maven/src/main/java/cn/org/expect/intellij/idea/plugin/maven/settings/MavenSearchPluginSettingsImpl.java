@@ -49,6 +49,9 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
     /** true表示支持在 All 标签页中执行查询操作 */
     private volatile boolean searchInAllTab;
 
+    /** 下载文件的地址 */
+    private volatile DownSource downSource;
+
     public MavenSearchPluginSettingsImpl() {
         this.workHome = new File(Settings.getUserHome(), ".maven_plus");
         FileUtils.createDirectory(this.workHome);
@@ -177,5 +180,13 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
 //            log.debug("setWorkHome({})", workHome);
 //        }
         this.workHome = workHome;
+    }
+
+    public DownSource getDownSource() {
+        return downSource;
+    }
+
+    public void setDownSource(DownSource downSource) {
+        this.downSource = downSource;
     }
 }

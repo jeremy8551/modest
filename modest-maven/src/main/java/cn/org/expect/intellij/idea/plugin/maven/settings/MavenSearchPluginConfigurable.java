@@ -9,7 +9,6 @@ import cn.org.expect.expression.MillisExpression;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginSettings;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginUtils;
-import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.search.ArtifactSearchMessage;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.XMLUtils;
@@ -30,7 +29,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
 
     /** UI组件 */
     private JBSlider inputIntervalTime;
-    private JComboBox<String> repositoryId;
+    private JComboBox<RepositorySelected> repositoryId;
     private JBCheckBox autoSwitchTab;
     private JBTextField tabIndex;
     private JBCheckBox tabVisible;
@@ -38,6 +37,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
     private JBTextField expireTimeMillis;
     private JBLabel expireTimeMillisMemo;
     private JBTextField elementPriority;
+    private JComboBox<DownSource> downloadType;
 
     public MavenSearchPluginConfigurable() {
         this.settings = MavenSearchPluginApplication.get().getBean(MavenSearchPluginSettings.class);
@@ -67,9 +67,9 @@ public class MavenSearchPluginConfigurable implements Configurable {
         inputIntervalTime.addChangeListener(e -> active.setInputIntervalTime(inputIntervalTime.getValue()));
 
         // 默认 Maven 仓库
-        String[] repositoryIdItems = ArtifactRepository.getNames(MavenSearchPluginApplication.get());
+        RepositorySelected[] repositoryIdItems = MavenSearchPluginApplication.get().getRepositorySelectList();
         repositoryId = new JComboBox<>(repositoryIdItems);
-        repositoryId.addActionListener(e -> active.setRepositoryId(ArtifactRepository.getId((String) repositoryId.getSelectedItem())));
+        repositoryId.addActionListener(e -> active.setRepositoryId(((RepositorySelected) repositoryId.getSelectedItem()).getId()));
 
         autoSwitchTab = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.auto.select.tab", tabName));
         autoSwitchTab.addActionListener(e -> active.setAutoSwitchTab(autoSwitchTab.isSelected()));
@@ -84,6 +84,10 @@ public class MavenSearchPluginConfigurable implements Configurable {
 
         tabVisible = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.select.tab", tabName, pluginName));
         tabVisible.addActionListener(e -> active.setTabVisible(tabVisible.isSelected()));
+
+        DownSource[] array = new DownSource[]{DownSource.MAVEN, DownSource.CENTRAL, DownSource.HUAWEI, DownSource.ALIYUN, DownSource.TENCENT};
+        downloadType = new JComboBox<>(array);
+        downloadType.addActionListener(e -> active.setDownSource((DownSource) downloadType.getSelectedItem()));
 
         searchInAllTab = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.select.tab", allTabName, pluginName));
         searchInAllTab.addActionListener(e -> active.setUseAllTab(searchInAllTab.isSelected()));
@@ -136,6 +140,10 @@ public class MavenSearchPluginConfigurable implements Configurable {
         this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.debounce.time"), inputIntervalTime, null, ArtifactSearchMessage.get("maven.search.settings.debounce.time.description", pluginName));
         this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.result.expire.time"), expireTimeMillis, expireTimeMillisMemo, ArtifactSearchMessage.get("maven.search.settings.result.expire.time.description", pluginName));
         this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.result.priority"), elementPriority, new JBLabel(intUnit), ArtifactSearchMessage.get("maven.search.settings.result.priority.description", pluginName));
+
+        this.addRow(panel, gbc);
+        this.addSeparator(panel, gbc, ArtifactSearchMessage.get("maven.search.settings.group.download"));
+        this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.download.source"), downloadType, null, ArtifactSearchMessage.get("maven.search.settings.download.source.description"));
 
         // 添加占位组件
         gbc.gridx = 0;
@@ -279,7 +287,16 @@ public class MavenSearchPluginConfigurable implements Configurable {
      */
     public void autowired(MavenSearchPluginSettings settings) {
         inputIntervalTime.setValue((int) settings.getInputIntervalTime());
-        repositoryId.setSelectedItem(ArtifactRepository.getName(settings.getRepositoryId()));
+
+        // 选中选项
+        ComboBoxModel<RepositorySelected> model = repositoryId.getModel();
+        for (int i = 0; i < model.getSize(); i++) {
+            RepositorySelected element = model.getElementAt(i);
+            if (element.getId().equals(settings.getRepositoryId())) {
+                repositoryId.setSelectedItem(element);
+            }
+        }
+
         autoSwitchTab.setSelected(settings.isAutoSwitchTab());
         tabIndex.setText(String.valueOf(settings.getTabIndex()));
         tabVisible.setSelected(settings.isTabVisible());
@@ -287,6 +304,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
         expireTimeMillis.setText(String.valueOf(settings.getExpireTimeMillis()));
         expireTimeMillisMemo.setText(MavenSearchPluginUtils.format(settings.getExpireTimeMillis()));
         elementPriority.setText(String.valueOf(settings.getElementPriority()));
+        downloadType.setSelectedItem(settings.getDownSource());
     }
 
     /**

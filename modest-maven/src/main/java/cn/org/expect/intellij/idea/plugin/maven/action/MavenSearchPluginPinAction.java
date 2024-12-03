@@ -96,7 +96,7 @@ public class MavenSearchPluginPinAction extends ToggleAction {
                 }
             }
         } catch (Throwable e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
     }
 

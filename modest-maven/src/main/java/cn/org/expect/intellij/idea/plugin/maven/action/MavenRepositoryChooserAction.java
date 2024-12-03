@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchScope;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchScopeDescriptor;
-import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.ArtifactRepository;
@@ -32,9 +32,9 @@ public class MavenRepositoryChooserAction extends ScopeChooserAction {
         this.plugin = plugin;
         this.onChanged = onChanged;
         this.descriptors = new ArrayList<>();
-        List<EasyBeanInfo> list = ArtifactRepository.getEasyBeanInfo(plugin.getEasyContext());
-        for (EasyBeanInfo beanInfo : list) {
-            this.descriptors.add(new MavenSearchScopeDescriptor(new MavenSearchScope(beanInfo)));
+        MavenSearchScope[] list = MavenSearchPluginApplication.get().getScopes();
+        for (MavenSearchScope scope : list) {
+            this.descriptors.add(new MavenSearchScopeDescriptor(scope));
         }
     }
 

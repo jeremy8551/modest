@@ -1,5 +1,6 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
+import cn.org.expect.intellij.idea.plugin.maven.settings.DownSource;
 import cn.org.expect.intellij.idea.plugin.maven.settings.MavenSearchPluginSettingsImpl;
 import cn.org.expect.maven.search.ArtifactSearchSettings;
 
@@ -99,6 +100,20 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
     void setElementPriority(int elementPriority);
 
     /**
+     * 下载工件的方式
+     *
+     * @return 下载方式
+     */
+    DownSource getDownSource();
+
+    /**
+     * 设置下载工件的方式
+     *
+     * @param downSource 下载方式
+     */
+    void setDownSource(DownSource downSource);
+
+    /**
      * 持久化配置信息
      */
     default void save() {
@@ -130,6 +145,7 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
         context.setAutoSwitchTab(this.isAutoSwitchTab());
         context.setRepositoryId(this.getRepositoryId());
         context.setInputIntervalTime(this.getInputIntervalTime());
+        context.setDownSource(this.getDownSource());
         return context;
     }
 
@@ -147,6 +163,7 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
         this.setAutoSwitchTab(context.isAutoSwitchTab());
         this.setRepositoryId(context.getRepositoryId());
         this.setInputIntervalTime(context.getInputIntervalTime());
+        this.setDownSource(context.getDownSource());
         return this;
     }
 
@@ -165,6 +182,8 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
                 && settings.getExpireTimeMillis() == this.getExpireTimeMillis() //
                 && settings.isAutoSwitchTab() == this.isAutoSwitchTab() //
                 && settings.getRepositoryId().equals(this.getRepositoryId()) //
-                && settings.getInputIntervalTime() == this.getInputIntervalTime();
+                && settings.getInputIntervalTime() == this.getInputIntervalTime() //
+                && settings.getDownSource() == this.getDownSource() //
+                ;
     }
 }
