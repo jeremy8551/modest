@@ -218,7 +218,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
             }
 
             Artifact artifact = selectItem.getArtifact();
-            String message = ArtifactSearchMessage.get("maven.search.download.url", artifact.getGroupId() + ":" + artifact.getArtifactId() + ":" + artifact.getVersion());
+            String message = ArtifactSearchMessage.get("maven.search.download.url", artifact.toStandardString());
             plugin.setStatusBar(ArtifactSearchAdvertiser.RUNNING, message);
             plugin.execute(new MavenSearchDownloadJob(artifact));
             plugin.display();

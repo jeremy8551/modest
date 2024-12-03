@@ -77,7 +77,7 @@ public class MavenSearchPluginUtils {
     }
 
     public static String parseJDKVersion(File file) {
-        if (file != null && file.exists() && file.isFile()) {
+        if (file != null && file.exists() && file.isFile() && file.length() > 0) {
             JarFile jarfile = null;
             try {
                 jarfile = new JarFile(file);
@@ -135,7 +135,7 @@ public class MavenSearchPluginUtils {
                     }
                 }
             } catch (Throwable e) {
-                log.error(e.getLocalizedMessage(), e);
+                log.error(e.getLocalizedMessage());
             } finally {
                 IO.closeQuietly(jarfile);
             }

@@ -93,6 +93,15 @@ public interface Artifact {
     }
 
     /**
+     * 转为标准的 groupId:artifactId:version 格式
+     *
+     * @return 字符串
+     */
+    default String toStandardString() {
+        return this.getGroupId() + ":" + this.getArtifactId() + ":" + this.getVersion();
+    }
+
+    /**
      * 使用 Groovy 的Gradle依赖
      *
      * @return Gradle依赖

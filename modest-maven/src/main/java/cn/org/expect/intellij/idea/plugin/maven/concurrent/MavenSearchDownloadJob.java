@@ -2,6 +2,7 @@ package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -9,12 +10,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import cn.org.expect.intellij.idea.plugin.maven.IdeaMavenUtils;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.concurrent.MavenSearchJob;
 import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
-import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.maven.search.ArtifactSearchUtils;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.Ensure;
@@ -23,7 +24,7 @@ import cn.org.expect.util.IO;
 import cn.org.expect.util.NetUtils;
 import cn.org.expect.util.StringUtils;
 
-public class MavenSearchDownloadJob extends MavenSearchJob {
+public class MavenSearchDownloadJob extends MavenSearchPluginJob implements EDTJob {
     private final static Log log = LogFactory.getLog(MavenSearchDownloadJob.class);
 
     private final Artifact artifact;
@@ -38,17 +39,32 @@ public class MavenSearchDownloadJob extends MavenSearchJob {
     }
 
     public int execute() throws Exception {
-        ArtifactSearch search = this.getSearch();
-        LocalMavenRepositorySettings settings = search.getLocalRepositorySettings();
+        MavenSearchPlugin plugin = this.getSearch();
+        if (IdeaMavenUtils.hasSetupMavenPlugin()) {
+            IdeaMavenUtils.download(plugin, this.artifact);
+        } else {
+            this.download(plugin);
+        }
+        return 0;
+    }
 
+    /**
+     * 从 Maven仓库下载
+     *
+     * @param plugin 搜索接口
+     * @throws IOException 发生错误
+     */
+    private void download(MavenSearchPlugin plugin) throws IOException {
+        LocalMavenRepositorySettings settings = plugin.getLocalRepositorySettings();
         List<String> list = new ArrayList<>();
-        list.add(search.getRepository().getAddress());
+        list.add(plugin.getRepository().getAddress());
         StringUtils.split(artifact.getGroupId(), '.', list);
         list.add(artifact.getArtifactId());
         list.add(artifact.getVersion());
         String parentUrl = NetUtils.joinUri(list.toArray(new String[0]));
 
-        String filepath = search.getLocalRepository().getAddress();
+        //
+        String filepath = plugin.getLocalRepository().getAddress();
         if (FileUtils.isDirectory(filepath)) {
             list.clear();
             list.add(filepath);
@@ -99,19 +115,17 @@ public class MavenSearchDownloadJob extends MavenSearchJob {
                 sdf.setTimeZone(TimeZone.getTimeZone("GMT+08:00")); // CST 是中国标准时间 (GMT+08:00)
                 String formattedDate = sdf.format(new Date());
 
-                StringBuilder buf = new StringBuilder("#NOTE: ").append(search.getSettings().getName()).append(" Plugin for intellij Idea").append(FileUtils.lineSeparator);
+                StringBuilder buf = new StringBuilder("#NOTE: ").append(plugin.getSettings().getName()).append(" Plugin for intellij Idea").append(FileUtils.lineSeparator);
                 buf.append("#").append(formattedDate).append(FileUtils.lineSeparator);
                 for (String name : files) {
                     if (name.toLowerCase().endsWith(".jar") || name.toLowerCase().endsWith(".pom")) {
-                        buf.append(name).append(">").append(search.getSettings().getRepositoryId()).append("=").append(FileUtils.lineSeparator);
+                        buf.append(name).append(">").append(plugin.getSettings().getRepositoryId()).append("=").append(FileUtils.lineSeparator);
                     }
                 }
                 FileUtils.write(remote, CharsetName.UTF_8, false, buf.toString());
             }
 
-            search.asyncDisplay();
+            plugin.asyncDisplay();
         }
-
-        return 0;
     }
 }

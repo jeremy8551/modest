@@ -40,7 +40,7 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
     }
 
     public String getName() {
-        return this.id + ":" + this.artifact.getGroupId() + ":" + this.artifact.getArtifactId() + ":" + this.artifact.getVersion();
+        return this.id + ":" + this.artifact.toStandardString();
     }
 
     public ItemPresentation getPresentation() {

@@ -6,7 +6,6 @@ import cn.org.expect.intellij.idea.plugin.maven.listener.MavenSettingListener;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
-import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.Settings;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -24,7 +23,7 @@ public class SimpleLocalRepositorySettings implements LocalMavenRepositorySettin
 
     public SimpleLocalRepositorySettings(AnActionEvent event) {
         // 如果idea中安装了 Maven 插件
-        if (ClassUtils.forName("org.jetbrains.idea.maven.project.MavenProjectsManager") != null) {
+        if (IdeaMavenUtils.hasSetupMavenPlugin()) {
             MavenSettingListener.start(event, this);
         }
 

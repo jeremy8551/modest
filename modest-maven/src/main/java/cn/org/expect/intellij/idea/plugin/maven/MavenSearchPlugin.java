@@ -76,13 +76,16 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
     }
 
     public LocalMavenRepositorySettings getLocalRepositorySettings() {
-        MavenProjectsManager manager = MavenProjectsManager.getInstance(this.context.getActionEvent().getProject());
-        MavenImportingSettings importingSettings = manager.getImportingSettings();
-
         LocalMavenRepositorySettings localRepositorySettings = super.getLocalRepositorySettings();
-        localRepositorySettings.setDownloadSourcesAutomatically(importingSettings.isDownloadSourcesAutomatically());
-        localRepositorySettings.setDownloadDocsAutomatically(importingSettings.isDownloadDocsAutomatically());
-        localRepositorySettings.setDownloadAnnotationsAutomatically(importingSettings.isDownloadAnnotationsAutomatically());
+        if (IdeaMavenUtils.hasSetupMavenPlugin()) {
+            MavenProjectsManager manager = MavenProjectsManager.getInstance(this.context.getActionEvent().getProject());
+            MavenImportingSettings importingSettings = manager.getImportingSettings();
+            if (importingSettings != null) {
+                localRepositorySettings.setDownloadSourcesAutomatically(importingSettings.isDownloadSourcesAutomatically());
+                localRepositorySettings.setDownloadDocsAutomatically(importingSettings.isDownloadDocsAutomatically());
+                localRepositorySettings.setDownloadAnnotationsAutomatically(importingSettings.isDownloadAnnotationsAutomatically());
+            }
+        }
 
         if (log.isDebugEnabled()) {
             log.debug("{} sources: {}, docs: {}, annotations: {}", LocalMavenRepositorySettings.class.getSimpleName(), localRepositorySettings.isDownloadSourcesAutomatically(), localRepositorySettings.isDownloadDocsAutomatically(), localRepositorySettings.isDownloadAnnotationsAutomatically());
