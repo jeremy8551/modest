@@ -162,6 +162,7 @@ public class MavenSearchPluginPinAction extends ToggleAction {
                 JFrame frame = new JFrame();
                 frame.setVisible(false);
                 frame.setUndecorated(true);
+                frame.setResizable(true);
                 frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 frame.addWindowFocusListener(new WindowAdapter() {
                     public void windowLostFocus(WindowEvent event) { // 失去焦点

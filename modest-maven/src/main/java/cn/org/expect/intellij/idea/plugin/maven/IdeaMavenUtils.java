@@ -29,7 +29,7 @@ public class IdeaMavenUtils {
     public static void download(MavenSearchPlugin plugin, Artifact artifact) {
         MavenRunnerParameters params = new MavenRunnerParameters();
         params.setGoals(Collections.singletonList("dependency:get"));
-        params.setCmdOptions("-Dartifact=" + artifact.toStandardString());
+        params.setCmdOptions("-Dartifact=" + artifact.toStandardString() + ":" + artifact.getType());
 
         Project project = plugin.getContext().getActionEvent().getProject();
         MavenRunner runner = MavenRunner.getInstance(project);

@@ -81,7 +81,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @return 过滤后的字符串
      */
     public @NotNull String filterControlSymbols(@NotNull String pattern) {
-        return pattern;
+        return MavenSearchPluginUtils.escape(pattern);
     }
 
     /**

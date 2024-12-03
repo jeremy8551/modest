@@ -7,10 +7,9 @@ import java.util.Map;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
-import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchAdapter;
@@ -48,20 +47,17 @@ public class MavenSearchPluginListener extends SearchAdapter {
         MavenSearchPluginPinAction.PIN.extend();
 
         if (this.plugin.canSearch()) {
-            if (log.isDebugEnabled()) {
-                log.debug("{}.async", this.getName());
-            }
-
-            ArtifactRepositoryDatabase database = this.plugin.getDatabase();
-            ArtifactSearchResult result = database.select(pattern);
-            if (result != null) {
-                this.plugin.display(result);
+            if (!this.plugin.getService().isRunning(MavenSearchPluginJob.class)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("{}.search({})", this.getName(), pattern);
+                }
+                this.plugin.search(pattern);
             }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("{}.show", this.getName());
+                log.debug("{}.display()", this.getName());
             }
-            this.plugin.display(); // 切换到其他选项卡，需要删除搜索结果
+            this.plugin.display(null); // 切换到其他选项卡，需要删除搜索结果
         }
     }
 

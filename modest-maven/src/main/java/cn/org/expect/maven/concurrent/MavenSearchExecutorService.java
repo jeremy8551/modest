@@ -34,6 +34,17 @@ public interface MavenSearchExecutorService extends ExecutorService {
     <T> boolean isRunning(Class<T> cls, Predicate<T> condition);
 
     /**
+     * 判断是否正在运行某个任务
+     *
+     * @param cls 任务的 Class 信息
+     * @param <T> 任务类型
+     * @return 返回true表示正在运行
+     */
+    default <T> boolean isRunning(Class<T> cls) {
+        return this.isRunning(cls, job -> true);
+    }
+
+    /**
      * 终止正在运行的任务
      *
      * @param cls       任务的 Class 信息

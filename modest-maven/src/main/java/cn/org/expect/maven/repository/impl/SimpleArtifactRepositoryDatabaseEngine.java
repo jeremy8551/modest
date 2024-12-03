@@ -146,10 +146,10 @@ public class SimpleArtifactRepositoryDatabaseEngine implements ArtifactRepositor
                     String artifactId = item.getString("artifactId");
                     String version = item.getString("version");
                     String type = item.getString("type");
-                    long timestamp = item.getLong("timestamp");
+                    long timestamp = item.optLong("timestamp", -1);
                     int versionCount = item.getInt("versionCount");
 
-                    list.add(new MavenArtifactImpl(groupId, artifactId, version, type, new Date(timestamp), versionCount));
+                    list.add(new MavenArtifactImpl(groupId, artifactId, version, type, timestamp == -1 ? null : new Date(timestamp), versionCount));
                 }
 
                 Map<String, ArtifactSearchResult> groupMap = map.computeIfAbsent(gid, k -> new LinkedHashMap<>());
@@ -181,10 +181,10 @@ public class SimpleArtifactRepositoryDatabaseEngine implements ArtifactRepositor
                 String artifactId = item.getString("artifactId");
                 String version = item.getString("version");
                 String type = item.getString("type");
-                long timestamp = item.getLong("timestamp");
+                long timestamp = item.optLong("timestamp", -1);
                 int versionCount = item.getInt("versionCount");
 
-                list.add(new MavenArtifactImpl(groupId, artifactId, version, type, new Date(timestamp), versionCount));
+                list.add(new MavenArtifactImpl(groupId, artifactId, version, type, timestamp == -1 ? null : new Date(timestamp), versionCount));
             }
 
             map.put(pattern, new SimpleArtifactSearchResult(resultType, list, start, foundNumber, queryTime, hasMore));

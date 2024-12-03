@@ -12,6 +12,7 @@ import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.concurrent.MavenSearchExtraJob;
+import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
 import cn.org.expect.maven.search.AbstractMavenSearch;
@@ -100,6 +101,18 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
      */
     public MavenSearchPluginContributor getContributor() {
         return this.contributor;
+    }
+
+    /**
+     * 模糊搜索
+     *
+     * @param pattern 文本信息
+     */
+    public void search(String pattern) {
+        ArtifactRepositoryDatabase database = this.getDatabase();
+        ArtifactSearchResult result = database.select(pattern);
+        this.getContext().setSearchResult(result);
+        this.display(result);
     }
 
     public void asyncSearch() {

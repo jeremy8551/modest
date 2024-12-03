@@ -7,6 +7,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import javax.swing.*;
 
+import ai.grazie.utils.mpp.StringBuilder;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.ArtifactSearchAdvertiser;
@@ -15,6 +16,7 @@ import cn.org.expect.maven.search.ArtifactSearchNotification;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
+import cn.org.expect.util.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.actionSystem.KeyboardShortcut;
@@ -24,6 +26,17 @@ import org.json.JSONObject;
 
 public class MavenSearchPluginUtils {
     private final static Log log = LogFactory.getLog(MavenSearchPluginUtils.class);
+
+    public static String escape(String str) {
+        StringBuilder buf = new StringBuilder();
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (StringUtils.isLetter(c) || StringUtils.isNumber(c) || StringUtils.inArray(c, '.', '!', '@', '#', '*', '-', '_', '+', '=', '?', ':', '|')) {
+                buf.append(c);
+            }
+        }
+        return buf.toString();
+    }
 
     public static NotificationType toNotification(ArtifactSearchNotification type) {
         if (type == null) {

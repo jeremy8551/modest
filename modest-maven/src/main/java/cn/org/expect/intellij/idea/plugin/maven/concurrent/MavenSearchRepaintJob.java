@@ -78,7 +78,7 @@ public class MavenSearchRepaintJob extends MavenSearchEDTJob {
 
         // 设置 more 按钮
         display.setContributorMore(plugin.getContributor(),  //
-                !plugin.getService().isRunning(MavenSearchMoreJob.class, t -> true)  // 在 MavenSearchPluginListener 中会重复生成 more 按钮，判断如果正在执行 more 搜索，则不能显示 more 按钮
+                !plugin.getService().isRunning(MavenSearchMoreJob.class)  // 在 MavenSearchPluginListener 中会重复生成 more 按钮，判断如果正在执行 more 搜索，则不能显示 more 按钮
                         && ( //
                         (hasMore && display.size() > 0 && isAllTab) // ALL标签页，有 more 按钮
                                 || (isSelfTab && result != null && result.isHasMore()) //

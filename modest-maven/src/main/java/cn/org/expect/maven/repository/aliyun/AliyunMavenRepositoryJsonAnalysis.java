@@ -58,68 +58,64 @@ public class AliyunMavenRepositoryJsonAnalysis {
     }
 
     public ArtifactSearchResult parsePattern(String responseBody) {
-        try {
-            List<Artifact> list = this.parseList(responseBody);
-            list.sort(PATTERN_RESULT_COMPARATOR);
-            List<Artifact> result = new ArrayList<>(list.size());
-            for (int i = 0; i < list.size(); i++) {
-                Artifact artifact = list.get(i);
-                result.add(artifact);
+        List<Artifact> list = this.parseList(responseBody);
+        list.sort(PATTERN_RESULT_COMPARATOR);
+        List<Artifact> result = new ArrayList<>(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            Artifact artifact = list.get(i);
+            result.add(artifact);
 
-                boolean find = false;
-                for (int j = i + 1; j < list.size(); j++) {
-                    Artifact next = list.get(j);
-                    if (!artifact.equalsId(next)) { // 按名字判断是否相等
-                        i = j - 1;
-                        find = true;
-                        break;
-                    }
-                }
-                if (!find) {
+            boolean find = false;
+            for (int j = i + 1; j < list.size(); j++) {
+                Artifact next = list.get(j);
+                if (!artifact.equalsId(next)) { // 按名字判断是否相等
+                    i = j - 1;
+                    find = true;
                     break;
                 }
             }
-
-            return new SimpleArtifactSearchResult(ArtifactSearchResultType.ALL, result, result.size() + 1, result.size(), System.currentTimeMillis(), false);
-        } catch (Exception e) {
-            log.error("responseBody: {}", responseBody);
-            throw e;
+            if (!find) {
+                break;
+            }
         }
+
+        return new SimpleArtifactSearchResult(ArtifactSearchResultType.ALL, result, result.size() + 1, result.size(), System.currentTimeMillis(), false);
     }
 
     public SimpleArtifactSearchResult parseExtra(String responseBody) {
-        try {
-            List<Artifact> list = this.parseList(responseBody);
-            list.sort(EXTRA_RESULT_COMPARATOR);
-            List<Artifact> result = new ArrayList<>(list.size());
-            for (int i = 0; i < list.size(); i++) {
-                Artifact artifact = list.get(i);
-                result.add(artifact);
+        List<Artifact> list = this.parseList(responseBody);
+        list.sort(EXTRA_RESULT_COMPARATOR);
+        List<Artifact> result = new ArrayList<>(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            Artifact artifact = list.get(i);
+            result.add(artifact);
 
-                boolean find = false;
-                for (int j = i + 1; j < list.size(); j++) {
-                    Artifact next = list.get(j);
-                    if (!artifact.equalsVersion(next)) { // 按版本号判断是否相等
-                        i = j - 1;
-                        find = true;
-                        break;
-                    }
-                }
-                if (!find) {
+            boolean find = false;
+            for (int j = i + 1; j < list.size(); j++) {
+                Artifact next = list.get(j);
+                if (!artifact.equalsVersion(next)) { // 按版本号判断是否相等
+                    i = j - 1;
+                    find = true;
                     break;
                 }
             }
-
-            return new SimpleArtifactSearchResult(ArtifactSearchResultType.ALL, result, result.size() + 1, result.size(), System.currentTimeMillis(), false);
-        } catch (Exception e) {
-            log.error("responseBody: {}", responseBody);
-            throw e;
+            if (!find) {
+                break;
+            }
         }
+
+        return new SimpleArtifactSearchResult(ArtifactSearchResultType.ALL, result, result.size() + 1, result.size(), System.currentTimeMillis(), false);
     }
 
     protected List<Artifact> parseList(String responseBody) {
-        JSONObject jsonObject = new JSONObject(responseBody);
-        JSONArray array = jsonObject.getJSONArray("object");
+        JSONArray array;
+        try {
+            JSONObject jsonObject = new JSONObject(responseBody);
+            array = jsonObject.getJSONArray("object");
+        } catch (Exception e) {
+            log.error("responseBody: {}", responseBody);
+            return new ArrayList<>(0);
+        }
 
         if (log.isDebugEnabled()) {
             log.debug("send Response, find: {}, response: {}", array.length(), responseBody);
