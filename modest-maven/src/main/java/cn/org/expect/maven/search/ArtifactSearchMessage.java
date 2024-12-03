@@ -44,6 +44,15 @@ public class ArtifactSearchMessage {
         throw new UnsupportedOperationException(value);
     }
 
+    /**
+     * 返回选项名
+     *
+     * @return 选项名
+     */
+    public static String getOptionName(String repositoryId) {
+        return ArtifactSearchMessage.get("maven.search.repository." + repositoryId + ".id");
+    }
+
     private static String getMessage(String key) {
         if (USE_CHINESE.test(key)) {
             return BUNDLE_CN.getString(key);

@@ -10,15 +10,6 @@ import cn.org.expect.maven.search.ArtifactSearchMessage;
 public interface ArtifactRepository extends Terminate {
 
     /**
-     * 返回仓库名
-     *
-     * @return 仓库ID
-     */
-    static String getName(String repositoryId) {
-        return ArtifactSearchMessage.get("maven.search.repository." + repositoryId + ".id");
-    }
-
-    /**
      * 返回仓库ID
      *
      * @return 仓库ID
@@ -33,7 +24,7 @@ public interface ArtifactRepository extends Terminate {
      * @return 仓库名
      */
     default String getName() {
-        return getName(this.getId());
+        return ArtifactSearchMessage.getOptionName(this.getId());
     }
 
     /**

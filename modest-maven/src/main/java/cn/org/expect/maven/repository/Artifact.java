@@ -1,8 +1,12 @@
 package cn.org.expect.maven.repository;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import cn.org.expect.util.NetUtils;
 import cn.org.expect.util.StringComparator;
+import cn.org.expect.util.StringUtils;
 
 /**
  * Maven仓库工件信息
@@ -163,5 +167,14 @@ public interface Artifact {
         text += this.getVersion();
         text += "\"";
         return text;
+    }
+
+    default String toURI(String url, Artifact artifact) {
+        List<String> list = new ArrayList<>();
+        list.add(url);
+        StringUtils.split(artifact.getGroupId(), '.', list);
+        list.add(artifact.getArtifactId());
+        list.add(artifact.getVersion());
+        return NetUtils.joinUri(list.toArray(new String[0]));
     }
 }

@@ -1,15 +1,8 @@
 package cn.org.expect.maven.search;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 
 public class ArtifactSearchUtils {
@@ -72,32 +65,5 @@ public class ArtifactSearchUtils {
      */
     public static boolean isXML(String str) {
         return StringUtils.indexOf(str, "<artifactId>", 0, true) != -1 || StringUtils.indexOf(str, "<groupId>", 0, true) != -1;
-    }
-
-    /**
-     * 获取指定 URL 目录下的文件列表
-     */
-    public static List<String> fetchFileList(String httpUrl) throws IOException {
-
-        // 创建一个 URL 对象并打开连接
-        URL url = new URL(httpUrl);
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.setRequestMethod("GET");
-
-        // 读取服务器返回的 HTML 页面内容
-        List<String> fileList = new ArrayList<>();
-        try (InputStream inputStream = connection.getInputStream()) {
-            String html = new String(inputStream.readAllBytes());
-            Pattern pattern = Pattern.compile("href=\"([^\"]+)\""); // 使用正则表达式查找 HTML 中的文件链接
-            Matcher matcher = pattern.matcher(html);
-            while (matcher.find()) {
-                String fileName = matcher.group(1);
-                String ext = FileUtils.getFilenameExt(fileName);
-                if (ext.length() > 1) { // 过滤需要的文件类型
-                    fileList.add(fileName);
-                }
-            }
-        }
-        return fileList;
     }
 }

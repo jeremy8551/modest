@@ -50,7 +50,7 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
     private volatile boolean searchInAllTab;
 
     /** 下载文件的地址 */
-    private volatile DownSource downSource;
+    private volatile DownloadWay downloadWay;
 
     public MavenSearchPluginSettingsImpl() {
         this.workHome = new File(Settings.getUserHome(), ".maven_plus");
@@ -65,6 +65,7 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
         this.tabVisible = true;
         this.expireTimeMillis = MavenSearchPluginSettings.DEFAULT_EXPIRE_TIME_MILLIS;
         this.searchInAllTab = false;
+        this.downloadWay = DownloadWay.CENTRAL;
     }
 
     public void setId(String id) {
@@ -88,9 +89,6 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
     }
 
     public void setInputIntervalTime(long continueInputIntervalTime) {
-//        if (log.isDebugEnabled()) {
-//            log.debug("setInputIntervalTime({})", continueInputIntervalTime);
-//        }
         this.inputIntervalTime = continueInputIntervalTime;
     }
 
@@ -99,16 +97,10 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
     }
 
     public void setRepositoryId(String repositoryId) {
-//        if (log.isDebugEnabled()) {
-//            log.debug("setRepositoryId({})", repositoryId);
-//        }
         this.repositoryId = repositoryId;
     }
 
     public void setAutoSwitchTab(boolean autoSwitchTab) {
-//        if (log.isDebugEnabled()) {
-//            log.debug("setAutoSwitchTab({})", autoSwitchTab);
-//        }
         this.autoSwitchTab = autoSwitchTab;
     }
 
@@ -121,9 +113,6 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
     }
 
     public void setTabIndex(int tabIndex) {
-//        if (log.isDebugEnabled()) {
-//            log.debug("setTabIndex({})", tabIndex);
-//        }
         this.tabIndex = tabIndex;
     }
 
@@ -132,9 +121,6 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
     }
 
     public void setElementPriority(int elementPriority) {
-//        if (log.isDebugEnabled()) {
-//            log.debug("setElementPriority({})", elementPriority);
-//        }
         this.elementPriority = elementPriority;
     }
 
@@ -143,9 +129,6 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
     }
 
     public void setTabVisible(boolean tabVisible) {
-//        if (log.isDebugEnabled()) {
-//            log.debug("setTabVisible({})", tabVisible);
-//        }
         this.tabVisible = tabVisible;
     }
 
@@ -154,9 +137,6 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
     }
 
     public void setExpireTimeMillis(long expireTimeMillis) {
-//        if (log.isDebugEnabled()) {
-//            log.debug("setExpireTimeMillis({})", expireTimeMillis);
-//        }
         this.expireTimeMillis = expireTimeMillis;
     }
 
@@ -165,9 +145,6 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
     }
 
     public void setUseAllTab(boolean searchInAllTab) {
-//        if (log.isDebugEnabled()) {
-//            log.debug("setSearchInAllTab({})", searchInAllTab);
-//        }
         this.searchInAllTab = searchInAllTab;
     }
 
@@ -176,17 +153,14 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
     }
 
     public void setWorkHome(File workHome) {
-//        if (log.isDebugEnabled()) {
-//            log.debug("setWorkHome({})", workHome);
-//        }
         this.workHome = workHome;
     }
 
-    public DownSource getDownSource() {
-        return downSource;
+    public DownloadWay getDownloadWay() {
+        return downloadWay;
     }
 
-    public void setDownSource(DownSource downSource) {
-        this.downSource = downSource;
+    public void setDownloadWay(DownloadWay downSource) {
+        this.downloadWay = downSource;
     }
 }

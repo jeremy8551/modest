@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.ArtifactOperation;
+import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.impl.ArtifactSearchResultType;
@@ -124,5 +124,20 @@ public class LocalMavenRepository implements ArtifactRepository {
     }
 
     public void terminate() {
+    }
+
+    /**
+     * 返回工件在本地仓库中的目录
+     *
+     * @param artifact 工件信息
+     * @return 目录
+     */
+    public File getParent(Artifact artifact) {
+        List<String> list = new ArrayList<>();
+        list.add(this.getAddress());
+        StringUtils.split(artifact.getGroupId(), '.', list);
+        list.add(artifact.getArtifactId());
+        list.add(artifact.getVersion());
+        return new File(FileUtils.joinPath(list.toArray(new String[list.size()])));
     }
 }

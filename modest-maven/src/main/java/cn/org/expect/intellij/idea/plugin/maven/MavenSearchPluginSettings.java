@@ -1,6 +1,6 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
-import cn.org.expect.intellij.idea.plugin.maven.settings.DownSource;
+import cn.org.expect.intellij.idea.plugin.maven.settings.DownloadWay;
 import cn.org.expect.intellij.idea.plugin.maven.settings.MavenSearchPluginSettingsImpl;
 import cn.org.expect.maven.search.ArtifactSearchSettings;
 
@@ -104,14 +104,14 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
      *
      * @return 下载方式
      */
-    DownSource getDownSource();
+    DownloadWay getDownloadWay();
 
     /**
      * 设置下载工件的方式
      *
      * @param downSource 下载方式
      */
-    void setDownSource(DownSource downSource);
+    void setDownloadWay(DownloadWay downSource);
 
     /**
      * 持久化配置信息
@@ -145,7 +145,7 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
         context.setAutoSwitchTab(this.isAutoSwitchTab());
         context.setRepositoryId(this.getRepositoryId());
         context.setInputIntervalTime(this.getInputIntervalTime());
-        context.setDownSource(this.getDownSource());
+        context.setDownloadWay(this.getDownloadWay());
         return context;
     }
 
@@ -163,7 +163,7 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
         this.setAutoSwitchTab(context.isAutoSwitchTab());
         this.setRepositoryId(context.getRepositoryId());
         this.setInputIntervalTime(context.getInputIntervalTime());
-        this.setDownSource(context.getDownSource());
+        this.setDownloadWay(context.getDownloadWay());
         return this;
     }
 
@@ -183,7 +183,7 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
                 && settings.isAutoSwitchTab() == this.isAutoSwitchTab() //
                 && settings.getRepositoryId().equals(this.getRepositoryId()) //
                 && settings.getInputIntervalTime() == this.getInputIntervalTime() //
-                && settings.getDownSource() == this.getDownSource() //
+                && settings.getDownloadWay() == this.getDownloadWay() //
                 ;
     }
 }

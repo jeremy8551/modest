@@ -7,6 +7,7 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchScope;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchScopeDescriptor;
+import cn.org.expect.intellij.idea.plugin.maven.settings.SelectOption;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.ArtifactRepository;
@@ -32,8 +33,10 @@ public class MavenRepositoryChooserAction extends ScopeChooserAction {
         this.plugin = plugin;
         this.onChanged = onChanged;
         this.descriptors = new ArrayList<>();
-        MavenSearchScope[] list = MavenSearchPluginApplication.get().getScopes();
-        for (MavenSearchScope scope : list) {
+
+        SelectOption[] array = MavenSearchPluginApplication.get().getRepositorySelectOptions();
+        for (SelectOption option : array) {
+            MavenSearchScope scope = new MavenSearchScope(option);
             this.descriptors.add(new MavenSearchScopeDescriptor(scope));
         }
     }

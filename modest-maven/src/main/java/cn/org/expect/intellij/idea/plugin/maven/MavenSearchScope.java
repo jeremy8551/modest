@@ -2,7 +2,7 @@ package cn.org.expect.intellij.idea.plugin.maven;
 
 import javax.swing.*;
 
-import cn.org.expect.intellij.idea.plugin.maven.settings.RepositorySelected;
+import cn.org.expect.intellij.idea.plugin.maven.settings.SelectOption;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import com.intellij.openapi.module.Module;
@@ -14,15 +14,15 @@ import org.jetbrains.annotations.NotNull;
 public class MavenSearchScope extends GlobalSearchScope {
     private final static Log log = LogFactory.getLog(MavenSearchScope.class);
 
-    private final RepositorySelected repository;
+    private final SelectOption repository;
 
-    public MavenSearchScope(@NotNull RepositorySelected repository) {
+    public MavenSearchScope(@NotNull SelectOption repository) {
         super();
         this.repository = repository;
     }
 
     public @NotNull String getRepositoryId() {
-        return this.repository.getId();
+        return this.repository.getKey();
     }
 
     public @NotNull String getDisplayName() {

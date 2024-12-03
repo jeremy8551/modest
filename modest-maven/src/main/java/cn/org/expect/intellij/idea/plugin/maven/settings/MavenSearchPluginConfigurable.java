@@ -29,7 +29,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
 
     /** UI组件 */
     private JBSlider inputIntervalTime;
-    private JComboBox<RepositorySelected> repositoryId;
+    private JComboBox<SelectOption> repositoryId;
     private JBCheckBox autoSwitchTab;
     private JBTextField tabIndex;
     private JBCheckBox tabVisible;
@@ -37,7 +37,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
     private JBTextField expireTimeMillis;
     private JBLabel expireTimeMillisMemo;
     private JBTextField elementPriority;
-    private JComboBox<DownSource> downloadType;
+    private JComboBox<SelectOption> downloadType;
 
     public MavenSearchPluginConfigurable() {
         this.settings = MavenSearchPluginApplication.get().getBean(MavenSearchPluginSettings.class);
@@ -66,10 +66,8 @@ public class MavenSearchPluginConfigurable implements Configurable {
         inputIntervalTime.setPreferredSize(new Dimension(500, 50));
         inputIntervalTime.addChangeListener(e -> active.setInputIntervalTime(inputIntervalTime.getValue()));
 
-        // 默认 Maven 仓库
-        RepositorySelected[] repositoryIdItems = MavenSearchPluginApplication.get().getRepositorySelectList();
-        repositoryId = new JComboBox<>(repositoryIdItems);
-        repositoryId.addActionListener(e -> active.setRepositoryId(((RepositorySelected) repositoryId.getSelectedItem()).getId()));
+        repositoryId = new JComboBox<>(MavenSearchPluginApplication.get().getRepositorySelectOptions());
+        repositoryId.addActionListener(e -> active.setRepositoryId(((SelectOption) repositoryId.getSelectedItem()).getKey()));
 
         autoSwitchTab = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.auto.select.tab", tabName));
         autoSwitchTab.addActionListener(e -> active.setAutoSwitchTab(autoSwitchTab.isSelected()));
@@ -85,9 +83,8 @@ public class MavenSearchPluginConfigurable implements Configurable {
         tabVisible = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.select.tab", tabName, pluginName));
         tabVisible.addActionListener(e -> active.setTabVisible(tabVisible.isSelected()));
 
-        DownSource[] array = new DownSource[]{DownSource.MAVEN, DownSource.CENTRAL, DownSource.HUAWEI, DownSource.ALIYUN, DownSource.TENCENT};
-        downloadType = new JComboBox<>(array);
-        downloadType.addActionListener(e -> active.setDownSource((DownSource) downloadType.getSelectedItem()));
+        downloadType = new JComboBox<>(DownloadWay.toOptions());
+        downloadType.addActionListener(e -> active.setDownloadWay(DownloadWay.getSelectedItem(downloadType)));
 
         searchInAllTab = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.select.tab", allTabName, pluginName));
         searchInAllTab.addActionListener(e -> active.setUseAllTab(searchInAllTab.isSelected()));
@@ -289,10 +286,10 @@ public class MavenSearchPluginConfigurable implements Configurable {
         inputIntervalTime.setValue((int) settings.getInputIntervalTime());
 
         // 选中选项
-        ComboBoxModel<RepositorySelected> model = repositoryId.getModel();
+        ComboBoxModel<SelectOption> model = repositoryId.getModel();
         for (int i = 0; i < model.getSize(); i++) {
-            RepositorySelected element = model.getElementAt(i);
-            if (element.getId().equals(settings.getRepositoryId())) {
+            SelectOption element = model.getElementAt(i);
+            if (element.getKey().equals(settings.getRepositoryId())) {
                 repositoryId.setSelectedItem(element);
             }
         }
@@ -304,7 +301,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
         expireTimeMillis.setText(String.valueOf(settings.getExpireTimeMillis()));
         expireTimeMillisMemo.setText(MavenSearchPluginUtils.format(settings.getExpireTimeMillis()));
         elementPriority.setText(String.valueOf(settings.getElementPriority()));
-        downloadType.setSelectedItem(settings.getDownSource());
+        downloadType.setSelectedItem(settings.getDownloadWay());
     }
 
     /**
