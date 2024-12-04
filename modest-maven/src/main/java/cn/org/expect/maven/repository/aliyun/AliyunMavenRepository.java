@@ -22,7 +22,7 @@ public class AliyunMavenRepository extends AbstractArtifactRepository {
         super(ioc);
         this.parse = new AliyunMavenRepositoryJsonAnalysis();
     }
-    
+
     public ArtifactOperation getSupported() {
         return new ArtifactOperation() {
 
@@ -31,7 +31,7 @@ public class AliyunMavenRepository extends AbstractArtifactRepository {
             }
 
             public boolean supportDownload() {
-                return false;
+                return true;
             }
 
             public boolean supportDelete() {

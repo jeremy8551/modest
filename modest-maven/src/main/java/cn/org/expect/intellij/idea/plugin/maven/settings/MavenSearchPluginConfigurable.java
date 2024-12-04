@@ -9,6 +9,7 @@ import cn.org.expect.expression.MillisExpression;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginSettings;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginUtils;
+import cn.org.expect.maven.search.ArtifactOption;
 import cn.org.expect.maven.search.ArtifactSearchMessage;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.XMLUtils;
@@ -29,7 +30,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
 
     /** UI组件 */
     private JBSlider inputIntervalTime;
-    private JComboBox<SelectOption> repositoryId;
+    private JComboBox<ArtifactOption> repositoryId;
     private JBCheckBox autoSwitchTab;
     private JBTextField tabIndex;
     private JBCheckBox tabVisible;
@@ -37,7 +38,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
     private JBTextField expireTimeMillis;
     private JBLabel expireTimeMillisMemo;
     private JBTextField elementPriority;
-    private JComboBox<SelectOption> downloadType;
+    private JComboBox<ArtifactOption> downloadType;
 
     public MavenSearchPluginConfigurable() {
         this.settings = MavenSearchPluginApplication.get().getBean(MavenSearchPluginSettings.class);
@@ -67,7 +68,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
         inputIntervalTime.addChangeListener(e -> active.setInputIntervalTime(inputIntervalTime.getValue()));
 
         repositoryId = new JComboBox<>(MavenSearchPluginApplication.get().getRepositorySelectOptions());
-        repositoryId.addActionListener(e -> active.setRepositoryId(((SelectOption) repositoryId.getSelectedItem()).getKey()));
+        repositoryId.addActionListener(e -> active.setRepositoryInfo(((ArtifactOption) repositoryId.getSelectedItem())));
 
         autoSwitchTab = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.auto.select.tab", tabName));
         autoSwitchTab.addActionListener(e -> active.setAutoSwitchTab(autoSwitchTab.isSelected()));
@@ -83,8 +84,8 @@ public class MavenSearchPluginConfigurable implements Configurable {
         tabVisible = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.select.tab", tabName, pluginName));
         tabVisible.addActionListener(e -> active.setTabVisible(tabVisible.isSelected()));
 
-        downloadType = new JComboBox<>(DownloadWay.toOptions());
-        downloadType.addActionListener(e -> active.setDownloadWay(DownloadWay.getSelectedItem(downloadType)));
+        downloadType = new JComboBox<>(MavenSearchPluginApplication.get().getRepositoryDownloadOptions());
+        downloadType.addActionListener(e -> active.setDownloadWay(((ArtifactOption) downloadType.getSelectedItem()).getId()));
 
         searchInAllTab = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.select.tab", allTabName, pluginName));
         searchInAllTab.addActionListener(e -> active.setUseAllTab(searchInAllTab.isSelected()));
@@ -286,10 +287,10 @@ public class MavenSearchPluginConfigurable implements Configurable {
         inputIntervalTime.setValue((int) settings.getInputIntervalTime());
 
         // 选中选项
-        ComboBoxModel<SelectOption> model = repositoryId.getModel();
+        ComboBoxModel<ArtifactOption> model = repositoryId.getModel();
         for (int i = 0; i < model.getSize(); i++) {
-            SelectOption element = model.getElementAt(i);
-            if (element.getKey().equals(settings.getRepositoryId())) {
+            ArtifactOption element = model.getElementAt(i);
+            if (element.equals(settings.getRepositoryInfo())) {
                 repositoryId.setSelectedItem(element);
             }
         }
@@ -301,7 +302,15 @@ public class MavenSearchPluginConfigurable implements Configurable {
         expireTimeMillis.setText(String.valueOf(settings.getExpireTimeMillis()));
         expireTimeMillisMemo.setText(MavenSearchPluginUtils.format(settings.getExpireTimeMillis()));
         elementPriority.setText(String.valueOf(settings.getElementPriority()));
-        downloadType.setSelectedItem(settings.getDownloadWay());
+
+        ArtifactOption downOption = ArtifactOption.getDownloader(settings.getDownloadWay());
+        ComboBoxModel<ArtifactOption> downModel = downloadType.getModel();
+        for (int i = 0; i < downModel.getSize(); i++) {
+            ArtifactOption element = downModel.getElementAt(i);
+            if (element.equals(downOption)) {
+                downloadType.setSelectedItem(element);
+            }
+        }
     }
 
     /**

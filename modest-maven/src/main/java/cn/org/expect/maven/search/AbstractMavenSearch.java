@@ -16,8 +16,11 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
     /** IOC 容器 */
     private final EasyContext ioc;
 
-    /** Maven仓库 */
+    /** 仓库 */
     private ArtifactRepository repository;
+
+    /** 选择的仓库 */
+    private ArtifactOption selectRepository;
 
     /** 本地Maven仓库接口 */
     private final LocalMavenRepository localRepository;
@@ -27,16 +30,18 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
         this.ioc = Ensure.notNull(ioc);
         this.localRepository = this.ioc.getBean(LocalMavenRepository.class);
         ArtifactSearchSettings settings = this.ioc.getBean(ArtifactSearchSettings.class);
-        this.setRepositoryId(settings.getRepositoryId());
+        this.setRepository(settings.getRepositoryInfo());
     }
 
     /**
      * 设置仓库ID
      *
-     * @param id 仓库ID
+     * @param option 仓库ID
      */
-    public void setRepositoryId(String id) {
-        this.repository = Ensure.notNull(this.ioc.getBean(ArtifactRepository.class, id), id);
+    public void setRepository(ArtifactOption option) {
+        String repositoryId = option.getId();
+        this.repository = Ensure.notNull(this.ioc.getBean(ArtifactRepository.class, repositoryId), repositoryId);
+        this.selectRepository = option;
     }
 
     /**
@@ -54,6 +59,10 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
 
     public MavenSearchExecutorService getService() {
         return this.ioc.getBean(MavenSearchExecutorService.class);
+    }
+
+    public ArtifactOption getRepositoryInfo() {
+        return this.selectRepository;
     }
 
     public ArtifactRepository getRepository() {

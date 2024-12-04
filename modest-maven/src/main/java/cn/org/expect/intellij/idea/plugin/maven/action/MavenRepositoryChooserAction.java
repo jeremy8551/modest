@@ -7,10 +7,9 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchScope;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchScopeDescriptor;
-import cn.org.expect.intellij.idea.plugin.maven.settings.SelectOption;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.ArtifactRepository;
+import cn.org.expect.maven.search.ArtifactOption;
 import cn.org.expect.util.CollectionUtils;
 import com.intellij.ide.actions.searcheverywhere.ScopeChooserAction;
 import com.intellij.ide.util.scopeChooser.ScopeDescriptor;
@@ -34,8 +33,8 @@ public class MavenRepositoryChooserAction extends ScopeChooserAction {
         this.onChanged = onChanged;
         this.descriptors = new ArrayList<>();
 
-        SelectOption[] array = MavenSearchPluginApplication.get().getRepositorySelectOptions();
-        for (SelectOption option : array) {
+        ArtifactOption[] array = MavenSearchPluginApplication.get().getRepositorySelectOptions();
+        for (ArtifactOption option : array) {
             MavenSearchScope scope = new MavenSearchScope(option);
             this.descriptors.add(new MavenSearchScopeDescriptor(scope));
         }
@@ -71,19 +70,16 @@ public class MavenRepositoryChooserAction extends ScopeChooserAction {
      * @param descriptor 选项信息
      */
     protected void onScopeSelected(@NotNull ScopeDescriptor descriptor) {
-        String repositoryId = ((MavenSearchScope) descriptor.getScope()).getRepositoryId();
-        plugin.setRepositoryId(repositoryId);
+        ArtifactOption option = ((MavenSearchScope) descriptor.getScope()).getOption();
+        plugin.setRepository(option);
         onChanged.run(); // 更新：搜索框右侧的广告信息
         plugin.asyncSearch();
     }
 
     protected @NotNull ScopeDescriptor getSelectedScope() {
-        ArtifactRepository repository = plugin.getRepository();
-        if (repository != null) {
-            for (MavenSearchScopeDescriptor descriptor : descriptors) {
-                if (repository.getId().equals(descriptor.getScope().getRepositoryId())) {
-                    return descriptor;
-                }
+        for (MavenSearchScopeDescriptor descriptor : descriptors) {
+            if (plugin.getRepositoryInfo().equals(descriptor.getScope().getOption())) {
+                return descriptor;
             }
         }
         return CollectionUtils.firstElement(descriptors);

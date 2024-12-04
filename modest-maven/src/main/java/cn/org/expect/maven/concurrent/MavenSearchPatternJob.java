@@ -53,7 +53,7 @@ public class MavenSearchPatternJob extends MavenSearchJob {
         // 查询失败
         if (result == null) {
             search.display();
-            String message = ArtifactSearchMessage.get("maven.search.send.url.fail", search.getRepository().getName());
+            String message = ArtifactSearchMessage.get("maven.search.send.url.fail", search.getRepositoryInfo().getName());
             search.setProgress(message);
             search.setStatusBar(ArtifactSearchAdvertiser.ERROR, message);
             return 0;

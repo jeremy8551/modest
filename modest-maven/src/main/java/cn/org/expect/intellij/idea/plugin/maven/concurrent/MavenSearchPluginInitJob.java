@@ -132,8 +132,8 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                 return;
             }
 
-            String text = null;
-            boolean isGradlePlugin = GradlePluginRepository.class.getAnnotation(EasyBean.class).value().equals(plugin.getRepository().getId());
+            String text;
+            boolean isGradlePlugin = GradlePluginRepository.class.getAnnotation(EasyBean.class).value().equals(plugin.getRepositoryInfo().getKey());
 
             AnActionEvent event = plugin.getContext().getActionEvent();
             String filepath = event.getProject() == null ? null : event.getProject().getBasePath();

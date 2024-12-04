@@ -2,9 +2,9 @@ package cn.org.expect.intellij.idea.plugin.maven;
 
 import javax.swing.*;
 
-import cn.org.expect.intellij.idea.plugin.maven.settings.SelectOption;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.search.ArtifactOption;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -14,19 +14,19 @@ import org.jetbrains.annotations.NotNull;
 public class MavenSearchScope extends GlobalSearchScope {
     private final static Log log = LogFactory.getLog(MavenSearchScope.class);
 
-    private final SelectOption repository;
+    private final ArtifactOption option;
 
-    public MavenSearchScope(@NotNull SelectOption repository) {
+    public MavenSearchScope(@NotNull ArtifactOption option) {
         super();
-        this.repository = repository;
-    }
-
-    public @NotNull String getRepositoryId() {
-        return this.repository.getKey();
+        this.option = option;
     }
 
     public @NotNull String getDisplayName() {
-        return this.repository.getName();
+        return this.option.getName();
+    }
+
+    public ArtifactOption getOption() {
+        return option;
     }
 
     public Icon getIcon() {

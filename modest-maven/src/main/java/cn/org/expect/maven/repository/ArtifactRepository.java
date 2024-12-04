@@ -1,31 +1,11 @@
 package cn.org.expect.maven.repository;
 
-import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.concurrent.Terminate;
-import cn.org.expect.maven.search.ArtifactSearchMessage;
 
 /**
  * 工件仓库
  */
 public interface ArtifactRepository extends Terminate {
-
-    /**
-     * 返回仓库ID
-     *
-     * @return 仓库ID
-     */
-    default String getId() {
-        return this.getClass().getAnnotation(EasyBean.class).value();
-    }
-
-    /**
-     * 返回仓库名
-     *
-     * @return 仓库名
-     */
-    default String getName() {
-        return ArtifactSearchMessage.getOptionName(this.getId());
-    }
 
     /**
      * 返回支持功能

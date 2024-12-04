@@ -175,6 +175,6 @@ public interface Artifact {
         StringUtils.split(artifact.getGroupId(), '.', list);
         list.add(artifact.getArtifactId());
         list.add(artifact.getVersion());
-        return NetUtils.joinUri(list.toArray(new String[0]));
+        return NetUtils.joinUri(list.toArray(new String[list.size()]));
     }
 }

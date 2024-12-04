@@ -10,6 +10,7 @@ import javax.swing.*;
 import ai.grazie.utils.mpp.StringBuilder;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.search.ArtifactOption;
 import cn.org.expect.maven.search.ArtifactSearchAdvertiser;
 import cn.org.expect.maven.search.ArtifactSearchMessage;
 import cn.org.expect.maven.search.ArtifactSearchNotification;
@@ -189,7 +190,7 @@ public class MavenSearchPluginUtils {
                 //  String name = jsonObject.getString("name");
                 //  String workHome = jsonObject.getString("workHome");
                 long inputIntervalTime = jsonObject.getLong("inputIntervalTime");
-                String repositoryId = jsonObject.getString("repositoryId");
+                ArtifactOption repositoryId = (ArtifactOption) jsonObject.opt("repository");
                 boolean autoSwitchTab = jsonObject.getBoolean("autoSwitchTab");
                 int tabIndex = jsonObject.getInt("tabIndex");
                 boolean tabVisible = jsonObject.getBoolean("tabVisible");
@@ -201,7 +202,7 @@ public class MavenSearchPluginUtils {
                 //   settings.setName(name);
                 //   settings.setWorkHome(new File(workHome));
                 settings.setInputIntervalTime(inputIntervalTime);
-                settings.setRepositoryId(repositoryId);
+                settings.setRepositoryInfo(repositoryId);
                 settings.setAutoSwitchTab(autoSwitchTab);
                 settings.setTabIndex(tabIndex);
                 settings.setTabVisible(tabVisible);

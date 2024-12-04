@@ -53,8 +53,8 @@ public class MavenSearchInputJob extends MavenSearchJob {
 
                 // 如果队列为空，表示在等待期间没有添加查询任务，则直接执行查询
                 if (this.queue.isEmpty()) {
-                    search.setProgress(ArtifactSearchMessage.get("maven.search.progress.text", search.getRepository().getName()));
-                    search.setStatusBar(ArtifactSearchAdvertiser.RUNNING, ArtifactSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern), search.getRepository().getName()));
+                    search.setProgress(ArtifactSearchMessage.get("maven.search.progress.text", search.getRepositoryInfo().getName()));
+                    search.setStatusBar(ArtifactSearchAdvertiser.RUNNING, ArtifactSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern), search.getRepositoryInfo().getName()));
                     search.execute(job);
                 }
             } catch (Throwable e) {

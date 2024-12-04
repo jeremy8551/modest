@@ -6,7 +6,9 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginSettings;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.repository.central.CentralArtifactDownloader;
 import cn.org.expect.maven.repository.central.CentralMavenRepository;
+import cn.org.expect.maven.search.ArtifactOption;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.Settings;
 
@@ -29,7 +31,7 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
     private volatile long inputIntervalTime;
 
     /** Maven 仓库ID，就是 {@linkplain EasyBean#value()} */
-    private volatile String repositoryId;
+    private volatile ArtifactOption repositoryInfo;
 
     /** 如果选中文本是 groupId:artifactId:version 时，是否自动切换tab */
     private volatile boolean autoSwitchTab;
@@ -50,7 +52,7 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
     private volatile boolean searchInAllTab;
 
     /** 下载文件的地址 */
-    private volatile DownloadWay downloadWay;
+    private volatile String downloadWay;
 
     public MavenSearchPluginSettingsImpl() {
         this.workHome = new File(Settings.getUserHome(), ".maven_plus");
@@ -58,14 +60,14 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
         this.id = "";
         this.name = "";
         this.inputIntervalTime = 300;
-        this.repositoryId = CentralMavenRepository.class.getAnnotation(EasyBean.class).value();
+        this.repositoryInfo = ArtifactOption.getRepository(CentralMavenRepository.class.getAnnotation(EasyBean.class).value());
         this.autoSwitchTab = true;
         this.tabIndex = MavenSearchPluginSettings.DEFAULT_TAB_INDEX;
         this.elementPriority = MavenSearchPluginSettings.DEFAULT_ELEMENT_PRIORITY;
         this.tabVisible = true;
         this.expireTimeMillis = MavenSearchPluginSettings.DEFAULT_EXPIRE_TIME_MILLIS;
         this.searchInAllTab = false;
-        this.downloadWay = DownloadWay.CENTRAL;
+        this.downloadWay = CentralArtifactDownloader.class.getAnnotation(EasyBean.class).value();
     }
 
     public void setId(String id) {
@@ -92,12 +94,12 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
         this.inputIntervalTime = continueInputIntervalTime;
     }
 
-    public String getRepositoryId() {
-        return repositoryId;
+    public ArtifactOption getRepositoryInfo() {
+        return repositoryInfo;
     }
 
-    public void setRepositoryId(String repositoryId) {
-        this.repositoryId = repositoryId;
+    public void setRepositoryInfo(ArtifactOption repositoryInfo) {
+        this.repositoryInfo = repositoryInfo;
     }
 
     public void setAutoSwitchTab(boolean autoSwitchTab) {
@@ -156,11 +158,11 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
         this.workHome = workHome;
     }
 
-    public DownloadWay getDownloadWay() {
+    public String getDownloadWay() {
         return downloadWay;
     }
 
-    public void setDownloadWay(DownloadWay downSource) {
+    public void setDownloadWay(String downSource) {
         this.downloadWay = downSource;
     }
 }

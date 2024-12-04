@@ -1,6 +1,5 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
-import cn.org.expect.intellij.idea.plugin.maven.settings.DownloadWay;
 import cn.org.expect.intellij.idea.plugin.maven.settings.MavenSearchPluginSettingsImpl;
 import cn.org.expect.maven.search.ArtifactSearchSettings;
 
@@ -104,14 +103,14 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
      *
      * @return 下载方式
      */
-    DownloadWay getDownloadWay();
+    String getDownloadWay();
 
     /**
      * 设置下载工件的方式
      *
      * @param downSource 下载方式
      */
-    void setDownloadWay(DownloadWay downSource);
+    void setDownloadWay(String downSource);
 
     /**
      * 持久化配置信息
@@ -143,7 +142,7 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
         context.setTabIndex(this.getTabIndex());
         context.setExpireTimeMillis(this.getExpireTimeMillis());
         context.setAutoSwitchTab(this.isAutoSwitchTab());
-        context.setRepositoryId(this.getRepositoryId());
+        context.setRepositoryInfo(this.getRepositoryInfo());
         context.setInputIntervalTime(this.getInputIntervalTime());
         context.setDownloadWay(this.getDownloadWay());
         return context;
@@ -161,7 +160,7 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
         this.setTabIndex(context.getTabIndex());
         this.setExpireTimeMillis(context.getExpireTimeMillis());
         this.setAutoSwitchTab(context.isAutoSwitchTab());
-        this.setRepositoryId(context.getRepositoryId());
+        this.setRepositoryInfo(context.getRepositoryInfo());
         this.setInputIntervalTime(context.getInputIntervalTime());
         this.setDownloadWay(context.getDownloadWay());
         return this;
@@ -181,7 +180,7 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
                 && settings.getTabIndex() == this.getTabIndex() //
                 && settings.getExpireTimeMillis() == this.getExpireTimeMillis() //
                 && settings.isAutoSwitchTab() == this.isAutoSwitchTab() //
-                && settings.getRepositoryId().equals(this.getRepositoryId()) //
+                && settings.getRepositoryInfo().equals(this.getRepositoryInfo()) //
                 && settings.getInputIntervalTime() == this.getInputIntervalTime() //
                 && settings.getDownloadWay() == this.getDownloadWay() //
                 ;

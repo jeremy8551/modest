@@ -90,7 +90,7 @@ public interface ArtifactSearch {
     void setStatusBar(ArtifactSearchAdvertiser type, String message);
 
     /**
-     * 多线程执行任务 <br>
+     * 提交到线程池并发执行任务
      *
      * @param command 任务
      */
@@ -102,6 +102,13 @@ public interface ArtifactSearch {
      * @return 线程池
      */
     MavenSearchExecutorService getService();
+
+    /**
+     * 返回仓库信息
+     *
+     * @return 仓库信息
+     */
+    ArtifactOption getRepositoryInfo();
 
     /**
      * 返回 Maven仓库接口

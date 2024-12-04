@@ -138,8 +138,8 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
         this.context.setSelectNavigationItem(null);
 
         // 更新等待信息与状态栏
-        this.setProgress(ArtifactSearchMessage.get("maven.search.progress.text", this.getRepository().getName()));
-        this.setStatusBar(ArtifactSearchAdvertiser.RUNNING, ArtifactSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern), this.getRepository().getName()));
+        this.setProgress(ArtifactSearchMessage.get("maven.search.progress.text", this.getRepositoryInfo().getName()));
+        this.setStatusBar(ArtifactSearchAdvertiser.RUNNING, ArtifactSearchMessage.get("maven.search.pattern.text", StringUtils.escapeLineSeparator(pattern), this.getRepositoryInfo().getName()));
         this.getInput().search(this, pattern, delete);
     }
 
@@ -148,7 +148,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements Disposable
 //            throw new UnsupportedOperationException(groupId + ":" + artifactId);
 //        }
 
-        String message = ArtifactSearchMessage.get("maven.search.extra.text", groupId, artifactId, this.getRepository().getName());
+        String message = ArtifactSearchMessage.get("maven.search.extra.text", groupId, artifactId, this.getRepositoryInfo().getName());
         this.setStatusBar(ArtifactSearchAdvertiser.RUNNING, message);
         this.execute(new MavenSearchExtraJob(groupId, artifactId));
     }

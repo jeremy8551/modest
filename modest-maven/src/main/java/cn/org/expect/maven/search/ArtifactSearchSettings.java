@@ -53,14 +53,14 @@ public interface ArtifactSearchSettings {
      *
      * @return 标识，如: central、aliyun
      */
-    String getRepositoryId();
+    ArtifactOption getRepositoryInfo();
 
     /**
      * Maven仓库ID，就是 {@linkplain EasyBean#value()}
      *
-     * @param repositoryId Maven仓库ID
+     * @param repositoryInfo Maven仓库ID
      */
-    void setRepositoryId(String repositoryId);
+    void setRepositoryInfo(ArtifactOption repositoryInfo);
 
     /**
      * 返回查询结果的超时时间，单位毫秒
