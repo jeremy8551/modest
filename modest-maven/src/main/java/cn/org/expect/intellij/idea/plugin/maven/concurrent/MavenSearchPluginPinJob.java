@@ -44,7 +44,7 @@ public class MavenSearchPluginPinJob extends MavenSearchPluginInitJob implements
 
         // 设置搜索接口
         MavenSearchPlugin plugin = this.getSearch();
-        plugin.setRepository(repositoryInfo);
+        plugin.setRepository(repositoryInfo.getKey());
         plugin.getContext().setVisibleRect(visibleRect);
 
         // 复制搜索文本

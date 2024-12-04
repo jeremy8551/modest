@@ -30,18 +30,17 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
         this.ioc = Ensure.notNull(ioc);
         this.localRepository = this.ioc.getBean(LocalMavenRepository.class);
         ArtifactSearchSettings settings = this.ioc.getBean(ArtifactSearchSettings.class);
-        this.setRepository(settings.getRepositoryInfo());
+        this.setRepository(settings.getRepositoryId());
     }
 
     /**
      * 设置仓库ID
      *
-     * @param option 仓库ID
+     * @param repositoryId 仓库ID
      */
-    public void setRepository(ArtifactOption option) {
-        String repositoryId = option.getId();
+    public void setRepository(String repositoryId) {
         this.repository = Ensure.notNull(this.ioc.getBean(ArtifactRepository.class, repositoryId), repositoryId);
-        this.selectRepository = option;
+        this.selectRepository = new SimpleArtifactOption(repositoryId);
     }
 
     /**

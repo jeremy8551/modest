@@ -142,7 +142,7 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
         context.setTabIndex(this.getTabIndex());
         context.setExpireTimeMillis(this.getExpireTimeMillis());
         context.setAutoSwitchTab(this.isAutoSwitchTab());
-        context.setRepositoryInfo(this.getRepositoryInfo());
+        context.setRepositoryId(this.getRepositoryId());
         context.setInputIntervalTime(this.getInputIntervalTime());
         context.setDownloadWay(this.getDownloadWay());
         return context;
@@ -160,7 +160,7 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
         this.setTabIndex(context.getTabIndex());
         this.setExpireTimeMillis(context.getExpireTimeMillis());
         this.setAutoSwitchTab(context.isAutoSwitchTab());
-        this.setRepositoryInfo(context.getRepositoryInfo());
+        this.setRepositoryId(context.getRepositoryId());
         this.setInputIntervalTime(context.getInputIntervalTime());
         this.setDownloadWay(context.getDownloadWay());
         return this;
@@ -180,9 +180,9 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
                 && settings.getTabIndex() == this.getTabIndex() //
                 && settings.getExpireTimeMillis() == this.getExpireTimeMillis() //
                 && settings.isAutoSwitchTab() == this.isAutoSwitchTab() //
-                && settings.getRepositoryInfo().equals(this.getRepositoryInfo()) //
+                && settings.getRepositoryId().equals(this.getRepositoryId()) //
                 && settings.getInputIntervalTime() == this.getInputIntervalTime() //
-                && settings.getDownloadWay() == this.getDownloadWay() //
+                && settings.getDownloadWay().equals(this.getDownloadWay()) //
                 ;
     }
 }

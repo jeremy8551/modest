@@ -4,7 +4,7 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.repository.huawei.HuaweiArtifactDownloader;
 
-@EasyBean(value = "aliyun", priority = Integer.MAX_VALUE - 2)
+@EasyBean(value = "download.use.aliyun", priority = Integer.MAX_VALUE - 2)
 public class AliyunArtifactDownloader extends HuaweiArtifactDownloader {
 
     public AliyunArtifactDownloader(EasyContext ioc) {

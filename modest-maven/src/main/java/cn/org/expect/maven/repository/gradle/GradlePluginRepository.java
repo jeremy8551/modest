@@ -27,7 +27,7 @@ import cn.org.expect.util.StringUtils;
 /**
  * gradle插件仓库
  */
-@EasyBean(value = "gradle", priority = 1)
+@EasyBean(value = "query.use.gradle", priority = 1)
 public class GradlePluginRepository extends AbstractArtifactRepository {
 
     protected PatternSearchResultAnalysis pattern;
@@ -35,7 +35,7 @@ public class GradlePluginRepository extends AbstractArtifactRepository {
     protected GradlePluginResultAnalysis analysis;
 
     public GradlePluginRepository(EasyContext ioc) {
-        super(ioc);
+        super(ioc, GradlePluginMavenRepositoryDatabaseEngine.class);
         this.pattern = new PatternSearchResultAnalysis();
         this.analysis = new GradlePluginResultAnalysis();
     }

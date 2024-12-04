@@ -2,13 +2,13 @@ package cn.org.expect.maven.search;
 
 import cn.org.expect.util.Ensure;
 
-public class ArtifactOptionImpl implements ArtifactOption {
+public class SimpleArtifactOption implements ArtifactOption {
 
     private final String key;
 
     private final String name;
 
-    public ArtifactOptionImpl(String key) {
+    public SimpleArtifactOption(String key) {
         this.key = Ensure.notNull(key);
         this.name = ArtifactSearchMessage.get("maven.search.repository.option." + key);
     }

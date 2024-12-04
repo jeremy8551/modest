@@ -2,6 +2,7 @@ package cn.org.expect.maven.repository;
 
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.repository.impl.SimpleArtifactRepositoryDatabase;
+import cn.org.expect.util.Ensure;
 
 public abstract class AbstractArtifactRepository extends HttpClient implements ArtifactRepository {
 
@@ -11,9 +12,9 @@ public abstract class AbstractArtifactRepository extends HttpClient implements A
     /** 数据库接口 */
     protected ArtifactRepositoryDatabase database;
 
-    public AbstractArtifactRepository(EasyContext ioc) {
-        this.ioc = ioc;
-        this.database = new SimpleArtifactRepositoryDatabase(this.getClass(), ioc);
+    public AbstractArtifactRepository(EasyContext ioc, Class<? extends ArtifactRepositoryDatabaseEngine> cls) {
+        this.ioc = Ensure.notNull(ioc);
+        this.database = new SimpleArtifactRepositoryDatabase(ioc, cls);
     }
 
     public EasyContext getEasyContext() {

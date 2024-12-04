@@ -22,7 +22,7 @@ import cn.org.expect.util.StringUtils;
 /**
  * 中央仓库
  */
-@EasyBean(value = "central", priority = Integer.MAX_VALUE)
+@EasyBean(value = "query.use.central", priority = Integer.MAX_VALUE)
 public class CentralMavenRepository extends AbstractArtifactRepository {
 
     protected PatternSearchResultAnalysis pattern;
@@ -30,7 +30,7 @@ public class CentralMavenRepository extends AbstractArtifactRepository {
     protected ExtraSearchResultAnalysis extra;
 
     public CentralMavenRepository(EasyContext ioc) {
-        super(ioc);
+        super(ioc, CentralMavenRepositoryDatabaseEngine.class);
         this.pattern = new PatternSearchResultAnalysis();
         this.extra = new ExtraSearchResultAnalysis();
     }

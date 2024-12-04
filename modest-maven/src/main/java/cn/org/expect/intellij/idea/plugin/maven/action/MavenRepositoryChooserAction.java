@@ -33,7 +33,7 @@ public class MavenRepositoryChooserAction extends ScopeChooserAction {
         this.onChanged = onChanged;
         this.descriptors = new ArrayList<>();
 
-        ArtifactOption[] array = MavenSearchPluginApplication.get().getRepositorySelectOptions();
+        ArtifactOption[] array = MavenSearchPluginApplication.get().getRepositoryOptions();
         for (ArtifactOption option : array) {
             MavenSearchScope scope = new MavenSearchScope(option);
             this.descriptors.add(new MavenSearchScopeDescriptor(scope));
@@ -71,7 +71,7 @@ public class MavenRepositoryChooserAction extends ScopeChooserAction {
      */
     protected void onScopeSelected(@NotNull ScopeDescriptor descriptor) {
         ArtifactOption option = ((MavenSearchScope) descriptor.getScope()).getOption();
-        plugin.setRepository(option);
+        plugin.setRepository(option.getKey());
         onChanged.run(); // 更新：搜索框右侧的广告信息
         plugin.asyncSearch();
     }

@@ -130,7 +130,7 @@ public class DefaultEasyContext implements EasyContext {
      * 注册容器上下文信息
      */
     protected void addSelf() {
-        EasyBeanDefineImpl beanInfo = new EasyBeanDefineImpl(DefaultEasyContext.class);
+        EasyBeanDefineImpl beanInfo = new EasyBeanDefineImpl(this.getClass());
         beanInfo.setSingleton(true);
         beanInfo.setLazy(false);
         beanInfo.setBean(this);

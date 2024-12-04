@@ -19,7 +19,7 @@ import cn.org.expect.util.StringUtils;
 /**
  * 本地仓库
  */
-@EasyBean(value = "local", priority = Integer.MAX_VALUE - 1)
+@EasyBean(value = "query.use.local", priority = Integer.MAX_VALUE - 1)
 public class LocalMavenRepository implements ArtifactRepository {
 
     private final LocalMavenRepositoryDatabase database;

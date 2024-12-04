@@ -90,7 +90,7 @@ public abstract class AbstractArtifactDownloader extends HttpClient implements A
                 try {
                     IO.write(new URL(httpUrl).openStream(), new FileOutputStream(downfile), this);
                 } catch (FileNotFoundException e) {
-                    log.error(e.getLocalizedMessage());
+                    log.error("download {} fail!", e.getLocalizedMessage());
                     continue;
                 }
             }

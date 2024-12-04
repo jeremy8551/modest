@@ -4,7 +4,7 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.repository.huawei.HuaweiArtifactDownloader;
 
-@EasyBean(value = "netease", priority = Integer.MAX_VALUE - 4)
+@EasyBean(value = "download.use.netease", priority = Integer.MAX_VALUE - 4)
 public class NetEaseArtifactDownloader extends HuaweiArtifactDownloader {
 
     public NetEaseArtifactDownloader(EasyContext ioc) {

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 
-import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;
@@ -30,9 +29,9 @@ public class SimpleArtifactRepositoryDatabase implements ArtifactRepositoryDatab
     /** 序列化与反序列化工具 */
     protected final ArtifactRepositoryDatabaseEngine engine;
 
-    public SimpleArtifactRepositoryDatabase(Class<?> cls, EasyContext ioc) {
+    public SimpleArtifactRepositoryDatabase(EasyContext ioc, Class<? extends ArtifactRepositoryDatabaseEngine> cls) {
         this.executorService = ioc.getBean(ThreadSource.class).getExecutorService();
-        this.engine = ioc.getBean(ArtifactRepositoryDatabaseEngine.class, Ensure.notBlank(cls.getAnnotation(EasyBean.class).value()));
+        this.engine = Ensure.notNull(ioc.getBean(cls), cls.getName());
         this.patternMap = this.engine.getPattern();
         this.extraMap = this.engine.getArtifact();
     }

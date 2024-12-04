@@ -13,13 +13,13 @@ import cn.org.expect.util.StringUtils;
 /**
  * 阿里云仓库
  */
-@EasyBean(value = "aliyun", priority = 0)
+@EasyBean(value = "query.use.aliyun", priority = 0)
 public class AliyunMavenRepository extends AbstractArtifactRepository {
 
     protected AliyunMavenRepositoryJsonAnalysis parse;
 
     public AliyunMavenRepository(EasyContext ioc) {
-        super(ioc);
+        super(ioc, AliyunMavenRepositoryDatabaseEngine.class);
         this.parse = new AliyunMavenRepositoryJsonAnalysis();
     }
 

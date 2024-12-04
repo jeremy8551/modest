@@ -19,6 +19,7 @@ import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.ObjectUtils;
 import cn.org.expect.util.ResourcesUtils;
+import cn.org.expect.util.StringUtils;
 
 /**
  * 容器工厂接口实现类
@@ -30,7 +31,7 @@ public class EasyBeanFactoryImpl implements EasyBeanFactory {
     private final static Log log = LogFactory.getLog(EasyBeanFactoryImpl.class);
 
     /** 容器上下文信息 */
-    private EasyContext context;
+    private final EasyContext context;
 
     public EasyBeanFactoryImpl(EasyContext context) {
         this.context = Ensure.notNull(context);
@@ -101,6 +102,7 @@ public class EasyBeanFactoryImpl implements EasyBeanFactory {
             } catch (Throwable e) {
                 String message = ResourcesUtils.getMessage("ioc.standard.output.msg002", type.getName(), constructors.getMatchConstructor().toGenericString(), EasyBeanArgument.toString(argument.getArgs()));
                 buf.append(FileUtils.lineSeparator).append(message);
+                buf.append(StringUtils.toString(e));
 
                 if (log.isDebugEnabled()) {
                     log.debug(message, e);
@@ -119,6 +121,7 @@ public class EasyBeanFactoryImpl implements EasyBeanFactory {
             } catch (Throwable e) {
                 String message = ResourcesUtils.getMessage("ioc.standard.output.msg002", type.getName(), constructors.getBaseConstructor().toGenericString(), "");
                 buf.append(FileUtils.lineSeparator).append(message);
+                buf.append(StringUtils.toString(e));
 
                 if (log.isDebugEnabled()) {
                     log.debug(message, e);
@@ -139,6 +142,7 @@ public class EasyBeanFactoryImpl implements EasyBeanFactory {
             } catch (Throwable e) {
                 String message = ResourcesUtils.getMessage("ioc.standard.output.msg002", type.getName(), constructor.toGenericString(), EasyBeanArgument.toString(parameters));
                 buf.append(FileUtils.lineSeparator).append(message);
+                buf.append(StringUtils.toString(e));
 
                 if (log.isDebugEnabled()) {
                     log.debug(message, e);

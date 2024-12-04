@@ -4,7 +4,7 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.maven.repository.impl.SimpleArtifactRepositoryDatabaseEngine;
 import cn.org.expect.maven.search.ArtifactSearchSettings;
 
-@EasyBean(value = "gradle", singleton = true)
+@EasyBean(singleton = true)
 public class GradlePluginMavenRepositoryDatabaseEngine extends SimpleArtifactRepositoryDatabaseEngine {
 
     public GradlePluginMavenRepositoryDatabaseEngine(ArtifactSearchSettings settings) {

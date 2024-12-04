@@ -7,6 +7,7 @@ import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.repository.ArtifactDownloader;
 import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.search.ArtifactOption;
+import cn.org.expect.maven.search.SimpleArtifactOption;
 
 public interface MavenSearchIoc extends EasyContext {
 
@@ -15,13 +16,13 @@ public interface MavenSearchIoc extends EasyContext {
      *
      * @return 仓库数组
      */
-    default ArtifactOption[] getRepositorySelectOptions() {
+    default ArtifactOption[] getRepositoryOptions() {
         List<EasyBeanInfo> list = this.getBeanInfoList(ArtifactRepository.class).stream().sorted((b1, b2) -> b2.getPriority() - b1.getPriority()).toList();
         int size = list.size();
         ArtifactOption[] array = new ArtifactOption[size];
         for (int i = 0; i < size; i++) {
             EasyBeanInfo beanInfo = list.get(i);
-            array[i] = ArtifactOption.getRepository(beanInfo.getName());
+            array[i] = new SimpleArtifactOption(beanInfo.getName());
         }
         return array;
     }
@@ -31,13 +32,13 @@ public interface MavenSearchIoc extends EasyContext {
      *
      * @return 仓库数组
      */
-    default ArtifactOption[] getRepositoryDownloadOptions() {
+    default ArtifactOption[] getDownloaderOptions() {
         List<EasyBeanInfo> list = this.getBeanInfoList(ArtifactDownloader.class).stream().sorted((b1, b2) -> b2.getPriority() - b1.getPriority()).toList();
         int size = list.size();
         ArtifactOption[] array = new ArtifactOption[size];
         for (int i = 0; i < size; i++) {
             EasyBeanInfo beanInfo = list.get(i);
-            array[i] = ArtifactOption.getDownloader(beanInfo.getName());
+            array[i] = new SimpleArtifactOption(beanInfo.getName());
         }
         return array;
     }

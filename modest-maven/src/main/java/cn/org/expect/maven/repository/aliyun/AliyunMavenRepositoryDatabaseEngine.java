@@ -4,7 +4,7 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.maven.repository.impl.SimpleArtifactRepositoryDatabaseEngine;
 import cn.org.expect.maven.search.ArtifactSearchSettings;
 
-@EasyBean(value = "aliyun", singleton = true)
+@EasyBean(singleton = true)
 public class AliyunMavenRepositoryDatabaseEngine extends SimpleArtifactRepositoryDatabaseEngine {
 
     public AliyunMavenRepositoryDatabaseEngine(ArtifactSearchSettings settings) {

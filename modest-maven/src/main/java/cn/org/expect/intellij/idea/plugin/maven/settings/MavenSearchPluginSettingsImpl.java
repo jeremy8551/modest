@@ -8,7 +8,6 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.central.CentralArtifactDownloader;
 import cn.org.expect.maven.repository.central.CentralMavenRepository;
-import cn.org.expect.maven.search.ArtifactOption;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.Settings;
 
@@ -31,7 +30,7 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
     private volatile long inputIntervalTime;
 
     /** Maven 仓库ID，就是 {@linkplain EasyBean#value()} */
-    private volatile ArtifactOption repositoryInfo;
+    private volatile String repositoryId;
 
     /** 如果选中文本是 groupId:artifactId:version 时，是否自动切换tab */
     private volatile boolean autoSwitchTab;
@@ -60,7 +59,7 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
         this.id = "";
         this.name = "";
         this.inputIntervalTime = 300;
-        this.repositoryInfo = ArtifactOption.getRepository(CentralMavenRepository.class.getAnnotation(EasyBean.class).value());
+        this.repositoryId = CentralMavenRepository.class.getAnnotation(EasyBean.class).value();
         this.autoSwitchTab = true;
         this.tabIndex = MavenSearchPluginSettings.DEFAULT_TAB_INDEX;
         this.elementPriority = MavenSearchPluginSettings.DEFAULT_ELEMENT_PRIORITY;
@@ -94,12 +93,12 @@ public class MavenSearchPluginSettingsImpl implements MavenSearchPluginSettings 
         this.inputIntervalTime = continueInputIntervalTime;
     }
 
-    public ArtifactOption getRepositoryInfo() {
-        return repositoryInfo;
+    public String getRepositoryId() {
+        return repositoryId;
     }
 
-    public void setRepositoryInfo(ArtifactOption repositoryInfo) {
-        this.repositoryInfo = repositoryInfo;
+    public void setRepositoryId(String repositoryId) {
+        this.repositoryId = repositoryId;
     }
 
     public void setAutoSwitchTab(boolean autoSwitchTab) {

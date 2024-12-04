@@ -4,7 +4,7 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.repository.huawei.HuaweiArtifactDownloader;
 
-@EasyBean(value = "tencent", priority = Integer.MAX_VALUE - 5)
+@EasyBean(value = "download.use.tencent", priority = Integer.MAX_VALUE - 5)
 public class TencentArtifactDownloader extends HuaweiArtifactDownloader {
 
     public TencentArtifactDownloader(EasyContext ioc) {

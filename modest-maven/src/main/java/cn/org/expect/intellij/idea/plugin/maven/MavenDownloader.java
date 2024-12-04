@@ -8,7 +8,7 @@ import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.impl.AbstractArtifactDownloader;
 
-@EasyBean(value = "maven", priority = Integer.MAX_VALUE)
+@EasyBean(value = "download.use.maven", priority = Integer.MAX_VALUE)
 public class MavenDownloader extends AbstractArtifactDownloader {
 
     public MavenDownloader(EasyContext ioc) {

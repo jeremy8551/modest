@@ -10,7 +10,6 @@ import javax.swing.*;
 import ai.grazie.utils.mpp.StringBuilder;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.search.ArtifactOption;
 import cn.org.expect.maven.search.ArtifactSearchAdvertiser;
 import cn.org.expect.maven.search.ArtifactSearchMessage;
 import cn.org.expect.maven.search.ArtifactSearchNotification;
@@ -190,25 +189,24 @@ public class MavenSearchPluginUtils {
                 //  String name = jsonObject.getString("name");
                 //  String workHome = jsonObject.getString("workHome");
                 long inputIntervalTime = jsonObject.getLong("inputIntervalTime");
-                ArtifactOption repositoryId = (ArtifactOption) jsonObject.opt("repository");
+                String repositoryId = jsonObject.getString("repositoryId");
                 boolean autoSwitchTab = jsonObject.getBoolean("autoSwitchTab");
                 int tabIndex = jsonObject.getInt("tabIndex");
                 boolean tabVisible = jsonObject.getBoolean("tabVisible");
                 int elementPriority = jsonObject.getInt("elementPriority");
                 long expireTimeMillis = jsonObject.getLong("expireTimeMillis");
                 boolean searchInAllTab = jsonObject.getBoolean("useAllTab");
+                String downloadWay = jsonObject.getString("downloadWay");
 
-                //   settings.setId(id);
-                //   settings.setName(name);
-                //   settings.setWorkHome(new File(workHome));
                 settings.setInputIntervalTime(inputIntervalTime);
-                settings.setRepositoryInfo(repositoryId);
+                settings.setRepositoryId(repositoryId);
                 settings.setAutoSwitchTab(autoSwitchTab);
                 settings.setTabIndex(tabIndex);
                 settings.setTabVisible(tabVisible);
                 settings.setElementPriority(elementPriority);
                 settings.setExpireTimeMillis(expireTimeMillis);
                 settings.setUseAllTab(searchInAllTab);
+                settings.setDownloadWay(downloadWay);
             }
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
