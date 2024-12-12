@@ -916,7 +916,7 @@ public class ClassUtils {
      * @param filter 接口的过滤器
      * @return 接口信息集合
      */
-    public static List<Class<?>> getAllInterface(Class<?> cls, InterfaceFilter filter) {
+    public static List<Class<?>> getAllInterface(Class<?> cls, Filter filter) {
         List<Class<?>> list = new ArrayList<Class<?>>();
         if (cls == null) {
             return list;
@@ -940,7 +940,7 @@ public class ClassUtils {
      * @param filter 接口的过滤器
      * @param list   存储接口的集合
      */
-    private static void loadAllInterface(Class<?> cls, InterfaceFilter filter, List<Class<?>> list) {
+    private static void loadAllInterface(Class<?> cls, Filter filter, List<Class<?>> list) {
         Class<?>[] array = cls.getInterfaces();
         if (array != null && array.length > 0) {
             for (Class<?> c : array) { // 判断是否有重复接口
@@ -1163,5 +1163,17 @@ public class ClassUtils {
         } catch (Throwable e) {
             return null;
         }
+    }
+
+    public interface Filter {
+
+        /**
+         * 过滤信息
+         *
+         * @param cls  接口的类信息
+         * @param name 接口的全名
+         * @return 返回true表示接受接口 false表示不接受接口
+         */
+        boolean accept(Class<?> cls, String name);
     }
 }

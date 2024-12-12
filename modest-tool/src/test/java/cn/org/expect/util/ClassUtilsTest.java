@@ -196,7 +196,7 @@ public class ClassUtilsTest {
     @Test
     public void testgetAllInterface() {
         Class<?> cls = ArrayDeque.class;
-        List<Class<?>> list = ClassUtils.getAllInterface(cls, new InterfaceFilter() {
+        List<Class<?>> list = ClassUtils.getAllInterface(cls, new ClassUtils.Filter() {
             public boolean accept(Class<?> cls, String name) {
                 return !name.startsWith("java.");
             }

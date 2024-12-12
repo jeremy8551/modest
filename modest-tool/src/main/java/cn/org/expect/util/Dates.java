@@ -158,7 +158,7 @@ public final class Dates {
      * @param timeout   超时时间（单位：毫秒），小于等于零表示不设置超时时间
      * @return 返回执行等待条件抛出的异常信息，超时返回 {@linkplain TimeoutException}，null表示没有异常
      */
-    public static Throwable waitFor(WaitForCondition condition, long wait, long timeout) {
+    public static Throwable waitFor(Condition condition, long wait, long timeout) {
         if (condition == null) {
             throw new IllegalArgumentException();
         }
@@ -2621,4 +2621,16 @@ public final class Dates {
         return list;
     }
 
+    /**
+     * 等待条件
+     */
+    public interface Condition {
+
+        /**
+         * 等待条件
+         *
+         * @return 返回true表示继续等待，false表示终止
+         */
+        boolean test();
+    }
 }

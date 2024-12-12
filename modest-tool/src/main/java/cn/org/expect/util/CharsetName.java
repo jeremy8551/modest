@@ -27,5 +27,4 @@ public interface CharsetName {
      * @param charsetName 字符集名称
      */
     void setCharsetName(String charsetName);
-
 }
