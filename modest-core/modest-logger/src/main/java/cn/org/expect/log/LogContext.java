@@ -13,20 +13,6 @@ import cn.org.expect.util.ResourceMessageBundle;
 public interface LogContext {
 
     /**
-     * 返回类加载器
-     *
-     * @return 类加载器
-     */
-    ClassLoader getClassLoader();
-
-    /**
-     * 设置类加载器
-     *
-     * @param classLoader 类加载器
-     */
-    void setClassLoader(ClassLoader classLoader);
-
-    /**
      * 设置日志输出级别
      *
      * @param name  包名或类名
@@ -44,6 +30,13 @@ public interface LogContext {
      * @return 日志级别
      */
     LogLevel getLevel(Class<?> type);
+
+    /**
+     * 设置国际化资源接口
+     *
+     * @param resourceBundle 国际化资源接口
+     */
+    void setResourceBundle(ResourceMessageBundle resourceBundle);
 
     /**
      * 返回国际化资源接口

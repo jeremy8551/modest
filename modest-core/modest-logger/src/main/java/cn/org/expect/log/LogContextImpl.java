@@ -1,4 +1,4 @@
-package cn.org.expect.log.cxt;
+package cn.org.expect.log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,22 +6,13 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import cn.org.expect.log.Appender;
-import cn.org.expect.log.Log;
-import cn.org.expect.log.LogBuilder;
-import cn.org.expect.log.LogContext;
-import cn.org.expect.log.LogFactory;
-import cn.org.expect.log.LogLevel;
-import cn.org.expect.log.LogLevelAware;
-import cn.org.expect.log.PatternConsoleAppender;
-import cn.org.expect.log.PatternLogBuilder;
-import cn.org.expect.util.ResourceMessageBundle;
-import cn.org.expect.util.ResourceMessageBundleMap;
+import cn.org.expect.LogLevelManager;
 import cn.org.expect.log.slf4j.Slf4jLogBuilder;
 import cn.org.expect.util.CharTable;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.JUL;
+import cn.org.expect.util.ResourceMessageBundle;
 
 /**
  * 日志模块的上下文信息
@@ -31,9 +22,6 @@ import cn.org.expect.util.JUL;
  */
 public class LogContextImpl implements LogContext {
 
-    /** 类加载器 */
-    private ClassLoader classLoader;
-
     /** 日志系统启动的时间 */
     private long startTimeMillis;
 
@@ -41,7 +29,7 @@ public class LogContextImpl implements LogContext {
     private LogBuilder builder;
 
     /** 已注册的日志接口 */
-    private final LogPool alives;
+    private final LogAliveSet alive;
 
     /** 日志级别 */
     private final LogLevelManager levelManager;
@@ -50,17 +38,16 @@ public class LogContextImpl implements LogContext {
     private final List<Appender> appenderList;
 
     /** 国际化信息 */
-    private final ResourceMessageBundleMap resourceBundle;
+    private volatile ResourceMessageBundle resourceBundle;
 
     /**
      * 日志模块的上下文信息
      */
     public LogContextImpl() {
         this.setStartMillis(System.currentTimeMillis());
-        this.alives = new LogPool();
+        this.alive = new LogAliveSet();
         this.levelManager = new LogLevelManager();
         this.appenderList = new ArrayList<Appender>();
-        this.resourceBundle = new ResourceMessageBundleMap();
         this.init();
     }
 
@@ -89,7 +76,7 @@ public class LogContextImpl implements LogContext {
 
     public synchronized void updateLevel(String name, LogLevel level) {
         this.levelManager.put(name, level); // 设置日志级别
-        List<Log> logs = this.alives.get(name);
+        List<Log> logs = this.alive.get(name);
         for (Log log : logs) {
             if (log instanceof LogLevelAware) {
                 LogLevel logLevel = this.levelManager.get(name);
@@ -98,17 +85,12 @@ public class LogContextImpl implements LogContext {
         }
     }
 
-    public ClassLoader getClassLoader() {
-        return classLoader;
-    }
-
-    public void setClassLoader(ClassLoader classLoader) {
-        this.classLoader = classLoader;
-        this.resourceBundle.load(classLoader);
+    public void setResourceBundle(ResourceMessageBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
     }
 
     public ResourceMessageBundle getResourceBundle() {
-        return resourceBundle;
+        return this.resourceBundle;
     }
 
     public void setStartMillis(long startTimeMillis) {
@@ -191,7 +173,7 @@ public class LogContextImpl implements LogContext {
     }
 
     public void addLog(Log log) {
-        this.alives.add(log);
+        this.alive.add(log);
     }
 
     public String toString() {
@@ -219,7 +201,7 @@ public class LogContextImpl implements LogContext {
         ct.addCells("", "");
 
         ct.addCell("alives");
-        ct.addCell(this.alives.toString());
+        ct.addCell(this.alive.toString());
         ct.addCells("", "");
 
         ct.addCell("levelManager");

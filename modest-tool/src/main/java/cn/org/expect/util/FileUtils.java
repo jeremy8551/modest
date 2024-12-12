@@ -54,6 +54,9 @@ public final class FileUtils {
     /** 临时文件目录 */
     private static volatile File tempDir;
 
+    /** 锁 */
+    protected final static Object lock = new Object();
+
     public FileUtils() {
     }
 
@@ -747,7 +750,7 @@ public final class FileUtils {
      */
     public static File getTempDir(String... array) {
         if (tempDir == null) {
-            synchronized (FileUtils.class) {
+            synchronized (lock) {
                 if (tempDir == null) {
                     String value = System.getProperty(PROPERTY_TEMPDIR);
                     if (value != null && value.length() > 0) {
@@ -769,10 +772,10 @@ public final class FileUtils {
     /**
      * 返回临时文件默认的存储目录
      *
-     * @param c true表示自动创建目录 false表示不自动创建目录
+     * @param create true表示自动创建目录 false表示不自动创建目录
      * @return 目录
      */
-    public static File getTempDir(boolean c) {
+    public static File getTempDir(boolean create) {
         List<String> list = new ArrayList<String>(5);
         StringUtils.split(Modest.class.getName().toLowerCase(), '.', list);
 
@@ -784,7 +787,7 @@ public final class FileUtils {
 
         // 创建目录
         File dir = new File(filepath);
-        if (c) {
+        if (create) {
             FileUtils.assertCreateDirectory(dir, true);
         }
 

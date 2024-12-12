@@ -14,5 +14,4 @@ public class EasyBeanFactoryImplTest {
         Assert.assertEquals(context, bean.getContext());
         Assert.assertEquals("test2", bean.getCeshi().getMessage());
     }
-
 }

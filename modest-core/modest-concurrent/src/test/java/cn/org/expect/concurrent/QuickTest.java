@@ -6,7 +6,7 @@ import java.util.List;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.log.cxt.LogConfigAnalysis;
+import cn.org.expect.log.LogSettings;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import org.junit.Assert;
@@ -26,7 +26,7 @@ public class QuickTest {
         File logfile = FileUtils.createTempFile(QuickTest.class.getSimpleName() + ".log");
         System.setProperty("QuickTestLogfile", logfile.getAbsolutePath());
         System.out.println("将日志输出到 file://" + logfile.getAbsolutePath());
-        LogConfigAnalysis.parse(null, ">>${QuickTestLogfile}+,sout-,debug");
+        LogSettings.load(LogFactory.getContext(), ">>${QuickTestLogfile}+,sout-,debug");
         for (int i = 0; i < 30; i++) {
             this.run();
             log.info("");

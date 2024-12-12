@@ -8,7 +8,7 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogTest;
 import cn.org.expect.log.PatternLogBuilder;
 import cn.org.expect.log.apd.file.FileAppender;
-import cn.org.expect.log.cxt.LogContextImpl;
+import cn.org.expect.log.LogContextImpl;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -8,5 +8,4 @@ public class StrAsNumberComparator implements Comparator<String> {
     public int compare(String o1, String o2) {
         return new BigDecimal(StringUtils.trimBlank(o1)).compareTo(new BigDecimal(StringUtils.trimBlank(o2)));
     }
-
 }

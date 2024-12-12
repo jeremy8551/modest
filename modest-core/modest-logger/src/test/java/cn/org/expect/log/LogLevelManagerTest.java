@@ -1,8 +1,8 @@
-package cn.org.expect.log.cxt;
+package cn.org.expect.log;
 
 import java.util.List;
 
-import cn.org.expect.log.LogLevel;
+import cn.org.expect.LogLevelManager;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -40,12 +40,12 @@ public class LogLevelManagerTest {
 
         // 测试排序
         int i = 0;
-        Assert.assertEquals("d.e.t", list.get(i++).name);
-        Assert.assertEquals("d.e", list.get(i++).name);
-        Assert.assertEquals("d", list.get(i++).name);
-        Assert.assertEquals("a.b.c", list.get(i++).name);
-        Assert.assertEquals("a.b", list.get(i++).name);
-        Assert.assertEquals("a", list.get(i++).name);
+        Assert.assertEquals("d.e.t", list.get(i++).getName());
+        Assert.assertEquals("d.e", list.get(i++).getName());
+        Assert.assertEquals("d", list.get(i++).getName());
+        Assert.assertEquals("a.b.c", list.get(i++).getName());
+        Assert.assertEquals("a.b", list.get(i++).getName());
+        Assert.assertEquals("a", list.get(i++).getName());
 
         // 测试包或类的日志级别
         Assert.assertEquals(LogLevel.WARN, m.get("d.e"));

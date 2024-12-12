@@ -113,6 +113,5 @@ public class StringComparator implements Comparator<String>, Cloneable {
             return -super.compare(str1, str2);
         }
     }
-
 }
 

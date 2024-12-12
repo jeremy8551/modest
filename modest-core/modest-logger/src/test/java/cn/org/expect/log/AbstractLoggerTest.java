@@ -1,6 +1,5 @@
 package cn.org.expect.log;
 
-import cn.org.expect.log.cxt.LogContextImpl;
 import org.junit.Assert;
 import org.junit.Test;
 

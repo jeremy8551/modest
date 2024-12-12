@@ -15,7 +15,7 @@ import cn.org.expect.util.StringUtils;
  */
 public class EasyBeanDefineImpl implements EasyBeanDefine {
 
-    /** 组件类 */
+    /** 组件的类信息 */
     protected Class<?> type;
 
     /** 组件管理的模式 */
@@ -100,7 +100,7 @@ public class EasyBeanDefineImpl implements EasyBeanDefine {
      * @param name 组件名
      */
     public void setName(String name) {
-        this.name = name;
+        this.name = StringUtils.defaultString(name, "");
     }
 
     /**
@@ -127,7 +127,7 @@ public class EasyBeanDefineImpl implements EasyBeanDefine {
      * @param description 说明信息
      */
     public void setDescription(String description) {
-        this.description = description;
+        this.description = StringUtils.defaultString(description, "");
     }
 
     public boolean equals(Class<?> cls) {

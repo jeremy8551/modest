@@ -12,8 +12,8 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogTest;
 import cn.org.expect.log.PatternConsoleAppender;
 import cn.org.expect.log.apd.file.FileAppender;
-import cn.org.expect.log.cxt.LogConfigAnalysis;
-import cn.org.expect.log.cxt.LogContextImpl;
+import cn.org.expect.log.LogSettings;
+import cn.org.expect.log.LogContextImpl;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
@@ -26,7 +26,7 @@ public class NoPatternLayoutTest {
         File file = LogTest.createfile(10);
 
         LogContext context = new LogContextImpl();
-        Assert.assertEquals(0, LogConfigAnalysis.parse(context, "info:sout").length);
+        Assert.assertEquals(0, LogSettings.load(context, "info:sout").length);
 
         PatternConsoleAppender appender = context.findAppender(PatternConsoleAppender.class);
         Assert.assertNotNull(appender);
@@ -51,7 +51,7 @@ public class NoPatternLayoutTest {
         File file = LogTest.createfile(40);
 
         LogContext context = new LogContextImpl();
-        Assert.assertEquals(0, LogConfigAnalysis.parse(context, "info:sout").length);
+        Assert.assertEquals(0, LogSettings.load(context, "info:sout").length);
 
         PatternConsoleAppender appender = context.findAppender(PatternConsoleAppender.class);
         Assert.assertNotNull(appender);

@@ -19,16 +19,16 @@ import java.lang.annotation.Target;
 public @interface EasyBean {
 
     /**
-     * 组件名称
+     * 组件名
      *
-     * @return 种类信息
+     * @return 组件名
      */
     String value() default "";
 
     /**
-     * 组件管理模式
+     * 是否使用单例模式
      *
-     * @return true表示组件是单例模式, false表示是原型模式（每次生成的组件都是新创建的）
+     * @return true表示使用单例模式, false表示使用原型模式（每次生成的组件都是新创建的）
      */
     boolean singleton() default false;
 
@@ -40,10 +40,10 @@ public @interface EasyBean {
     boolean lazy() default true;
 
     /**
-     * 排序编号
-     * 如果注册了多个同名的组件导致冲突时，容器使用排序编号最大组件
+     * 权重 <br>
+     * 如果注册了多个同名的组件导致冲突，容器使用权重值最大的组件
      *
-     * @return 默认0，值越大权重越高
+     * @return 值越大权重越高，默认0
      */
     int priority() default 0;
 
@@ -53,5 +53,4 @@ public @interface EasyBean {
      * @return 描述信息
      */
     String description() default "";
-
 }

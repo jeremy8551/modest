@@ -1,13 +1,8 @@
-package cn.org.expect.log.cxt;
+package cn.org.expect.log;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.log.LogContext;
-import cn.org.expect.log.LogFactory;
-import cn.org.expect.log.LogLevel;
-import cn.org.expect.log.PatternConsoleAppender;
-import cn.org.expect.log.PatternLogBuilder;
 import cn.org.expect.log.apd.file.FileAppender;
 import cn.org.expect.log.slf4j.Slf4jLogBuilder;
 import cn.org.expect.util.Ensure;
@@ -20,7 +15,7 @@ import cn.org.expect.util.StringUtils;
  * @author jeremy8551@qq.com
  * @createtime 2023/11/21
  */
-public class LogConfigAnalysis {
+public class LogSettings {
 
     /**
      * 解析日志配置信息
@@ -52,18 +47,14 @@ public class LogConfigAnalysis {
      *                sout+,>>${temp}/file.log
      * @return 返回与日志配置无关的配置信息
      */
-    public static String[] parse(LogContext context, String... args) {
-        if (context == null) {
-            context = LogFactory.getContext();
-        }
-
-        return new LogConfigAnalysis(context).parseSome(args);
+    public static String[] load(LogContext context, String... args) {
+        return new LogSettings(context).load(args);
     }
 
     /** 日志上下文信息 */
-    private LogContext context;
+    private final LogContext context;
 
-    protected LogConfigAnalysis(LogContext context) {
+    protected LogSettings(LogContext context) {
         this.context = Ensure.notNull(context);
     }
 
@@ -73,7 +64,7 @@ public class LogConfigAnalysis {
      * @param args 参数数组
      * @return 返回true表示解析成功 false表示失败
      */
-    protected String[] parseSome(String[] args) {
+    protected String[] load(String[] args) {
         List<String> list = new ArrayList<String>(args.length);
         for (String str : args) {
             String[] array = StringUtils.split(str, ',');
@@ -234,5 +225,4 @@ public class LogConfigAnalysis {
 
         return false;
     }
-
 }

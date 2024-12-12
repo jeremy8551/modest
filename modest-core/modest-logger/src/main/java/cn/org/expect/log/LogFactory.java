@@ -3,8 +3,6 @@ package cn.org.expect.log;
 import cn.org.expect.Modest;
 import cn.org.expect.log.apd.LogEvent;
 import cn.org.expect.log.apd.LogPattern;
-import cn.org.expect.log.cxt.LogConfigAnalysis;
-import cn.org.expect.log.cxt.LogContextImpl;
 import cn.org.expect.util.Ensure;
 
 /**
@@ -24,32 +22,32 @@ public class LogFactory {
     /** 默认的日志格式, 详见{@linkplain LogPattern} */
     public static String DEFAULT_LOG_PATTERN = "%d|%-5.5p|%30.30c|%50.50l|%m%ex%n";
 
+    /** 单例模式 */
+    private static volatile LogContext context;
+
+    /** 锁 */
+    private final static Object lock = new Object();
+
     /**
      * 初始化
      */
     private LogFactory() {
     }
 
-    /** 单例模式 */
-    private static volatile LogContext CONTEXT;
-
-    /** 锁 */
-    private final static Object LOCK = new Object();
-
     /**
-     * 返回日志模块上下文信息
+     * 返回单例模式的日志上下文信息
      *
-     * @return 上下文信息
+     * @return 日志上下文信息
      */
     public static LogContext getContext() {
-        if (CONTEXT == null) {
-            synchronized (LOCK) {
-                if (CONTEXT == null) {
-                    CONTEXT = new LogContextImpl();
+        if (context == null) {
+            synchronized (lock) {
+                if (context == null) {
+                    context = new LogContextImpl();
                 }
             }
         }
-        return CONTEXT;
+        return context;
     }
 
     /**
@@ -79,7 +77,7 @@ public class LogFactory {
      * @param context         日志模块上下文信息
      * @param type            日志归属的类
      * @param fqcn            用于定位输出日志的代码位置信息的标识符，详见 {@linkplain LogEvent#setFqcn(String)}
-     * @param dynamicCategory true表示动态生成日志接口归属的类名, false表示使用 {@code type} 作为日志接口归属的类名
+     * @param dynamicCategory true表示使用 StackTraceElement 动态生成日志归属的类名, false表示使用 {@code type} 作为日志接口归属的类名
      * @return 日志接口
      */
     public synchronized static Log getLog(LogContext context, Class<?> type, String fqcn, boolean dynamicCategory) {
@@ -114,10 +112,10 @@ public class LogFactory {
     /**
      * 设置日志参数
      *
-     * @param args 参数数组，详见 {@linkplain LogConfigAnalysis#parse(LogContext, String...)}
+     * @param args 参数数组，详见 {@linkplain LogSettings#load(LogContext, String...)}
      */
     public static synchronized void set(String... args) {
         LogContext context = LogFactory.getContext();
-        LogConfigAnalysis.parse(context, args);
+        LogSettings.load(context, args);
     }
 }

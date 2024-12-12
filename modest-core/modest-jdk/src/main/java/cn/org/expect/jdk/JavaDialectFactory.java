@@ -10,6 +10,9 @@ import cn.org.expect.util.Settings;
  */
 public class JavaDialectFactory {
 
+    /** 锁 */
+    protected final static Object lock = new Object();
+
     /** JDK方言 */
     private volatile static JavaDialect DIALECT;
 
@@ -20,7 +23,7 @@ public class JavaDialectFactory {
      */
     public static JavaDialect get() {
         if (DIALECT == null) {
-            synchronized (JavaDialectFactory.class) {
+            synchronized (lock) {
                 if (DIALECT == null) {
                     DIALECT = new JavaDialectFactory().loadDialect();
                 }

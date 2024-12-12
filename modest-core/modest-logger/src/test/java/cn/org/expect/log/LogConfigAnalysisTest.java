@@ -1,14 +1,8 @@
-package cn.org.expect.log.cxt;
+package cn.org.expect.log;
 
 import java.io.File;
 import java.io.IOException;
 
-import cn.org.expect.log.Log;
-import cn.org.expect.log.LogContext;
-import cn.org.expect.log.LogFactory;
-import cn.org.expect.log.LogLevel;
-import cn.org.expect.log.PatternConsoleAppender;
-import cn.org.expect.log.PatternLogBuilder;
 import cn.org.expect.log.slf4j.Slf4jLogBuilder;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.FileUtils;
@@ -22,7 +16,7 @@ public class LogConfigAnalysisTest {
     @Test
     public void test1() {
         LogContext context = new LogContextImpl();
-        Assert.assertEquals(0, LogConfigAnalysis.parse(context, "sout:trace").length);
+        Assert.assertEquals(0, LogSettings.load(context, "sout:trace").length);
         Assert.assertEquals(PatternLogBuilder.class, context.getBuilder().getClass());
 
         Log log = LogFactory.getLog(context, LogConfigAnalysisTest.class, null, false);
@@ -42,7 +36,7 @@ public class LogConfigAnalysisTest {
     public void test2() {
         System.setProperty(LogFactory.PROPERTY_LOG_SOUT, "");
         LogContext context = new LogContextImpl();
-        Assert.assertEquals(0, LogConfigAnalysis.parse(context, "error:sout+").length);
+        Assert.assertEquals(0, LogSettings.load(context, "error:sout+").length);
         Assert.assertEquals(PatternLogBuilder.class, context.getBuilder().getClass());
 
         Log log = LogFactory.getLog(context, LogConfigAnalysisTest.class, null, false);
@@ -60,13 +54,13 @@ public class LogConfigAnalysisTest {
     @Test
     public void test3() {
         LogContext context = new LogContextImpl();
-        Assert.assertEquals(1, LogConfigAnalysis.parse(context, "slf4j|info").length);
+        Assert.assertEquals(1, LogSettings.load(context, "slf4j|info").length);
     }
 
     @Test
     public void test4() {
         LogContext context = new LogContextImpl();
-        Assert.assertEquals(0, LogConfigAnalysis.parse(context, "slf4j:").length);
+        Assert.assertEquals(0, LogSettings.load(context, "slf4j:").length);
         Assert.assertEquals(Slf4jLogBuilder.class, context.getBuilder().getClass());
     }
 
@@ -74,7 +68,7 @@ public class LogConfigAnalysisTest {
     public void test5() {
         try {
             LogContext context = new LogContextImpl();
-            LogConfigAnalysis.parse(context, "sout:sout+");
+            LogSettings.load(context, "sout:sout+");
             Assert.fail();
         } catch (Exception e) {
             e.printStackTrace();
@@ -95,7 +89,7 @@ public class LogConfigAnalysisTest {
         Assert.assertEquals(content, FileUtils.readline(logfile, charsetName, 0));
 
         LogContext context = new LogContextImpl();
-        Assert.assertEquals(0, LogConfigAnalysis.parse(context, ">" + logfile).length);
+        Assert.assertEquals(0, LogSettings.load(context, ">" + logfile).length);
         Log log = LogFactory.getLog(context, this.getClass());
 
         log.info("");
@@ -115,7 +109,7 @@ public class LogConfigAnalysisTest {
         Assert.assertEquals(content, FileUtils.readline(logfile, charsetName, 0));
 
         LogContext context = new LogContextImpl();
-        Assert.assertEquals(0, LogConfigAnalysis.parse(context, ">>" + logfile).length);
+        Assert.assertEquals(0, LogSettings.load(context, ">>" + logfile).length);
         Log log = LogFactory.getLog(context, this.getClass());
 
         log.info("ceshi");
@@ -128,12 +122,12 @@ public class LogConfigAnalysisTest {
     @Test
     public void test8() {
         LogContext context = new LogContextImpl();
-        Assert.assertEquals(0, LogConfigAnalysis.parse(context, "sout+:info").length);
+        Assert.assertEquals(0, LogSettings.load(context, "sout+:info").length);
         Log log = LogFactory.getLog(context, this.getClass());
 
         Assert.assertFalse(log.isDebugEnabled());
         Assert.assertTrue(log.isInfoEnabled());
-        Assert.assertEquals(0, LogConfigAnalysis.parse(context, "error", "debug").length);
+        Assert.assertEquals(0, LogSettings.load(context, "error", "debug").length);
         Assert.assertTrue(log.isDebugEnabled());
     }
 
@@ -143,7 +137,7 @@ public class LogConfigAnalysisTest {
         String charsetName = Settings.getFileEncoding();
 
         LogContext context = new LogContextImpl();
-        Assert.assertEquals(0, LogConfigAnalysis.parse(context, ">>" + logfile + "+").length);
+        Assert.assertEquals(0, LogSettings.load(context, ">>" + logfile + "+").length);
         Log log = LogFactory.getLog(context, this.getClass());
 
         String str = "ceshi";
@@ -164,7 +158,7 @@ public class LogConfigAnalysisTest {
         String charsetName = Settings.getFileEncoding();
 
         LogContext context = new LogContextImpl();
-        Assert.assertEquals(0, LogConfigAnalysis.parse(context, ">>" + logfile + "+%-5.5p|%d|%30.30c|%50.50l|%m%ex%n", "sout+%-5.5p|%d|%30.30c|%50.50l|%m%ex%n").length);
+        Assert.assertEquals(0, LogSettings.load(context, ">>" + logfile + "+%-5.5p|%d|%30.30c|%50.50l|%m%ex%n", "sout+%-5.5p|%d|%30.30c|%50.50l|%m%ex%n").length);
         Log log = LogFactory.getLog(context, this.getClass());
 
         String str = "ceshi";

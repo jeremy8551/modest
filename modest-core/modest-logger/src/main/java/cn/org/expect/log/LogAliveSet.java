@@ -1,4 +1,4 @@
-package cn.org.expect.log.cxt;
+package cn.org.expect.log;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,30 +6,30 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.WeakHashMap;
 
-import cn.org.expect.log.Log;
+import cn.org.expect.LogLevelManager;
 import cn.org.expect.util.CharTable;
 
 /**
- * 日志池
- * 用于保存所有已注册还存活的日志接口
+ * 存活的日志集合（保存所有已注册还存活的日志接口）
  *
  * @author jeremy8551@qq.com
  * @createtime 2023/11/21
  */
-public class LogPool {
+public class LogAliveSet {
 
     /** 还存活的日志接口 */
-    private WeakHashMap<String, Log> map;
+    private final WeakHashMap<String, Log> map;
 
     /** 按创建日志的顺序保存日志接口归属的类名 */
-    private LinkedHashSet<String> names;
+    private final LinkedHashSet<String> names;
 
     /**
      * 日志池
      */
-    public LogPool() {
-        this.map = new WeakHashMap<String, Log>(40);
-        this.names = new LinkedHashSet<String>(this.map.size());
+    public LogAliveSet() {
+        int size = 40;
+        this.map = new WeakHashMap<String, Log>(size);
+        this.names = new LinkedHashSet<String>(size);
     }
 
     /**

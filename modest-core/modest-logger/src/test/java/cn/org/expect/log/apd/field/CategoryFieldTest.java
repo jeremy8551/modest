@@ -3,7 +3,7 @@ package cn.org.expect.log.apd.field;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.PatternLogBuilder;
 import cn.org.expect.log.apd.LogAppender;
-import cn.org.expect.log.cxt.LogContextImpl;
+import cn.org.expect.log.LogContextImpl;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,5 +23,4 @@ public class CategoryFieldTest {
         a.close();
         Assert.assertNotNull(a.getName());
     }
-
 }

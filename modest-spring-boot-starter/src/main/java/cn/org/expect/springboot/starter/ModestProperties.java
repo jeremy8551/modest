@@ -3,7 +3,7 @@ package cn.org.expect.springboot.starter;
 import java.util.List;
 
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.log.cxt.LogConfigAnalysis;
+import cn.org.expect.log.LogSettings;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
@@ -76,7 +76,7 @@ public class ModestProperties {
         }
 
         public void setLevel(String level) {
-            LogConfigAnalysis.parse(LogFactory.getContext(), level);
+            LogSettings.load(LogFactory.getContext(), level);
             this.level = level;
         }
 
@@ -86,7 +86,7 @@ public class ModestProperties {
 
         public void setPackages(List<String> packages) {
             for (String expression : packages) {
-                LogConfigAnalysis.parse(LogFactory.getContext(), expression);
+                LogSettings.load(LogFactory.getContext(), expression);
             }
             this.packages = packages;
         }

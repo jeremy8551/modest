@@ -9,7 +9,6 @@ import java.util.List;
 
 import cn.org.expect.Modest;
 import cn.org.expect.log.apd.file.FileAppender;
-import cn.org.expect.log.cxt.LogContextImpl;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;

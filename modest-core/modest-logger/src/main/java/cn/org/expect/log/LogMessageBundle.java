@@ -24,7 +24,7 @@ public class LogMessageBundle {
      * @return 返回true表示是国际化信息，false表示不是
      */
     public boolean isResourceBundle(String key) {
-        return this.resourceBundle.contains(key);
+        return this.resourceBundle != null && this.resourceBundle.contains(key);
     }
 
     /**

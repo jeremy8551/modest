@@ -10,10 +10,15 @@ import cn.org.expect.ioc.scan.BeanClassScanner;
 import cn.org.expect.ioc.scan.EasyScanPatternList;
 import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.log.cxt.LogConfigAnalysis;
+import cn.org.expect.log.LogSettings;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Ensure;
+import cn.org.expect.util.ResourceMessageBundle;
+import cn.org.expect.util.ResourceMessageBundleMap;
+import cn.org.expect.util.StrAsIntComparator;
+import cn.org.expect.util.StrAsNumberComparator;
+import cn.org.expect.util.StringComparator;
 
 /**
  * 容器上下文信息
@@ -93,27 +98,32 @@ public class DefaultEasyContext implements EasyContext {
      *
      * @param classLoader 类加载器
      * @param args        参数数组 <br>
-     *                    设置日志级别，规则详见: {@linkplain LogConfigAnalysis#parse(LogContext, String...)} <br>
+     *                    设置日志级别，规则详见: {@linkplain LogSettings#load(LogContext, String...)} <br>
      *                    设置扫描包名，如：org.apache,org.spring
      */
     public DefaultEasyContext(ClassLoader classLoader, String... args) {
         this.setClassLoader(classLoader);
         this.setArgument(args);
 
+        // 加载资源文件
+        ResourceMessageBundle resourceBundle = new ResourceMessageBundleMap(classLoader);
+
         // 加载日志模块参数
         LogContext logContext = LogFactory.getContext();
-        logContext.setClassLoader(classLoader);
-        String[] configs = LogConfigAnalysis.parse(logContext, args);
+        logContext.setResourceBundle(resourceBundle);
+        String[] params = LogSettings.load(logContext, args); // 解析日志参数，并从参数数组中删除日志相关的参数
 
         // 扫描并加载组件
         EasyScanPatternList list = new EasyScanPatternList();
         list.addProperty();
-        list.addArgument(configs);
+        list.addArgument(params);
         list.addGroupID();
         String[] arguments = list.toArray();
 
         this.init();
-        this.addSelf();
+        Ensure.isTrue(this.addSingletonBean(this)); // 注册容器上下文信息
+        Ensure.isTrue(this.addSingletonBean(resourceBundle)); // 注册国际化资源信息
+        this.addBeans(); // 注册其他组件
         this.scanPackages(arguments);
     }
 
@@ -128,17 +138,6 @@ public class DefaultEasyContext implements EasyContext {
         this.eventManager = new EasyBeanEventManager(this);
         this.builders = new EasyBeanBuilderManager(this);
         this.name = EasySerialFactory.createContextName();
-    }
-
-    /**
-     * 注册容器上下文信息
-     */
-    protected void addSelf() {
-        EasyBeanDefineImpl beanInfo = new EasyBeanDefineImpl(this.getClass());
-        beanInfo.setSingleton(true);
-        beanInfo.setLazy(false);
-        beanInfo.setBean(this);
-        this.addBean(beanInfo);
     }
 
     public EasyContext getParent() {
@@ -208,8 +207,27 @@ public class DefaultEasyContext implements EasyContext {
         return this.iocManager.getBean(type, args);
     }
 
-    public boolean addBean(Class<?> type) {
-        return this.addBean(new EasyBeanDefineImpl(type));
+    public boolean addSingletonBean(Object bean) {
+        Ensure.notNull(bean);
+        EasyBeanDefineImpl beanInfo = new EasyBeanDefineImpl(bean.getClass());
+        beanInfo.setSingleton(true); // 默认单例模式
+        beanInfo.setLazy(false); // 编程方式添加单例对象，延迟加载方式设置为false
+        beanInfo.setBean(bean);
+        return this.addBean(beanInfo);
+    }
+
+    public boolean addBean(Class<?> beanClass, String name, boolean singleton, boolean lazy, int priority, String description) {
+        EasyBeanDefineImpl beanInfo = new EasyBeanDefineImpl(beanClass);
+        beanInfo.setName(name);
+        beanInfo.setSingleton(singleton);
+        beanInfo.setLazy(lazy);
+        beanInfo.setPriority(priority);
+        beanInfo.setDescription(description);
+        return this.addBean(beanInfo);
+    }
+
+    public boolean addBean(Class<?> beanClass) {
+        return this.addBean(new EasyBeanDefineImpl(beanClass));
     }
 
     public synchronized boolean addBean(EasyBeanDefine beanInfo) {
@@ -293,5 +311,24 @@ public class DefaultEasyContext implements EasyContext {
 
     public String getName() {
         return this.name;
+    }
+
+    /**
+     * 注册组件
+     */
+    protected void addBeans() {
+        Ensure.isTrue(this.addBean(StrAsIntComparator.class, "int", false, true, 0, "字符串作为整数的比较规则"));
+        Ensure.isTrue(this.addBean(StrAsNumberComparator.class, "number", false, true, 0, "字符串作为浮点数的比较规则"));
+        Ensure.isTrue(this.addBean(StringComparator.class, "string", false, true, 0, "字符串比较规则"));
+
+        Class<Object> type1 = ClassUtils.forName("cn.org.expect.concurrent.ThreadSourceImpl");
+        if (type1 != null) {
+            Ensure.isTrue(this.addBean(type1, "", true, true, 0, "线程池"));
+        }
+
+        Class<Object> type2 = ClassUtils.forName("cn.org.expect.expression.AnalysisImpl");
+        if (type2 != null) {
+            Ensure.isTrue(this.addBean(type2, "", false, true, 0, "脚本语句分析器"));
+        }
     }
 }

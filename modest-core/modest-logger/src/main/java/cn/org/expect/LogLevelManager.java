@@ -1,4 +1,4 @@
-package cn.org.expect.log.cxt;
+package cn.org.expect;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +28,7 @@ public class LogLevelManager {
     }
 
     /** 日志级别配置信息 */
-    private List<Entry> list;
+    private final List<Entry> list;
 
     /** 默认日志级别 */
     private LogLevel root;
@@ -128,6 +128,14 @@ public class LogLevelManager {
         public Entry(String name, LogLevel level) {
             this.name = name;
             this.level = level;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public LogLevel getLevel() {
+            return level;
         }
     }
 }

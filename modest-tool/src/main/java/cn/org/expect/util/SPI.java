@@ -201,6 +201,4 @@ public class SPI<E> {
     public String toString() {
         return SPI.class.getSimpleName() + "[" + this.service.getName() + "]";
     }
-
 }
-

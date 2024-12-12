@@ -18,7 +18,7 @@ import cn.org.expect.jdk.JavaDialect;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.log.cxt.LogConfigAnalysis;
+import cn.org.expect.log.LogSettings;
 import cn.org.expect.test.annotation.RunIf;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.ClassUtils;
@@ -59,7 +59,7 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
 
     @Override
     public void run(RunNotifier notifier) {
-        LogConfigAnalysis.parse(null, "sout+");
+        LogSettings.load(LogFactory.getContext(), "sout+");
         log = LogFactory.getLog(ModestRunner.class);
 
         String line = StringUtils.left("", 100, '-');

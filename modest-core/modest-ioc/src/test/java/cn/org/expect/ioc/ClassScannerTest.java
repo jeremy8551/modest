@@ -43,5 +43,4 @@ public class ClassScannerTest {
         Assert.assertTrue(exists);
         Assert.assertTrue(exists1);
     }
-
 }

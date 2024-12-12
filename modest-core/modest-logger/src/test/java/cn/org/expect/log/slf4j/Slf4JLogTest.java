@@ -5,7 +5,7 @@ import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogLevel;
 import cn.org.expect.log.apd.DefaultLogTest;
-import cn.org.expect.log.cxt.LogContextImpl;
+import cn.org.expect.log.LogContextImpl;
 import org.junit.Assert;
 import org.junit.Test;
 

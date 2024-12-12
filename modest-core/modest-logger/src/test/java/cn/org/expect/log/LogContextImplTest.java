@@ -1,10 +1,5 @@
-package cn.org.expect.log.cxt;
+package cn.org.expect.log;
 
-import cn.org.expect.log.Log;
-import cn.org.expect.log.LogFactory;
-import cn.org.expect.log.LogLevel;
-import cn.org.expect.log.PatternConsoleAppender;
-import cn.org.expect.log.PatternLogBuilder;
 import cn.org.expect.log.apd.field.CategoryField;
 import cn.org.expect.log.apd.file.FileAppender;
 import org.junit.Assert;
