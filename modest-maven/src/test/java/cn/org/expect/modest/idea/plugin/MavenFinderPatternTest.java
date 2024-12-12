@@ -1,6 +1,6 @@
 package cn.org.expect.modest.idea.plugin;
 
-import cn.org.expect.maven.search.ArtifactSearchUtils;
+import cn.org.expect.maven.search.ArtifactSearchPattern;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -8,14 +8,15 @@ public class MavenFinderPatternTest {
 
     @Test
     public void parseTest() {
-        Assertions.assertEquals("", ArtifactSearchUtils.parse(""));
-        Assertions.assertEquals("1", ArtifactSearchUtils.parse("1"));
-        Assertions.assertEquals("ab", ArtifactSearchUtils.parse("ab"));
-        Assertions.assertEquals("<artifactId>a", ArtifactSearchUtils.parse("<artifactId>a"));
-        Assertions.assertEquals("a</artifactId>", ArtifactSearchUtils.parse("a</artifactId>"));
-        Assertions.assertEquals("a", ArtifactSearchUtils.parse("<artifactId>a</artifactId>"));
-        Assertions.assertEquals("org.test", ArtifactSearchUtils.parse("<artifactId>org.test</artifactId>"));
-        Assertions.assertEquals("org.test", ArtifactSearchUtils.parse("<artifactId> org.test </artifactId>"));
-        Assertions.assertEquals("org.test", ArtifactSearchUtils.parse("  <artifactId> org.test </artifactId>  "));
+        ArtifactSearchPattern pattern = new ArtifactSearchPattern();
+        Assertions.assertEquals("", pattern.parse(""));
+        Assertions.assertEquals("1", pattern.parse("1"));
+        Assertions.assertEquals("ab", pattern.parse("ab"));
+        Assertions.assertEquals("<artifactId>a", pattern.parse("<artifactId>a"));
+        Assertions.assertEquals("a</artifactId>", pattern.parse("a</artifactId>"));
+        Assertions.assertEquals("a", pattern.parse("<artifactId>a</artifactId>"));
+        Assertions.assertEquals("org.test", pattern.parse("<artifactId>org.test</artifactId>"));
+        Assertions.assertEquals("org.test", pattern.parse("<artifactId> org.test </artifactId>"));
+        Assertions.assertEquals("org.test", pattern.parse("  <artifactId> org.test </artifactId>  "));
     }
 }

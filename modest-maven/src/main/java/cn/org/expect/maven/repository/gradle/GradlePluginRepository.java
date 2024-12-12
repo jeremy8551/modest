@@ -12,15 +12,14 @@ import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.EDTJob;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginJob;
 import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.maven.impl.SimpleArtifact;
+import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
 import cn.org.expect.maven.repository.AbstractArtifactRepository;
-import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.ArtifactOperation;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
+import cn.org.expect.maven.repository.ArtifactSearchResultType;
 import cn.org.expect.maven.repository.HttpClient;
-import cn.org.expect.maven.repository.central.PatternSearchResultAnalysis;
-import cn.org.expect.maven.repository.impl.ArtifactSearchResultType;
-import cn.org.expect.maven.repository.impl.MavenArtifactImpl;
-import cn.org.expect.maven.repository.impl.SimpleArtifactSearchResult;
+import cn.org.expect.maven.Artifact;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 
@@ -30,14 +29,11 @@ import cn.org.expect.util.StringUtils;
 @EasyBean(value = "query.use.gradle", priority = 1)
 public class GradlePluginRepository extends AbstractArtifactRepository {
 
-    protected PatternSearchResultAnalysis pattern;
-
-    protected GradlePluginResultAnalysis analysis;
+    protected GradlePluginRepositoryAnalysis analysis;
 
     public GradlePluginRepository(EasyContext ioc) {
-        super(ioc, GradlePluginMavenRepositoryDatabaseEngine.class);
-        this.pattern = new PatternSearchResultAnalysis();
-        this.analysis = new GradlePluginResultAnalysis();
+        super(ioc, GradlePluginRepositoryDatabaseEngine.class);
+        this.analysis = new GradlePluginRepositoryAnalysis();
     }
 
     public ArtifactOperation getSupported() {
@@ -60,6 +56,18 @@ public class GradlePluginRepository extends AbstractArtifactRepository {
             }
 
             public boolean supportCopyMavenDependency() {
+                return false;
+            }
+
+            public boolean supportOpenProjectURL() {
+                return false;
+            }
+
+            public boolean supportOpenIssueURL() {
+                return false;
+            }
+
+            public boolean supportOpenPomFile() {
                 return false;
             }
         };
@@ -133,7 +141,7 @@ public class GradlePluginRepository extends AbstractArtifactRepository {
     public ArtifactSearchResult query(String pattern, int start) throws Exception {
         this.terminate = false;
         String responseBody = this.sendRequest("https://plugins.gradle.org/search?term=" + this.escape(pattern) + "&page=" + (start - 1));
-        if (StringUtils.isBlank(responseBody) || this.terminate) {
+        if (responseBody == null) {
             return null;
         } else {
             return this.analysis.parsePatternResult(responseBody, start);
@@ -143,11 +151,11 @@ public class GradlePluginRepository extends AbstractArtifactRepository {
     public ArtifactSearchResult query(String groupId, String artifactId) throws Exception {
         this.terminate = false;
         String responseBody = this.sendRequest("https://plugins.gradle.org/m2/" + artifactId.replace('.', '/') + "/" + artifactId + ".gradle.plugin/");
-        if (this.terminate || StringUtils.isBlank(responseBody)) {
+        if (responseBody == null) {
             return null;
         }
 
-        List<MavenArtifactImpl> list = this.analysis.parseExtraResult(groupId, artifactId, responseBody);
+        List<SimpleArtifact> list = this.analysis.parseExtraResult(groupId, artifactId, responseBody);
         if (list == null) {
             return null;
         }
@@ -162,28 +170,34 @@ public class GradlePluginRepository extends AbstractArtifactRepository {
         List<EasyJob> jobList = new ArrayList<>();
         List<Artifact> result = new ArrayList<>();
         for (int i = list.size() - 1; i >= 0; i--) {
-            MavenArtifactImpl artifact = list.get(i);
+            SimpleArtifact artifact = list.get(i);
             result.add(artifact);
             jobList.add(new GradleQueryJob(artifact));
         }
         service.execute(new EasyJobReaderImpl(jobList));
+
+        // 搜索结果
         return new SimpleArtifactSearchResult(ArtifactSearchResultType.NO_TOTAL, result, list.size() + 1, list.size(), System.currentTimeMillis(), true);
     }
 
     static class GradleQueryJob extends MavenSearchPluginJob implements EDTJob {
 
-        private final MavenArtifactImpl artifact;
+        private final SimpleArtifact artifact;
 
         private final HttpClient client = new HttpClient();
 
-        public GradleQueryJob(MavenArtifactImpl artifact) {
-            super();
+        public GradleQueryJob(SimpleArtifact artifact) {
+            super("");
             this.artifact = artifact;
         }
 
         public int execute() throws Exception {
-            String html = this.client.sendRequest("https://plugins.gradle.org/plugin/" + this.artifact.getArtifactId() + "/" + this.artifact.getVersion());
-            Matcher compile = StringUtils.compile(html, "Created ([^\\.]+)\\.");
+            String responseBody = this.client.sendRequest("https://plugins.gradle.org/plugin/" + this.artifact.getArtifactId() + "/" + this.artifact.getVersion());
+            if (responseBody == null) {
+                return -1;
+            }
+
+            Matcher compile = StringUtils.compile(responseBody, "Created ([^\\.]+)\\.");
             if (compile != null) {
                 String date = StringUtils.trimBlank(compile.group(1));
                 this.artifact.setTimestamp(Dates.parse(date));
@@ -194,10 +208,6 @@ public class GradlePluginRepository extends AbstractArtifactRepository {
         public void terminate() {
             super.terminate();
             this.client.terminate();
-        }
-
-        public boolean isTerminate() {
-            return super.isTerminate();
         }
     }
 }

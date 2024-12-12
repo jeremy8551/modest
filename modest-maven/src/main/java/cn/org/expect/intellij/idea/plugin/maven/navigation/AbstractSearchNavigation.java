@@ -2,56 +2,168 @@ package cn.org.expect.intellij.idea.plugin.maven.navigation;
 
 import javax.swing.*;
 
-import cn.org.expect.maven.repository.Artifact;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchDownloadJob;
+import cn.org.expect.maven.Artifact;
 import cn.org.expect.util.Ensure;
 import com.intellij.navigation.ItemPresentation;
-import com.intellij.util.TextWithIcon;
 
 public abstract class AbstractSearchNavigation implements MavenSearchNavigation, ItemPresentation {
 
+    /** 序号规则 */
+    protected static volatile long NUMBER = 1; // TODO 使用通用的序号生成器
+
+    /** 层级 */
+    private int depth;
+
+    /** 工件 */
     protected final Artifact artifact;
 
-    protected static volatile long NUMBER = 1;
-
+    /** 序号 */
     protected final long id;
 
-    protected volatile Icon icon;
+    /** 左侧图标 */
+    private volatile Icon leftIcon;
 
-    public AbstractSearchNavigation(Artifact artifact, Icon icon) {
+    /** 右侧图标 */
+    private volatile Icon rightIcon;
+
+    /** 右侧文本 */
+    private String rightText;
+
+    /** true表示折叠，false表示展开 */
+    private volatile boolean fold;
+
+    /** 左侧文本 */
+    private String presentableText;
+
+    /** 左侧小字的文本 */
+    private String locationString;
+
+    public AbstractSearchNavigation(Artifact artifact) {
         this.id = NUMBER++;
         this.artifact = Ensure.notNull(artifact);
-        this.icon = Ensure.notNull(icon);
+        this.fold = true;
+        this.depth = 1;
+    }
+
+    /**
+     * 导航记录名，要保证唯一
+     *
+     * @return 导航记录名
+     */
+    public String getName() {
+        return this.id + ":" + this.artifact.toStandardString();
+    }
+
+    /**
+     * 左侧图标
+     *
+     * @param unused Used to mean if open/close icons for tree renderer. No longer in use. The parameter is only there for API compatibility reason.
+     * @return 图标
+     */
+    public Icon getIcon(boolean unused) {
+        return this.leftIcon;
+    }
+
+    /**
+     * 返回导航记录对象
+     *
+     * @return 导航记录对象
+     */
+    public ItemPresentation getPresentation() {
+        return this;
+    }
+
+    /**
+     * 左键点击导航记录执行的操作
+     *
+     * @param requestFocus {@code true} if focus requesting is necessary
+     */
+    public void navigate(boolean requestFocus) {
     }
 
     public Artifact getArtifact() {
         return artifact;
     }
 
-    public TextWithIcon getRightIcon() {
-        return new TextWithIcon("", this.icon);
+    public void setLeftIcon(Icon icon) {
+        this.leftIcon = icon;
     }
 
-    public void setIcon(Icon icon) {
-        this.icon = icon;
+    public Icon getLeftIcon() {
+        return leftIcon;
     }
 
-    public long getId() {
-        return id;
+    public void setRightIcon(Icon icon) {
+        this.rightIcon = icon;
     }
 
-    public String getName() {
-        return this.id + ":" + this.artifact.toStandardString();
+    public Icon getRightIcon() {
+        return this.rightIcon;
     }
 
-    public ItemPresentation getPresentation() {
-        return this;
+    public void setRightText(String rightText) {
+        this.rightText = rightText;
+    }
+
+    public String getRightText() {
+        return rightText;
+    }
+
+    public void setPresentableText(String text) {
+        this.presentableText = text;
     }
 
     public String getPresentableText() {
-        return this.artifact.getArtifactId();
+        return this.presentableText;
     }
 
-    public void navigate(boolean requestFocus) {
+    public void setLocationString(String text) {
+        this.locationString = text;
+    }
+
+    public String getLocationString() {
+        return this.locationString;
+    }
+
+    public boolean isFold() {
+        return this.fold;
+    }
+
+    /**
+     * 设置是否折叠
+     *
+     * @param fold true表示折叠 false表示展开
+     */
+    public void setFold(boolean fold) {
+        this.fold = fold;
+    }
+
+    public int getDepth() {
+        return depth;
+    }
+
+    public void setDepth(int depth) {
+        this.depth = Ensure.fromOne(depth);
+    }
+
+    public void update(MavenSearch search) {
+        Artifact artifact = this.getArtifact();
+
+        // 如果正在下载工件，则更新图标
+        if (search.getService().isRunning(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(artifact))) { // 正在下载
+            this.setRightIcon(MavenSearchPluginIcon.RIGHT_DOWNLOAD);
+            return;
+        }
+
+        // 如果工件已下载，则更新图标
+        if (search.getLocalRepository().exists(artifact)) {
+            this.setRightIcon(MavenSearchPluginIcon.RIGHT_LOCAL);
+        } else {
+            this.setRightIcon(MavenSearchPluginIcon.RIGHT_REMOTE);
+        }
     }
 
     public boolean equals(Object o) {

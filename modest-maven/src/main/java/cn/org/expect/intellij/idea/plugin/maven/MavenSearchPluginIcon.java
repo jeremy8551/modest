@@ -9,6 +9,8 @@ import com.intellij.openapi.util.IconLoader;
  */
 public class MavenSearchPluginIcon {
 
+    public static final Icon CLASS_LEFT = load("/cn/org/expect/intellij/idea/plugin/maven/maven-search-class-left.svg");
+
     public static final Icon LEFT_FOLD = load("/cn/org/expect/intellij/idea/plugin/maven/maven-repository-left.svg");
 
     public static final Icon LEFT_HAS_QUERY = load("/cn/org/expect/intellij/idea/plugin/maven/maven-repository-left-hasquery.svg");

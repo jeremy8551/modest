@@ -10,13 +10,14 @@ import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.EDTJob;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginJob;
 import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
 import cn.org.expect.maven.repository.AbstractArtifactRepository;
-import cn.org.expect.maven.repository.Artifact;
 import cn.org.expect.maven.repository.ArtifactOperation;
+import cn.org.expect.maven.repository.ArtifactRepositoryDatabaseEngine;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
+import cn.org.expect.maven.repository.ArtifactSearchResultType;
 import cn.org.expect.maven.repository.HttpClient;
-import cn.org.expect.maven.repository.impl.ArtifactSearchResultType;
-import cn.org.expect.maven.repository.impl.SimpleArtifactSearchResult;
+import cn.org.expect.maven.Artifact;
 import cn.org.expect.util.StringUtils;
 
 /**
@@ -25,14 +26,19 @@ import cn.org.expect.util.StringUtils;
 @EasyBean(value = "query.use.central", priority = Integer.MAX_VALUE)
 public class CentralMavenRepository extends AbstractArtifactRepository {
 
-    protected PatternSearchResultAnalysis pattern;
+    /** 分析工具 */
+    protected CentralMavenRepositoryAnalysis analysis;
 
-    protected ExtraSearchResultAnalysis extra;
+    /** 行数 */
+    protected int rows = 200;
+
+    public CentralMavenRepository(EasyContext ioc, Class<? extends ArtifactRepositoryDatabaseEngine> cls) {
+        super(ioc, cls);
+        this.analysis = new CentralMavenRepositoryAnalysis();
+    }
 
     public CentralMavenRepository(EasyContext ioc) {
-        super(ioc, CentralMavenRepositoryDatabaseEngine.class);
-        this.pattern = new PatternSearchResultAnalysis();
-        this.extra = new ExtraSearchResultAnalysis();
+        this(ioc, CentralMavenRepositoryDatabaseEngine.class);
     }
 
     public ArtifactOperation getSupported() {
@@ -87,72 +93,70 @@ public class CentralMavenRepository extends AbstractArtifactRepository {
 
     public ArtifactSearchResult query(String pattern, int start) throws Exception {
         this.terminate = false;
-        String url = "https://search.maven.org/solrsearch/select?q=" + escape(pattern) + "&rows=200&wt=json&start=" + (start - 1); // 构建请求 URL
+        String url = "https://search.maven.org/solrsearch/select?q=" + escape(pattern) + "&rows=" + this.rows + "&wt=json&start=" + (start - 1); // 构建请求 URL
         String responseBody = this.sendRequest(url);
-        if (StringUtils.isBlank(responseBody) || this.terminate) {
+        if (responseBody == null) {
             return null;
+        } else {
+            return this.analysis.parsePatternResult(responseBody).sortByPattern();
         }
-
-        ArtifactSearchResult result = this.pattern.parse(responseBody);
-        result.sortByPattern();
-        return result;
     }
 
     public ArtifactSearchResult query(String groupId, String artifactId) throws Exception {
         this.terminate = false;
 
-        int rows = 200;
-        String url = "https://search.maven.org/solrsearch/select?q=g:" + escape(groupId) + "+AND+a:" + escape(artifactId) + "&core=gav&rows=" + rows + "&wt=json"; // 构建请求 URL
+        String url = "https://search.maven.org/solrsearch/select?q=g:" + escape(groupId) + "+AND+a:" + escape(artifactId) + "&core=gav&rows=" + this.rows + "&wt=json"; // 构建请求 URL
         String responseBody = this.sendRequest(url);
-        if (StringUtils.isBlank(responseBody) || this.terminate) {
+        if (responseBody == null) {
             return null;
         }
 
-        ArtifactSearchResult result = this.extra.parse(responseBody);
-        List<Artifact> list = result.getList();
+        ArtifactSearchResult result = this.analysis.parseExtraResult(responseBody);
 
+        // 使用线程池，并发查询工件所有版本
         ThreadSource threadSource = this.getEasyContext().getBean(ThreadSource.class);
         EasyJobService service = threadSource.getJobService(7);
-
         List<CentralMavenJob> jobList = new ArrayList<>();
         int start = result.size(); // 起始位置
-        while (result.getFoundNumber() > start) {
-            jobList.add(new CentralMavenJob(url, start, this.extra, list));
-            start += rows + 1;
+        while (result.getFoundNumber() > start) { // 拆分任务
+            jobList.add(new CentralMavenJob(url, start, this.analysis, result.getList()));
+            start += this.rows + 1;
         }
-        service.execute(new EasyJobReaderImpl(jobList));
+        service.execute(new EasyJobReaderImpl(jobList)); // 提交到线程池，等待执行完毕
 
-        result.sortByTimeDesc();
-        return new SimpleArtifactSearchResult(ArtifactSearchResultType.LIMIT_PAGE, list, start, result.getFoundNumber(), System.currentTimeMillis(), false);
+        // 搜索结果
+        return new SimpleArtifactSearchResult(ArtifactSearchResultType.ALL, result.sortByTime().getList(), start, result.getFoundNumber(), System.currentTimeMillis(), false);
     }
 
-    static class CentralMavenJob extends MavenSearchPluginJob implements EDTJob {
+    public static class CentralMavenJob extends MavenSearchPluginJob implements EDTJob {
 
         private final String url;
 
         private final int start;
 
-        private final ExtraSearchResultAnalysis extra;
+        private final CentralMavenRepositoryAnalysis analysis;
 
         private final List<Artifact> list;
 
         private final HttpClient client = new HttpClient();
 
-        public CentralMavenJob(String url, int start, ExtraSearchResultAnalysis extra, List<Artifact> list) {
-            super();
+        public CentralMavenJob(String url, int start, CentralMavenRepositoryAnalysis analysis, List<Artifact> list) {
+            super("");
             this.url = url;
             this.start = start;
-            this.extra = extra;
+            this.analysis = analysis;
             this.list = list;
         }
 
         public int execute() throws Exception {
             String responseBody = this.client.sendRequest(this.url + "&start=" + this.start);
-            if (StringUtils.isBlank(responseBody) || this.terminate) {
+            if (responseBody == null) {
                 return -1;
             } else {
-                ArtifactSearchResult next = this.extra.parse(responseBody);
-                list.addAll(next.getList());
+                ArtifactSearchResult next = this.analysis.parseExtraResult(responseBody);
+                synchronized (this.list) {
+                    this.list.addAll(next.getList());
+                }
                 return 0;
             }
         }
@@ -160,10 +164,6 @@ public class CentralMavenRepository extends AbstractArtifactRepository {
         public void terminate() {
             super.terminate();
             this.client.terminate();
-        }
-
-        public boolean isTerminate() {
-            return super.isTerminate();
         }
     }
 }

@@ -2,7 +2,7 @@ package cn.org.expect.maven.repository.central;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.maven.repository.impl.AbstractArtifactDownloader;
+import cn.org.expect.maven.repository.AbstractArtifactDownloader;
 
 @EasyBean(value = "download.use.central", priority = Integer.MAX_VALUE - 1)
 public class CentralArtifactDownloader extends AbstractArtifactDownloader {

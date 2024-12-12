@@ -1,36 +1,41 @@
 package cn.org.expect.intellij.idea.plugin.maven.navigation;
 
-import java.io.File;
-import javax.swing.*;
+import java.util.List;
 
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginUtils;
-import cn.org.expect.maven.repository.Artifact;
-import com.intellij.util.TextWithIcon;
+import cn.org.expect.maven.Artifact;
+import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 
 public class SearchNavigationItem extends AbstractSearchNavigation {
 
-    protected File jarfile;
-
-    public SearchNavigationItem(Artifact artifact, File jarfile) {
-        super(artifact, MavenSearchPluginIcon.RIGHT_REMOTE);
-        this.jarfile = jarfile;
+    public SearchNavigationItem(Artifact artifact) {
+        super(artifact);
+        this.setDepth(2);
+        this.setPresentableText(this.artifact.getVersion());
+        this.setLocationString("");
+        this.setLeftIcon(null);
+        this.setRightIcon(MavenSearchPluginIcon.RIGHT_REMOTE);
+        this.setRightText("");
     }
 
-    public String getPresentableText() {
-        return this.artifact.getVersion();
+    public boolean supportMenu() {
+        return true;
     }
 
-    public String getLocationString() {
-        return "";
+    public boolean supportFold(MavenSearch search) {
+        return false;
     }
 
-    public Icon getIcon(boolean unused) {
-        return null;
+    public void setUnfold(MavenSearch search) {
     }
 
-    public TextWithIcon getRightIcon() {
-        String version = MavenSearchPluginUtils.parseJDKVersion(this.jarfile);
-        return new TextWithIcon(version == null ? "" : version + " ", this.icon);
+    public void setFold(MavenSearch search) {
+    }
+
+    public void unfold(MavenSearch search, List<SearchEverywhereFoundElementInfo> list) {
+    }
+
+    public void fold(MavenSearch search, List<SearchEverywhereFoundElementInfo> list) {
     }
 }

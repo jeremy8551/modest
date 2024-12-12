@@ -47,4 +47,31 @@ public interface ArtifactOperation {
     default boolean supportCopyGradleDependency() {
         return true;
     }
+
+    /**
+     * 是否支持浏览项目地址
+     *
+     * @return 返回 true 表示支持，false 表示不支持
+     */
+    default boolean supportOpenProjectURL() {
+        return true;
+    }
+
+    /**
+     * 是否支持浏览项目错误管理页面
+     *
+     * @return 返回 true 表示支持，false 表示不支持
+     */
+    default boolean supportOpenIssueURL() {
+        return true;
+    }
+
+    /**
+     * 是否支持打开 POM 文件
+     *
+     * @return 返回 true 表示支持，false 表示不支持
+     */
+    default boolean supportOpenPomFile() {
+        return true;
+    }
 }

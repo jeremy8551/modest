@@ -11,24 +11,27 @@ import java.util.concurrent.TimeoutException;
 import java.util.function.Predicate;
 
 import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.concurrent.BaseJob;
 import cn.org.expect.concurrent.Terminate;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
-import cn.org.expect.maven.concurrent.MavenSearchJob;
+import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
+import cn.org.expect.maven.concurrent.ArtifactSearchJob;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.Alarm;
 import com.intellij.util.concurrency.EdtExecutorService;
 import org.jetbrains.annotations.NotNull;
 
 @EasyBean(singleton = true)
-public class MavenSearchExecutorServiceImpl implements MavenSearchExecutorService {
+public class MavenSearchExecutorServiceImpl implements ArtifactSearchExecutorService {
     private final static Log log = LogFactory.getLog(MavenSearchExecutorServiceImpl.class);
 
     public final static String PARAMETER = "Alarm";
 
+    /** 公用 SearchEverywhereUI 使用的线程池，防止多线程并发修改 JList 中的数据 */
     private volatile Alarm service;
 
+    /** 还未执行完毕的任务集合 */
     private final List<Runnable> list;
 
     public MavenSearchExecutorServiceImpl() {
@@ -42,7 +45,8 @@ public class MavenSearchExecutorServiceImpl implements MavenSearchExecutorServic
     }
 
     public <T> T getFirst(Class<T> cls, Predicate<T> condition) {
-        for (Runnable task : this.list) {
+        for (int i = 0; i < this.list.size(); i++) {
+            Runnable task = this.list.get(i);
             if (cls.isAssignableFrom(task.getClass()) && condition.test((T) task)) {
                 return (T) task;
             }
@@ -51,7 +55,8 @@ public class MavenSearchExecutorServiceImpl implements MavenSearchExecutorServic
     }
 
     public <T> boolean isRunning(Class<T> cls, Predicate<T> condition) {
-        for (Runnable task : this.list) {
+        for (int i = 0; i < this.list.size(); i++) {
+            Runnable task = this.list.get(i);
             if (cls.isAssignableFrom(task.getClass()) && condition.test((T) task)) {
                 return true;
             }
@@ -60,7 +65,8 @@ public class MavenSearchExecutorServiceImpl implements MavenSearchExecutorServic
     }
 
     public <T> void terminate(Class<T> cls, Predicate<T> condition) {
-        for (Runnable task : this.list) {
+        for (int i = 0; i < this.list.size(); i++) {
+            Runnable task = this.list.get(i);
             if (cls.isAssignableFrom(task.getClass()) && condition.test((T) task)) {
                 if (task instanceof Terminate) {
                     ((Terminate) task).terminate();
@@ -74,8 +80,8 @@ public class MavenSearchExecutorServiceImpl implements MavenSearchExecutorServic
     }
 
     public void addJob(Object command) {
-        if (command instanceof MavenSearchJob) {
-            MavenSearchJob job = (MavenSearchJob) command;
+        if (command instanceof ArtifactSearchJob) {
+            ArtifactSearchJob job = (ArtifactSearchJob) command;
             job.setService(this);
             this.list.add(job);
         }
@@ -84,24 +90,32 @@ public class MavenSearchExecutorServiceImpl implements MavenSearchExecutorServic
     public void execute(@NotNull Runnable command) {
         this.addJob(command);
 
+        // 任务名
+        String taskName;
+        if (command instanceof BaseJob) {
+            taskName = ((BaseJob) command).getName();
+        } else {
+            taskName = command.getClass().getName();
+        }
+
         if (command instanceof EDTJob) {
             if (this.service != null && !this.service.isDisposed()) {
                 if (log.isDebugEnabled()) {
-                    log.debug("{} execute {} ..", this.service.getClass().getSimpleName(), command.getClass().getName());
+                    log.debug("{} execute {} ..", this.service.getClass().getSimpleName(), taskName);
                 }
                 this.service.addRequest(command, 0);
                 return;
             }
 
             if (log.isDebugEnabled()) {
-                log.debug("{} execute {} ..", EdtExecutorService.class.getSimpleName(), command.getClass().getName());
+                log.debug("{} execute {} ..", EdtExecutorService.class.getSimpleName(), taskName);
             }
             EdtExecutorService.getInstance().execute(command);
             return;
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("{} run {} ..", ApplicationManager.class.getSimpleName(), command.getClass().getName());
+            log.debug("{} run {} ..", ApplicationManager.class.getSimpleName(), taskName);
         }
         ApplicationManager.getApplication().executeOnPooledThread(command);
     }

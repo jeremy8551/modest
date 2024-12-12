@@ -1,6 +1,12 @@
 package cn.org.expect.maven.repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cn.org.expect.concurrent.Terminate;
+import cn.org.expect.maven.Artifact;
+import cn.org.expect.util.NetUtils;
+import cn.org.expect.util.StringUtils;
 
 /**
  * 工件仓库
@@ -52,4 +58,19 @@ public interface ArtifactRepository extends Terminate {
      * 终止查询
      */
     void terminate();
+
+    /**
+     * 生成工件的 URI
+     *
+     * @param artifact 工件
+     * @return URI
+     */
+    default String toURI(Artifact artifact) {
+        List<String> list = new ArrayList<>();
+        list.add(this.getAddress());
+        StringUtils.split(artifact.getGroupId(), '.', list);
+        list.add(artifact.getArtifactId());
+        list.add(artifact.getVersion());
+        return NetUtils.joinUri(list.toArray(new String[0]));
+    }
 }

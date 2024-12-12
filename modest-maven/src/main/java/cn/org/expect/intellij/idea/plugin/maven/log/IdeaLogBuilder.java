@@ -13,7 +13,7 @@ import cn.org.expect.log.LogContext;
 public class IdeaLogBuilder implements LogBuilder {
 
     public Log create(LogContext context, Class<?> type, String fqcn, boolean dynamicCategory) throws Exception {
-        IdeaLog log = new IdeaLog(type);
+        IdeaLog log = new IdeaLog(context, type);
         context.addLog(log);
         return log;
     }

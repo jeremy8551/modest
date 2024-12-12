@@ -4,8 +4,7 @@ import java.awt.*;
 import java.awt.event.MouseListener;
 import javax.swing.*;
 
-import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.ui.components.JBList;
 
@@ -26,10 +25,20 @@ public class SearchDisplay extends SearchDisplayModel {
         return this.list.locationToIndex(location);
     }
 
+    /**
+     * 选中导航记录
+     *
+     * @param index 位置信息，从0开始
+     */
     public void setSelectedIndex(int index) {
         this.list.setSelectedIndex(index);
     }
 
+    /**
+     * 返回 JList 的横坐标
+     *
+     * @return 横坐标
+     */
     public int getX() {
         return this.list.getX();
     }
@@ -38,10 +47,22 @@ public class SearchDisplay extends SearchDisplayModel {
         return this.list.getCellBounds(index0, index1);
     }
 
+    /**
+     * 显示菜单
+     *
+     * @param menu 菜单
+     * @param x    横坐标
+     * @param y    纵坐标
+     */
     public void showMenu(JPopupMenu menu, int x, int y) {
         menu.show(this.list, x, y);
     }
 
+    /**
+     * 设置在等待时显示的进度文本
+     *
+     * @param message 文本
+     */
     public void setProgress(String message) {
         try {
             this.list.setEmptyText(message);
@@ -51,6 +72,9 @@ public class SearchDisplay extends SearchDisplayModel {
         }
     }
 
+    /**
+     * 重新渲染搜索结果
+     */
     public void paint() {
         try {
             this.list.revalidate();
@@ -63,40 +87,25 @@ public class SearchDisplay extends SearchDisplayModel {
     /**
      * 选中记录
      */
-    public void select(SearchNavigationHead selectHead, SearchNavigationItem selectItem) {
+    public void select(MavenSearchNavigation selected) {
         int selectedIndex = -1;
-
-        SearchListModel listModel = this.model;
-        if (selectHead != null) {
-            for (int i = 0, size = listModel.getSize(); i < size; i++) {
+        if (selected != null) {
+            SearchListModel listModel = this.model;
+            for (int i = listModel.getSize() - 1; i >= 0; i--) {
                 Object object = listModel.getElementAt(i);
-                if (object instanceof SearchNavigationHead) {
-                    SearchNavigationHead head = (SearchNavigationHead) object;
-                    if (selectHead.getArtifact().equals(head.getArtifact())) {
+                if (object instanceof MavenSearchNavigation) {
+                    MavenSearchNavigation navigation = (MavenSearchNavigation) object;
+                    if (navigation.match(selected)) {
                         selectedIndex = i;
                         break;
                     }
                 }
             }
         }
-
-        if (selectItem != null) {
-            for (int i = 0, size = listModel.getSize(); i < size; i++) {
-                Object object = listModel.getElementAt(i);
-                if (object instanceof SearchNavigationItem) {
-                    SearchNavigationItem item = (SearchNavigationItem) object;
-                    if (selectItem.getArtifact().equals(item.getArtifact())) {
-                        selectedIndex = i;
-                        break;
-                    }
-                }
-            }
-        }
-
         this.select(selectedIndex);
     }
 
-    public void select(int index) {
+    protected void select(int index) {
         try {
             if (index == -1) {
                 this.list.clearSelection();
@@ -109,11 +118,16 @@ public class SearchDisplay extends SearchDisplayModel {
         }
     }
 
+    /**
+     * 设置JList的显示区域
+     *
+     * @param visibleRect 显示区域
+     */
     public void setVisibleRange(Rectangle visibleRect) {
         if (visibleRect == null) {
             return;
         }
-        
+
         int index = -1;
         for (int i = 0; i < this.model.getSize(); i++) {
             Rectangle itemRect = list.getCellBounds(i, i); // 获取第 i 项的矩形区域
@@ -127,6 +141,11 @@ public class SearchDisplay extends SearchDisplayModel {
         }
     }
 
+    /**
+     * 返回JList的显示区域
+     *
+     * @return 显示区域
+     */
     public Rectangle getVisibleRect() {
         return this.list.getVisibleRect();
     }

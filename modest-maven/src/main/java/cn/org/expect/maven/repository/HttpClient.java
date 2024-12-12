@@ -4,14 +4,16 @@ import java.net.UnknownHostException;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.MavenRuntimeException;
 import cn.org.expect.util.ClassUtils;
+import cn.org.expect.util.StringUtils;
 import okhttp3.Call;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public class HttpClient {
-    protected final Log log = LogFactory.getLog(this.getClass());
+    protected final static Log log = LogFactory.getLog(HttpClient.class);
 
     /** Http请求 */
     protected volatile Call call;
@@ -23,6 +25,13 @@ public class HttpClient {
         this.terminate = false;
     }
 
+    /**
+     * 发送 Http 请求
+     *
+     * @param url Http请求地址
+     * @return 响应结果，返回null表示失败!
+     * @throws UnknownHostException 不能访问域名
+     */
     public synchronized String sendRequest(String url) throws UnknownHostException {
         Throwable throwable = null;
         int times = 3;
@@ -32,7 +41,8 @@ public class HttpClient {
             }
 
             try {
-                return this.sendURL(url);
+                String result = this.sendURL(url);
+                return StringUtils.isBlank(result) ? null : result;
             } catch (Throwable e) {
                 UnknownHostException cause = ClassUtils.getCause(e, UnknownHostException.class);
                 if (cause != null) {
@@ -48,11 +58,11 @@ public class HttpClient {
         if (this.terminate) {
             return null;
         } else {
-            throw new RuntimeException("try " + times + " times send request, but fail!", throwable);
+            throw new MavenRuntimeException(throwable, "maven.search.error.cannot.send.request.url", url);
         }
     }
 
-    private String sendURL(String url) throws Exception {
+    protected String sendURL(String url) throws Exception {
         if (log.isDebugEnabled()) {
             log.debug("{} send URL: {}", this.getClass().getSimpleName(), url);
         }

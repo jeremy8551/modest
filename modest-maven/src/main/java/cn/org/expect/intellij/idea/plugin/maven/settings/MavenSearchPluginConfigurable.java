@@ -3,15 +3,14 @@ package cn.org.expect.intellij.idea.plugin.maven.settings;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.time.Duration;
 import javax.swing.*;
 
 import cn.org.expect.expression.MillisExpression;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginSettings;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginUtils;
-import cn.org.expect.maven.search.ArtifactOption;
-import cn.org.expect.maven.search.ArtifactSearchMessage;
-import cn.org.expect.maven.search.SimpleArtifactOption;
+import cn.org.expect.maven.impl.SimpleArtifactOption;
+import cn.org.expect.maven.ArtifactOption;
+import cn.org.expect.maven.MavenMessage;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.XMLUtils;
 import com.intellij.openapi.options.Configurable;
@@ -36,6 +35,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
     private JBTextField tabIndex;
     private JBCheckBox tabVisible;
     private JBCheckBox searchInAllTab;
+    private JBCheckBox useParentPom;
     private JBTextField expireTimeMillis;
     private JBLabel expireTimeMillisMemo;
     private JBTextField elementPriority;
@@ -52,13 +52,14 @@ public class MavenSearchPluginConfigurable implements Configurable {
      * @return 配置名称
      */
     public String getDisplayName() {
-        return ArtifactSearchMessage.get("maven.search.settings.display", this.settings.getName());
+        return MavenMessage.get("maven.search.settings.display", this.settings.getName());
     }
 
     public JComponent createComponent() {
         String pluginName = this.settings.getName();
-        String tabName = MavenSearchPluginUtils.getTabName();
-        String allTabName = MavenSearchPluginUtils.getAllTabName();
+        String tabName = this.settings.getTabName();
+        String allTabName = this.settings.getAllTabName();
+        SimpleMavenSearchPluginSettings def = new SimpleMavenSearchPluginSettings();
 
         inputIntervalTime = new JBSlider(100, 2000); // 最小值 0，最大值 100
         inputIntervalTime.setMajorTickSpacing(200); // 主刻度间隔
@@ -69,48 +70,51 @@ public class MavenSearchPluginConfigurable implements Configurable {
         inputIntervalTime.addChangeListener(e -> active.setInputIntervalTime(inputIntervalTime.getValue()));
 
         repository = new JComboBox<>(MavenSearchPluginApplication.get().getRepositoryOptions());
-        repository.addActionListener(e -> active.setRepositoryId(((ArtifactOption) repository.getSelectedItem()).getKey()));
+        repository.addActionListener(e -> active.setRepositoryId(((ArtifactOption) repository.getSelectedItem()).value()));
 
-        autoSwitchTab = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.auto.select.tab", tabName));
+        autoSwitchTab = new JBCheckBox(MavenMessage.get("maven.search.settings.auto.select.tab", tabName));
         autoSwitchTab.addActionListener(e -> active.setAutoSwitchTab(autoSwitchTab.isSelected()));
 
         tabIndex = new JBTextField(10);
         tabIndex.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e) {
-                active.setTabIndex(StringUtils.parseInt(tabIndex.getText(), MavenSearchPluginSettings.DEFAULT_TAB_INDEX));
+                active.setTabIndex(StringUtils.parseInt(tabIndex.getText(), def.getTabIndex()));
                 tabIndex.setText(String.valueOf(active.getTabIndex()));
             }
         });
 
-        tabVisible = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.select.tab", tabName, pluginName));
+        tabVisible = new JBCheckBox(MavenMessage.get("maven.search.settings.select.tab", tabName, pluginName));
         tabVisible.addActionListener(e -> active.setTabVisible(tabVisible.isSelected()));
 
         downloadType = new JComboBox<>(MavenSearchPluginApplication.get().getDownloaderOptions());
-        downloadType.addActionListener(e -> active.setDownloadWay(((ArtifactOption) downloadType.getSelectedItem()).getKey()));
+        downloadType.addActionListener(e -> active.setDownloadWay(((ArtifactOption) downloadType.getSelectedItem()).value()));
 
-        searchInAllTab = new JBCheckBox(ArtifactSearchMessage.get("maven.search.settings.select.tab", allTabName, pluginName));
+        searchInAllTab = new JBCheckBox(MavenMessage.get("maven.search.settings.select.tab", allTabName, pluginName));
         searchInAllTab.addActionListener(e -> active.setUseAllTab(searchInAllTab.isSelected()));
+
+        useParentPom = new JBCheckBox(MavenMessage.get("maven.search.settings.use.parent.pom"));
+        useParentPom.addActionListener(e -> active.setUseParentPom(useParentPom.isSelected()));
 
         expireTimeMillisMemo = new JBLabel("");
         expireTimeMillis = new JBTextField(10);
         expireTimeMillis.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e) {
-                long timeMillis = MavenSearchPluginSettings.DEFAULT_EXPIRE_TIME_MILLIS;
+                long timeMillis = def.getExpireTimeMillis();
                 try {
                     timeMillis = new MillisExpression(expireTimeMillis.getText()).value();
                 } catch (Throwable ignored) {
                 }
                 active.setExpireTimeMillis(timeMillis);
                 expireTimeMillis.setText(String.valueOf(active.getExpireTimeMillis()));
-                expireTimeMillisMemo.setText(MavenSearchPluginUtils.format(timeMillis));
+                expireTimeMillisMemo.setText(formatMillis(timeMillis));
             }
         });
 
         elementPriority = new JBTextField(10);
         elementPriority.addFocusListener(new FocusAdapter() {
             public void focusLost(FocusEvent e) {
-                active.setElementPriority(StringUtils.parseInt(elementPriority.getText(), MavenSearchPluginSettings.DEFAULT_ELEMENT_PRIORITY));
-                elementPriority.setText(String.valueOf(active.getElementPriority()));
+                active.setNavigationPriority(StringUtils.parseInt(elementPriority.getText(), def.getNavigationPriority()));
+                elementPriority.setText(String.valueOf(active.getNavigationPriority()));
             }
         });
 
@@ -123,24 +127,28 @@ public class MavenSearchPluginConfigurable implements Configurable {
         gbc.fill = GridBagConstraints.NONE; // 水平填充
         gbc.weightx = 1.0; // 保持一致的列宽
 
-        String intUnit = ArtifactSearchMessage.get("maven.search.settings.unit.integer");
+        String intUnit = MavenMessage.get("maven.search.settings.unit.integer");
 
-        this.addSeparator(panel, gbc, ArtifactSearchMessage.get("maven.search.settings.group.tab"));
-        this.addRow(panel, gbc, true, tabVisible, ArtifactSearchMessage.get("maven.search.settings.select.tab.description", tabName));
-        this.addRow(panel, gbc, true, searchInAllTab, ArtifactSearchMessage.get("maven.search.settings.select.tab.description", allTabName));
-        this.addRow(panel, gbc, true, autoSwitchTab, ArtifactSearchMessage.get("maven.search.settings.auto.select.tab.description", tabName));
-        this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.tab.position"), tabIndex, new JBLabel(intUnit), ArtifactSearchMessage.get("maven.search.settings.tab.position.description", tabName));
-
-        this.addRow(panel, gbc);
-        this.addSeparator(panel, gbc, ArtifactSearchMessage.get("maven.search.settings.group.search"));
-        this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.tab.default.select.repository"), repository, null, ArtifactSearchMessage.get("maven.search.settings.tab.default.select.repository.description", tabName));
-        this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.debounce.time"), inputIntervalTime, null, ArtifactSearchMessage.get("maven.search.settings.debounce.time.description", pluginName));
-        this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.result.expire.time"), expireTimeMillis, expireTimeMillisMemo, ArtifactSearchMessage.get("maven.search.settings.result.expire.time.description", pluginName));
-        this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.result.priority"), elementPriority, new JBLabel(intUnit), ArtifactSearchMessage.get("maven.search.settings.result.priority.description", pluginName));
+        this.addSeparator(panel, gbc, "maven.search.settings.group.tab");
+        this.addRow(panel, gbc, true, tabVisible, "maven.search.settings.select.tab.description", tabName);
+        this.addRow(panel, gbc, true, searchInAllTab, "maven.search.settings.select.tab.description", allTabName);
+        this.addRow(panel, gbc, true, autoSwitchTab, "maven.search.settings.auto.select.tab.description", tabName);
+        this.addRow(panel, gbc, true, "maven.search.settings.tab.position", tabIndex, new JBLabel(intUnit), "maven.search.settings.tab.position.description", tabName);
 
         this.addRow(panel, gbc);
-        this.addSeparator(panel, gbc, ArtifactSearchMessage.get("maven.search.settings.group.download"));
-        this.addRow(panel, gbc, true, ArtifactSearchMessage.get("maven.search.settings.download.source"), downloadType, null, ArtifactSearchMessage.get("maven.search.settings.download.source.description"));
+        this.addSeparator(panel, gbc, "maven.search.settings.group.search");
+        this.addRow(panel, gbc, true, "maven.search.settings.tab.default.select.repository", repository, null, "maven.search.settings.tab.default.select.repository.description", tabName);
+        this.addRow(panel, gbc, true, "maven.search.settings.debounce.time", inputIntervalTime, null, "maven.search.settings.debounce.time.description", pluginName);
+        this.addRow(panel, gbc, true, "maven.search.settings.result.expire.time", expireTimeMillis, expireTimeMillisMemo, "maven.search.settings.result.expire.time.description", pluginName);
+        this.addRow(panel, gbc, true, "maven.search.settings.result.priority", elementPriority, new JBLabel(intUnit), "maven.search.settings.result.priority.description", pluginName);
+
+        this.addRow(panel, gbc);
+        this.addSeparator(panel, gbc, "maven.search.settings.group.download");
+        this.addRow(panel, gbc, true, "maven.search.settings.download.source", downloadType, null, "maven.search.settings.download.source.description");
+
+        this.addRow(panel, gbc);
+        this.addSeparator(panel, gbc, "maven.search.settings.group.project");
+        this.addRow(panel, gbc, true, useParentPom, "maven.search.settings.use.parent.pom.description");
 
         // 添加占位组件
         gbc.gridx = 0;
@@ -165,7 +173,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
         // 左侧标题
         config.gridx = 0;
         config.weightx = 0; // 固定宽度
-        inner.add(new JBLabel(title + "  "), config);
+        inner.add(new JBLabel(MavenMessage.get(title) + "  "), config);
 
         // 右侧分隔线
         config.gridx = 1;
@@ -193,7 +201,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
         panel.add(new JBLabel(""), gbc);
     }
 
-    private void addRow(JPanel panel, GridBagConstraints gbc, boolean tab, JComponent component, String... array) {
+    private void addRow(JPanel panel, GridBagConstraints gbc, boolean tab, JComponent component, String description, Object... descriptionParams) {
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 2; // 占1列
@@ -203,25 +211,24 @@ public class MavenSearchPluginConfigurable implements Configurable {
         panel.add(this.addTab(component, tab), gbc);
 
         // 注释说明
-        for (String description : array) {
-            if (StringUtils.isNotBlank(description)) {
-                gbc.gridx = 0;
-                gbc.gridy++;
-                gbc.gridwidth = 2; // 占1列
-                gbc.fill = GridBagConstraints.NONE;
-                gbc.anchor = GridBagConstraints.WEST;
-                gbc.insets = new Insets(0, 0, 0, 0); // 设置每个组件的间距
+        String value = MavenMessage.toString(description, descriptionParams);
+        if (StringUtils.isNotBlank(value)) {
+            gbc.gridx = 0;
+            gbc.gridy++;
+            gbc.gridwidth = 2; // 占1列
+            gbc.fill = GridBagConstraints.NONE;
+            gbc.anchor = GridBagConstraints.WEST;
+            gbc.insets = new Insets(0, 0, 0, 0); // 设置每个组件的间距
 
-                String text = "<html>" + ((component instanceof JBCheckBox) ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") + XMLUtils.escape(description) + "</html>";
-                JBLabel descriptionLabel = new JBLabel(text);
-                descriptionLabel.setFont(descriptionLabel.getFont().deriveFont(Font.PLAIN, 10));
-                descriptionLabel.setForeground(Color.GRAY);
-                panel.add(this.addTab(descriptionLabel, tab), gbc);
-            }
+            String text = "<html>" + ((component instanceof JBCheckBox) ? "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" : "") + XMLUtils.escape(value) + "</html>";
+            JBLabel descriptionLabel = new JBLabel(text);
+            descriptionLabel.setFont(descriptionLabel.getFont().deriveFont(Font.PLAIN, 10));
+            descriptionLabel.setForeground(Color.GRAY);
+            panel.add(this.addTab(descriptionLabel, tab), gbc);
         }
     }
 
-    private void addRow(JPanel panel, GridBagConstraints gbc, boolean tab, String title, JComponent component, JBLabel memo, String... array) {
+    private void addRow(JPanel panel, GridBagConstraints gbc, boolean tab, String title, JComponent component, JBLabel memo, String description, Object... descriptionParams) {
         gbc.gridx = 0;
         gbc.gridy++;
         gbc.gridwidth = 1; // 占1列
@@ -229,13 +236,14 @@ public class MavenSearchPluginConfigurable implements Configurable {
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(0, 0, 0, 0); // 设置每个组件的间距
 
-        int begin = title.indexOf('(');
-        if (begin != -1 && title.indexOf(')', begin) != -1) {
-            String name = title.substring(0, begin);
-            String unit = title.substring(begin);
-            title = "<html>" + name + "<font size='3'>" + unit + "</font></html>";
+        String value = MavenMessage.get(title);
+        int begin = value.indexOf('(');
+        if (begin != -1 && value.indexOf(')', begin) != -1) {
+            String name = value.substring(0, begin);
+            String unit = value.substring(begin);
+            value = "<html>" + name + "<font size='3'>" + unit + "</font></html>";
         }
-        panel.add(this.addTab(new JBLabel(title), tab), gbc);
+        panel.add(this.addTab(new JBLabel(value), tab), gbc);
 
         gbc.gridx = 1;
         gbc.anchor = GridBagConstraints.WEST;
@@ -250,21 +258,20 @@ public class MavenSearchPluginConfigurable implements Configurable {
         }
 
         // 注释说明
-        for (String description : array) {
-            if (StringUtils.isNotBlank(description)) {
-                gbc.gridx = 0;
-                gbc.gridy++;
-                gbc.gridwidth = 2; // 占1列
-                gbc.fill = GridBagConstraints.NONE;
-                gbc.anchor = GridBagConstraints.WEST;
-                gbc.insets = new Insets(0, 0, 0, 0); // 设置每个组件的间距
+        String descriptionValue = MavenMessage.toString(description, descriptionParams);
+        if (StringUtils.isNotBlank(descriptionValue)) {
+            gbc.gridx = 0;
+            gbc.gridy++;
+            gbc.gridwidth = 2; // 占1列
+            gbc.fill = GridBagConstraints.NONE;
+            gbc.anchor = GridBagConstraints.WEST;
+            gbc.insets = new Insets(0, 0, 0, 0); // 设置每个组件的间距
 
-                String text = "<html>" + XMLUtils.escape(description) + "</html>";
-                JBLabel descriptionLabel = new JBLabel(text);
-                descriptionLabel.setFont(descriptionLabel.getFont().deriveFont(Font.PLAIN, 10));
-                descriptionLabel.setForeground(Color.GRAY);
-                panel.add(this.addTab(descriptionLabel, tab), gbc);
-            }
+            String text = "<html>" + XMLUtils.escape(descriptionValue) + "</html>";
+            JBLabel descriptionLabel = new JBLabel(text);
+            descriptionLabel.setFont(descriptionLabel.getFont().deriveFont(Font.PLAIN, 10));
+            descriptionLabel.setForeground(Color.GRAY);
+            panel.add(this.addTab(descriptionLabel, tab), gbc);
         }
     }
 
@@ -280,6 +287,20 @@ public class MavenSearchPluginConfigurable implements Configurable {
     }
 
     /**
+     * 将时间戳转为：hh:mm:ss
+     *
+     * @param millis 时间戳
+     * @return 字符串
+     */
+    public String formatMillis(long millis) {
+        Duration duration = Duration.ofMillis(millis); // 将毫秒数转换为 Duration
+        long hours = duration.toHours(); // 提取小时、分钟、秒
+        long minutes = duration.toMinutes() % 60;
+        long seconds = duration.getSeconds() % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    /**
      * 填充数据
      *
      * @param settings 配置信息
@@ -291,10 +312,11 @@ public class MavenSearchPluginConfigurable implements Configurable {
         tabVisible.setSelected(settings.isTabVisible());
         searchInAllTab.setSelected(settings.isUseAllTab());
         expireTimeMillis.setText(String.valueOf(settings.getExpireTimeMillis()));
-        expireTimeMillisMemo.setText(MavenSearchPluginUtils.format(settings.getExpireTimeMillis()));
-        elementPriority.setText(String.valueOf(settings.getElementPriority()));
+        expireTimeMillisMemo.setText(this.formatMillis(settings.getExpireTimeMillis()));
+        elementPriority.setText(String.valueOf(settings.getNavigationPriority()));
         this.setSelectedOption(repository, new SimpleArtifactOption(settings.getRepositoryId()));
         this.setSelectedOption(downloadType, new SimpleArtifactOption(settings.getDownloadWay()));
+        useParentPom.setSelected(settings.isUseParentPom());
     }
 
     public void setSelectedOption(JComboBox<ArtifactOption> comboBox, ArtifactOption selected) {

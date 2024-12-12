@@ -4,12 +4,9 @@ import java.io.File;
 import java.io.OutputStreamWriter;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContext;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
-import cn.org.expect.maven.search.ArtifactSearchMessage;
+import cn.org.expect.maven.MavenMessage;
 import cn.org.expect.maven.search.ArtifactSearchNotification;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
@@ -31,19 +28,17 @@ public class CleanRepositoryLastUpdated extends AnAction {
     private int success;
 
     public CleanRepositoryLastUpdated() {
-        super(ArtifactSearchMessage.get("maven.search.delete.local.repository.lastUpdated.menu"));
+        super(MavenMessage.get("maven.search.delete.local.repository.lastUpdated.menu"));
     }
 
     public void actionPerformed(@NotNull AnActionEvent event) {
         this.find = 0;
         this.success = 0;
 
-        MavenSearchPluginFactory.loadLocalRepositoryConfig(event);
-        MavenSearchPluginContext context = new MavenSearchPluginContext(event);
-        MavenSearchPlugin plugin = new MavenSearchPlugin(context);
-        File repository = plugin.getEasyContext().getBean(LocalMavenRepositorySettings.class).getRepository();
+        MavenSearchPlugin plugin = new MavenSearchPlugin(event);
+        File repository = plugin.getLocalRepositorySettings().getRepository();
         if (repository == null) {
-            plugin.sendNotification(ArtifactSearchNotification.ERROR, ArtifactSearchMessage.get("maven.search.error.cannot.found.local.repository"));
+            plugin.sendNotification(ArtifactSearchNotification.ERROR, "maven.search.error.cannot.found.local.repository");
             return;
         }
 
@@ -65,12 +60,10 @@ public class CleanRepositoryLastUpdated extends AnAction {
                 IO.closeQuietly(out);
             }
 
-            String message = ArtifactSearchMessage.get("maven.search.delete.local.repository.lastUpdated.notify", this.find, this.success);
             if (this.success > 0) {
-                String actionName = ArtifactSearchMessage.get("maven.search.delete.local.repository.lastUpdated.action");
-                plugin.sendNotification(ArtifactSearchNotification.NORMAL, message, actionName, logfile);
+                plugin.sendNotification(ArtifactSearchNotification.NORMAL, "maven.search.delete.local.repository.lastUpdated.notify", "maven.search.delete.local.repository.lastUpdated.action", logfile, this.find, this.success);
             } else {
-                plugin.sendNotification(ArtifactSearchNotification.NORMAL, message);
+                plugin.sendNotification(ArtifactSearchNotification.NORMAL, "maven.search.delete.local.repository.lastUpdated.notify", this.find, this.success);
             }
         }
     }

@@ -1,0 +1,420 @@
+{
+  "responseHeader": {
+    "status": 0,
+    "QTime": 4819,
+    "params": {
+      "q": "fc:icu.etl.script.UniversalScriptEngine",
+      "hl.snippets": "3",
+      "core": "",
+      "hl": "true",
+      "indent": "off",
+      "fl": "id,g,a,v,p,ec,timestamp,tags",
+      "start": "",
+      "hl.fl": "fch",
+      "sort": "score desc,timestamp desc,g asc,a asc,v desc",
+      "rows": "20",
+      "wt": "json",
+      "version": "2.2"
+    }
+  },
+  "response": {
+    "numFound": 17,
+    "start": 0,
+    "docs": [
+      {
+        "id": "icu.etl:easyetl:2.0.9",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "2.0.9",
+        "p": "jar",
+        "timestamp": 1702997114000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:2.0.8",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "2.0.8",
+        "p": "jar",
+        "timestamp": 1702827237000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:2.0.7",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "2.0.7",
+        "p": "jar",
+        "timestamp": 1702548508000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:2.0.6",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "2.0.6",
+        "p": "jar",
+        "timestamp": 1701851587000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:2.0.5",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "2.0.5",
+        "p": "jar",
+        "timestamp": 1699458921000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:2.0.4",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "2.0.4",
+        "p": "jar",
+        "timestamp": 1699370774000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:2.0.3",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "2.0.3",
+        "p": "jar",
+        "timestamp": 1699281546000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "easyetl",
+          "dependencies"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:2.0.2",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "2.0.2",
+        "p": "jar",
+        "timestamp": 1699279329000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:2.0.1",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "2.0.1",
+        "p": "jar",
+        "timestamp": 1699255680000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:1.1.2",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "1.1.2",
+        "p": "jar",
+        "timestamp": 1697206431000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "simple",
+          "easy",
+          "tool"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:1.1.1",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "1.1.1",
+        "p": "jar",
+        "timestamp": 1697098405000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "simple",
+          "easy",
+          "tool"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:1.1.0",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "1.1.0",
+        "p": "jar",
+        "timestamp": 1697073234000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "simple",
+          "easy",
+          "tool"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:1.0.9",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "1.0.9",
+        "p": "jar",
+        "timestamp": 1694967020000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "simple",
+          "easy",
+          "tool"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:1.0.8",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "1.0.8",
+        "p": "jar",
+        "timestamp": 1694854120000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "simple",
+          "easy",
+          "tool"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:1.0.7",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "1.0.7",
+        "p": "jar",
+        "timestamp": 1694741755000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "simple",
+          "easy",
+          "tool"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:1.0.2",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "1.0.2",
+        "p": "jar",
+        "timestamp": 1694676370000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "about",
+          "tool"
+        ]
+      },
+      {
+        "id": "icu.etl:easyetl:1.0.0",
+        "g": "icu.etl",
+        "a": "easyetl",
+        "v": "1.0.0",
+        "p": "jar",
+        "timestamp": 1694673887000,
+        "ec": [
+          "-sources.jar",
+          ".pom",
+          "-javadoc.jar",
+          ".jar"
+        ],
+        "tags": [
+          "about",
+          "tool"
+        ]
+      }
+    ]
+  },
+  "highlighting": {
+    "icu.etl:easyetl:2.0.9": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:2.0.8": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:2.0.7": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:2.0.6": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:2.0.5": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:2.0.4": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:2.0.3": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:2.0.2": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:2.0.1": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:1.1.2": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:1.1.1": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:1.1.0": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:1.0.9": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:1.0.8": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:1.0.7": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:1.0.2": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    },
+    "icu.etl:easyetl:1.0.0": {
+      "fch": [
+        "<em>icu<\/em>.<em>etl<\/em>.<em>script<\/em>.<em>UniversalScriptEngine<\/em>"
+      ]
+    }
+  },
+  "alternate": [
+    "fc:icu.etl.script.UniversalScriptEngine"
+  ]
+}

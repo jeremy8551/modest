@@ -1,10 +1,14 @@
 package cn.org.expect.maven.repository;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-import cn.org.expect.maven.repository.impl.ArtifactSearchResultType;
+import cn.org.expect.maven.Artifact;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.StringUtils;
 
@@ -63,16 +67,6 @@ public interface ArtifactSearchResult {
     boolean isHasMore();
 
     /**
-     * 重置操作
-     */
-    default void reset() {
-        List<Artifact> list = this.getList();
-        for (Artifact artifact : list) {
-            artifact.setFold(true);
-        }
-    }
-
-    /**
      * 判断查询结果是否过期
      *
      * @param timeMillis 过期时间，单位毫秒
@@ -83,41 +77,24 @@ public interface ArtifactSearchResult {
     }
 
     /**
-     * 判断工件是否存在
-     *
-     * @param groupId    工件域名
-     * @param artifactId 工件ID
-     * @param version    版本号
-     * @return 返回true表示存在
-     */
-    default boolean contains(String groupId, String artifactId, String version) {
-        for (Artifact artifact : this.getList()) {
-            if (artifact.getGroupId().equals(groupId) && artifact.getArtifactId().equals(artifactId) && artifact.getVersion().equals(version)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 添加一个工件
+     * 添加工件
      *
      * @param artifact 工件
      */
     default void addArtifact(Artifact artifact) {
         List<Artifact> list = this.getList();
         for (int i = 0; i < list.size(); i++) {
-            Artifact mavenArtifact = list.get(i);
-            if (mavenArtifact.getGroupId().equals(artifact.getGroupId()) //
-                    && mavenArtifact.getArtifactId().equals(artifact.getArtifactId()) //
-                    && mavenArtifact.getVersion().equals(artifact.getVersion()) //
+            Artifact item = list.get(i);
+            if (item.getGroupId().equals(artifact.getGroupId()) //
+                    && item.getArtifactId().equals(artifact.getArtifactId()) //
+                    && item.getVersion().equals(artifact.getVersion()) //
             ) {
                 if (artifact.getType().equalsIgnoreCase("jar")) {
                     list.set(i, artifact);
                     return;
                 }
 
-                if (mavenArtifact.getType().equalsIgnoreCase("jar")) {
+                if (item.getType().equalsIgnoreCase("jar")) {
                     return;
                 }
 
@@ -125,27 +102,95 @@ public interface ArtifactSearchResult {
                     list.set(i, artifact);
                     return;
                 }
-
                 return;
             }
         }
 
         list.add(artifact);
-        list.sort(COMPARATOR.reversed());
+        List<String> delimiters = ArrayUtils.asList(".", "-"); // 版本号文本的分隔符
+        list.sort((a1, a2) -> {
+            String v1 = a1.getVersion();
+            String v2 = a2.getVersion();
+            String[] array1 = StringUtils.split(v1, delimiters, false);
+            String[] array2 = StringUtils.split(v2, delimiters, false);
+            int size = Math.min(array1.length, array2.length);
+            for (int i = 0; i < size; i++) {
+                String element1 = array1[i];
+                String element2 = array2[i];
+
+                if (StringUtils.isNumber(element1) && StringUtils.isNumber(element2)) {
+                    int v = Integer.parseInt(element1) - Integer.parseInt(element2);
+                    if (v != 0) {
+                        return -v;
+                    }
+                } else {
+                    int v = element1.compareTo(element2);
+                    if (v != 0) {
+                        return -v;
+                    }
+                }
+            }
+            return array2.length - array1.length;
+        });
     }
 
     /**
-     * 模糊查询结果的排序规则：按时间戳倒序
+     * 在保持工件的原始顺序的前提下，对集合中不同类型的工件进行归类
      */
-    default void sortByPattern() {
-        this.getList().sort(PATTERN_RESULT_COMPARATOR.reversed());
+    default ArtifactSearchResult sortByGroup() {
+        List<Artifact> list = this.getList();
+        Map<String, List<Artifact>> map = new LinkedHashMap<>(); // 使用 LinkedHashMap 保证插入顺序
+        for (Artifact artifact : list) { // 遍历列表，根据类型分组
+            String key = artifact.getGroupId() + ":" + artifact.getArtifactId();
+            map.putIfAbsent(key, new ArrayList<>());
+            map.get(key).add(artifact);
+        }
+
+        list.clear();
+        Set<Map.Entry<String, List<Artifact>>> entries = map.entrySet();
+        for (Map.Entry<String, List<Artifact>> entry : entries) {
+            List<Artifact> value = entry.getValue();
+            value.sort((a1, a2) -> a2.getVersion().compareTo(a1.getVersion()));
+            list.addAll(value);
+        }
+        return this;
     }
 
     /**
-     * 精确查询结果的排序规则：按版本数、最新发布时间等排序
+     * 模糊查询结果的排序规则：按版本数、时间戳倒序
+     *
+     * @return 搜索结果
      */
-    default void sortByTimeDesc() {
+    default ArtifactSearchResult sortByPattern() {
+        this.getList().sort((o1, o2) -> {
+            int vv = o2.getVersionCount() - o1.getVersionCount(); // 版本数
+            if (vv != 0) {
+                return vv;
+            }
+
+            int tv = TIMESTAMP_COMPARATOR.compare(o2.getTimestamp(), o1.getTimestamp()); // 最新发布
+            if (tv != 0) {
+                return tv;
+            }
+
+            int gv = o2.getGroupId().compareTo(o1.getGroupId());
+            if (gv != 0) {
+                return gv;
+            }
+
+            return o2.getArtifactId().compareTo(o1.getArtifactId());
+        });
+        return this;
+    }
+
+    /**
+     * 精确查询结果的排序规则：按最新发布时间倒序排序
+     *
+     * @return 搜索结果
+     */
+    default ArtifactSearchResult sortByTime() {
         this.getList().sort((m1, m2) -> TIMESTAMP_COMPARATOR.compare(m2.getTimestamp(), m1.getTimestamp()));
+        return this;
     }
 
     Comparator<Date> TIMESTAMP_COMPARATOR = (o1, o2) -> {
@@ -158,55 +203,5 @@ public interface ArtifactSearchResult {
         } else {
             return o1.compareTo(o2);
         }
-    };
-
-    Comparator<Artifact> PATTERN_RESULT_COMPARATOR = (o1, o2) -> {
-        int vv = o1.getVersionCount() - o2.getVersionCount(); // 版本数
-        if (vv != 0) {
-            return vv;
-        }
-
-        int tv = TIMESTAMP_COMPARATOR.compare(o1.getTimestamp(), o2.getTimestamp()); // 最新发布
-        if (tv != 0) {
-            return tv;
-        }
-
-        int gv = o1.getGroupId().compareTo(o2.getGroupId());
-        if (gv != 0) {
-            return gv;
-        }
-
-        return o1.getArtifactId().compareTo(o2.getArtifactId());
-    };
-
-    /** 版本号文本的分隔符 */
-    List<String> DELIMITERS = ArrayUtils.asList(".", "-");
-
-    /**
-     * 同一个工件有多个版本时的排序规则，按版本号排序
-     */
-    Comparator<Artifact> COMPARATOR = (a1, a2) -> {
-        String v1 = a1.getVersion();
-        String v2 = a2.getVersion();
-        String[] array1 = StringUtils.split(v1, DELIMITERS, false);
-        String[] array2 = StringUtils.split(v2, DELIMITERS, false);
-        int size = Math.min(array1.length, array2.length);
-        for (int i = 0; i < size; i++) {
-            String element1 = array1[i];
-            String element2 = array2[i];
-
-            if (StringUtils.isNumber(element1) && StringUtils.isNumber(element2)) {
-                int v = Integer.parseInt(element1) - Integer.parseInt(element2);
-                if (v != 0) {
-                    return v;
-                }
-            } else {
-                int v = element1.compareTo(element2);
-                if (v != 0) {
-                    return v;
-                }
-            }
-        }
-        return array1.length - array2.length;
     };
 }

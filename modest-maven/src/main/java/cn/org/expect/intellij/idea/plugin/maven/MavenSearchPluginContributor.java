@@ -6,13 +6,10 @@ import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenRepositoryChooserAction;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.NavigationCellRenderer;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.Artifact;
-import cn.org.expect.maven.repository.ArtifactSearchResult;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
 import com.intellij.ide.actions.searcheverywhere.ExtendedInfo;
 import com.intellij.ide.actions.searcheverywhere.FoundItemDescriptor;
@@ -40,7 +37,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
 
     public MavenSearchPluginContributor(@NotNull MavenSearchPlugin plugin) {
         super(plugin.getContext().getActionEvent());
-        this.contributor = new MavenSearchPluginChooseContributor(plugin);
+        this.contributor = new MavenSearchPluginChooseContributor();
         this.plugin = plugin;
         this.pinAction = new MavenSearchPluginPinAction(this.plugin);
         this.renderer = new NavigationCellRenderer(this);
@@ -81,7 +78,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @return 过滤后的字符串
      */
     public @NotNull String filterControlSymbols(@NotNull String pattern) {
-        return MavenSearchPluginUtils.escape(pattern);
+        return this.plugin.getPattern().filter(pattern);
     }
 
     /**
@@ -90,60 +87,39 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @param selectedObject 查询结果
      * @param modifiers      快捷键
      * @param searchText     搜索文本
-     * @return 默认返回 false
+     * @return 返回true表示点击导航结果时马上关闭搜索界面，false表示点击导航结果不会关闭界面
      */
     public boolean processSelectedItem(@NotNull Object selectedObject, int modifiers, @NotNull String searchText) {
-        if (selectedObject instanceof SearchNavigationHead) {
-            SearchNavigationHead head = (SearchNavigationHead) selectedObject;
-            this.plugin.getContext().setSelectNavigationHead(head); // 保存选择记录
-            this.plugin.getContext().setSelectNavigationItem(null); // 清空子选项
-
-            Artifact artifact = head.getArtifact();
+        if (selectedObject instanceof MavenSearchNavigation) {
+            MavenSearchNavigation navigation = (MavenSearchNavigation) selectedObject;
             if (log.isDebugEnabled()) {
-                log.debug("processSelectedItem({}, {}, {}) {}, fold: {}, version: {}", selectedObject, modifiers, searchText, artifact, artifact.isFold(), artifact.getVersionCount());
+                log.debug("select navigation: {} -> {}", selectedObject.getClass().getName(), navigation.getArtifact().toStandardString());
             }
 
-            // 折叠或展开
-            if (artifact.isFold()) { // 设置为：展开
-                artifact.setFold(false);
-                String groupId = artifact.getGroupId();
-                String artifactId = artifact.getArtifactId();
+            // 保存选中的导航记录
+            this.plugin.getContext().setSelectNavigation(navigation);
 
-                ArtifactSearchResult result = this.plugin.getDatabase().select(groupId, artifactId);
-                if (result == null || result.isExpire(this.plugin.getSettings().getExpireTimeMillis())) {
-                    head.setIcon(MavenSearchPluginIcon.LEFT_WAITING); // 更改为：等待图标
-                    this.plugin.asyncSearch(groupId, artifactId); // 后台查询 maven 工件
+            // 左键点击操作：展开还是折叠
+            if (navigation.supportFold(plugin)) {
+                if (navigation.isFold()) { // 如果是折叠状态
+                    navigation.setUnfold(this.plugin);
                 } else {
-                    this.plugin.display();
+                    navigation.setFold(this.plugin);
                 }
-            } else { // 设置为：折叠
-                artifact.setFold(true);
-                this.plugin.display();
             }
             return false;
         }
-
-        // 保存选择记录
-        if (selectedObject instanceof SearchNavigationItem) {
-            this.plugin.getContext().setSelectNavigationItem((SearchNavigationItem) selectedObject);
-            return false;
-        }
-
         return false;
     }
 
     /**
-     * 选中搜索结果时，从选种记录中读取数据
+     * 选中搜索结果时，从选中记录中读取数据
      *
      * @param element 元素
      * @param dataId  数据编号
      * @return 返回数据
      */
     public Object getDataForItem(@NotNull Object element, @NotNull String dataId) {
-//        if (log.isDebugEnabled()) {
-//            log.debug("getDataForItem({}, {})", element, dataId);
-//        }
-
         return super.getDataForItem(element, dataId);
     }
 
@@ -151,7 +127,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         if (log.isDebugEnabled()) {
             log.debug("getElementPriority({}, {}) ", element, searchPattern);
         }
-        return this.plugin.getSettings().getElementPriority();
+        return this.plugin.getSettings().getNavigationPriority();
     }
 
     public ExtendedInfo createExtendedInfo() {
@@ -204,12 +180,12 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
     }
 
     /**
-     * 搜索框中标签页的名字
+     * 搜索UI中标签页的名字
      *
      * @return 标签页名
      */
     public @NotNull String getGroupName() {
-        return MavenSearchPluginUtils.getTabName();
+        return this.plugin.getSettings().getTabName();
     }
 
     /**

@@ -1,18 +1,21 @@
 package cn.org.expect.intellij.idea.plugin.maven.log;
 
+import cn.org.expect.log.BaseLogger;
 import cn.org.expect.log.Log;
+import cn.org.expect.log.LogContext;
+import cn.org.expect.maven.MavenMessage;
 import cn.org.expect.util.FileUtils;
-import cn.org.expect.util.MessageFormatter;
 import cn.org.expect.util.StringUtils;
 import com.intellij.openapi.diagnostic.Logger;
 
-public class IdeaLog implements Log {
+public class IdeaLog extends BaseLogger implements Log {
 
     protected Class<?> type;
 
     protected Logger log;
 
-    public IdeaLog(Class<?> type) {
+    public IdeaLog(LogContext context, Class<?> type) {
+        super(context);
         this.type = type;
         this.log = Logger.getInstance(type);
     }
@@ -46,50 +49,55 @@ public class IdeaLog implements Log {
     }
 
     public void trace(String message, Object... args) {
-        log.trace(new MessageFormatter(message).fill(args));
+        if (this.isResourceBundle(message)) {
+            message = this.getResourceBundle(message, args);
+            args = BLANK;
+        }
+
+        log.trace(MavenMessage.toString(message, args));
     }
 
     public void trace(String message, Throwable e) {
-        log.trace(message + FileUtils.lineSeparator + StringUtils.toString(e));
+        log.trace(MavenMessage.toString(message) + FileUtils.lineSeparator + StringUtils.toString(e));
     }
 
     public void debug(String message, Object... args) {
-        log.debug(new MessageFormatter(message).fill(args));
+        log.debug(MavenMessage.toString(message, args));
     }
 
     public void debug(String message, Throwable e) {
-        log.debug(message + FileUtils.lineSeparator + StringUtils.toString(e));
+        log.debug(MavenMessage.toString(message) + FileUtils.lineSeparator + StringUtils.toString(e));
     }
 
     public void info(String message, Object... args) {
-        log.info(new MessageFormatter(message).fill(args));
+        log.info(MavenMessage.toString(message, args));
     }
 
     public void info(String message, Throwable e) {
-        log.info(message + FileUtils.lineSeparator + StringUtils.toString(e));
+        log.info(MavenMessage.toString(message) + FileUtils.lineSeparator + StringUtils.toString(e));
     }
 
     public void warn(String message, Object... args) {
-        log.warn(new MessageFormatter(message).fill(args));
+        log.warn(MavenMessage.toString(message, args));
     }
 
     public void warn(String message, Throwable e) {
-        log.warn(message + FileUtils.lineSeparator + StringUtils.toString(e));
+        log.warn(MavenMessage.toString(message) + FileUtils.lineSeparator + StringUtils.toString(e));
     }
 
     public void error(String message, Object... args) {
-        log.error(new MessageFormatter(message).fill(args));
+        log.error(MavenMessage.toString(message, args));
     }
 
     public void error(String message, Throwable e) {
-        log.error(message + FileUtils.lineSeparator + StringUtils.toString(e));
+        log.error(MavenMessage.toString(message) + FileUtils.lineSeparator + StringUtils.toString(e));
     }
 
     public void fatal(String message, Object... args) {
-        log.error(new MessageFormatter(message).fill(args));
+        log.error(MavenMessage.toString(message, args));
     }
 
     public void fatal(String message, Throwable e) {
-        log.error(message + FileUtils.lineSeparator + StringUtils.toString(e));
+        log.error(MavenMessage.toString(message) + FileUtils.lineSeparator + StringUtils.toString(e));
     }
 }

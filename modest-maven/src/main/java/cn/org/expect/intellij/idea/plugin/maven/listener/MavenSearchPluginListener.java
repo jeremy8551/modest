@@ -7,7 +7,6 @@ import java.util.Map;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.Ensure;
@@ -25,9 +24,16 @@ public class MavenSearchPluginListener extends SearchAdapter {
 
     private final MavenSearchPlugin plugin;
 
+    private volatile boolean display;
+
     public MavenSearchPluginListener(MavenSearchPlugin plugin) {
         super();
         this.plugin = Ensure.notNull(plugin);
+        this.display = false;
+    }
+
+    public void setDisplay(boolean display) {
+        this.display = display;
     }
 
     public String getName() {
@@ -39,25 +45,27 @@ public class MavenSearchPluginListener extends SearchAdapter {
             return;
         }
 
-        if (log.isDebugEnabled()) {
-            log.debug("{}.searchStarted({})", this.getName(), pattern);
-        }
-
         // 扩展 pin 窗口大小
         MavenSearchPluginPinAction.PIN.extend();
 
         if (this.plugin.canSearch()) {
-            if (!this.plugin.getService().isRunning(MavenSearchPluginJob.class)) {
-                if (log.isDebugEnabled()) {
-                    log.debug("{}.search({})", this.getName(), pattern);
-                }
-                this.plugin.search(pattern);
+            if (log.isDebugEnabled()) {
+                log.debug("{}.searchStarted({})", this.getName(), pattern);
+            }
+
+            if (this.display) {
+                this.plugin.display();
+                this.display = false;
+            } else {
+                this.plugin.asyncSearch(pattern);
             }
         } else {
             if (log.isDebugEnabled()) {
-                log.debug("{}.display()", this.getName());
+                log.debug("{}.searchStarted()::display", this.getName());
             }
-            this.plugin.display(null); // 切换到其他选项卡，需要删除搜索结果
+
+            this.plugin.getIdeaUI().getDisplay().clearSelfNavigation();
+            this.plugin.getIdeaUI().getDisplay().paint();
         }
     }
 
@@ -79,21 +87,26 @@ public class MavenSearchPluginListener extends SearchAdapter {
      * @param hasMoreContributors
      */
     public synchronized void searchFinished(@NotNull Map<SearchEverywhereContributor<?>, Boolean> hasMoreContributors) {
-        Boolean value = null;
-        for (Map.Entry<SearchEverywhereContributor<?>, Boolean> entry : hasMoreContributors.entrySet()) {
-            if (entry.getKey() instanceof MavenSearchPluginContributor) {
-                value = entry.getValue();
-                break;
-            }
-        }
-
         if (log.isDebugEnabled()) {
+            Boolean value = null;
+            for (Map.Entry<SearchEverywhereContributor<?>, Boolean> entry : hasMoreContributors.entrySet()) {
+                if (entry.getKey() instanceof MavenSearchPluginContributor) {
+                    value = entry.getValue();
+                    break;
+                }
+            }
             log.debug("{}.searchFinished() {}", this.getName(), value);
         }
 
-        // 在搜索UI界面中，如果选中的不是当前插件的 Tab，则将状态栏中的文本更换为广告
+        // 如果当前是其他搜索类别的选项卡
         if (!this.plugin.isSelfTab()) {
+            // 将状态栏中的文本更换为广告
             this.plugin.setStatusBar(null, "");
+
+            // 则自动取消窗口固定
+            if (MavenSearchPluginPinAction.PIN.isPin()) {
+                MavenSearchPluginPinAction.PIN.cancel();
+            }
         }
     }
 

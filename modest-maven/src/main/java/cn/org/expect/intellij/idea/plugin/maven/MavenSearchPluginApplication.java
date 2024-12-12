@@ -2,13 +2,12 @@ package cn.org.expect.intellij.idea.plugin.maven;
 
 import java.util.List;
 
-import cn.org.expect.intellij.idea.plugin.maven.ioc.MavenSearchIoc;
-import cn.org.expect.intellij.idea.plugin.maven.ioc.MavenSearchIocImpl;
 import cn.org.expect.intellij.idea.plugin.maven.log.IdeaLogBuilder;
-import cn.org.expect.intellij.idea.plugin.maven.settings.MavenSearchPluginSettingsImpl;
-import cn.org.expect.ioc.impl.EasyBeanDefineImpl;
+import cn.org.expect.intellij.idea.plugin.maven.settings.MavenSearchPluginSettings;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.ioc.MavenSearchIoc;
+import cn.org.expect.maven.ioc.MavenSearchIocImpl;
 import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.StringUtils;
@@ -21,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
  * 插件启动器：在 Idea 启动后执行的业务逻辑
  */
 public class MavenSearchPluginApplication implements AppLifecycleListener {
-    private final Log log = LogFactory.getLog(MavenSearchPluginApplication.class);
+    private final static Log log = LogFactory.getLog(MavenSearchPluginApplication.class);
 
     private static volatile MavenSearchIoc INSTANCE;
 
@@ -76,21 +75,12 @@ public class MavenSearchPluginApplication implements AppLifecycleListener {
         for (IdeaPluginDescriptor descriptor : plugins) {
             String id = descriptor.getPluginId().getIdString();
             if (id.equals(packageName)) {
-                String name = descriptor.getName(); // 插件名
-
-                MavenSearchPluginSettingsImpl settings = new MavenSearchPluginSettingsImpl();
-                settings.setId(id);
-                settings.setName(name);
+                MavenSearchPluginSettings settings = ioc.getBean(MavenSearchPluginSettings.class);
+                settings.setId(id); // 插件ID
+                settings.setName(descriptor.getName()); // 插件名
                 settings.load();
-
-                // 注册插件配置信息
-                EasyBeanDefineImpl bean = new EasyBeanDefineImpl(MavenSearchPluginSettings.class);
-                bean.setBean(settings);
-                bean.setSingleton(true);
-                ioc.addBean(bean);
             }
         }
-
         return ioc;
     }
 

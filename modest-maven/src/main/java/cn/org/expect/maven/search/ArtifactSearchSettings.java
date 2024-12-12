@@ -2,8 +2,9 @@ package cn.org.expect.maven.search;
 
 import java.io.File;
 
-import cn.org.expect.annotation.EasyBean;
-
+/**
+ * 搜索配置信息
+ */
 public interface ArtifactSearchSettings {
 
     /**
@@ -37,42 +38,56 @@ public interface ArtifactSearchSettings {
     /**
      * 返回连续输入的间隔，单位毫秒
      *
-     * @return 毫秒
+     * @return 毫秒数
      */
     long getInputIntervalTime();
 
     /**
      * 设置连续输入的间隔，单位毫秒
      *
-     * @param inputIntervalTime 毫秒
+     * @param millis 毫秒数
      */
-    void setInputIntervalTime(long inputIntervalTime);
+    void setInputIntervalTime(long millis);
 
     /**
-     * 返回 Maven仓库ID，就是 {@linkplain EasyBean#value()}
+     * 返回仓库ID
      *
-     * @return 标识，如: central、aliyun
+     * @return 仓库ID
      */
     String getRepositoryId();
 
     /**
-     * Maven仓库ID，就是 {@linkplain EasyBean#value()}
+     * 仓库ID
      *
-     * @param repositoryId Maven仓库ID
+     * @param repositoryId 仓库ID
      */
     void setRepositoryId(String repositoryId);
 
     /**
-     * 返回查询结果的超时时间，单位毫秒
+     * 返回查询结果的过期时间，搜索结果过期后自动失效
      *
-     * @return 超时时间
+     * @return 毫秒数
      */
     long getExpireTimeMillis();
 
     /**
      * 失效时间（单位毫秒）
      *
-     * @param expireTimeMillis
+     * @param millis 毫秒数
      */
-    void setExpireTimeMillis(long expireTimeMillis);
+    void setExpireTimeMillis(long millis);
+
+    /**
+     * 是否读取父工程POM的项目信息
+     *
+     * @return true表示读取父工程POM的项目信息，false表示只读本工程POM中的项目信息
+     */
+    boolean isUseParentPom();
+
+    /**
+     * 设置是否读取父工程POM的项目信息
+     *
+     * @param useParentPom true表示读取父工程POM的项目信息，false表示只读本工程POM中的项目信息
+     */
+    void setUseParentPom(boolean useParentPom);
 }

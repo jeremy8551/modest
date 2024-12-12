@@ -5,7 +5,7 @@ import javax.swing.*;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.search.ArtifactSearchAdvertiser;
+import cn.org.expect.maven.search.ArtifactSearchStatusMessageType;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.MessageFormatter;
 import cn.org.expect.util.StringUtils;
@@ -19,7 +19,7 @@ import com.intellij.ui.components.JBList;
 import com.intellij.util.ui.Advertiser;
 
 public class IdeaSearchUI {
-    private final static Log log = LogFactory.getLog(IdeaSearchUI.class);
+    protected final static Log log = LogFactory.getLog(IdeaSearchUI.class);
 
     /** Idea搜索功能UI */
     protected volatile SearchEverywhereUI ui;
@@ -30,6 +30,7 @@ public class IdeaSearchUI {
     /** 状态栏更新请求 */
     private volatile StatusBar statusBar;
 
+    /** 搜索显示 */
     private volatile SearchDisplay display;
 
     public IdeaSearchUI() {
@@ -59,14 +60,14 @@ public class IdeaSearchUI {
         return this.ui.getSearchField();
     }
 
-    public void setStatusBar(ArtifactSearchAdvertiser type, String message) {
+    public void setStatusBar(ArtifactSearchStatusMessageType type, String message) {
         if (this.ui == null) {
             return;
         }
 
         this.statusBar = new StatusBar(type, message);
-        Icon icon = MavenSearchPluginUtils.getIcon(type);
-        String fontColor = ArtifactSearchAdvertiser.ERROR == type ? "red" : "orange";
+        Icon icon = this.getIcon(type);
+        String fontColor = ArtifactSearchStatusMessageType.ERROR == type ? "red" : "orange";
         String text = new MessageFormatter("<html><span style='color:{};'>{}</span></html>").fill(fontColor, message);
 
         try {
@@ -109,6 +110,26 @@ public class IdeaSearchUI {
             myNextLabel.repaint();
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
+        }
+    }
+
+    protected Icon getIcon(ArtifactSearchStatusMessageType type) {
+        if (type == null) {
+            return null;
+        }
+
+        switch (type) {
+            case NORMAL:
+                return MavenSearchPluginIcon.BOTTOM;
+
+            case RUNNING:
+                return MavenSearchPluginIcon.BOTTOM_WAITING;
+
+            case ERROR:
+                return MavenSearchPluginIcon.BOTTOM_ERROR;
+
+            default:
+                throw new UnsupportedOperationException(type.name());
         }
     }
 
@@ -167,15 +188,15 @@ public class IdeaSearchUI {
     }
 
     public static class StatusBar {
-        private final ArtifactSearchAdvertiser type;
+        private final ArtifactSearchStatusMessageType type;
         private final String message;
 
-        public StatusBar(ArtifactSearchAdvertiser type, String message) {
+        public StatusBar(ArtifactSearchStatusMessageType type, String message) {
             this.type = type;
             this.message = message;
         }
 
-        public ArtifactSearchAdvertiser getType() {
+        public ArtifactSearchStatusMessageType getType() {
             return type;
         }
 

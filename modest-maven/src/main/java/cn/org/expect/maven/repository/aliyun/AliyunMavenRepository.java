@@ -8,7 +8,6 @@ import cn.org.expect.maven.repository.AbstractArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactOperation;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.central.CentralMavenRepository;
-import cn.org.expect.util.StringUtils;
 
 /**
  * 阿里云仓库
@@ -52,7 +51,7 @@ public class AliyunMavenRepository extends AbstractArtifactRepository {
         this.terminate = false;
         String url = "https://developer.aliyun.com/artifact/aliyunMaven/searchArtifactByWords?repoId=all&queryTerm=" + CentralMavenRepository.escape(pattern) + "&_input_charset=utf-8";
         String responseBody = this.sendRequest(url);
-        if (StringUtils.isBlank(responseBody) || this.terminate) {
+        if (responseBody == null) {
             return null;
         }
         return this.parse.parsePattern(responseBody);
@@ -62,7 +61,7 @@ public class AliyunMavenRepository extends AbstractArtifactRepository {
         this.terminate = false;
         String url = "https://developer.aliyun.com/artifact/aliyunMaven/searchArtifactByGav?groupId=" + CentralMavenRepository.escape(groupId) + "&artifactId=" + CentralMavenRepository.escape(artifactId) + "&version=&repoId=all&_input_charset=utf-8";
         String responseBody = this.sendRequest(url);
-        if (StringUtils.isBlank(responseBody) || this.terminate) {
+        if (responseBody == null) {
             return null;
         }
         return this.parse.parseExtra(responseBody);

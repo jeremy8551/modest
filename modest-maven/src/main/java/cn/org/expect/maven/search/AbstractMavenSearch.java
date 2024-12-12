@@ -1,43 +1,44 @@
 package cn.org.expect.maven.search;
 
 import cn.org.expect.concurrent.ThreadSource;
-import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
-import cn.org.expect.maven.concurrent.MavenSearchInputJob;
+import cn.org.expect.maven.ArtifactOption;
+import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
+import cn.org.expect.maven.concurrent.ArtifactSearchInputJob;
+import cn.org.expect.maven.impl.SimpleArtifactOption;
+import cn.org.expect.maven.ioc.MavenSearchIoc;
 import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
-import cn.org.expect.maven.repository.local.LocalMavenRepository;
-import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
+import cn.org.expect.maven.repository.local.LocalRepository;
+import cn.org.expect.maven.repository.local.LocalRepositorySettings;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 
 public abstract class AbstractMavenSearch implements ArtifactSearch {
 
-    /** IOC 容器 */
-    private final EasyContext ioc;
+    /** 容器上下文信息 */
+    private final MavenSearchIoc ioc;
 
-    /** 仓库 */
+    /** 仓库接口 */
     private ArtifactRepository repository;
 
     /** 选择的仓库 */
     private ArtifactOption selectRepository;
 
     /** 本地Maven仓库接口 */
-    private final LocalMavenRepository localRepository;
+    private volatile LocalRepository localRepository;
 
-    public AbstractMavenSearch(EasyContext ioc) {
-        super();
+    /** 文本处理器 */
+    private final ArtifactSearchPattern pattern;
+
+    public AbstractMavenSearch(MavenSearchIoc ioc) {
+        this.pattern = new ArtifactSearchPattern();
         this.ioc = Ensure.notNull(ioc);
-        this.localRepository = this.ioc.getBean(LocalMavenRepository.class);
-        ArtifactSearchSettings settings = this.ioc.getBean(ArtifactSearchSettings.class);
-        this.setRepository(settings.getRepositoryId());
     }
 
-    /**
-     * 设置仓库ID
-     *
-     * @param repositoryId 仓库ID
-     */
+    public ArtifactSearchPattern getPattern() {
+        return this.pattern;
+    }
+
     public void setRepository(String repositoryId) {
         this.repository = Ensure.notNull(this.ioc.getBean(ArtifactRepository.class, repositoryId), repositoryId);
         this.selectRepository = new SimpleArtifactOption(repositoryId);
@@ -48,7 +49,7 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
      *
      * @return 容器
      */
-    public EasyContext getEasyContext() {
+    public MavenSearchIoc getIoc() {
         return this.ioc;
     }
 
@@ -56,8 +57,8 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
         this.ioc.getBean(ThreadSource.class).getExecutorService().execute(this.aware(command));
     }
 
-    public MavenSearchExecutorService getService() {
-        return this.ioc.getBean(MavenSearchExecutorService.class);
+    public ArtifactSearchExecutorService getService() {
+        return this.ioc.getBean(ArtifactSearchExecutorService.class);
     }
 
     public ArtifactOption getRepositoryInfo() {
@@ -68,11 +69,18 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
         return this.repository;
     }
 
-    public LocalMavenRepository getLocalRepository() {
+    public LocalRepository getLocalRepository() {
+        if (this.localRepository == null) {
+            synchronized (this) {
+                if (this.localRepository == null) {
+                    this.localRepository = this.ioc.getBean(LocalRepository.class);
+                }
+            }
+        }
         return this.localRepository;
     }
 
-    public LocalMavenRepositorySettings getLocalRepositorySettings() {
+    public LocalRepositorySettings getLocalRepositorySettings() {
         return this.localRepository.getSettings();
     }
 
@@ -81,14 +89,14 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
      *
      * @return 模糊查询工具
      */
-    public synchronized MavenSearchInputJob getInput() {
-        MavenSearchInputJob job = this.getService().getFirst(MavenSearchInputJob.class, first -> true); // 只能是单例模式
+    public synchronized ArtifactSearchInputJob getInput() {
+        ArtifactSearchInputJob job = this.getService().getFirst(ArtifactSearchInputJob.class, first -> true); // 只能是单例模式
         if (job == null) {
-            job = new MavenSearchInputJob();
+            job = new ArtifactSearchInputJob();
             this.getService().execute(job);
 
             // 等待任务启动
-            Throwable e = Dates.waitFor(() -> this.getService().isRunning(MavenSearchInputJob.class, task -> !task.isRunning()), 100, 20 * 1000);
+            Throwable e = Dates.waitFor(() -> this.getService().isRunning(ArtifactSearchInputJob.class, task -> !task.isRunning()), 100, 20 * 1000);
             if (e != null) {
                 throw new RuntimeException(e.getLocalizedMessage(), e);
             }

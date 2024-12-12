@@ -34,6 +34,11 @@ public abstract class SearchDisplayModel {
         return this.model.isMoreElement(index);
     }
 
+    /**
+     * 判断是否有more按钮
+     *
+     * @return 返回true表示有，false表示没有
+     */
     public boolean hasMore() {
         for (int i = this.model.getSize() - 1; i >= 0; i--) {
             if (this.model.isMoreElement(i)) {
@@ -43,10 +48,19 @@ public abstract class SearchDisplayModel {
         return false;
     }
 
+    /**
+     * 删除 more 按钮
+     */
     public void clearMore() {
         this.model.clearMoreItems();
     }
 
+    /**
+     * 返回指定位置上的导航记录
+     *
+     * @param index 位置信息，从0开始
+     * @return 导航记录
+     */
     public Object getElement(int index) {
         return this.model.getElementAt(index);
     }
@@ -54,12 +68,12 @@ public abstract class SearchDisplayModel {
     /**
      * 将导航记录添加到数据模型中
      *
-     * @param list                     导航记录
+     * @param infos                    导航记录集合
      * @param keepOtherContributorItem true表示保留其他搜索类别的导航记录 false表示不保留
      */
-    public void merge(List<SearchEverywhereFoundElementInfo> list, boolean keepOtherContributorItem) {
+    public void merge(List<SearchEverywhereFoundElementInfo> infos, boolean keepOtherContributorItem) {
         if (keepOtherContributorItem) {
-            List<SearchEverywhereFoundElementInfo> all = new ArrayList<>(this.model.getSize() + list.size());
+            List<SearchEverywhereFoundElementInfo> all = new ArrayList<>(this.model.getSize() + infos.size());
 
             // 保存其他搜索类别的记录
             boolean add = true;
@@ -68,7 +82,7 @@ public abstract class SearchDisplayModel {
                 Object element = info.getElement();
                 if (element instanceof MavenSearchNavigation) {
                     if (add) {
-                        all.addAll(list); // 将查询结果合并到 all 集合中
+                        all.addAll(infos); // 将查询结果合并到 all 集合中
                         add = false;
                     }
                 } else if (!model.isMoreElement(i)) {
@@ -76,17 +90,17 @@ public abstract class SearchDisplayModel {
                 }
             }
             if (add) {
-                all.addAll(list);
+                all.addAll(infos);
             }
 
             this.merge(all);
         } else {
-            this.merge(list);
+            this.merge(infos);
         }
     }
 
     public void merge(List<SearchEverywhereFoundElementInfo> list) {
-        this.setComparator(this.model, new MavenFoundElementInfoComparator());
+        this.setComparator(this.model, new MavenFoundElementInfoComparator()); // TODO 先取出来再替换
         try {
             this.model.clear(); // 清空所有数据
             this.model.addElements(list);
@@ -98,9 +112,9 @@ public abstract class SearchDisplayModel {
     }
 
     /**
-     * 删除其他搜索类别的导航记录
+     * 删除导航记录，保留其他搜索类别的导航记录
      */
-    public void clearOtherContributorItem() {
+    public void clearSelfNavigation() {
         for (int i = this.model.getSize() - 1; i >= 0; i--) {
             SearchEverywhereFoundElementInfo info = this.model.getRawFoundElementAt(i);
             Object element = info.getElement();

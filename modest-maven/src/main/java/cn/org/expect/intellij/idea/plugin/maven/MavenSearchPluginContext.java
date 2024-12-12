@@ -2,120 +2,75 @@ package cn.org.expect.intellij.idea.plugin.maven;
 
 import java.awt.*;
 
-import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationResultSet;
-import cn.org.expect.log.Log;
-import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.repository.ArtifactSearchResult;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigationList;
 import cn.org.expect.maven.search.ArtifactSearchContext;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class MavenSearchPluginContext implements ArtifactSearchContext {
-    private final static Log log = LogFactory.getLog(MavenSearchPluginContext.class);
-
-    /** 事件 */
-    private final AnActionEvent event;
-
-    /** 最后一次执行模糊查询的文本 */
-    private volatile String searchPattern;
-
-    /** 选中的导航记录 */
-    private volatile SearchNavigationHead selectedNavigation;
-
-    /** 选中的版本列表记录 */
-    private volatile SearchNavigationItem selectNavigationItem;
-
-    /** 最近一次模糊搜索结果 */
-    private volatile ArtifactSearchResult mavenSearchResult;
-
-    /** 最近一次模糊搜索的导航记录 */
-    private volatile SearchNavigationResultSet navigationResultSet;
-
-    private volatile Rectangle visibleRect;
-
-    public MavenSearchPluginContext(AnActionEvent event) {
-        this.event = event;
-    }
-
-    public AnActionEvent getActionEvent() {
-        return this.event;
-    }
-
-    public String getSearchText() {
-        return searchPattern;
-    }
-
-    public void setSearchText(String searchPattern) {
-        this.searchPattern = searchPattern;
-    }
-
-    public synchronized void setSearchResult(ArtifactSearchResult result) {
-        this.mavenSearchResult = result;
-    }
-
-    public ArtifactSearchResult getSearchResult() {
-        return this.mavenSearchResult;
-    }
-
-    public SearchNavigationResultSet getNavigationResultSet() {
-        return navigationResultSet;
-    }
-
-    public void setNavigationResultSet(SearchNavigationResultSet navigationResultSet) {
-        this.navigationResultSet = navigationResultSet;
-    }
+/**
+ * 搜索插件的上下文信息
+ */
+public interface MavenSearchPluginContext extends ArtifactSearchContext {
 
     /**
-     * 返回选中的导航栏
+     * 返回事件
      *
-     * @return 导航栏
+     * @return 事件
      */
-    public SearchNavigationHead getSelectNavigationHead() {
-        return this.selectedNavigation;
-    }
+    AnActionEvent getActionEvent();
 
     /**
-     * 设置选中的导航栏
+     * 返回选中的导航记录
      *
-     * @param navigation 导航栏
+     * @return 导航记录
      */
-    public void setSelectNavigationHead(SearchNavigationHead navigation) {
-        this.selectedNavigation = navigation;
-    }
+    MavenSearchNavigation getSelectNavigation();
 
     /**
-     * 返回选中的版本列表记录
+     * 设置选中的导航记录
      *
-     * @return 版本列表记录
+     * @param selectNavigation 导航记录
      */
-    public SearchNavigationItem getSelectNavigationItem() {
-        return selectNavigationItem;
-    }
+    void setSelectNavigation(MavenSearchNavigation selectNavigation);
 
     /**
-     * 设置选中的版本列表记录
+     * 返回 JList 当前的位置
      *
-     * @param selectNavigationItem 版本列表记录
+     * @return 位置信息
      */
-    public void setSelectNavigationItem(SearchNavigationItem selectNavigationItem) {
-        this.selectNavigationItem = selectNavigationItem;
-    }
+    Rectangle getVisibleRect();
 
-    public Rectangle getVisibleRect() {
-        return visibleRect;
-    }
+    /**
+     * 保存 JList 当前的位置
+     *
+     * @param visibleRect 位置信息
+     */
+    void setVisibleRect(Rectangle visibleRect);
 
-    public void setVisibleRect(Rectangle visibleRect) {
-        this.visibleRect = visibleRect;
-    }
+    /**
+     * 返回导航记录
+     *
+     * @return 导航记录
+     */
+    MavenSearchNavigationList getNavigationList();
 
-    public void clone(MavenSearchPluginContext context) {
+    /**
+     * 设置导航记录
+     *
+     * @param navigationList 导航记录
+     */
+    void setNavigationList(MavenSearchNavigationList navigationList);
+
+    /**
+     * 复制上下文信息
+     *
+     * @param context 上下文信息
+     */
+    default void clone(MavenSearchPluginContext context) {
         this.setSearchText(context.getSearchText());
-        this.setSearchResult(context.getSearchResult());
-        this.setNavigationResultSet(context.getNavigationResultSet());
-        this.setSelectNavigationItem(context.getSelectNavigationItem());
-        this.setSelectNavigationHead(context.getSelectNavigationHead());
+        this.setSelectNavigation(context.getSelectNavigation());
         this.setVisibleRect(context.getVisibleRect());
+        this.setSearchResult(context.getSearchResult());
+        this.setNavigationList(context.getNavigationList());
     }
 }

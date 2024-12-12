@@ -85,6 +85,8 @@
 
         <!-- settings -->
         <projectConfigurable instance="cn.org.expect.intellij.idea.plugin.maven.settings.MavenSearchPluginConfigurable" groupId="Other Settings"/>
+
+<!--        <mavenExecutionListener implementation="cn.org.expect.intellij.idea.plugin.maven.listener.ExecutionListenerImpl"></mavenExecutionListener>-->
     </extensions>
 
     <actions>

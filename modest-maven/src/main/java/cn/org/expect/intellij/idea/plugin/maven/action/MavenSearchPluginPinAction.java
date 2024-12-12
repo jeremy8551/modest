@@ -1,6 +1,8 @@
 package cn.org.expect.intellij.idea.plugin.maven.action;
 
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Method;
@@ -16,7 +18,7 @@ import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchExecutorSe
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginPinJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.search.ArtifactSearchMessage;
+import cn.org.expect.maven.MavenMessage;
 import cn.org.expect.util.Ensure;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.actions.searcheverywhere.ActionSearchEverywhereContributor;
@@ -45,7 +47,7 @@ public class MavenSearchPluginPinAction extends ToggleAction {
     private final MavenSearchPlugin plugin;
 
     public MavenSearchPluginPinAction(MavenSearchPlugin plugin) {
-        super(ArtifactSearchMessage.get("maven.search.btn.pin.text"), ArtifactSearchMessage.get("maven.search.btn.pin.description"), AllIcons.General.Pin_tab);
+        super(MavenMessage.get("maven.search.btn.pin.text"), MavenMessage.get("maven.search.btn.pin.description"), AllIcons.General.Pin_tab);
         this.plugin = Ensure.notNull(plugin);
 //        int mask = SystemInfo.isMac ? 256 : 128;
 //        this.registerCustomShortcutSet(68, mask, plugin.getIdeaUI().getSearchEverywhereUI());
@@ -164,6 +166,8 @@ public class MavenSearchPluginPinAction extends ToggleAction {
                 frame.setUndecorated(true);
                 frame.setResizable(true);
                 frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                frame.addMouseListener(new ResizeMouseAdapter(frame));
+                frame.addMouseMotionListener(new ResizeMouseAdapter(frame));
                 frame.addWindowFocusListener(new WindowAdapter() {
                     public void windowLostFocus(WindowEvent event) { // 失去焦点
                         frame.setVisible(show);
@@ -247,6 +251,55 @@ public class MavenSearchPluginPinAction extends ToggleAction {
 
         public SearchEverywhereUI getUI() {
             return ui;
+        }
+    }
+
+    private static class ResizeMouseAdapter extends MouseAdapter {
+
+        private static final int BORDER_THICKNESS = 7; // 可调整边框的厚度
+        private final JFrame frame;
+        private volatile Cursor cursor = Cursor.getDefaultCursor();
+        private volatile Point initialMousePosition;
+
+        public ResizeMouseAdapter(JFrame frame) {
+            this.frame = frame;
+        }
+
+        public void mouseMoved(MouseEvent e) {
+            int x = e.getX();
+            int y = e.getY();
+            int width = this.frame.getWidth();
+            int height = this.frame.getHeight();
+
+//            log.debug("x: {}, y: {}, with: {}, height: {}", x, y, width, height);
+
+            // 判断鼠标位于边框的哪个位置，并设置相应的光标
+            if (x >= width - BORDER_THICKNESS && x <= width && y >= height - BORDER_THICKNESS && y <= height) {
+                this.cursor = Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR);
+            } else if (x >= width - BORDER_THICKNESS && x <= width && y >= BORDER_THICKNESS && y <= height - BORDER_THICKNESS) {
+                this.cursor = Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR);
+            } else if (x >= BORDER_THICKNESS && x <= width && y >= height - BORDER_THICKNESS && y <= height) {
+                this.cursor = Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR);
+            } else {
+                this.cursor = Cursor.getDefaultCursor();
+            }
+            this.frame.setCursor(this.cursor);
+        }
+
+        public void mousePressed(MouseEvent e) {
+            this.initialMousePosition = e.getPoint();
+        }
+
+        public void mouseReleased(MouseEvent e) {
+            Point currentMousePosition = e.getPoint();
+            int dx = currentMousePosition.x - this.initialMousePosition.x;
+            int dy = currentMousePosition.y - this.initialMousePosition.y;
+
+            Dimension dimension = new Dimension(this.frame.getWidth() + dx, this.frame.getHeight() + dy);
+            this.frame.setSize(dimension);
+            this.frame.setVisible(true);
+            this.frame.setCursor(Cursor.getDefaultCursor());
+            this.initialMousePosition = currentMousePosition;
         }
     }
 }

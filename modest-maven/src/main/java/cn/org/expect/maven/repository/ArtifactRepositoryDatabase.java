@@ -45,9 +45,4 @@ public interface ArtifactRepositoryDatabase {
      * @return 搜索结果
      */
     ArtifactSearchResult select(String groupId, String artifactId);
-
-    /**
-     * 删除所有数据
-     */
-    void clear();
 }

@@ -2,12 +2,17 @@ package cn.org.expect.maven.search;
 
 import java.io.File;
 
-import cn.org.expect.maven.concurrent.MavenSearchExecutorService;
+import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.ArtifactOption;
+import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
 import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
-import cn.org.expect.maven.repository.ArtifactSearchResult;
-import cn.org.expect.maven.repository.local.LocalMavenRepositorySettings;
+import cn.org.expect.maven.repository.local.LocalRepository;
+import cn.org.expect.maven.repository.local.LocalRepositorySettings;
 
+/**
+ * 搜索结果
+ */
 public interface ArtifactSearch {
 
     /**
@@ -71,23 +76,33 @@ public interface ArtifactSearch {
      * @param text       通知内容
      * @param actionName 操作名称
      * @param file       打开的文件
+     * @param textParams 通知内容的参数
      */
-    void sendNotification(ArtifactSearchNotification type, String text, String actionName, File file);
+    void sendNotification(ArtifactSearchNotification type, String text, String actionName, File file, Object... textParams);
 
     /**
      * 在等待搜索结果时，显示进度的文本信息
      *
-     * @param message 文本信息
+     * @param message       文本信息
+     * @param messageParams 文本的参数
      */
-    void setProgress(String message);
+    void setProgress(String message, Object... messageParams);
 
     /**
      * 设置状态栏的信息
      *
-     * @param type    文本的类型
-     * @param message 文本信息
+     * @param type          文本的类型
+     * @param message       文本信息
+     * @param messageParams 文本参数
      */
-    void setStatusBar(ArtifactSearchAdvertiser type, String message);
+    void setStatusBar(ArtifactSearchStatusMessageType type, String message, Object... messageParams);
+
+    /**
+     * 文本处理器
+     *
+     * @return 文本处理器
+     */
+    ArtifactSearchPattern getPattern();
 
     /**
      * 提交到线程池并发执行任务
@@ -101,7 +116,7 @@ public interface ArtifactSearch {
      *
      * @return 线程池
      */
-    MavenSearchExecutorService getService();
+    ArtifactSearchExecutorService getService();
 
     /**
      * 返回仓库信息
@@ -111,25 +126,32 @@ public interface ArtifactSearch {
     ArtifactOption getRepositoryInfo();
 
     /**
-     * 返回 Maven仓库接口
+     * 设置仓库ID
+     *
+     * @param repositoryId 仓库ID
+     */
+    void setRepository(String repositoryId);
+
+    /**
+     * 返回仓库接口
      *
      * @return Maven Maven仓库接口
      */
     ArtifactRepository getRepository();
 
     /**
-     * 返回本地Maven仓库接口
+     * 返回本地仓库接口
      *
      * @return 本地Maven仓库接口
      */
-    ArtifactRepository getLocalRepository();
+    LocalRepository getLocalRepository();
 
     /**
-     * 返回本地仓库配置信息
+     * 返回本地仓库的配置信息
      *
      * @return 配置信息
      */
-    LocalMavenRepositorySettings getLocalRepositorySettings();
+    LocalRepositorySettings getLocalRepositorySettings();
 
     /**
      * 返回数据库接口
@@ -139,21 +161,34 @@ public interface ArtifactSearch {
     ArtifactRepositoryDatabase getDatabase();
 
     /**
-     * 显示结果
+     * 下载工件
      *
-     * @param result 搜索结果
+     * @param artifact 工件信息
      */
-    void display(ArtifactSearchResult result);
+    void download(Artifact artifact);
 
     /**
-     * 显示结果
+     * 下载工件
+     *
+     * @param artifact 工件信息
      */
-    default void display() {
-        this.display(getContext().getSearchResult());
-    }
+    void asyncDownload(Artifact artifact);
 
     /**
-     * 异步显示结果
+     * 等待工件下载完毕
+     *
+     * @param artifact 工件信息
+     * @param timeout
+     */
+    void waitDownload(Artifact artifact, long timeout);
+
+    /**
+     * 显示搜索结果
+     */
+    void display();
+
+    /**
+     * 异步显示搜索结果
      */
     default void asyncDisplay() {
         this.execute(this::display);
