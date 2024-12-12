@@ -9,12 +9,12 @@ import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.JUL;
 import cn.org.expect.util.SPI;
 
-public class ResourceBundleList implements ResourceBundle {
+public class EasyResourceBundleList implements EasyResourceBundle {
 
-    private final List<ResourceBundle> list;
+    private final List<EasyResourceBundle> list;
 
-    public ResourceBundleList() {
-        this.list = new ArrayList<ResourceBundle>();
+    public EasyResourceBundleList() {
+        this.list = new ArrayList<EasyResourceBundle>();
         this.load(null);
     }
 
@@ -24,7 +24,7 @@ public class ResourceBundleList implements ResourceBundle {
     public synchronized void load(ClassLoader classLoader) {
         try {
             this.list.clear();
-            this.list.addAll(SPI.load(ClassUtils.getClassLoader(classLoader), ResourceBundle.class));
+            this.list.addAll(SPI.load(ClassUtils.getClassLoader(classLoader), EasyResourceBundle.class));
         } catch (Throwable e) {
             JUL.error(e.getLocalizedMessage(), e);
         }
@@ -32,7 +32,7 @@ public class ResourceBundleList implements ResourceBundle {
 
     public boolean contains(String key) {
         for (int i = 0; i < this.list.size(); i++) {
-            ResourceBundle lp = this.list.get(i);
+            EasyResourceBundle lp = this.list.get(i);
             if (lp.contains(key)) {
                 return true;
             }
@@ -42,7 +42,7 @@ public class ResourceBundleList implements ResourceBundle {
 
     public String get(String key) {
         for (int i = 0; i < this.list.size(); i++) {
-            ResourceBundle lp = this.list.get(i);
+            EasyResourceBundle lp = this.list.get(i);
             if (lp.contains(key)) {
                 return lp.get(key);
             }
@@ -53,7 +53,7 @@ public class ResourceBundleList implements ResourceBundle {
     public Set<String> getKeys() {
         LinkedHashSet<String> set = new LinkedHashSet<String>();
         for (int i = 0; i < this.list.size(); i++) {
-            ResourceBundle lp = this.list.get(i);
+            EasyResourceBundle lp = this.list.get(i);
             set.addAll(lp.getKeys());
         }
         return set;

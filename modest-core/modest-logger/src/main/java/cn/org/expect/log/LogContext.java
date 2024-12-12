@@ -48,7 +48,7 @@ public interface LogContext {
      *
      * @return 国际化资源接口
      */
-    ResourceBundle getResourceBundle();
+    EasyResourceBundle getResourceBundle();
 
     /**
      * 返回应用的启动时间戳

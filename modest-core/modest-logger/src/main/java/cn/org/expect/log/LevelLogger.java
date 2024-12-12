@@ -2,7 +2,7 @@ package cn.org.expect.log;
 
 import cn.org.expect.util.ObjectUtils;
 
-public abstract class LevelLogger extends ResourceBundleFormatter implements Log, LogLevelAware {
+public abstract class LevelLogger extends EasyResourceBundleFormatter implements Log, LogLevelAware {
 
     /** 日志级别 */
     protected volatile boolean trace;

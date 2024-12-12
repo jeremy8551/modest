@@ -9,7 +9,7 @@ import cn.org.expect.util.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class ResourceBundleTest {
+public class EasyResourceBundleTest {
 
     @Test
     public void test2() throws IOException {

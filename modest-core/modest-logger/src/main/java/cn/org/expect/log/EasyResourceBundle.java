@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  * 国际化资源接口
  */
-public interface ResourceBundle {
+public interface EasyResourceBundle {
 
     /**
      * 判断国际化资源是否存在

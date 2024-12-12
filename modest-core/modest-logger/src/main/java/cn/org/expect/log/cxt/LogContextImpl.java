@@ -15,8 +15,8 @@ import cn.org.expect.log.LogLevel;
 import cn.org.expect.log.LogLevelAware;
 import cn.org.expect.log.PatternConsoleAppender;
 import cn.org.expect.log.PatternLogBuilder;
-import cn.org.expect.log.ResourceBundle;
-import cn.org.expect.log.ResourceBundleList;
+import cn.org.expect.log.EasyResourceBundle;
+import cn.org.expect.log.EasyResourceBundleList;
 import cn.org.expect.log.slf4j.Slf4jLogBuilder;
 import cn.org.expect.util.CharTable;
 import cn.org.expect.util.Dates;
@@ -50,7 +50,7 @@ public class LogContextImpl implements LogContext {
     private final List<Appender> appenderList;
 
     /** 国际化信息 */
-    private final ResourceBundleList resourceBundle;
+    private final EasyResourceBundleList resourceBundle;
 
     /**
      * 日志模块的上下文信息
@@ -60,7 +60,7 @@ public class LogContextImpl implements LogContext {
         this.alives = new LogPool();
         this.levelManager = new LogLevelManager();
         this.appenderList = new ArrayList<Appender>();
-        this.resourceBundle = new ResourceBundleList();
+        this.resourceBundle = new EasyResourceBundleList();
         this.init();
     }
 
@@ -107,7 +107,7 @@ public class LogContextImpl implements LogContext {
         this.resourceBundle.load(classLoader);
     }
 
-    public ResourceBundle getResourceBundle() {
+    public EasyResourceBundle getResourceBundle() {
         return resourceBundle;
     }
 

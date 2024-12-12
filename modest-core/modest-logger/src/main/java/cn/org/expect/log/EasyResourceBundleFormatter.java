@@ -3,15 +3,15 @@ package cn.org.expect.log;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
-public class ResourceBundleFormatter {
+public class EasyResourceBundleFormatter {
 
     /** 日志上下文信息 */
     protected LogContext context;
 
     /** 国际化资源 */
-    protected ResourceBundle resourceBundle;
+    protected EasyResourceBundle resourceBundle;
 
-    public ResourceBundleFormatter(LogContext context) {
+    public EasyResourceBundleFormatter(LogContext context) {
         this.context = Ensure.notNull(context);
         this.resourceBundle = this.context.getResourceBundle();
     }

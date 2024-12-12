@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class ResourceBundleImpl implements ResourceBundle {
+public class EasyResourceBundleImpl implements EasyResourceBundle {
 
     private final Map<String, String> map;
 
-    public ResourceBundleImpl() {
+    public EasyResourceBundleImpl() {
         this.map = new HashMap<String, String>();
         this.map.put("a.b", "test ab");
         this.map.put("a.b.c", "test abc");
