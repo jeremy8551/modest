@@ -1,17 +1,18 @@
 package cn.org.expect.log;
 
 import cn.org.expect.util.Ensure;
+import cn.org.expect.util.MessageBundle;
 import cn.org.expect.util.StringUtils;
 
-public class EasyResourceBundleFormatter {
+public class LogMessageBundle {
 
     /** 日志上下文信息 */
     protected LogContext context;
 
     /** 国际化资源 */
-    protected EasyResourceBundle resourceBundle;
+    protected MessageBundle resourceBundle;
 
-    public EasyResourceBundleFormatter(LogContext context) {
+    public LogMessageBundle(LogContext context) {
         this.context = Ensure.notNull(context);
         this.resourceBundle = this.context.getResourceBundle();
     }

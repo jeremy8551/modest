@@ -1,20 +1,17 @@
-package cn.org.expect.log;
+package cn.org.expect.util;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import cn.org.expect.util.ClassUtils;
-import cn.org.expect.util.JUL;
-import cn.org.expect.util.SPI;
+public class MessageBundleMap implements MessageBundle {
 
-public class EasyResourceBundleList implements EasyResourceBundle {
+    /** 资源集合 */
+    private final List<MessageBundle> list;
 
-    private final List<EasyResourceBundle> list;
-
-    public EasyResourceBundleList() {
-        this.list = new ArrayList<EasyResourceBundle>();
+    public MessageBundleMap() {
+        this.list = new ArrayList<MessageBundle>();
         this.load(null);
     }
 
@@ -24,7 +21,7 @@ public class EasyResourceBundleList implements EasyResourceBundle {
     public synchronized void load(ClassLoader classLoader) {
         try {
             this.list.clear();
-            this.list.addAll(SPI.load(ClassUtils.getClassLoader(classLoader), EasyResourceBundle.class));
+            this.list.addAll(SPI.load(ClassUtils.getClassLoader(classLoader), MessageBundle.class));
         } catch (Throwable e) {
             JUL.error(e.getLocalizedMessage(), e);
         }
@@ -32,7 +29,7 @@ public class EasyResourceBundleList implements EasyResourceBundle {
 
     public boolean contains(String key) {
         for (int i = 0; i < this.list.size(); i++) {
-            EasyResourceBundle lp = this.list.get(i);
+            MessageBundle lp = this.list.get(i);
             if (lp.contains(key)) {
                 return true;
             }
@@ -42,7 +39,7 @@ public class EasyResourceBundleList implements EasyResourceBundle {
 
     public String get(String key) {
         for (int i = 0; i < this.list.size(); i++) {
-            EasyResourceBundle lp = this.list.get(i);
+            MessageBundle lp = this.list.get(i);
             if (lp.contains(key)) {
                 return lp.get(key);
             }
@@ -53,7 +50,7 @@ public class EasyResourceBundleList implements EasyResourceBundle {
     public Set<String> getKeys() {
         LinkedHashSet<String> set = new LinkedHashSet<String>();
         for (int i = 0; i < this.list.size(); i++) {
-            EasyResourceBundle lp = this.list.get(i);
+            MessageBundle lp = this.list.get(i);
             set.addAll(lp.getKeys());
         }
         return set;

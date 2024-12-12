@@ -2,6 +2,8 @@ package cn.org.expect.log;
 
 import java.util.List;
 
+import cn.org.expect.util.MessageBundle;
+
 /**
  * 日志上下文信息
  *
@@ -48,7 +50,7 @@ public interface LogContext {
      *
      * @return 国际化资源接口
      */
-    EasyResourceBundle getResourceBundle();
+    MessageBundle getResourceBundle();
 
     /**
      * 返回应用的启动时间戳

@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class EasyResourceBundleImpl implements EasyResourceBundle {
+import cn.org.expect.util.MessageBundle;
+
+public class EasyResourceBundleImpl implements MessageBundle {
 
     private final Map<String, String> map;
 

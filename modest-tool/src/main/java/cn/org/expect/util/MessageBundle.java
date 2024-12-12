@@ -1,14 +1,14 @@
-package cn.org.expect.log;
+package cn.org.expect.util;
 
 import java.util.Set;
 
 /**
- * 国际化资源接口
+ * 资源信息接口
  */
-public interface EasyResourceBundle {
+public interface MessageBundle {
 
     /**
-     * 判断国际化资源是否存在
+     * 判断资源信息是否存在
      *
      * @param key 资源编号
      * @return 返回true表示存在 false表示不存在
@@ -16,10 +16,10 @@ public interface EasyResourceBundle {
     boolean contains(String key);
 
     /**
-     * 返回国际化资源文本
+     * 返回资源信息
      *
      * @param key 资源编号
-     * @return 国际化资源文本，其中的参数必须是 {0} 格式
+     * @return 资源信息
      */
     String get(String key);
 
