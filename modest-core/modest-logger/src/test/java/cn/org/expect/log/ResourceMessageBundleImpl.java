@@ -4,13 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import cn.org.expect.util.MessageBundle;
+import cn.org.expect.util.ResourceMessageBundle;
 
-public class EasyResourceBundleImpl implements MessageBundle {
+public class ResourceMessageBundleImpl implements ResourceMessageBundle {
 
     private final Map<String, String> map;
 
-    public EasyResourceBundleImpl() {
+    public ResourceMessageBundleImpl() {
         this.map = new HashMap<String, String>();
         this.map.put("a.b", "test ab");
         this.map.put("a.b.c", "test abc");

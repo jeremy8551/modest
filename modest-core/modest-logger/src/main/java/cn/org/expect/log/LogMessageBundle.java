@@ -1,7 +1,7 @@
 package cn.org.expect.log;
 
 import cn.org.expect.util.Ensure;
-import cn.org.expect.util.MessageBundle;
+import cn.org.expect.util.ResourceMessageBundle;
 import cn.org.expect.util.StringUtils;
 
 public class LogMessageBundle {
@@ -10,7 +10,7 @@ public class LogMessageBundle {
     protected LogContext context;
 
     /** 国际化资源 */
-    protected MessageBundle resourceBundle;
+    protected ResourceMessageBundle resourceBundle;
 
     public LogMessageBundle(LogContext context) {
         this.context = Ensure.notNull(context);

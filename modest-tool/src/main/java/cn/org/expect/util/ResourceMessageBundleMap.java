@@ -5,13 +5,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-public class MessageBundleMap implements MessageBundle {
+public class ResourceMessageBundleMap implements ResourceMessageBundle {
 
     /** 资源集合 */
-    private final List<MessageBundle> list;
+    private final List<ResourceMessageBundle> list;
 
-    public MessageBundleMap() {
-        this.list = new ArrayList<MessageBundle>();
+    public ResourceMessageBundleMap() {
+        this.list = new ArrayList<ResourceMessageBundle>();
         this.load(null);
     }
 
@@ -21,7 +21,7 @@ public class MessageBundleMap implements MessageBundle {
     public synchronized void load(ClassLoader classLoader) {
         try {
             this.list.clear();
-            this.list.addAll(SPI.load(ClassUtils.getClassLoader(classLoader), MessageBundle.class));
+            this.list.addAll(SPI.load(ClassUtils.getClassLoader(classLoader), ResourceMessageBundle.class));
         } catch (Throwable e) {
             JUL.error(e.getLocalizedMessage(), e);
         }
@@ -29,7 +29,7 @@ public class MessageBundleMap implements MessageBundle {
 
     public boolean contains(String key) {
         for (int i = 0; i < this.list.size(); i++) {
-            MessageBundle lp = this.list.get(i);
+            ResourceMessageBundle lp = this.list.get(i);
             if (lp.contains(key)) {
                 return true;
             }
@@ -39,7 +39,7 @@ public class MessageBundleMap implements MessageBundle {
 
     public String get(String key) {
         for (int i = 0; i < this.list.size(); i++) {
-            MessageBundle lp = this.list.get(i);
+            ResourceMessageBundle lp = this.list.get(i);
             if (lp.contains(key)) {
                 return lp.get(key);
             }
@@ -50,7 +50,7 @@ public class MessageBundleMap implements MessageBundle {
     public Set<String> getKeys() {
         LinkedHashSet<String> set = new LinkedHashSet<String>();
         for (int i = 0; i < this.list.size(); i++) {
-            MessageBundle lp = this.list.get(i);
+            ResourceMessageBundle lp = this.list.get(i);
             set.addAll(lp.getKeys());
         }
         return set;

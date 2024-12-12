@@ -5,7 +5,7 @@ import java.util.Set;
 /**
  * 资源信息接口
  */
-public interface MessageBundle {
+public interface ResourceMessageBundle {
 
     /**
      * 判断资源信息是否存在
