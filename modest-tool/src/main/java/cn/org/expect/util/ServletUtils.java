@@ -9,36 +9,40 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import cn.org.expect.concurrent.Terminate;
+
 public class ServletUtils {
 
     /**
      * 下载文件
      *
-     * @param response HttpServletResponse对象
-     * @param file     下载文件
-     * @param filename 下载后显示文件名
+     * @param response  HttpServletResponse对象
+     * @param file      下载文件
+     * @param filename  下载后显示文件名
+     * @param terminate 终止接口，可以为null
      * @throws IOException 输入流发生错误
      */
-    private static void downFile(HttpServletResponse response, File file, String filename) throws IOException {
+    private static void downFile(HttpServletResponse response, File file, String filename, Terminate terminate) throws IOException {
         response.setContentType("APPLICATION/OCTET-STREAM");
         response.setHeader("Content-Disposition", "attachment; filename=\"" + StringUtils.defaultString(filename, file.getName()) + "\"");
         ServletOutputStream out = response.getOutputStream();
         InputStream in = new FileInputStream(file);
-        IO.write(in, out, null);
+        IO.write(in, out, terminate);
     }
 
     /**
      * 下载文件
      *
-     * @param request  HttpServletRequest对象
-     * @param response HttpServletResponse对象
-     * @param file     下载文件
-     * @param filename 下载后显示文件名
+     * @param request   HttpServletRequest对象
+     * @param response  HttpServletResponse对象
+     * @param file      下载文件
+     * @param filename  下载后显示文件名
+     * @param terminate 终止接口，可以为null
      * @throws IOException 输入流发生错误
      */
-    public static void downFile(HttpServletRequest request, HttpServletResponse response, File file, String filename) throws IOException {
+    public static void downFile(HttpServletRequest request, HttpServletResponse response, File file, String filename, Terminate terminate) throws IOException {
         String name = encodeFilename(request, StringUtils.defaultString(filename, file.getName()));
-        downFile(response, file, name);
+        downFile(response, file, name, terminate);
     }
 
     /**
@@ -65,5 +69,4 @@ public class ServletUtils {
             return StringUtils.toString(array, CharsetName.ISO_8859_1);
         }
     }
-
 }
