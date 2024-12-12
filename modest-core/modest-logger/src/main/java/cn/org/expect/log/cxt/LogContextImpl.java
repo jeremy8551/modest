@@ -15,6 +15,8 @@ import cn.org.expect.log.LogLevel;
 import cn.org.expect.log.LogLevelAware;
 import cn.org.expect.log.PatternConsoleAppender;
 import cn.org.expect.log.PatternLogBuilder;
+import cn.org.expect.log.ResourceBundle;
+import cn.org.expect.log.ResourceBundleList;
 import cn.org.expect.log.slf4j.Slf4jLogBuilder;
 import cn.org.expect.util.CharTable;
 import cn.org.expect.util.Dates;
@@ -29,6 +31,9 @@ import cn.org.expect.util.JUL;
  */
 public class LogContextImpl implements LogContext {
 
+    /** 类加载器 */
+    private ClassLoader classLoader;
+
     /** 日志系统启动的时间 */
     private long startTimeMillis;
 
@@ -42,7 +47,10 @@ public class LogContextImpl implements LogContext {
     private final LogLevelManager levelManager;
 
     /** 日志记录器 */
-    private final List<Appender> appenders;
+    private final List<Appender> appenderList;
+
+    /** 国际化信息 */
+    private final ResourceBundleList resourceBundle;
 
     /**
      * 日志模块的上下文信息
@@ -51,7 +59,8 @@ public class LogContextImpl implements LogContext {
         this.setStartMillis(System.currentTimeMillis());
         this.alives = new LogPool();
         this.levelManager = new LogLevelManager();
-        this.appenders = new ArrayList<Appender>();
+        this.appenderList = new ArrayList<Appender>();
+        this.resourceBundle = new ResourceBundleList();
         this.init();
     }
 
@@ -89,6 +98,19 @@ public class LogContextImpl implements LogContext {
         }
     }
 
+    public ClassLoader getClassLoader() {
+        return classLoader;
+    }
+
+    public void setClassLoader(ClassLoader classLoader) {
+        this.classLoader = classLoader;
+        this.resourceBundle.load(classLoader);
+    }
+
+    public ResourceBundle getResourceBundle() {
+        return resourceBundle;
+    }
+
     public void setStartMillis(long startTimeMillis) {
         this.startTimeMillis = startTimeMillis;
     }
@@ -107,7 +129,7 @@ public class LogContextImpl implements LogContext {
 
     @SuppressWarnings("unchecked")
     public <E> E findAppender(Class<E> type) {
-        for (Appender next : this.appenders) {
+        for (Appender next : this.appenderList) {
             if (next.getClass().equals(type)) {
                 return (E) next;
             }
@@ -116,13 +138,13 @@ public class LogContextImpl implements LogContext {
     }
 
     public void addAppender(Appender appender) {
-        this.appenders.add(Ensure.notNull(appender));
+        this.appenderList.add(Ensure.notNull(appender));
     }
 
     public List<Appender> removeAppender(Object where) {
         ArrayList<Appender> list = new ArrayList<Appender>();
         if (where instanceof Appender) {
-            for (Iterator<Appender> it = this.appenders.iterator(); it.hasNext(); ) {
+            for (Iterator<Appender> it = this.appenderList.iterator(); it.hasNext(); ) {
                 Appender next = it.next();
                 if (next.equals(where)) {
                     it.remove();
@@ -138,7 +160,7 @@ public class LogContextImpl implements LogContext {
             }
             return list;
         } else if (where instanceof String) {
-            for (Iterator<Appender> it = this.appenders.iterator(); it.hasNext(); ) {
+            for (Iterator<Appender> it = this.appenderList.iterator(); it.hasNext(); ) {
                 Appender next = it.next();
                 if (next.getName().equals(where)) {
                     it.remove();
@@ -147,7 +169,7 @@ public class LogContextImpl implements LogContext {
             }
             return list;
         } else if (where instanceof Class) {
-            for (Iterator<Appender> it = this.appenders.iterator(); it.hasNext(); ) {
+            for (Iterator<Appender> it = this.appenderList.iterator(); it.hasNext(); ) {
                 Appender next = it.next();
                 if (next.getClass().equals(where)) {
                     it.remove();
@@ -161,7 +183,7 @@ public class LogContextImpl implements LogContext {
     }
 
     public List<Appender> getAppenders() {
-        return Collections.unmodifiableList(this.appenders);
+        return Collections.unmodifiableList(this.appenderList);
     }
 
     public LogLevel getLevel(Class<?> type) {
@@ -186,9 +208,9 @@ public class LogContextImpl implements LogContext {
         ct.addCells("", "");
 
         CharTable ct1 = new CharTable();
-        ct1.addTitle(this.appenders.getClass().getName());
-        for (int i = 0; i < this.appenders.size(); i++) {
-            Appender appender = this.appenders.get(i);
+        ct1.addTitle(this.appenderList.getClass().getName());
+        for (int i = 0; i < this.appenderList.size(); i++) {
+            Appender appender = this.appenderList.get(i);
             ct1.addCell(appender.getClass().getName());
         }
 

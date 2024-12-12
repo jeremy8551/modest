@@ -99,7 +99,11 @@ public class DefaultEasyContext implements EasyContext {
     public DefaultEasyContext(ClassLoader classLoader, String... args) {
         this.setClassLoader(classLoader);
         this.setArgument(args);
-        String[] configs = LogConfigAnalysis.parse(LogFactory.getContext(), args);
+
+        // 加载日志模块参数
+        LogContext logContext = LogFactory.getContext();
+        logContext.setClassLoader(classLoader);
+        String[] configs = LogConfigAnalysis.parse(logContext, args);
 
         // 扫描并加载组件
         EasyScanPatternList list = new EasyScanPatternList();

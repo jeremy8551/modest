@@ -47,6 +47,9 @@ public class LogConfigAnalysis {
      *                >${temp}/file.log 不带格式输出日志 <br>
      *                >${temp}/file.log+ 带格式输出日志 <br>
      *                >${temp}/file.log+pattern 使用指定格式输出日志 <br>
+     *                <br>
+     *                案例: <br>
+     *                sout+,>>${temp}/file.log
      * @return 返回与日志配置无关的配置信息
      */
     public static String[] parse(LogContext context, String... args) {

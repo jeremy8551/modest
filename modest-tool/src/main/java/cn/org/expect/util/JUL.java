@@ -63,66 +63,51 @@ public class JUL {
     }
 
     public static void trace(String msg, Object... args) {
-        out.log(Level.FINEST, new MessageFormatter().format(msg, args));
+        out.log(Level.FINEST, StringUtils.replacePlaceholder(msg, args));
     }
 
     public static void trace(String msg, Throwable e) {
-        out.log(Level.FINEST, format(msg, e));
+        out.log(Level.FINEST, StringUtils.toString(msg, e));
     }
 
     public static void debug(String msg, Object... args) {
-        out.log(Level.CONFIG, new MessageFormatter().format(msg, args));
+        out.log(Level.CONFIG, StringUtils.replacePlaceholder(msg, args));
     }
 
     public static void debug(String msg, Throwable e) {
-        out.log(Level.CONFIG, format(msg, e));
+        out.log(Level.CONFIG, StringUtils.toString(msg, e));
     }
 
     public static void info(String msg, Object... args) {
-        out.log(Level.INFO, new MessageFormatter().format(msg, args));
+        out.log(Level.INFO, StringUtils.replacePlaceholder(msg, args));
     }
 
     public static void info(String msg, Throwable e) {
-        out.log(Level.INFO, format(msg, e));
+        out.log(Level.INFO, StringUtils.toString(msg, e));
     }
 
     public static void warn(String msg, Object... args) {
-        out.log(Level.WARNING, new MessageFormatter().format(msg, args));
+        out.log(Level.WARNING, StringUtils.replacePlaceholder(msg, args));
     }
 
     public static void warn(String msg, Throwable e) {
-        out.log(Level.WARNING, format(msg, e));
+        out.log(Level.WARNING, StringUtils.toString(msg, e));
     }
 
     public static void error(String msg, Object... args) {
-        out.log(Level.SEVERE, new MessageFormatter().format(msg, args));
+        out.log(Level.SEVERE, StringUtils.replacePlaceholder(msg, args));
     }
 
     public static void error(String msg, Throwable e) {
-        out.log(Level.SEVERE, format(msg, e));
+        out.log(Level.SEVERE, StringUtils.toString(msg, e));
     }
 
     public static void fatal(String msg, Object... args) {
-        out.log(Level.SEVERE, new MessageFormatter().format(msg, args));
+        out.log(Level.SEVERE, StringUtils.replacePlaceholder(msg, args));
     }
 
     public static void fatal(String msg, Throwable e) {
-        out.log(Level.SEVERE, format(msg, e));
-    }
-
-    /**
-     * 将字符串中的占位符 {} 替换为数组元素
-     *
-     * @param message 字符串
-     * @param e       数组
-     * @return 字符串
-     */
-    public static String format(CharSequence message, Throwable e) {
-        StringBuilder buf = new StringBuilder(message.length());
-        buf.append(message);
-        buf.append(FileUtils.lineSeparator);
-        buf.append(StringUtils.toString(e));
-        return buf.toString();
+        out.log(Level.SEVERE, StringUtils.toString(msg, e));
     }
 
     /**

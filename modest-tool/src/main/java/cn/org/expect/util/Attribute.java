@@ -32,5 +32,4 @@ public interface Attribute<E> {
      * @return 属性值
      */
     E getAttribute(String key);
-
 }

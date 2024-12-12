@@ -1,7 +1,7 @@
 package cn.org.expect.log.apd.field;
 
 import cn.org.expect.log.apd.LogEvent;
-import cn.org.expect.util.MessageFormatter;
+import cn.org.expect.util.StringUtils;
 
 /**
  * %m: 输出代码中指定的日志信息
@@ -11,10 +11,7 @@ import cn.org.expect.util.MessageFormatter;
  */
 public class MessageField extends AbstractField {
 
-    private MessageFormatter formater;
-
     public MessageField() {
-        this.formater = new MessageFormatter();
     }
 
     public String format(LogEvent event) {
@@ -24,10 +21,7 @@ public class MessageField extends AbstractField {
         }
 
         Object[] args = event.getArgs();
-        if (args != null && args.length > 0) {
-            return this.format(this.formater.format(message, args));
-        } else {
-            return this.format(message);
-        }
+        String text = StringUtils.replaceEmptyHolder(message, args);
+        return this.format(text);
     }
 }

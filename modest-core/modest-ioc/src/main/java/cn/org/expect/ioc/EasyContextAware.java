@@ -8,5 +8,4 @@ public interface EasyContextAware {
      * @param context 容器上下文信息
      */
     void setContext(EasyContext context);
-
 }

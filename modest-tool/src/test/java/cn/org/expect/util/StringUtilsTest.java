@@ -1972,7 +1972,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void testappend() {
+    public void testAppend() {
         String[] a = {};
         String[] sa = StringUtils.append(a, "a", "bc");
         Assert.assertEquals("a", sa[0]);
@@ -1985,4 +1985,51 @@ public class StringUtilsTest {
         Assert.assertEquals("bc", sa[2]);
     }
 
+    @Test
+    public void testReplacePlaceholder() {
+        Assert.assertEquals("", StringUtils.replacePlaceholder("", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("1", StringUtils.replacePlaceholder("{0}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("1+2", StringUtils.replacePlaceholder("{0}+{1}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{0}", StringUtils.replacePlaceholder("\\{0}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{0}+1", StringUtils.replacePlaceholder("\\{0}+{0}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{}+13", StringUtils.replacePlaceholder("\\{}+{0}3", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{}+{01}3", StringUtils.replacePlaceholder("\\{}+{01}3", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{}+{01}3", StringUtils.replacePlaceholder("\\{}+\\{01}3", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("1+{01}3", StringUtils.replacePlaceholder("{}+{01}3", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{a}+{b}3", StringUtils.replacePlaceholder("{a}+{b}3", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("11", StringUtils.replacePlaceholder("{10}", new Object[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}));
+
+        Assert.assertEquals("", StringUtils.replacePlaceholder("", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("1", StringUtils.replacePlaceholder("{}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("1+2", StringUtils.replacePlaceholder("{}+{}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{}+1", StringUtils.replacePlaceholder("\\{}+{}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{}+13", StringUtils.replacePlaceholder("\\{}+{}3", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{}+13\\", StringUtils.replacePlaceholder("\\{}+{}3\\", new Object[]{"1", "2", "3"}));
+    }
+
+    @Test
+    public void testReplaceEmptyHolder() {
+        Assert.assertEquals("", StringUtils.replaceEmptyHolder("", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("1", StringUtils.replaceEmptyHolder("{}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("1+2", StringUtils.replaceEmptyHolder("{}+{}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("\\{}+1", StringUtils.replaceEmptyHolder("\\{}+{}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("\\{}+13", StringUtils.replaceEmptyHolder("\\{}+{}3", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("\\{}+13\\", StringUtils.replaceEmptyHolder("\\{}+{}3\\", new Object[]{"1", "2", "3"}));
+    }
+
+    @Test
+    public void testReplaceIndexHolder() {
+        Assert.assertEquals("", StringUtils.replaceIndexHolder("", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("1", StringUtils.replaceIndexHolder("{0}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("1+2", StringUtils.replaceIndexHolder("{0}+{1}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{0}", StringUtils.replaceIndexHolder("\\{0}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{0}+1", StringUtils.replaceIndexHolder("\\{0}+{0}", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{}+13", StringUtils.replaceIndexHolder("\\{}+{0}3", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{}+{01}3", StringUtils.replaceIndexHolder("\\{}+{01}3", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{}+{01}3", StringUtils.replaceIndexHolder("\\{}+\\{01}3", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{}+{01}3", StringUtils.replaceIndexHolder("{}+{01}3", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{a}+{b}3", StringUtils.replaceIndexHolder("{a}+{b}3", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("{a}+{b}3\\", StringUtils.replaceIndexHolder("{a}+{b}3\\", new Object[]{"1", "2", "3"}));
+        Assert.assertEquals("11", StringUtils.replaceIndexHolder("{10}", new Object[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}));
+    }
 }

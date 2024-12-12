@@ -659,20 +659,4 @@ public class ArrayDeque<E> extends AbstractCollection<E> implements Cloneable, S
         }
         return a;
     }
-
-//    /**
-//     * 返回此队列的一个副本
-//     *
-//     * @return 此队列的一个副本
-//     */
-//    public ArrayDeque<E> clone() {
-//        try {
-//            ArrayDeque<E> result = (ArrayDeque<E>) super.clone();
-//            result.elements = Arrays.copyOf(this.elements, this.elements.length);
-//            return result;
-//        } catch (CloneNotSupportedException e) {
-//            throw new AssertionError();
-//        }
-//    }
-
 }

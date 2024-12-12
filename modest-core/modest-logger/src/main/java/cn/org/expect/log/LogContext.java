@@ -3,12 +3,26 @@ package cn.org.expect.log;
 import java.util.List;
 
 /**
- * 日志模块的上下文信息
+ * 日志上下文信息
  *
  * @author jeremy8551@qq.com
  * @createtime 2023/11/22
  */
 public interface LogContext {
+
+    /**
+     * 返回类加载器
+     *
+     * @return 类加载器
+     */
+    ClassLoader getClassLoader();
+
+    /**
+     * 设置类加载器
+     *
+     * @param classLoader 类加载器
+     */
+    void setClassLoader(ClassLoader classLoader);
 
     /**
      * 设置日志输出级别
@@ -28,6 +42,13 @@ public interface LogContext {
      * @return 日志级别
      */
     LogLevel getLevel(Class<?> type);
+
+    /**
+     * 返回国际化资源接口
+     *
+     * @return 国际化资源接口
+     */
+    ResourceBundle getResourceBundle();
 
     /**
      * 返回应用的启动时间戳

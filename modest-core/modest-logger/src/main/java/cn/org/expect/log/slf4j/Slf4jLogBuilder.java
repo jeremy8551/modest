@@ -23,9 +23,8 @@ public class Slf4jLogBuilder implements LogBuilder {
     }
 
     public Log create(LogContext context, Class<?> type, String fqcn, boolean dynamicCategory) throws Exception {
-        Slf4jLog log = new Slf4jLog(type, fqcn);
+        Slf4jLog log = new Slf4jLog(context, type);
         context.addLog(log);
         return log;
     }
-
 }

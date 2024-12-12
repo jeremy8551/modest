@@ -777,5 +777,4 @@ public class BaseAnalysis implements Analysis {
             return StringUtils.inArray(key, array);
         }
     }
-
 }

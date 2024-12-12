@@ -8,5 +8,4 @@ public interface LogLevelAware {
      * @param level 日志级别
      */
     void setLevel(LogLevel level);
-
 }

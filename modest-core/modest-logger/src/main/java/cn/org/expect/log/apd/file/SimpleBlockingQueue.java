@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
+import cn.org.expect.util.ObjectUtils;
+
 /**
  * 非阻塞队列的实现
  *
@@ -103,7 +105,7 @@ public class SimpleBlockingQueue<E> implements BlockingQueue<E> {
     }
 
     public Object[] toArray() {
-        return new Object[0];
+        return ObjectUtils.of();
     }
 
     public <T> T[] toArray(T[] a) {

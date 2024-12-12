@@ -3,7 +3,8 @@ package cn.org.expect.log.slf4j;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.log.Log;
+import cn.org.expect.log.LevelLogger;
+import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.StackTraceUtils;
 import cn.org.expect.util.StringUtils;
@@ -16,21 +17,22 @@ import org.slf4j.LoggerFactory;
  * @author jeremy8551@qq.com
  * @createtime 2023-09-13
  */
-public class Slf4jLog implements Log {
-
-    /** 行的集合 */
-    private final List<CharSequence> list;
+public class Slf4jLog extends LevelLogger {
 
     /** 日志接口 */
     private final Logger log;
+
+    /** 行的集合 */
+    private final List<CharSequence> list;
 
     /** 创建日志的堆栈信息 */
     protected StackTraceElement stackTrace;
 
     /** 日志所属的类名 */
-    private String type;
+    private final String type;
 
-    public Slf4jLog(Class<?> type, String fqcn) {
+    public Slf4jLog(LogContext context, Class<?> type) {
+        super(context);
         this.type = type.getName();
         this.list = new ArrayList<CharSequence>();
         this.log = LoggerFactory.getLogger(type);
@@ -40,124 +42,124 @@ public class Slf4jLog implements Log {
     }
 
     public String getName() {
-        return this.log.getName();
+        return log.getName();
     }
 
     public boolean isTraceEnabled() {
-        return this.log.isTraceEnabled();
+        return log.isTraceEnabled();
     }
 
     public boolean isDebugEnabled() {
-        return this.log.isDebugEnabled();
+        return log.isDebugEnabled();
     }
 
     public boolean isInfoEnabled() {
-        return this.log.isInfoEnabled();
+        return log.isInfoEnabled();
     }
 
     public boolean isWarnEnabled() {
-        return this.log.isWarnEnabled();
+        return log.isWarnEnabled();
     }
 
     public boolean isErrorEnabled() {
-        return this.log.isErrorEnabled();
+        return log.isErrorEnabled();
     }
 
     public boolean isFatalEnabled() {
-        return this.log.isErrorEnabled();
+        return log.isErrorEnabled();
     }
 
-    public void trace(String message, Object... args) {
+    public void printTrace(String message, Object... args) {
         if (StringUtils.contains(message, '\r', '\n')) {
             synchronized (this.list) {
                 StringUtils.splitLines(message, this.list);
                 for (int i = 0, size = this.list.size(); i < size; i++) {
-                    this.log.trace(this.list.get(i).toString(), args);
+                    log.trace(this.list.get(i).toString(), args);
                 }
             }
         } else {
-            this.log.trace(message, args);
+            log.trace(message, args);
         }
     }
 
-    public void trace(String message, Throwable e) {
-        this.log.trace(message, e);
+    public void printTrace(String message, Throwable e) {
+        log.trace(message, e);
     }
 
-    public void debug(String message, Object... args) {
+    public void printDebug(String message, Object... args) {
         if (StringUtils.contains(message, '\r', '\n')) {
             synchronized (this.list) {
                 StringUtils.splitLines(message, this.list);
                 for (int i = 0, size = this.list.size(); i < size; i++) {
-                    this.log.debug(this.list.get(i).toString(), args);
+                    log.debug(this.list.get(i).toString(), args);
                 }
             }
         } else {
-            this.log.debug(message, args);
+            log.debug(message, args);
         }
     }
 
-    public void debug(String message, Throwable e) {
-        this.log.debug(message, e);
+    public void printDebug(String message, Throwable e) {
+        log.debug(message, e);
     }
 
-    public void info(String message, Object... args) {
+    public void printInfo(String message, Object... args) {
         if (StringUtils.contains(message, '\r', '\n')) {
             synchronized (this.list) {
                 StringUtils.splitLines(message, this.list);
                 for (int i = 0, size = this.list.size(); i < size; i++) {
-                    this.log.info(this.list.get(i).toString(), args);
+                    log.info(this.list.get(i).toString(), args);
                 }
             }
         } else {
-            this.log.info(message, args);
+            log.info(message, args);
         }
     }
 
-    public void info(String message, Throwable e) {
-        this.log.info(message, e);
+    public void printInfo(String message, Throwable e) {
+        log.info(message, e);
     }
 
-    public void warn(String message, Object... args) {
+    public void printWarn(String message, Object... args) {
         if (StringUtils.contains(message, '\r', '\n')) {
             synchronized (this.list) {
                 StringUtils.splitLines(message, this.list);
                 for (int i = 0, size = this.list.size(); i < size; i++) {
-                    this.log.warn(this.list.get(i).toString(), args);
+                    log.warn(this.list.get(i).toString(), args);
                 }
             }
         } else {
-            this.log.warn(message, args);
+            log.warn(message, args);
         }
     }
 
-    public void warn(String message, Throwable e) {
-        this.log.warn(message, e);
+    public void printWarn(String message, Throwable e) {
+        log.warn(message, e);
     }
 
-    public void error(String message, Object... args) {
+    public void printError(String message, Object... args) {
         if (StringUtils.contains(message, '\r', '\n')) {
             synchronized (this.list) {
                 StringUtils.splitLines(message, this.list);
                 for (int i = 0, size = this.list.size(); i < size; i++) {
-                    this.log.error(this.list.get(i).toString(), args);
+                    log.error(this.list.get(i).toString(), args);
                 }
             }
         } else {
-            this.log.error(message, args);
+            log.error(message, args);
         }
     }
 
-    public void error(String message, Throwable e) {
-        this.log.error(message, e);
+    public void printError(String message, Throwable e) {
+        log.error(message, e);
     }
 
-    public void fatal(String message, Object... args) {
-        this.error(message, args);
+    public void printFatal(String message, Object... args) {
+        this.printError(message, args);
     }
 
-    public void fatal(String message, Throwable e) {
-        this.error(message, e);
+    public void printFatal(String message, Throwable e) {
+        this.printError(message, e);
     }
 
     public String toString() {
@@ -175,9 +177,8 @@ public class Slf4jLog implements Log {
         }
         str += ", class=" + this.type;
         str += ", line=(" + stackTrace.getFileName() + ":" + this.stackTrace.getLineNumber() + ")";
-        str += ", logClass=" + this.log.getClass().getName();
+        str += ", logClass=" + log.getClass().getName();
         str += '}';
         return str;
     }
-
 }

@@ -1054,6 +1054,233 @@ public class StringUtils {
     }
 
     /**
+     * 将字符串中的占位符替换为数组中的元素，支持 {} 与 {0} 占位符
+     *
+     * @param message 字符串
+     * @param args    参数数组
+     * @return 字符串
+     */
+    public static String replacePlaceholder(String message, Object... args) {
+        if (message == null || args == null || args.length == 0) {
+            return message;
+        }
+
+        boolean escape = false;
+        int length = message.length();
+        StringBuilder buf = new StringBuilder(length);
+        for (int i = 0, index = 0; i < length; i++) {
+            char c = message.charAt(i);
+
+            // 转义字符
+            if (c == '\\') {
+                escape = true;
+                continue;
+            }
+
+            // 转义字符
+            if (escape) {
+                buf.append(c);
+                escape = false;
+                continue;
+            }
+
+            // 下一个位置
+            int next = i + 1;
+
+            // 替换 {}
+            if (c == '{' && next < length && message.charAt(next) == '}' && index < args.length) {
+                buf.append(args[index++]);
+                i = next;
+                continue;
+            }
+
+            // 替换 {0}
+            if (c == '{') {
+                int end = StringUtils.indexOfBrace(message, i);
+                if (end != -1 && StringUtils.isInt(message, next, end)) {
+                    CharSequence intExpr = message.subSequence(next, end);
+                    int position = Integer.parseInt(intExpr.toString());
+                    if (position >= 0 && position < args.length) {
+                        buf.append(args[position]);
+                        i = end;
+                        continue;
+                    }
+                }
+            }
+
+            // 追加字符
+            buf.append(c);
+        }
+
+        // 最后一个字符是转义字符
+        if (escape) {
+            buf.append('\\');
+        }
+        return buf.toString();
+    }
+
+    /**
+     * 将字符串中的占位符 {} 替换为数组元素
+     *
+     * @param message 字符串
+     * @param args    参数数组
+     * @return 字符串
+     */
+    public static String replaceEmptyHolder(String message, Object... args) {
+        if (message == null || args == null || args.length == 0) {
+            return message;
+        }
+
+        boolean escape = false;
+        StringBuilder buf = new StringBuilder(message.length());
+        for (int i = 0, index = 0, length = message.length(); i < length; i++) {
+            char c = message.charAt(i);
+
+            // 转义字符
+            if (c == '\\') {
+                escape = true;
+                continue;
+            }
+
+            // 转义字符
+            if (escape) {
+                buf.append('\\');
+                buf.append(c);
+                escape = false;
+                continue;
+            }
+
+            // 替换 {}
+            int next = i + 1;
+            if (c == '{' && next < length && message.charAt(next) == '}' && index < args.length) {
+                buf.append(args[index++]);
+                i = next;
+            } else {
+                buf.append(c);
+            }
+        }
+
+        // 最后一个字符是转义字符
+        if (escape) {
+            buf.append('\\');
+        }
+        return buf.toString();
+    }
+
+    /**
+     * 将字符串中的占位符 {0} 替换为数组元素
+     *
+     * @param message 字符串
+     * @param args    参数数组
+     * @return 字符串
+     */
+    public static String replaceIndexHolder(String message, Object... args) {
+        if (message == null || args == null || args.length == 0) {
+            return message;
+        }
+
+        StringBuilder buf = new StringBuilder(message.length());
+        int length = message.length();
+        boolean escape = false;
+        for (int i = 0; i < length; i++) {
+            char c = message.charAt(i);
+
+            // 转义字符
+            if (c == '\\') {
+                escape = true;
+                continue;
+            }
+
+            // 转义字符
+            if (escape) {
+                buf.append(c);
+                escape = false;
+                continue;
+            }
+
+            // 替换 {0}
+            if (c == '{') {
+                int start = i + 1;
+                int end = indexOfBrace(message, i);
+                if (end != -1 && isInt(message, start, end)) {
+                    CharSequence intExpr = message.subSequence(start, end);
+                    int position = Integer.parseInt(intExpr.toString());
+                    if (position >= 0 && position < args.length) {
+                        buf.append(args[position]);
+                        i = end;
+                        continue;
+                    }
+                }
+            }
+
+            // 追加字符
+            buf.append(c);
+        }
+
+        // 最后一个字符是转义字符
+        if (escape) {
+            buf.append('\\');
+        }
+        return buf.toString();
+    }
+
+    /**
+     * 将字符串解析为整数
+     *
+     * @param str  字符串
+     * @param from 整数开始位置，从0开始
+     * @param end  整数结束位置，从0开始
+     * @return 返回true表示是整数 false表示不是整数
+     */
+    protected static boolean isInt(CharSequence str, int from, int end) {
+        int size = end - from;
+
+        // 如果字符串为空
+        if (size == 0) {
+            return false;
+        }
+
+        // 排除单数0的情况
+        if (size >= 2) {
+            boolean first = true;
+            for (int i = from; first && i < end; i++) {
+                char c = str.charAt(from);
+                if (c == '0') {
+                    return false; // 如果数字的前缀是0，则返回false
+                } else {
+                    first = false;
+                }
+            }
+        }
+
+        // 检查每位字符是否是数字
+        for (int i = from; i < end; i++) {
+            char c = str.charAt(i);
+            if (!StringUtils.isNumber(c)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * 搜索大括号结束的位置
+     *
+     * @param str  字符串
+     * @param from 起始位置，从0开始
+     * @return 返回打括号结束位置，从0开始，返回-1表示未找到结束位置
+     */
+    protected static int indexOfBrace(CharSequence str, int from) {
+        for (int i = from + 1; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (c == '}') {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
      * 替换字符串参数 str 中所有全角字符为半角字符
      *
      * @param str 字符串
@@ -3383,6 +3610,23 @@ public class StringUtils {
         }
 
         return obj.toString();
+    }
+
+    /**
+     * 格式化文本与异常信息
+     *
+     * @param message   文本
+     * @param throwable 异常信息
+     * @return 字符串
+     */
+    public static String toString(String message, Throwable throwable) {
+        String error = StringUtils.toString(throwable);
+        StringBuilder buf = new StringBuilder(message.length() + error.length() + 4);
+        buf.append(message);
+        buf.append(FileUtils.lineSeparator);
+        buf.append(error);
+        buf.append(FileUtils.lineSeparator);
+        return buf.toString();
     }
 
     /**

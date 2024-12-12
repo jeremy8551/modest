@@ -7,6 +7,8 @@ import java.sql.Statement;
 import javax.sql.RowSetInternal;
 import javax.sql.RowSetMetaData;
 
+import cn.org.expect.util.ObjectUtils;
+
 public class StandardRowSetInternal implements RowSetInternal {
 
     private Statement statement;
@@ -22,7 +24,7 @@ public class StandardRowSetInternal implements RowSetInternal {
     }
 
     public Object[] getParams() throws SQLException {
-        return new Object[0];
+        return ObjectUtils.of();
     }
 
     public ResultSet getOriginalRow() throws SQLException {

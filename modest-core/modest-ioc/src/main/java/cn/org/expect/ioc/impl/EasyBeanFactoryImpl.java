@@ -224,5 +224,4 @@ public class EasyBeanFactoryImpl implements EasyBeanFactory {
         }
         return array;
     }
-
 }

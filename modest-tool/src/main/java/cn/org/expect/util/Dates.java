@@ -153,7 +153,7 @@ public final class Dates {
     /**
      * 等待某个条件执行完毕
      *
-     * @param condition 等待条件，条件全满足结束等待
+     * @param condition 等待条件，条件满足一直等待
      * @param wait      每次等待的时间（单位：毫秒），小于等于零表示不设置等待时间
      * @param timeout   超时时间（单位：毫秒），小于等于零表示不设置超时时间
      * @return 返回执行等待条件抛出的异常信息，超时返回 {@linkplain TimeoutException}，null表示没有异常

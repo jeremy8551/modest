@@ -60,7 +60,6 @@ import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
-import cn.org.expect.util.MessageFormatter;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StackTraceUtils;
 import cn.org.expect.util.StringUtils;
@@ -76,7 +75,7 @@ import cn.org.expect.util.StringUtils;
 public class HelpCommand extends AbstractTraceCommand implements NohupCommandSupported {
 
     /** 输出格式 */
-    private String format;
+    private final String format;
 
     public HelpCommand(UniversalCommandCompiler compiler, String command, String parameter) {
         super(compiler, command);
@@ -253,7 +252,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         IO.write(in, out, null);
         String markdown = out.toString(charsetName);
-        String usage = new MessageFormatter(MessageFormatter.Placeholder.NORMAL).format(markdown, args);
+        String usage = StringUtils.replaceIndexHolder(markdown, args);
         stdout.println(usage);
         return 0;
     }

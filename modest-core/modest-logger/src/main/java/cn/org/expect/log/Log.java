@@ -152,5 +152,4 @@ public interface Log {
      * @param e       异常信息
      */
     void fatal(String message, Throwable e);
-
 }

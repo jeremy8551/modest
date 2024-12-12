@@ -17,14 +17,14 @@ public class PatternLog extends AbstractLogger {
     private final LogEventImpl template;
 
     /** 日志记录器集合 */
-    private final List<Appender> appenders;
+    private final List<Appender> appenderList;
 
     /** 用于定位输出日志的代码位置信息的标识符 */
     public static String FQCN = PatternLog.class.getName();
 
     public PatternLog(LogContext context, Class<?> type, LogLevel level, String fqcn, boolean dynamicCategory) {
         super(context, type, level);
-        this.appenders = context.getAppenders();
+        this.appenderList = context.getAppenders();
         this.template = new LogEventImpl(fqcn == null ? FQCN : fqcn, this, type.getName(), context, dynamicCategory, null, null, null, null);
     }
 
@@ -32,111 +32,87 @@ public class PatternLog extends AbstractLogger {
         this.template.setFqcn(fqcn == null ? FQCN : fqcn);
     }
 
-    public void trace(String msg, Object... args) {
-        if (this.trace) {
-            LogEvent event = this.template.clone(LogLevel.TRACE, msg, args, null);
-            for (Appender appender : this.appenders) {
-                appender.append(event);
-            }
+    public void printTrace(String message, Object... args) {
+        LogEvent event = this.template.clone(LogLevel.TRACE, message, args, null);
+        for (int i = 0; i < this.appenderList.size(); i++) {
+            this.appenderList.get(i).append(event);
         }
     }
 
-    public void trace(String msg, Throwable e) {
-        if (this.trace) {
-            LogEvent event = this.template.clone(LogLevel.TRACE, msg, null, e);
-            for (Appender appender : this.appenders) {
-                appender.append(event);
-            }
+    public void printTrace(String message, Throwable e) {
+        LogEvent event = this.template.clone(LogLevel.TRACE, message, null, e);
+        for (int i = 0; i < this.appenderList.size(); i++) {
+            this.appenderList.get(i).append(event);
         }
     }
 
-    public void debug(String msg, Object... args) {
-        if (this.debug) {
-            LogEvent event = this.template.clone(LogLevel.DEBUG, msg, args, null);
-            for (Appender appender : this.appenders) {
-                appender.append(event);
-            }
+    public void printDebug(String message, Object... args) {
+        LogEvent event = this.template.clone(LogLevel.DEBUG, message, args, null);
+        for (int i = 0; i < this.appenderList.size(); i++) {
+            this.appenderList.get(i).append(event);
         }
     }
 
-    public void debug(String msg, Throwable e) {
-        if (this.debug) {
-            LogEvent event = this.template.clone(LogLevel.DEBUG, msg, null, e);
-            for (Appender appender : this.appenders) {
-                appender.append(event);
-            }
+    public void printDebug(String message, Throwable e) {
+        LogEvent event = this.template.clone(LogLevel.DEBUG, message, null, e);
+        for (int i = 0; i < this.appenderList.size(); i++) {
+            this.appenderList.get(i).append(event);
         }
     }
 
-    public void info(String msg, Object... args) {
-        if (this.info) {
-            LogEvent event = this.template.clone(LogLevel.INFO, msg, args, null);
-            for (Appender appender : this.appenders) {
-                appender.append(event);
-            }
+    public void printInfo(String message, Object... args) {
+        LogEvent event = this.template.clone(LogLevel.INFO, message, args, null);
+        for (int i = 0; i < this.appenderList.size(); i++) {
+            this.appenderList.get(i).append(event);
         }
     }
 
-    public void info(String msg, Throwable e) {
-        if (this.info) {
-            LogEvent event = this.template.clone(LogLevel.INFO, msg, null, e);
-            for (Appender appender : this.appenders) {
-                appender.append(event);
-            }
+    public void printInfo(String message, Throwable e) {
+        LogEvent event = this.template.clone(LogLevel.INFO, message, null, e);
+        for (int i = 0; i < this.appenderList.size(); i++) {
+            this.appenderList.get(i).append(event);
         }
     }
 
-    public void warn(String msg, Object... args) {
-        if (this.warn) {
-            LogEvent event = this.template.clone(LogLevel.WARN, msg, args, null);
-            for (Appender appender : this.appenders) {
-                appender.append(event);
-            }
+    public void printWarn(String message, Object... args) {
+        LogEvent event = this.template.clone(LogLevel.WARN, message, args, null);
+        for (int i = 0; i < this.appenderList.size(); i++) {
+            this.appenderList.get(i).append(event);
         }
     }
 
-    public void warn(String msg, Throwable e) {
-        if (this.warn) {
-            LogEvent event = this.template.clone(LogLevel.WARN, msg, null, e);
-            for (Appender appender : this.appenders) {
-                appender.append(event);
-            }
+    public void printWarn(String message, Throwable e) {
+        LogEvent event = this.template.clone(LogLevel.WARN, message, null, e);
+        for (int i = 0; i < this.appenderList.size(); i++) {
+            this.appenderList.get(i).append(event);
         }
     }
 
-    public void error(String msg, Object... args) {
-        if (this.error) {
-            LogEvent event = this.template.clone(LogLevel.ERROR, msg, args, null);
-            for (Appender appender : this.appenders) {
-                appender.append(event);
-            }
+    public void printError(String message, Object... args) {
+        LogEvent event = this.template.clone(LogLevel.ERROR, message, args, null);
+        for (int i = 0; i < this.appenderList.size(); i++) {
+            this.appenderList.get(i).append(event);
         }
     }
 
-    public void error(String msg, Throwable e) {
-        if (this.error) {
-            LogEvent event = this.template.clone(LogLevel.ERROR, msg, null, e);
-            for (Appender appender : this.appenders) {
-                appender.append(event);
-            }
+    public void printError(String message, Throwable e) {
+        LogEvent event = this.template.clone(LogLevel.ERROR, message, null, e);
+        for (int i = 0; i < this.appenderList.size(); i++) {
+            this.appenderList.get(i).append(event);
         }
     }
 
-    public void fatal(String msg, Object... args) {
-        if (this.fatal) {
-            LogEvent event = this.template.clone(LogLevel.FATAL, msg, args, null);
-            for (Appender appender : this.appenders) {
-                appender.append(event);
-            }
+    public void printFatal(String message, Object... args) {
+        LogEvent event = this.template.clone(LogLevel.FATAL, message, args, null);
+        for (int i = 0; i < this.appenderList.size(); i++) {
+            this.appenderList.get(i).append(event);
         }
     }
 
-    public void fatal(String msg, Throwable e) {
-        if (this.fatal) {
-            LogEvent event = this.template.clone(LogLevel.FATAL, msg, null, e);
-            for (Appender appender : this.appenders) {
-                appender.append(event);
-            }
+    public void printFatal(String message, Throwable e) {
+        LogEvent event = this.template.clone(LogLevel.FATAL, message, null, e);
+        for (int i = 0; i < this.appenderList.size(); i++) {
+            this.appenderList.get(i).append(event);
         }
     }
 

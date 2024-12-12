@@ -8,6 +8,18 @@ package cn.org.expect.util;
  */
 public class ObjectUtils {
 
+    /** 空参数 */
+    private final static Object[] BLANK = new Object[0];
+
+    /**
+     * 返回一个空数组
+     *
+     * @return 空数组
+     */
+    public static Object[] of() {
+        return BLANK;
+    }
+
     /**
      * 如果参数 {@code obj} 不为null，则返回参数本身，否则返回参数 {@code def}
      *
@@ -63,10 +75,6 @@ public class ObjectUtils {
         if (obj instanceof Character) {
             return true;
         }
-        if (obj instanceof Boolean) {
-            return true;
-        }
-        return false;
+        return obj instanceof Boolean;
     }
-
 }

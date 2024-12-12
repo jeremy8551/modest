@@ -1,7 +1,5 @@
 package cn.org.expect.util;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -11,6 +9,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -79,7 +79,7 @@ public class XMLUtils {
     }
 
     /**
-     * 返回 xml 配置文件根节点
+     * 返回 XML 的根节点
      *
      * @param in xml输入流
      * @return 元素
@@ -94,6 +94,154 @@ public class XMLUtils {
             return doc.getDocumentElement();
         } catch (Exception e) {
             throw new RuntimeException(ResourcesUtils.getMessage("xml.standard.output.msg001"), e);
+        }
+    }
+
+    /**
+     * 返回 XML 的根节点，XML 中只能有一个根节点
+     *
+     * @param in       xml输入流
+     * @param nodeName 根节点名
+     * @return 根节点
+     */
+    public static Node getRoot(InputStream in, String nodeName) {
+        Document document = XMLUtils.getXmlDocument(in);
+        List<Node> nodeList = XMLUtils.getChildNodes(document, nodeName);
+        int size = nodeList.size();
+        if (size == 0) {
+            throw new IllegalArgumentException(ResourcesUtils.getMessage("xml.standard.output.msg009", "Node: " + nodeName));
+        } else if (size == 1) {
+            return nodeList.get(0);
+        } else {
+            throw new IllegalArgumentException(ResourcesUtils.getMessage("xml.standard.output.msg013", "Node: " + nodeName + " size is ", size));
+        }
+    }
+
+    /**
+     * 计算在[节点node]下有多少个子节点名字=[nodeName]
+     *
+     * @param node     节点
+     * @param nodeName 子节点名
+     * @return 节点个数
+     */
+    public static int getNodeNumber(Node node, String nodeName) {
+        int count = 0;
+        NodeList nodeList = node.getChildNodes();
+        int length = nodeList.getLength();
+        for (int i = 0; i < length; i++) {
+            Node item = nodeList.item(i);
+            if (nodeName.equalsIgnoreCase(item.getNodeName())) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
+     * 返回在[节点node]下子节点的集合
+     *
+     * @param node     节点
+     * @param nodeName 子节点的名字，忽略大小写
+     * @return 集合
+     */
+    public static List<Node> getChildNodes(Node node, String nodeName) { // TODO 单元测试
+        List<Node> result = new ArrayList<>();
+        NodeList nodeList = node.getChildNodes();
+        int length = nodeList.getLength();
+        for (int i = 0; i < length; i++) {
+            Node item = nodeList.item(i);
+            if (item.getNodeName().equalsIgnoreCase(nodeName)) {
+                result.add(item);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 返回在[节点node]下子节点的集合
+     *
+     * @param node   节点
+     * @param filter 子节点的过滤条件
+     * @return 集合
+     */
+    public static List<Node> getChildNodes(Node node, Filter filter) {
+        NodeList nodeList = node.getChildNodes();
+        int length = nodeList.getLength();
+        List<Node> result = new ArrayList<>(length);
+        for (int i = 0; i < length; i++) {
+            Node item = nodeList.item(i);
+            if (filter.test(i, item)) {
+                result.add(item);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 返回在[节点node]下子节点的子节点的集合
+     *
+     * @param node          节点
+     * @param nodeName      子节点的名字，忽略大小写
+     * @param childNodeName 子节点的子节点的名字，忽略大小写
+     * @return 集合
+     */
+    public static List<Node> getChildNodes(Node node, String nodeName, String childNodeName) { // TODO 单元测试
+        List<Node> result = new ArrayList<>();
+        NodeList nodeList = node.getChildNodes();
+        int length = nodeList.getLength();
+        for (int i = 0; i < length; i++) {
+            Node item = nodeList.item(i);
+            if (item.getNodeName().equalsIgnoreCase(nodeName)) {
+                NodeList childNodes = item.getChildNodes();
+                for (int j = 0; j < childNodes.getLength(); j++) {
+                    Node childNode = childNodes.item(j);
+                    if (childNode.getNodeName().equalsIgnoreCase(childNodeName)) {
+                        result.add(childNode);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 返回在[节点node]下子节点的子节点
+     *
+     * @param node          节点
+     * @param nodeName      子节点的名字，忽略大小写
+     * @param childNodeName 子节点的子节点的名字，忽略大小写
+     * @return 集合
+     */
+    public static Node getChildNode(Node node, String nodeName, String childNodeName) { // TODO 单元测试
+        NodeList nodeList = node.getChildNodes();
+        int length = nodeList.getLength();
+        for (int i = 0; i < length; i++) {
+            Node item = nodeList.item(i);
+            if (item.getNodeName().equalsIgnoreCase(nodeName)) {
+                NodeList childNodes = item.getChildNodes();
+                for (int j = 0; j < childNodes.getLength(); j++) {
+                    Node childNode = childNodes.item(j);
+                    if (childNode.getNodeName().equalsIgnoreCase(childNodeName)) {
+                        return childNode;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 处理在[节点node]的子节点
+     *
+     * @param node 节点
+     * @param func 处理规则
+     */
+    public static void runChildNodes(Node node, Function func) {
+        NodeList nodeList = node.getChildNodes();
+        int length = nodeList.getLength();
+        for (int i = 0; i < length; i++) {
+            Node item = nodeList.item(i);
+            func.execute(i, item);
         }
     }
 
@@ -220,26 +368,6 @@ public class XMLUtils {
                 throw new RuntimeException(ResourcesUtils.getMessage("xml.standard.output.msg005", node.getNodeName(), name), e);
             }
         }
-    }
-
-    /**
-     * 计算在[节点node]下有多少个子节点名字=[nodeName]
-     *
-     * @param node     节点
-     * @param nodeName 子节点名
-     * @return 节点个数
-     */
-    public static int getNodeNumber(Node node, String nodeName) {
-        int count = 0;
-        NodeList nodeList = node.getChildNodes();
-        int length = nodeList.getLength();
-        for (int i = 0; i < length; i++) {
-            Node item = nodeList.item(i);
-            if (nodeName.equalsIgnoreCase(item.getNodeName())) {
-                count++;
-            }
-        }
-        return count;
     }
 
     /**
@@ -666,4 +794,32 @@ public class XMLUtils {
         return from;
     }
 
+    /**
+     * XML中节点的过滤条件
+     */
+    public interface Filter {
+
+        /**
+         * 过滤条件
+         *
+         * @param index 节点位置信息，从0开始
+         * @param node  节点信息
+         * @return 返回true表示满足条件，false表示不满足条件
+         */
+        boolean test(int index, Node node);
+    }
+
+    /**
+     * XML中节点的处理规则
+     */
+    public interface Function {
+
+        /**
+         * 处理规则
+         *
+         * @param index 节点位置信息，从0开始
+         * @param node  节点信息
+         */
+        void execute(int index, Node node);
+    }
 }

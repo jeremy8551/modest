@@ -34,6 +34,7 @@ import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.CollectionUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
+import cn.org.expect.util.ObjectUtils;
 import cn.org.expect.util.Property;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;
@@ -225,7 +226,7 @@ public abstract class AbstractDialect implements DatabaseDialect {
 
     public String getSchema(Connection conn) throws SQLException {
         try {
-            return (String) ClassUtils.executeMethod(conn, "getSchema", new Object[0]);
+            return (String) ClassUtils.executeMethod(conn, "getSchema", ObjectUtils.of());
         } catch (Exception e) {
             Property property = CollectionUtils.firstElement(Jdbc.getSchemas(conn));
             return property == null ? null : property.getKey();
