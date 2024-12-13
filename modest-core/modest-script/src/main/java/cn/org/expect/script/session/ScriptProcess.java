@@ -5,6 +5,7 @@ import java.util.Date;
 import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.script.UniversalScriptCommand;
 import cn.org.expect.util.Ensure;
+import cn.org.expect.util.UniqueSequenceGenerator;
 
 /**
  * 子线程信息
@@ -13,20 +14,11 @@ import cn.org.expect.util.Ensure;
  */
 public class ScriptProcess {
 
-    /** 序号 */
-    private static volatile int number = 20;
-
-    /**
-     * 返回任务编号
-     *
-     * @return 编号
-     */
-    private static synchronized int getId() {
-        return ++number;
-    }
+    /** 任务编号的序号生成器 */
+    protected final static UniqueSequenceGenerator UNIQUE = new UniqueSequenceGenerator("{}", 21);
 
     /** 任务编号 */
-    private String pid;
+    private final String pid;
 
     /** 任务起始时间 */
     private Date startTime;
@@ -35,16 +27,16 @@ public class ScriptProcess {
     private Date endTime;
 
     /** 任务运行环境 */
-    private ScriptProcessEnvironment environment;
+    private final ScriptProcessEnvironment environment;
 
     /** 任务运行线程 */
-    private ScriptProcessJob scriptJob;
+    private final ScriptProcessJob scriptJob;
 
     /** 任务的返回值 */
     private Integer exitcode;
 
     /** 行号 */
-    private long lineNumber;
+    private final long lineNumber;
 
     /**
      * 初始化
@@ -53,7 +45,7 @@ public class ScriptProcess {
      * @param scriptJob   脚本任务
      */
     public ScriptProcess(ScriptProcessEnvironment environment, ScriptProcessJob scriptJob) {
-        this.pid = String.valueOf(ScriptProcess.getId());
+        this.pid = UNIQUE.nextString();
         this.environment = Ensure.notNull(environment);
         this.scriptJob = Ensure.notNull(scriptJob);
         this.scriptJob.setObserver(this);

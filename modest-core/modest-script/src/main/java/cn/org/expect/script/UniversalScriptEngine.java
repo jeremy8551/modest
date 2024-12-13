@@ -14,6 +14,7 @@ import cn.org.expect.script.session.ScriptMainProcess;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.ResourcesUtils;
+import cn.org.expect.util.UniqueSequenceGenerator;
 
 /**
  * 脚本引擎 <br>
@@ -28,6 +29,9 @@ import cn.org.expect.util.ResourcesUtils;
  * @createtime 2018-06-01
  */
 public class UniversalScriptEngine implements Closeable {
+
+    /** 脚本引擎的序号生成器 */
+    protected final static UniqueSequenceGenerator UNIQUE = new UniqueSequenceGenerator("engine{timestamp}{}", 1);
 
     /** 唯一编号 */
     private final String id;
@@ -69,7 +73,7 @@ public class UniversalScriptEngine implements Closeable {
      */
     public UniversalScriptEngine(UniversalScriptEngineFactory factory) {
         this.factory = Ensure.notNull(factory);
-        this.id = factory.createSerialNumber();
+        this.id = UNIQUE.nextString();
         this.sessionFactory = factory.buildSessionFactory();
         this.format = factory.buildFormatter();
         this.checker = factory.buildChecker();

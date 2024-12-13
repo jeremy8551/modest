@@ -3,9 +3,9 @@ package cn.org.expect.ioc;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.org.expect.ProjectPom;
 import cn.org.expect.ioc.impl.EasyBeanDefineImpl;
 import cn.org.expect.ioc.impl.EasyBeanFactoryImpl;
-import cn.org.expect.ioc.impl.EasySerialFactory;
 import cn.org.expect.ioc.scan.BeanClassScanner;
 import cn.org.expect.ioc.scan.EasyScanPatternList;
 import cn.org.expect.log.LogContext;
@@ -19,6 +19,7 @@ import cn.org.expect.util.ResourceMessageBundleMap;
 import cn.org.expect.util.StrAsIntComparator;
 import cn.org.expect.util.StrAsNumberComparator;
 import cn.org.expect.util.StringComparator;
+import cn.org.expect.util.UniqueSequenceGenerator;
 
 /**
  * 容器上下文信息
@@ -26,6 +27,9 @@ import cn.org.expect.util.StringComparator;
  * @author jeremy8551@qq.com
  */
 public class DefaultEasyContext implements EasyContext {
+
+    /** 序号生成器 */
+    protected final static UniqueSequenceGenerator UNIQUE = new UniqueSequenceGenerator(ProjectPom.getArtifactID() + "-{}", 1);
 
     /** 容器的单例模式，默认使用第一个创建的容器作为单例 */
     private static volatile EasyContext INSTANCE;
@@ -137,7 +141,7 @@ public class DefaultEasyContext implements EasyContext {
         this.table = new EasyBeanTable(this);
         this.eventManager = new EasyBeanEventManager(this);
         this.builders = new EasyBeanBuilderManager(this);
-        this.name = EasySerialFactory.createContextName();
+        this.name = UNIQUE.nextString();
     }
 
     public EasyContext getParent() {

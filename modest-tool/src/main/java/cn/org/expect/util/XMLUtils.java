@@ -145,7 +145,7 @@ public class XMLUtils {
      * @return 集合
      */
     public static List<Node> getChildNodes(Node node, String nodeName) { // TODO 单元测试
-        List<Node> result = new ArrayList<>();
+        List<Node> result = new ArrayList<Node>();
         NodeList nodeList = node.getChildNodes();
         int length = nodeList.getLength();
         for (int i = 0; i < length; i++) {
@@ -167,7 +167,7 @@ public class XMLUtils {
     public static List<Node> getChildNodes(Node node, Filter filter) {
         NodeList nodeList = node.getChildNodes();
         int length = nodeList.getLength();
-        List<Node> result = new ArrayList<>(length);
+        List<Node> result = new ArrayList<Node>(length);
         for (int i = 0; i < length; i++) {
             Node item = nodeList.item(i);
             if (filter.test(i, item)) {
@@ -186,7 +186,7 @@ public class XMLUtils {
      * @return 集合
      */
     public static List<Node> getChildNodes(Node node, String nodeName, String childNodeName) { // TODO 单元测试
-        List<Node> result = new ArrayList<>();
+        List<Node> result = new ArrayList<Node>();
         NodeList nodeList = node.getChildNodes();
         int length = nodeList.getLength();
         for (int i = 0; i < length; i++) {

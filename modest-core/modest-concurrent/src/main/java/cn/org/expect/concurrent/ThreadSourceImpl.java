@@ -8,9 +8,9 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import cn.org.expect.util.Ensure;
+import cn.org.expect.util.UniqueSequenceGenerator;
 
 /**
  * 接口实现类
@@ -20,6 +20,9 @@ import cn.org.expect.util.Ensure;
  */
 public class ThreadSourceImpl implements ThreadSource, Closeable {
 
+    /** 并发任务运行容器的序号生成器 */
+    protected final static UniqueSequenceGenerator UNIQUE = new UniqueSequenceGenerator("JobService{}", 1);
+    
     /** 外部线程池工厂 */
     private volatile ExecutorServiceFactory externalFactory;
 
@@ -34,9 +37,6 @@ public class ThreadSourceImpl implements ThreadSource, Closeable {
 
     /** 线程池拒绝策略 */
     private RejectedExecutionHandler executionHandler;
-
-    /** 并发任务运行容器的序号 */
-    private static final AtomicInteger serial = new AtomicInteger(0);
 
     /** 核心线程数 */
     private int coreSize;
@@ -108,7 +108,7 @@ public class ThreadSourceImpl implements ThreadSource, Closeable {
 
     public EasyJobService getJobService(int n) {
         Ensure.fromOne(n);
-        String id = "JobService" + serial.incrementAndGet();
+        String id = UNIQUE.nextString();
         ExecutorService service = this.getExecutorService();
         return new EasyJobServiceImpl(id, service, n);
     }

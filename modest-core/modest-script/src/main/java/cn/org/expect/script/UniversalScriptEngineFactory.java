@@ -11,7 +11,6 @@ import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.internal.UniversalScriptVariableImpl;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.CharTable;
-import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;
@@ -29,9 +28,6 @@ public class UniversalScriptEngineFactory {
 
     /** 容器的上下文信息 */
     protected volatile EasyContext context;
-
-    /** 脚本引擎序号 */
-    private static volatile int serialNumber = 0;
 
     /**
      * 初始化 <br>
@@ -51,15 +47,6 @@ public class UniversalScriptEngineFactory {
      */
     public UniversalScriptEngineFactory(EasyContext context) {
         this.setContext(context);
-    }
-
-    /**
-     * 生成一个唯一的序列号
-     *
-     * @return 序列号
-     */
-    public synchronized String createSerialNumber() {
-        return "engine" + Dates.format17() + StringUtils.right(++serialNumber, 3, '0');
     }
 
     /**

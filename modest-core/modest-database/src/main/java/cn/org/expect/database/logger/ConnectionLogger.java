@@ -12,6 +12,7 @@ import cn.org.expect.util.Ensure;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.TimeWatch;
+import cn.org.expect.util.UniqueSequenceGenerator;
 
 /**
  * 数据库连接日志接口，使用代理方式打印数据库连接上的关键操作信息
@@ -22,28 +23,17 @@ import cn.org.expect.util.TimeWatch;
 public class ConnectionLogger implements InvocationHandler {
     private final static Log log = LogFactory.getLog(ConnectionLogger.class);
 
-    /**
-     * 代理数据库连接对象的序号
-     */
-    private static int serialNo = 1;
-
-    /**
-     * 产生一个唯一序号（大于0）
-     *
-     * @return 序号
-     */
-    private synchronized static int getSerialNo() {
-        return serialNo++;
-    }
+    /** 代理数据库连接的序号生成器 */
+    protected final static UniqueSequenceGenerator UNIQUE = new UniqueSequenceGenerator("{}", 1);
 
     /** 被代理的 Connection 对象 */
-    private Connection conn;
+    private final Connection conn;
 
     /** 数据库连接编号 */
-    private int number;
+    private final long number;
 
     /** 超时时间（单位：秒） */
-    private int warnTimeout;
+    private final int warnTimeout;
 
     /**
      * 初始化
@@ -52,7 +42,7 @@ public class ConnectionLogger implements InvocationHandler {
      * @param warnTimeout 超时提醒时间，单位秒
      */
     public ConnectionLogger(Connection conn, int warnTimeout) {
-        this.number = getSerialNo();
+        this.number = UNIQUE.next();
         this.conn = Ensure.notNull(conn);
         this.warnTimeout = Ensure.fromZero(warnTimeout);
     }

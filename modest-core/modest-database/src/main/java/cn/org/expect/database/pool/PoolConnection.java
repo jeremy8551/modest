@@ -17,6 +17,7 @@ import cn.org.expect.util.Ensure;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;
+import cn.org.expect.util.UniqueSequenceGenerator;
 
 /**
  * 数据库连接代理类
@@ -27,20 +28,8 @@ import cn.org.expect.util.StringUtils;
 public class PoolConnection implements InvocationHandler {
     private final static Log log = LogFactory.getLog(PoolConnection.class);
 
-    /**
-     * 代理数据库连接的序号
-     */
-    private static int serialNo = 1;
-
-    /**
-     * 生成 PoolConnection 代理数据库连接的唯一三位字符串编号
-     *
-     * @return 序号
-     */
-    private synchronized static String getSerialNo() {
-        int number = serialNo++;
-        return PoolConnection.class.getName() + "@" + StringUtils.right(number, 3, '0');
-    }
+    /** 序号生成器 */
+    protected final static UniqueSequenceGenerator UNIQUE = new UniqueSequenceGenerator(PoolConnection.class.getName() + "@{}", 1);
 
     /** 数据库连接编号（唯一的） */
     protected String id;
@@ -88,7 +77,7 @@ public class PoolConnection implements InvocationHandler {
     public PoolConnection(Pool pool, Connection conn, String username, String password) {
         this();
 
-        this.id = getSerialNo();
+        this.id = UNIQUE.nextString();
         this.connection = Ensure.notNull(conn);
         this.pool = Ensure.notNull(pool);
         this.username = username;
