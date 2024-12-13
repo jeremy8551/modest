@@ -65,17 +65,18 @@ public class MavenSearchNavigationRenderer extends SearchEverywherePsiRenderer {
     private Component renderItem(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus, MavenSearchNavigation navigation) {
         this.removeAll();
 
+        Icon leftIcon = navigation.getLeftIcon();
         String leftText = StringUtils.trimBlank(navigation.getPresentableText());
         Date timestamp = navigation.getArtifact().getTimestamp();
         String middleText = timestamp == null ? "" : StringUtils.left(Dates.format19(timestamp), 16);
         File jarfile = contributor.getPlugin().getLocalRepository().getJarfile(navigation.getArtifact());
         String jdkVersion = StringUtils.defaultString(this.parseJDKVersion(jarfile), "");
 
-        Component leftComponent = new NavigationCell(leftText, SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        Component middleComponent = new NavigationCell(middleText, SimpleTextAttributes.STYLE_SMALLER, JBColor.GRAY).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        Component leftComponent = new NavigationCell(leftIcon, leftText, SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        Component middleComponent = new NavigationCell(null, middleText, SimpleTextAttributes.STYLE_SMALLER, JBColor.GRAY).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         middleComponent.setPreferredSize(new Dimension(100, middleComponent.getHeight()));
 
-        NavigationCell navigationCell = new NavigationCell(jdkVersion, SimpleTextAttributes.STYLE_SMALLER, JBColor.GRAY);
+        NavigationCell navigationCell = new NavigationCell(null, jdkVersion, SimpleTextAttributes.STYLE_SMALLER, JBColor.GRAY);
         navigationCell.setTextAlign(SwingConstants.RIGHT);
         Component javaVersion = navigationCell.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         javaVersion.setPreferredSize(new Dimension(100, javaVersion.getHeight()));
@@ -128,8 +129,8 @@ public class MavenSearchNavigationRenderer extends SearchEverywherePsiRenderer {
         String rightText = navigation.getRightText();
         Icon rightIcon = navigation.getRightIcon();
 
-        Component leftComponent = new NavigationCell("     " + leftText, SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        Component middleComponent = new NavigationCell(middleText, SimpleTextAttributes.STYLE_PLAIN, JBColor.GRAY).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        Component leftComponent = new NavigationCell(null, "     " + leftText, SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        Component middleComponent = new NavigationCell(null, middleText, SimpleTextAttributes.STYLE_PLAIN, JBColor.GRAY).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         middleComponent.setPreferredSize(new Dimension(100, middleComponent.getHeight()));
 
         // 左侧的文本，无图标

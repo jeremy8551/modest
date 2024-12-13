@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.MavenIcon;
 import cn.org.expect.maven.concurrent.ArtifactSearchExtraJob;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 
@@ -20,8 +20,8 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
         this.setDepth(1);
         this.setPresentableText(artifact.getArtifactId());
         this.setLocationString(" " + artifact.getGroupId());
-        this.setLeftIcon(MavenSearchPluginIcon.LEFT_FOLD);
-        this.setRightIcon(MavenSearchPluginIcon.RIGHT);
+        this.setLeftIcon(MavenIcon.LEFT_FOLD);
+        this.setRightIcon(MavenIcon.RIGHT);
         this.setRightText(artifact.getType() + " ");
     }
 
@@ -33,7 +33,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
         Artifact artifact = this.getArtifact();
         ArtifactSearchResult result = search.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId());
         if (result != null && !result.isExpire(search.getSettings().getExpireTimeMillis())) { // 如果导航记录有子节点，则更新图标
-            this.setLeftIcon(MavenSearchPluginIcon.LEFT_HAS_QUERY);
+            this.setLeftIcon(MavenIcon.LEFT_HAS_QUERY);
         }
         return true;
     }
@@ -43,7 +43,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
         Artifact artifact = this.getArtifact();
         ArtifactSearchResult result = search.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId());
         if (result == null || result.isExpire(search.getSettings().getExpireTimeMillis())) {
-            this.setLeftIcon(MavenSearchPluginIcon.LEFT_WAITING); // 更改为：等待图标
+            this.setLeftIcon(MavenIcon.LEFT_WAITING); // 更改为：等待图标
             search.asyncSearch(artifact.getGroupId(), artifact.getArtifactId()); // 后台搜索
         } else {
             search.display();
@@ -59,7 +59,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
         Artifact artifact = this.getArtifact();
         ArtifactSearchResult result = search.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId());
         if (result != null) {
-            this.setLeftIcon(MavenSearchPluginIcon.LEFT_UNFOLD);
+            this.setLeftIcon(MavenIcon.LEFT_UNFOLD);
 
             if (this.child.isEmpty()) {
                 for (Artifact itemArtifact : result.getList()) {
@@ -97,7 +97,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
     protected void updateWaitingIcon(MavenSearch search) {
         Artifact artifact = this.getArtifact();
         if (search.getService().isRunning(ArtifactSearchExtraJob.class, job -> artifact.getGroupId().equals(job.getGroupId()) && artifact.getArtifactId().equals(job.getArtifactId()))) {
-            this.setLeftIcon(MavenSearchPluginIcon.LEFT_WAITING);
+            this.setLeftIcon(MavenIcon.LEFT_WAITING);
         }
     }
 }

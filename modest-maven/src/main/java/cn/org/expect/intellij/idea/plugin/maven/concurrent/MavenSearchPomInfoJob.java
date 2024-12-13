@@ -12,6 +12,10 @@ public class MavenSearchPomInfoJob extends MavenSearchPluginJob implements EDTJo
         this.artifact = artifact;
     }
 
+    public Artifact getArtifact() {
+        return artifact;
+    }
+
     public int execute() throws Exception {
         MavenSearchPlugin plugin = this.getSearch();
         plugin.getPomInfoRepository().query(plugin, artifact);

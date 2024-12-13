@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPomInfoJob;
 import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.MavenIcon;
 import cn.org.expect.maven.pom.PomInfo;
 import cn.org.expect.util.StringUtils;
 
@@ -21,7 +22,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
         this.setPresentableText(artifact.getVersion());
         this.setLocationString("");
         this.setLeftIcon(null);
-        this.setRightIcon(MavenSearchPluginIcon.RIGHT_REMOTE);
+        this.setRightIcon(MavenIcon.RIGHT_REMOTE);
         this.setRightText("");
     }
 
@@ -40,11 +41,13 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
     public void setUnfold(MavenSearch search) {
         this.setFold(false);
         search.asyncPomInfo(this.getArtifact());
+        this.update(search, this.getArtifact());
         search.display();
     }
 
     public void setFold(MavenSearch search) {
         this.setFold(true);
+        this.setLeftIcon(null);
         search.display();
     }
 
@@ -57,8 +60,9 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
                 for (int i = 0; i < developers.size(); i++) {
                     PomInfo.Developer developer = developers.get(i);
                     SearchNavigationDetail detail = new SearchNavigationDetail(artifact);
-                    detail.setPresentableText("developer: ");
-                    detail.setLocationString(pomInfo.toDisplayString(developer.getName(), developer.getOrganization(), developer.getEmail(), StringUtils.join(developer.getRoles(), " "), developer.getTimezone()));
+                    detail.setRightIcon(MavenIcon.RIGHT_DEVELOPER);
+                    detail.setPresentableText(developer.getName());
+                    detail.setLocationString(pomInfo.toDisplayString(developer.getOrganization(), developer.getEmail(), StringUtils.join(developer.getRoles(), " "), developer.getTimezone()));
                     this.child.add(detail);
                 }
 
@@ -66,15 +70,29 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
                 for (int i = 0; i < licenses.size(); i++) {
                     PomInfo.License license = licenses.get(i);
                     SearchNavigationDetail detail = new SearchNavigationDetail(artifact);
-                    detail.setPresentableText("license: ");
-                    detail.setLocationString(pomInfo.toDisplayString(license.getName(), license.getUrl(), license.getComments()));
+                    detail.setRightIcon(MavenIcon.RIGHT_LICENSE);
+                    detail.setPresentableText(license.getName());
+                    detail.setLocationString(pomInfo.toDisplayString(license.getUrl(), license.getComments()));
                     this.child.add(detail);
                 }
             }
+
+            this.setLeftIcon(null);
+        } else {
+            this.update(search, artifact);
         }
     }
 
     public void fold(MavenSearch search) {
         this.child.clear();
+        this.setLeftIcon(null);
+    }
+
+    private void update(MavenSearch search, Artifact artifact) {
+        if (search.getService().isRunning(MavenSearchPomInfoJob.class, job -> job.getArtifact().equals(artifact))) {
+            this.setLeftIcon(MavenIcon.LEFT_WAITING);
+        } else {
+            this.setLeftIcon(null);
+        }
     }
 }

@@ -168,7 +168,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements MavenSearc
     }
 
     public void asyncPomInfo(Artifact artifact) {
-        this.getService().execute(new MavenSearchPomInfoJob(artifact));
+        this.execute(new MavenSearchPomInfoJob(artifact));
     }
 
     public void copyToClipboard(String text) {

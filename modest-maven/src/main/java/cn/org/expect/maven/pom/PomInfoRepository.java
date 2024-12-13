@@ -28,23 +28,27 @@ public class PomInfoRepository {
     protected final static Log log = LogFactory.getLog(PomInfoRepository.class);
 
     /** 搜索结果 */
-    protected final Map<String, Map<String, PomInfo>> database;
+    protected final Map<String, Map<String, Map<String, PomInfo>>> database;
 
     public PomInfoRepository() {
         this.database = new ConcurrentHashMap<>();
     }
 
     public PomInfo select(Artifact artifact) {
-        Map<String, PomInfo> map = this.database.get(artifact.getGroupId());
-        if (map != null) {
-            return map.get(artifact.getArtifactId());
+        Map<String, Map<String, PomInfo>> groupMap = this.database.get(artifact.getGroupId());
+        if (groupMap != null) {
+            Map<String, PomInfo> artifactMap = groupMap.get(artifact.getArtifactId());
+            if (artifactMap != null) {
+                return artifactMap.get(artifact.getVersion());
+            }
         }
         return null;
     }
 
     public void insert(Artifact artifact, PomInfo pomInfo) {
-        Map<String, PomInfo> group = this.database.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
-        group.put(artifact.getArtifactId(), pomInfo);
+        Map<String, Map<String, PomInfo>> groupMap = this.database.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
+        Map<String, PomInfo> artifactMap = groupMap.computeIfAbsent(artifact.getArtifactId(), k -> new HashMap<>());
+        artifactMap.put(artifact.getVersion(), pomInfo);
     }
 
     public PomInfo query(ArtifactSearch search, Artifact artifact) throws Exception {

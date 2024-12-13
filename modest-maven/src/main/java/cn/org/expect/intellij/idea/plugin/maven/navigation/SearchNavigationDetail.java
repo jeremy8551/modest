@@ -3,7 +3,7 @@ package cn.org.expect.intellij.idea.plugin.maven.navigation;
 import java.util.List;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
+import cn.org.expect.maven.MavenIcon;
 import cn.org.expect.maven.Artifact;
 
 public class SearchNavigationDetail extends AbstractSearchNavigation {
@@ -14,7 +14,7 @@ public class SearchNavigationDetail extends AbstractSearchNavigation {
         this.setPresentableText(artifact.getVersion());
         this.setLocationString("");
         this.setLeftIcon(null);
-        this.setRightIcon(MavenSearchPluginIcon.RIGHT_REMOTE);
+        this.setRightIcon(MavenIcon.RIGHT_REMOTE);
         this.setRightText("");
     }
 

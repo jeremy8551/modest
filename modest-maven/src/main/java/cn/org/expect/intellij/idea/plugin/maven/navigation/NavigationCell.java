@@ -20,10 +20,10 @@ public class NavigationCell extends ColoredListCellRenderer<Object> {
 
     private final Color fgColor;
 
-    public NavigationCell(String text, int style, Color fgColor) {
+    public NavigationCell(Icon icon, String text, int style, Color fgColor) {
         super();
+        this.icon = icon;
         this.text = StringUtils.defaultString(text, "");
-        this.icon = null;
         this.style = style;
         this.fgColor = fgColor;
     }

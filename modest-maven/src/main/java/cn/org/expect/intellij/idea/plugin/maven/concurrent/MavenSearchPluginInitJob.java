@@ -48,7 +48,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
         MavenSearchPluginContext context = plugin.getContext();
         AnActionEvent event = context.getActionEvent();
         SearchEverywhereUI ui = this.getSearchEverywhereUI(event);
-        plugin.getService().setParameter(MavenSearchExecutorServiceImpl.PARAMETER, JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
+        plugin.getService().setParameter(MavenSearchExecutorService.PARAMETER, JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
         plugin.getIdeaUI().setSearchEverywhereUI(ui);
         ui.addSearchListener(plugin.getSearchListener());
     }

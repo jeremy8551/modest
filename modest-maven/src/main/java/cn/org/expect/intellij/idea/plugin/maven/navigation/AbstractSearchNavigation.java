@@ -3,10 +3,11 @@ package cn.org.expect.intellij.idea.plugin.maven.navigation;
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchDownloadJob;
 import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.MavenIcon;
 import cn.org.expect.util.Ensure;
+import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.UniqueSequenceGenerator;
 import com.intellij.navigation.ItemPresentation;
 
@@ -114,7 +115,7 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
     }
 
     public void setPresentableText(String text) {
-        this.presentableText = text;
+        this.presentableText = StringUtils.defaultString(text, "");
     }
 
     public String getPresentableText() {
@@ -122,7 +123,7 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
     }
 
     public void setLocationString(String text) {
-        this.locationString = text;
+        this.locationString = StringUtils.defaultString(text, "");
     }
 
     public String getLocationString() {
@@ -155,15 +156,15 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
 
         // 如果正在下载工件，则更新图标
         if (search.getService().isRunning(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(artifact))) { // 正在下载
-            this.setRightIcon(MavenSearchPluginIcon.RIGHT_DOWNLOAD);
+            this.setRightIcon(MavenIcon.RIGHT_DOWNLOAD);
             return;
         }
 
         // 如果工件已下载，则更新图标
         if (search.getLocalRepository().exists(artifact)) {
-            this.setRightIcon(MavenSearchPluginIcon.RIGHT_LOCAL);
+            this.setRightIcon(MavenIcon.RIGHT_LOCAL);
         } else {
-            this.setRightIcon(MavenSearchPluginIcon.RIGHT_REMOTE);
+            this.setRightIcon(MavenIcon.RIGHT_REMOTE);
         }
     }
 

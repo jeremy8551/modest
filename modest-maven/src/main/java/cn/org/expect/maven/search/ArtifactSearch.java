@@ -5,6 +5,7 @@ import java.io.File;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.ArtifactOption;
 import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
+import cn.org.expect.maven.ArtifactSearchIoc;
 import cn.org.expect.maven.pom.PomInfoRepository;
 import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
@@ -104,6 +105,13 @@ public interface ArtifactSearch {
      * @return 文本处理器
      */
     ArtifactSearchPattern getPattern();
+
+    /**
+     * 返回 Ioc 容器
+     *
+     * @return 容器
+     */
+    ArtifactSearchIoc getIoc();
 
     /**
      * 提交到线程池并发执行任务

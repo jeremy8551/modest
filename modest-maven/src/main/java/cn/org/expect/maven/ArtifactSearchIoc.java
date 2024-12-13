@@ -1,4 +1,4 @@
-package cn.org.expect.maven.ioc;
+package cn.org.expect.maven;
 
 import java.util.List;
 
@@ -7,9 +7,8 @@ import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.impl.SimpleArtifactOption;
 import cn.org.expect.maven.repository.ArtifactDownloader;
 import cn.org.expect.maven.repository.ArtifactRepository;
-import cn.org.expect.maven.ArtifactOption;
 
-public interface MavenSearchIoc extends EasyContext {
+public interface ArtifactSearchIoc extends EasyContext {
 
     /**
      * 已注册工件仓库的数组

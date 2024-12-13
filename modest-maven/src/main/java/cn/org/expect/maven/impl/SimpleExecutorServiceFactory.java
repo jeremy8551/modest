@@ -8,14 +8,14 @@ import java.util.concurrent.TimeUnit;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.concurrent.ExecutorServiceFactory;
-import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchExecutorService;
 
 @EasyBean
 public class SimpleExecutorServiceFactory implements ExecutorServiceFactory {
 
-    private final ArtifactSearchExecutorService service;
+    private final MavenSearchExecutorService service;
 
-    public SimpleExecutorServiceFactory(ArtifactSearchExecutorService service) {
+    public SimpleExecutorServiceFactory(MavenSearchExecutorService service) {
         this.service = service;
     }
 

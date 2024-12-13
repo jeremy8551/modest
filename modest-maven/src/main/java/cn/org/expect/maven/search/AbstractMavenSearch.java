@@ -2,10 +2,11 @@ package cn.org.expect.maven.search;
 
 import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.maven.ArtifactOption;
-import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
+import cn.org.expect.maven.MavenRuntimeException;
 import cn.org.expect.maven.concurrent.ArtifactSearchInputJob;
+import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
 import cn.org.expect.maven.impl.SimpleArtifactOption;
-import cn.org.expect.maven.ioc.MavenSearchIoc;
+import cn.org.expect.maven.ArtifactSearchIoc;
 import cn.org.expect.maven.pom.PomInfoRepository;
 import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
@@ -17,7 +18,7 @@ import cn.org.expect.util.Ensure;
 public abstract class AbstractMavenSearch implements ArtifactSearch {
 
     /** 容器上下文信息 */
-    private final MavenSearchIoc ioc;
+    private final ArtifactSearchIoc ioc;
 
     /** 仓库接口 */
     private ArtifactRepository repository;
@@ -31,7 +32,7 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
     /** 文本处理器 */
     private final ArtifactSearchPattern pattern;
 
-    public AbstractMavenSearch(MavenSearchIoc ioc) {
+    public AbstractMavenSearch(ArtifactSearchIoc ioc) {
         this.pattern = new ArtifactSearchPattern();
         this.ioc = Ensure.notNull(ioc);
     }
@@ -45,12 +46,7 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
         this.selectRepository = new SimpleArtifactOption(repositoryId);
     }
 
-    /**
-     * 返回 Ioc 容器
-     *
-     * @return 容器
-     */
-    public MavenSearchIoc getIoc() {
+    public ArtifactSearchIoc getIoc() {
         return this.ioc;
     }
 
@@ -94,12 +90,12 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
         ArtifactSearchInputJob job = this.getService().getFirst(ArtifactSearchInputJob.class, first -> true); // 只能是单例模式
         if (job == null) {
             job = new ArtifactSearchInputJob();
-            this.getService().execute(job);
+            this.execute(job);
 
             // 等待任务启动
-            Throwable e = Dates.waitFor(() -> this.getService().isRunning(ArtifactSearchInputJob.class, task -> !task.isRunning()), 100, 20 * 1000);
+            Throwable e = Dates.waitFor(() -> this.getService().isRunning(ArtifactSearchInputJob.class, command -> !command.isRunning()), 100, 20 * 1000);
             if (e != null) {
-                throw new RuntimeException(e.getLocalizedMessage(), e);
+                throw new MavenRuntimeException(e, e.getLocalizedMessage());
             }
         }
         return job;

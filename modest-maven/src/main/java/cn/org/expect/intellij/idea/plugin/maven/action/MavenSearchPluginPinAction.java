@@ -14,7 +14,7 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginFactory;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchExecutorServiceImpl;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchExecutorService;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginPinJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -93,7 +93,7 @@ public class MavenSearchPluginPinAction extends ToggleAction {
                 if (contributor instanceof MavenSearchPluginContributor) {
                     MavenSearchPlugin searchPlugin = ((MavenSearchPluginContributor) contributor).getPlugin();
                     searchPlugin.getContext().clone(this.plugin.getContext());
-                    searchPlugin.getService().setParameter(MavenSearchExecutorServiceImpl.PARAMETER, null);
+                    searchPlugin.getService().setParameter(MavenSearchExecutorService.PARAMETER, null);
                     searchPlugin.execute(new MavenSearchPluginPinJob(this.plugin, () -> super.actionPerformed(event)));
                 }
             }
