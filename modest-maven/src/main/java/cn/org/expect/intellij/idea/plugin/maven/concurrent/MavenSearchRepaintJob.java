@@ -16,6 +16,9 @@ import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInf
 
 public class MavenSearchRepaintJob extends MavenSearchPluginJob implements EDTJob {
 
+    /** 锁 */
+    protected final static Object lock = new Object();
+
     /** 查询结果 */
     protected final MavenSearchNavigationList result;
 
@@ -30,7 +33,7 @@ public class MavenSearchRepaintJob extends MavenSearchPluginJob implements EDTJo
      * @return 返回值
      */
     public int execute() {
-        synchronized (MavenSearchRepaintJob.class) {
+        synchronized (lock) {
             this.paint();
         }
         return 0;
@@ -116,12 +119,5 @@ public class MavenSearchRepaintJob extends MavenSearchPluginJob implements EDTJo
         } else {
             plugin.setStatusBar(ArtifactSearchStatusMessageType.NORMAL, "maven.search.status.text", 0, 0);
         }
-    }
-
-    /**
-     * 将查询结果转为导航记录
-     */
-    public void process(MavenSearchPlugin plugin, MavenSearchNavigationList result) {
-
     }
 }

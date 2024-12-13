@@ -1,8 +1,10 @@
 package cn.org.expect.maven;
 
 import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import cn.org.expect.util.StringUtils;
@@ -30,11 +32,17 @@ public class MavenMessage {
      * @return 字符串
      */
     public static String get(String key, Object... args) {
-        String message = getMessage(key);
+        String message = getResourceBundle(key);
         return StringUtils.replaceIndexHolder(message, args);
     }
 
-    private static String getMessage(String key) {
+    /**
+     * 返回国际化资源信息
+     *
+     * @param key 资源编号
+     * @return 国际化资源信息
+     */
+    public static String getResourceBundle(String key) {
         if (USE_CHINESE.test(key)) {
             return BUNDLE_CN.getString(key);
         } else {
@@ -63,6 +71,18 @@ public class MavenMessage {
     }
 
     /**
+     * 返回国际化资源编号集合
+     */
+    public static Set<String> getKeys() {
+        LinkedHashSet<String> set = new LinkedHashSet<>();
+        Enumeration<String> keys = BUNDLE.getKeys();
+        while (keys.hasMoreElements()) {
+            set.add(keys.nextElement());
+        }
+        return set;
+    }
+
+    /**
      * 转为字符串
      *
      * @param text  文本信息
@@ -72,27 +92,12 @@ public class MavenMessage {
     public static String toString(String text, Object... array) {
         if (MavenMessage.contains(text)) {
             return MavenMessage.get(text, array);
-        } else if (StringUtils.isBlank(text)) {
-            return text;
-        } else {
-            return StringUtils.replaceIndexHolder(text, array);
         }
-    }
 
-    /**
-     * 根据属性值查询对应的 key
-     *
-     * @param value 属性值
-     * @return key
-     */
-    public static String getKey(String value) {
-        Enumeration<String> keys = BUNDLE.getKeys();
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement();
-            if (value.equals(BUNDLE.getString(key))) {
-                return key;
-            }
+        if (StringUtils.isBlank(text)) {
+            return text;
         }
-        throw new UnsupportedOperationException(value);
+
+        return StringUtils.replaceIndexHolder(text, array);
     }
 }

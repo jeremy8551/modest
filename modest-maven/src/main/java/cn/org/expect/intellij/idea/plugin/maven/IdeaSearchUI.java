@@ -7,7 +7,6 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.ArtifactSearchStatusMessageType;
 import cn.org.expect.util.Dates;
-import cn.org.expect.util.MessageFormatter;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
@@ -68,7 +67,7 @@ public class IdeaSearchUI {
         this.statusBar = new StatusBar(type, message);
         Icon icon = this.getIcon(type);
         String fontColor = ArtifactSearchStatusMessageType.ERROR == type ? "red" : "orange";
-        String text = new MessageFormatter("<html><span style='color:{};'>{}</span></html>").fill(fontColor, message);
+        String text = StringUtils.replaceEmptyHolder("<html><span style='color:{};'>{}</span></html>", fontColor, message);
 
         try {
             // 检查注册项是否启用，为true，表示使用扩展模式作为状态栏

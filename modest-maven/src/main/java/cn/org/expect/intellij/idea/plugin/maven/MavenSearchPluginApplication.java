@@ -22,7 +22,10 @@ import org.jetbrains.annotations.NotNull;
 public class MavenSearchPluginApplication implements AppLifecycleListener {
     private final static Log log = LogFactory.getLog(MavenSearchPluginApplication.class);
 
-    private static volatile MavenSearchIoc INSTANCE;
+    private static volatile MavenSearchIoc instance;
+
+    /** 锁 */
+    protected final static Object lock = new Object();
 
     // Idea 启动后加载容器
     static {
@@ -41,14 +44,14 @@ public class MavenSearchPluginApplication implements AppLifecycleListener {
      * @return 容器上下文信息
      */
     public static MavenSearchIoc get() {
-        if (INSTANCE == null) {
-            synchronized (MavenSearchPluginApplication.class) {
-                if (INSTANCE == null) {
-                    INSTANCE = create();
+        if (instance == null) {
+            synchronized (lock) {
+                if (instance == null) {
+                    instance = create();
                 }
             }
         }
-        return INSTANCE;
+        return instance;
     }
 
     /**

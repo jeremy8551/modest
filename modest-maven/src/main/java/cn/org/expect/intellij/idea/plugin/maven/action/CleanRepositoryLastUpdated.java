@@ -21,6 +21,9 @@ import org.jetbrains.annotations.NotNull;
 public class CleanRepositoryLastUpdated extends AnAction {
     private final static Log log = LogFactory.getLog(CleanRepositoryLastUpdated.class);
 
+    /** 锁 */
+    protected final static Object lock = new Object();
+
     /** 找到的文件数量 */
     private int find;
 
@@ -42,7 +45,7 @@ public class CleanRepositoryLastUpdated extends AnAction {
             return;
         }
 
-        synchronized (CleanRepositoryLastUpdated.class) {
+        synchronized (lock) {
             File logfile = FileUtils.createTempFile("clean_last_updated.log");
 
             OutputStreamWriter out = null;
