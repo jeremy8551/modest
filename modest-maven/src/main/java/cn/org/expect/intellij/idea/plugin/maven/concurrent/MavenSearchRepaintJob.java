@@ -85,7 +85,7 @@ public class MavenSearchRepaintJob extends MavenSearchPluginJob implements EDTJo
             log.debug("---->");
             for (SearchEverywhereFoundElementInfo info : infos) {
                 MavenSearchNavigation navigation = (MavenSearchNavigation) info.getElement();
-                log.trace(navigation.getArtifact().toStandardString());
+                log.debug(navigation.getArtifact().toStandardString() + ", " + navigation.isFold());
             }
         }
 

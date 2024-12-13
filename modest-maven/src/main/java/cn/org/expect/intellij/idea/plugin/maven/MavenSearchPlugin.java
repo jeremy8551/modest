@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchDownloadJob;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPomInfoJob;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.intellij.idea.plugin.maven.impl.SimpleMavenSearchPluginContext;
 import cn.org.expect.intellij.idea.plugin.maven.listener.MavenSearchPluginListener;
@@ -164,6 +165,10 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements MavenSearc
 
         this.setStatusBar(ArtifactSearchStatusMessageType.RUNNING, "maven.search.extra.text", groupId, artifactId, this.getRepositoryInfo().getDisplayName());
         this.execute(new ArtifactSearchExtraJob(groupId, artifactId));
+    }
+
+    public void asyncPomInfo(Artifact artifact) {
+        this.getService().execute(new MavenSearchPomInfoJob(artifact));
     }
 
     public void copyToClipboard(String text) {

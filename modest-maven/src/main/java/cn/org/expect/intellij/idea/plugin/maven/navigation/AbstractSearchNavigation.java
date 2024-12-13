@@ -18,7 +18,7 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
     private int depth;
 
     /** 工件 */
-    protected final Artifact artifact;
+    private final Artifact artifact;
 
     /** 序号 */
     protected final long id;

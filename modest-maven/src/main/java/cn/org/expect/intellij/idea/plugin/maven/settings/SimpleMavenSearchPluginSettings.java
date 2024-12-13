@@ -67,7 +67,7 @@ public class SimpleMavenSearchPluginSettings implements MavenSearchPluginSetting
         this.expireTimeMillis = 1000 * 3600 * 24;
         this.searchInAllTab = false;
         this.downloadWay = CentralArtifactDownloader.class.getAnnotation(EasyBean.class).value();
-        this.useParentPom = true;
+        this.useParentPom = false;
     }
 
     public void setId(String id) {

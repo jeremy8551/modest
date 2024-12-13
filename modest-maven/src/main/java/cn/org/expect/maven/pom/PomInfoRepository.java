@@ -3,9 +3,13 @@ package cn.org.expect.maven.pom;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.Artifact;
@@ -19,13 +23,36 @@ import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.XMLUtils;
 import org.w3c.dom.Node;
 
-public class PomInfoFactory {
-    protected final static Log log = LogFactory.getLog(PomInfoFactory.class);
+@EasyBean(singleton = true)
+public class PomInfoRepository {
+    protected final static Log log = LogFactory.getLog(PomInfoRepository.class);
 
-    public PomInfoFactory() {
+    /** 搜索结果 */
+    protected final Map<String, Map<String, PomInfo>> database;
+
+    public PomInfoRepository() {
+        this.database = new ConcurrentHashMap<>();
     }
 
-    public PomInfo create(ArtifactSearch search, Artifact artifact) throws IOException {
+    public PomInfo select(Artifact artifact) {
+        Map<String, PomInfo> map = this.database.get(artifact.getGroupId());
+        if (map != null) {
+            return map.get(artifact.getArtifactId());
+        }
+        return null;
+    }
+
+    public void insert(Artifact artifact, PomInfo pomInfo) {
+        Map<String, PomInfo> group = this.database.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
+        group.put(artifact.getArtifactId(), pomInfo);
+    }
+
+    public PomInfo query(ArtifactSearch search, Artifact artifact) throws Exception {
+        PomInfo pomInfo = this.select(artifact);
+        if (pomInfo != null) {
+            return pomInfo;
+        }
+
         byte[] pomXmlBytes = this.readPomXml(search, artifact);
         if (pomXmlBytes == null) {
             return null;
@@ -33,29 +60,34 @@ public class PomInfoFactory {
 
         // 解析 POM 信息
         Node project = XMLUtils.getRoot(new ByteArrayInputStream(pomXmlBytes), "project");
-        PomInfo info = new PomInfo();
-        this.parsePomXml(project, info);
+        pomInfo = new PomInfo();
+        this.parsePomXml(project, pomInfo);
 
         // 如果有上级工件
         if (search.getSettings().isUseParentPom()) {
-            if (StringUtils.isBlank(info.getProjectUrl()) || StringUtils.isBlank(info.getIssue().getUrl())) {
-                if (info.getParent().isInherit(artifact.getGroupId())) {
+            if (StringUtils.isBlank(pomInfo.getProjectUrl()) || StringUtils.isBlank(pomInfo.getIssue().getUrl())) {
+                if (pomInfo.getParent().isInherit(artifact.getGroupId())) {
                     SimpleArtifact parent = artifact.copy();
-                    parent.setGroupId(info.getParent().getGroupId());
-                    parent.setArtifactId(info.getParent().getArtifactId());
-                    parent.setVersion(info.getParent().getVersion());
-                    log.debug("find parent artifact: {}", parent.toStandardString());
-                    PomInfo parentPom = this.create(search, parent);
+                    parent.setGroupId(pomInfo.getParent().getGroupId());
+                    parent.setArtifactId(pomInfo.getParent().getArtifactId());
+                    parent.setVersion(pomInfo.getParent().getVersion());
+
+                    if (log.isDebugEnabled()) {
+                        log.debug("find parent artifact: {}", parent.toStandardString());
+                    }
+                    PomInfo parentPom = this.query(search, parent);
                     if (parentPom != null) {
-                        if (StringUtils.isBlank(info.getProjectUrl()) && StringUtils.isNotBlank(parentPom.getProjectUrl())) {
-                            info.setUrl(parentPom.getProjectUrl());
+                        if (StringUtils.isBlank(pomInfo.getProjectUrl()) && StringUtils.isNotBlank(parentPom.getProjectUrl())) {
+                            pomInfo.setUrl(parentPom.getProjectUrl());
                         }
 
-                        if (StringUtils.isBlank(info.getIssue().getUrl()) && StringUtils.isNotBlank(parentPom.getIssue().getUrl())) {
-                            info.getIssue().setUrl(parentPom.getIssue().getUrl());
-                            info.getIssue().setSystem(parentPom.getIssue().getSystem());
+                        if (StringUtils.isBlank(pomInfo.getIssue().getUrl()) && StringUtils.isNotBlank(parentPom.getIssue().getUrl())) {
+                            pomInfo.getIssue().setUrl(parentPom.getIssue().getUrl());
+                            pomInfo.getIssue().setSystem(parentPom.getIssue().getSystem());
                         }
-                        return info;
+
+                        this.insert(artifact, pomInfo); // 保存搜索结果
+                        return pomInfo;
                     }
                 } else {
                     log.warn("{} {} parent Artifact not exists!", PomInfo.class.getSimpleName(), artifact.toStandardString());
@@ -63,10 +95,12 @@ public class PomInfoFactory {
             }
         }
 
-        if (StringUtils.isBlank(info.getProjectUrl())) {
+        if (StringUtils.isBlank(pomInfo.getProjectUrl())) {
             log.warn("{} {} have not Project Url!", PomInfo.class.getSimpleName(), artifact.toStandardString());
         }
-        return info;
+
+        this.insert(artifact, pomInfo); // 保存搜索结果
+        return pomInfo;
     }
 
     private void parsePomXml(Node project, PomInfo info) {

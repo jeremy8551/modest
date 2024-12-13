@@ -5,6 +5,7 @@ import java.io.File;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.ArtifactOption;
 import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
+import cn.org.expect.maven.pom.PomInfoRepository;
 import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.local.LocalRepository;
@@ -161,6 +162,13 @@ public interface ArtifactSearch {
     ArtifactRepositoryDatabase getDatabase();
 
     /**
+     * 返回 PomInfo 仓库
+     *
+     * @return 仓库
+     */
+    PomInfoRepository getPomInfoRepository();
+
+    /**
      * 下载工件
      *
      * @param artifact 工件信息
@@ -178,9 +186,16 @@ public interface ArtifactSearch {
      * 等待工件下载完毕
      *
      * @param artifact 工件信息
-     * @param timeout
+     * @param timeout  超时时间，单位：毫秒
      */
     void waitDownload(Artifact artifact, long timeout);
+
+    /**
+     * 异步获取工件的POM信息
+     *
+     * @param artifact 工件
+     */
+    void asyncPomInfo(Artifact artifact);
 
     /**
      * 显示搜索结果

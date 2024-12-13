@@ -3,6 +3,7 @@ package cn.org.expect.intellij.idea.plugin.maven.navigation;
 import java.awt.*;
 import javax.swing.*;
 
+import cn.org.expect.util.StringUtils;
 import com.intellij.ui.ColoredListCellRenderer;
 import com.intellij.ui.SimpleTextAttributes;
 import com.intellij.util.IconUtil;
@@ -21,7 +22,7 @@ public class NavigationCell extends ColoredListCellRenderer<Object> {
 
     public NavigationCell(String text, int style, Color fgColor) {
         super();
-        this.text = text;
+        this.text = StringUtils.defaultString(text, "");
         this.icon = null;
         this.style = style;
         this.fgColor = fgColor;

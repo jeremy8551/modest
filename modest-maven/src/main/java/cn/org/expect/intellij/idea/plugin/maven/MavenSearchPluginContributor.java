@@ -7,7 +7,7 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenRepositoryChooserAction;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.NavigationCellRenderer;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigationRenderer;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
@@ -33,14 +33,14 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
 
     private final MavenSearchPluginPinAction pinAction;
 
-    private final NavigationCellRenderer renderer;
+    private final MavenSearchNavigationRenderer renderer;
 
     public MavenSearchPluginContributor(@NotNull MavenSearchPlugin plugin) {
         super(plugin.getContext().getActionEvent());
         this.contributor = new MavenSearchPluginChooseContributor();
         this.plugin = plugin;
         this.pinAction = new MavenSearchPluginPinAction(this.plugin);
-        this.renderer = new NavigationCellRenderer(this);
+        this.renderer = new MavenSearchNavigationRenderer(this);
     }
 
     public MavenSearchPlugin getPlugin() {

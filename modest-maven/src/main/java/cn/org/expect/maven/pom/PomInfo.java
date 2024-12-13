@@ -105,6 +105,11 @@ public class PomInfo {
         return null;
     }
 
+    public String toDisplayString(String... array) {
+        String[] newArray = StringUtils.removeBlank(array);
+        return StringUtils.join(newArray, "; ");
+    }
+
     public static class License {
         private String name;
         private String url;
@@ -256,7 +261,7 @@ public class PomInfo {
         private String timezone;
         private String organization;
         private String organizationUrl;
-        private List<String> roles;
+        private final List<String> roles;
 
         public Developer() {
             this.roles = new ArrayList<>();
@@ -312,10 +317,6 @@ public class PomInfo {
 
         public List<String> getRoles() {
             return roles;
-        }
-
-        public void setRoles(List<String> roles) {
-            this.roles = roles;
         }
     }
 }

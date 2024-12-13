@@ -6,6 +6,7 @@ import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
 import cn.org.expect.maven.concurrent.ArtifactSearchInputJob;
 import cn.org.expect.maven.impl.SimpleArtifactOption;
 import cn.org.expect.maven.ioc.MavenSearchIoc;
+import cn.org.expect.maven.pom.PomInfoRepository;
 import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.local.LocalRepository;
@@ -104,12 +105,11 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
         return job;
     }
 
-    /**
-     * 返回数据库对象
-     *
-     * @return 数据库对象
-     */
     public ArtifactRepositoryDatabase getDatabase() {
         return this.getRepository().getDatabase();
+    }
+
+    public PomInfoRepository getPomInfoRepository() {
+        return this.ioc.getBean(PomInfoRepository.class);
     }
 }

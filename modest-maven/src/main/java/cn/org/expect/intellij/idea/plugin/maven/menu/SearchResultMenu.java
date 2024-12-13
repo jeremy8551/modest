@@ -2,7 +2,6 @@ package cn.org.expect.intellij.idea.plugin.maven.menu;
 
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 import javax.swing.*;
 
 import cn.org.expect.annotation.EasyBean;
@@ -17,7 +16,6 @@ import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.MavenMessage;
 import cn.org.expect.maven.concurrent.ArtifactSearchMoreJob;
 import cn.org.expect.maven.pom.PomInfo;
-import cn.org.expect.maven.pom.PomInfoFactory;
 import cn.org.expect.maven.repository.ArtifactOperation;
 import cn.org.expect.maven.repository.central.CentralMavenRepository;
 import cn.org.expect.maven.repository.gradle.GradlePluginRepository;
@@ -143,8 +141,8 @@ public class SearchResultMenu extends AbstractMenu {
             public void execute(MavenSearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
                 plugin.execute(new MavenSearchPluginJob("maven.search.job.download.artifact.description") { // 异步执行任务
-                    public int execute() throws IOException {
-                        PomInfo pomInfo = new PomInfoFactory().create(plugin, artifact);
+                    public int execute() throws Exception {
+                        PomInfo pomInfo = plugin.getPomInfoRepository().query(plugin, artifact);
                         if (pomInfo != null && StringUtils.isNotBlank(pomInfo.getProjectUrl())) {
                             BrowserUtil.browse(pomInfo.getProjectUrl());
                             return 0;
@@ -162,8 +160,8 @@ public class SearchResultMenu extends AbstractMenu {
             public void execute(MavenSearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
                 plugin.execute(new MavenSearchPluginJob("maven.search.job.open.project.issue.description") { // 异步执行任务
-                    public int execute() throws IOException {
-                        PomInfo pomInfo = new PomInfoFactory().create(plugin, artifact);
+                    public int execute() throws Exception {
+                        PomInfo pomInfo = plugin.getPomInfoRepository().query(plugin, artifact);
                         if (pomInfo != null && StringUtils.isNotBlank(pomInfo.getIssue().getUrl())) {
                             BrowserUtil.browse(pomInfo.getIssue().getUrl());
                             return 0;

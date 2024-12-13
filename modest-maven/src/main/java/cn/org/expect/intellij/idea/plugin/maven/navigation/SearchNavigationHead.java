@@ -1,24 +1,29 @@
 package cn.org.expect.intellij.idea.plugin.maven.navigation;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
+import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.concurrent.ArtifactSearchExtraJob;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
-import cn.org.expect.maven.Artifact;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 
 public class SearchNavigationHead extends AbstractSearchNavigation {
 
+    /** 子节点 */
+    private final List<SearchNavigationItem> child;
+
     public SearchNavigationHead(Artifact artifact) {
         super(artifact);
+        this.child = new ArrayList<>();
         this.setDepth(1);
         this.setPresentableText(artifact.getArtifactId());
-        this.setLocationString(" " + this.artifact.getGroupId());
+        this.setLocationString(" " + artifact.getGroupId());
         this.setLeftIcon(MavenSearchPluginIcon.LEFT_FOLD);
         this.setRightIcon(MavenSearchPluginIcon.RIGHT);
-        this.setRightText(this.artifact.getType() + " ");
+        this.setRightText(artifact.getType() + " ");
     }
 
     public boolean supportFold(MavenSearch search) {
@@ -53,12 +58,23 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
         if (result != null) {
             this.setLeftIcon(MavenSearchPluginIcon.LEFT_UNFOLD);
 
-            for (Artifact itemArtifact : result.getList()) {
-                SearchNavigationItem item = new SearchNavigationItem(itemArtifact);
-                item.update(search);
+            if (this.child.isEmpty()) {
+                for (Artifact itemArtifact : result.getList()) {
+                    this.child.add(new SearchNavigationItem(itemArtifact));
+                }
+            }
+
+            for (SearchNavigationItem item : this.child) {
                 list.add(new SearchEverywhereFoundElementInfo(item, search.getSettings().getNavigationPriority(), search.getContributor()));
+                if (item.isFold()) {
+                    item.fold(search, list);
+                } else {
+                    item.unfold(search, list);
+                }
+                item.update(search);
             }
         }
+
         this.updateWaitingIcon(search);
     }
 

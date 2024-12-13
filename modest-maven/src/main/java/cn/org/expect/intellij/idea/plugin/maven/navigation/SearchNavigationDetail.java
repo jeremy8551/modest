@@ -7,25 +7,24 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.maven.Artifact;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 
-public class SearchNavigationClass extends AbstractSearchNavigation {
+public class SearchNavigationDetail extends AbstractSearchNavigation {
 
-    public SearchNavigationClass(Artifact artifact) {
+    public SearchNavigationDetail(Artifact artifact) {
         super(artifact);
-        this.setDepth(1);
-        this.setPresentableText(artifact.getArtifactId());
-        this.setLocationString(" " + artifact.getGroupId() + "  (" + artifact.getVersion() + ")");
-        this.setLeftIcon(MavenSearchPluginIcon.CLASS_LEFT);
+        this.setDepth(3);
+        this.setPresentableText(artifact.getVersion());
+        this.setLocationString("");
+        this.setLeftIcon(null);
         this.setRightIcon(MavenSearchPluginIcon.RIGHT_REMOTE);
-        this.setRightText(artifact.getType() + " ");
-    }
-
-    public boolean supportFold(MavenSearch search) {
-        this.update(search);
-        return false;
+        this.setRightText("");
     }
 
     public boolean supportMenu() {
-        return true;
+        return false;
+    }
+
+    public boolean supportFold(MavenSearch search) {
+        return false;
     }
 
     public void setUnfold(MavenSearch search) {

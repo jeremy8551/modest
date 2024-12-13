@@ -66,12 +66,6 @@ public class SimpleArtifactRepositoryDatabase implements ArtifactRepositoryDatab
         return null;
     }
 
-    public void clear() {
-        this.patternMap.clear();
-        this.extraMap.clear();
-        this.store();
-    }
-
     public void store() {
         this.executorService.execute(this.engine::save);
     }
