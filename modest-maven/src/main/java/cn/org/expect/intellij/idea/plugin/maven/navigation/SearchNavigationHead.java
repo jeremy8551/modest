@@ -8,7 +8,6 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.concurrent.ArtifactSearchExtraJob;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 
 public class SearchNavigationHead extends AbstractSearchNavigation {
 
@@ -24,6 +23,10 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
         this.setLeftIcon(MavenSearchPluginIcon.LEFT_FOLD);
         this.setRightIcon(MavenSearchPluginIcon.RIGHT);
         this.setRightText(artifact.getType() + " ");
+    }
+
+    public List<? extends MavenSearchNavigation> getNavigationList() {
+        return this.child;
     }
 
     public boolean supportFold(MavenSearch search) {
@@ -52,7 +55,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
         search.display();
     }
 
-    public void unfold(MavenSearch search, List<SearchEverywhereFoundElementInfo> list) {
+    public void unfold(MavenSearch search) {
         Artifact artifact = this.getArtifact();
         ArtifactSearchResult result = search.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId());
         if (result != null) {
@@ -65,11 +68,10 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
             }
 
             for (SearchNavigationItem item : this.child) {
-                list.add(new SearchEverywhereFoundElementInfo(item, search.getSettings().getNavigationPriority(), search.getContributor()));
                 if (item.isFold()) {
-                    item.fold(search, list);
+                    item.fold(search);
                 } else {
-                    item.unfold(search, list);
+                    item.unfold(search);
                 }
                 item.update(search);
             }
@@ -78,8 +80,9 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
         this.updateWaitingIcon(search);
     }
 
-    public void fold(MavenSearch search, List<SearchEverywhereFoundElementInfo> list) {
+    public void fold(MavenSearch search) {
         this.updateWaitingIcon(search);
+        this.child.clear();
     }
 
     public boolean supportMenu() {

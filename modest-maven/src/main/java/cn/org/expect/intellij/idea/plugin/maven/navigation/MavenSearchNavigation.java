@@ -6,7 +6,6 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.util.ClassUtils;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 import com.intellij.navigation.NavigationItem;
 
 /**
@@ -138,17 +137,22 @@ public interface MavenSearchNavigation extends NavigationItem {
      * 展开操作
      *
      * @param search 搜索接口
-     * @param list   集合
      */
-    void unfold(MavenSearch search, List<SearchEverywhereFoundElementInfo> list);
+    void unfold(MavenSearch search);
 
     /**
      * 折叠操作
      *
      * @param search 搜索接口
-     * @param list   集合
      */
-    void fold(MavenSearch search, List<SearchEverywhereFoundElementInfo> list);
+    void fold(MavenSearch search);
+
+    /**
+     * 返回子导航记录集合
+     *
+     * @return 导航记录集合
+     */
+    List<? extends MavenSearchNavigation> getNavigationList();
 
     /**
      * 判断工件信息是否相等

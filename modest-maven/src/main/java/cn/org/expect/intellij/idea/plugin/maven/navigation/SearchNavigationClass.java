@@ -5,7 +5,6 @@ import java.util.List;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.maven.Artifact;
-import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 
 public class SearchNavigationClass extends AbstractSearchNavigation {
 
@@ -17,6 +16,10 @@ public class SearchNavigationClass extends AbstractSearchNavigation {
         this.setLeftIcon(MavenSearchPluginIcon.CLASS_LEFT);
         this.setRightIcon(MavenSearchPluginIcon.RIGHT_REMOTE);
         this.setRightText(artifact.getType() + " ");
+    }
+
+    public List<? extends MavenSearchNavigation> getNavigationList() {
+        return List.of();
     }
 
     public boolean supportFold(MavenSearch search) {
@@ -34,9 +37,9 @@ public class SearchNavigationClass extends AbstractSearchNavigation {
     public void setFold(MavenSearch search) {
     }
 
-    public void unfold(MavenSearch search, List<SearchEverywhereFoundElementInfo> list) {
+    public void unfold(MavenSearch search) {
     }
 
-    public void fold(MavenSearch search, List<SearchEverywhereFoundElementInfo> list) {
+    public void fold(MavenSearch search) {
     }
 }

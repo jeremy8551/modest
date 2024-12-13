@@ -62,24 +62,7 @@ public class MavenSearchRepaintJob extends MavenSearchPluginJob implements EDTJo
         // 生成导航记录
         MavenSearchNavigationList result = this.result;
         boolean hasResult = result != null;
-        List<SearchEverywhereFoundElementInfo> infos = new ArrayList<>(hasResult ? result.size() : 0);
-        if (hasResult) {
-            for (int i = 0; i < result.size(); i++) {
-                MavenSearchNavigation navigation = result.getNavigation(i);
-                if (navigation.getDepth() == 1) {
-                    infos.add(result.getInfo(i)); // TODO 优化
-
-                    if (navigation.supportFold(plugin)) {
-                        if (navigation.isFold()) {
-                            navigation.fold(plugin, infos); // 折叠
-                        } else {
-                            navigation.unfold(plugin, infos); // 展开
-                        }
-                    }
-                }
-            }
-            result.setInfos(infos);
-        }
+        List<SearchEverywhereFoundElementInfo> infos = hasResult ? result.toInfoList(plugin) : new ArrayList<>(0);
 
         if (log.isTraceEnabled()) {
             log.debug("---->");
