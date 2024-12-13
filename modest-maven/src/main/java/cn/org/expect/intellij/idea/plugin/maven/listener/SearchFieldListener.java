@@ -4,12 +4,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
-import cn.org.expect.log.Log;
-import cn.org.expect.log.LogFactory;
 import org.jetbrains.annotations.NotNull;
 
 public class SearchFieldListener extends KeyAdapter {
-    private final static Log log = LogFactory.getLog(SearchFieldListener.class);
+//    private final static Log log = LogFactory.getLog(SearchFieldListener.class);
 
     private final MavenSearchPlugin plugin;
 
