@@ -100,14 +100,19 @@ public abstract class SearchDisplayModel {
     }
 
     public void merge(List<SearchEverywhereFoundElementInfo> list) {
-        this.setComparator(this.model, new MavenFoundElementInfoComparator()); // TODO 先取出来再替换
+        Comparator defaultComparator = this.getComparator(this.model);
+        this.setComparator(this.model, new MavenFoundElementInfoComparator());
         try {
             this.model.clear(); // 清空所有数据
             this.model.addElements(list);
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         } finally {
-            this.setComparator(this.model, SearchEverywhereFoundElementInfo.COMPARATOR.reversed());
+            if (defaultComparator == null) {
+                this.setComparator(this.model, SearchEverywhereFoundElementInfo.COMPARATOR.reversed());
+            } else {
+                this.setComparator(this.model, defaultComparator);
+            }
         }
     }
 
@@ -156,5 +161,16 @@ public abstract class SearchDisplayModel {
                 log.error(e.getLocalizedMessage(), e);
             }
         }
+    }
+
+    protected Comparator getComparator(SearchListModel listModel) {
+        if (listModel.getClass().getSimpleName().equals("MixedSearchListModel")) {
+            try {
+                return JavaDialectFactory.get().getField(listModel, "myElementsComparator");
+            } catch (Throwable e) {
+                log.error(e.getLocalizedMessage(), e);
+            }
+        }
+        return null;
     }
 }

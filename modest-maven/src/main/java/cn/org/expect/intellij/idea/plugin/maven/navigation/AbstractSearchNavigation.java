@@ -7,12 +7,13 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchDownloadJob;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.util.Ensure;
+import cn.org.expect.util.UniqueSequenceGenerator;
 import com.intellij.navigation.ItemPresentation;
 
 public abstract class AbstractSearchNavigation implements MavenSearchNavigation, ItemPresentation {
 
-    /** 序号规则 */
-    protected static volatile long NUMBER = 1; // TODO 使用通用的序号生成器
+    /** 序号生成器 */
+    protected final static UniqueSequenceGenerator UNIQUE = new UniqueSequenceGenerator("Navigation-{}", 1);
 
     /** 层级 */
     private int depth;
@@ -21,7 +22,7 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
     private final Artifact artifact;
 
     /** 序号 */
-    protected final long id;
+    protected final String id;
 
     /** 左侧图标 */
     private volatile Icon leftIcon;
@@ -42,7 +43,7 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
     private String locationString;
 
     public AbstractSearchNavigation(Artifact artifact) {
-        this.id = NUMBER++;
+        this.id = UNIQUE.nextString();
         this.artifact = Ensure.notNull(artifact);
         this.fold = true;
         this.depth = 1;
