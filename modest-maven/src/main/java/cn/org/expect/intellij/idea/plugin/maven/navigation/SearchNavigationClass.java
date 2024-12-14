@@ -1,7 +1,6 @@
 package cn.org.expect.intellij.idea.plugin.maven.navigation;
 
 import java.util.List;
-
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
@@ -35,6 +34,7 @@ public class SearchNavigationClass extends AbstractSearchNavigation {
     }
 
     public void displayMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+        plugin.getResultMenu().displayItemMenu(plugin, navigation, topMenu, selectedIndex, 22);
     }
 
     public void setUnfold(MavenSearch search) {

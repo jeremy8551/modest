@@ -258,7 +258,7 @@ public class SearchResultMenu extends AbstractMenu {
         });
     }
 
-    public void displayItemMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+    public void displayItemMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex, int offset) {
         topMenu.removeAll();
 
         // 复制Maven依赖
@@ -342,7 +342,7 @@ public class SearchResultMenu extends AbstractMenu {
 
         // 在鼠标位置显示弹出菜单
         SearchDisplay display = plugin.getIdeaUI().getDisplay();
-        int x = display.getX() + 30;
+        int x = display.getX() + offset;
         int y = display.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中导航记录之间的高度
         display.showMenu(topMenu, x, y);
     }
