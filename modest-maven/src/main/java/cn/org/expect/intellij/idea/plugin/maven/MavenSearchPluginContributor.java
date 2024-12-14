@@ -51,10 +51,6 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         return MavenSearchPlugin.class.getSimpleName() + ".Tab";
     }
 
-    public MavenSearchPluginPinAction getPinAction() {
-        return pinAction;
-    }
-
     protected boolean processElement(@NotNull ProgressIndicator progressIndicator, @NotNull Processor<? super FoundItemDescriptor<Object>> consumer, FilteringGotoByModel<?> model, Object element, int degree) {
         return super.processElement(progressIndicator, consumer, model, element, degree);
     }

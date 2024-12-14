@@ -3,7 +3,7 @@ package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.maven.Artifact;
 
-public class MavenSearchPomInfoJob extends MavenSearchPluginJob implements EDTJob {
+public class MavenSearchPomInfoJob extends MavenSearchPluginJob {
 
     protected final Artifact artifact;
 
@@ -19,7 +19,7 @@ public class MavenSearchPomInfoJob extends MavenSearchPluginJob implements EDTJo
     public int execute() throws Exception {
         MavenSearchPlugin plugin = this.getSearch();
         plugin.getPomInfoRepository().query(plugin, artifact);
-        plugin.display();
+        plugin.asyncDisplay();
         return 0;
     }
 }

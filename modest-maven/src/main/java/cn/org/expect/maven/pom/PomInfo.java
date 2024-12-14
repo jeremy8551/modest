@@ -105,11 +105,6 @@ public class PomInfo {
         return null;
     }
 
-    public String toDisplayString(String... array) {
-        String[] newArray = StringUtils.removeBlank(array);
-        return StringUtils.join(newArray, "; ");
-    }
-
     public static class License {
         private String name;
         private String url;

@@ -1,20 +1,20 @@
 package cn.org.expect.intellij.idea.plugin.maven.navigation;
 
 import java.util.List;
+import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
-import cn.org.expect.maven.MavenIcon;
 import cn.org.expect.maven.Artifact;
 
 public class SearchNavigationDetail extends AbstractSearchNavigation {
 
-    public SearchNavigationDetail(Artifact artifact) {
+    public SearchNavigationDetail(Artifact artifact, Icon rightIcon, String presentableText, String locationString) {
         super(artifact);
         this.setDepth(3);
-        this.setPresentableText(artifact.getVersion());
-        this.setLocationString("");
+        this.setPresentableText(presentableText);
+        this.setLocationString(locationString);
         this.setLeftIcon(null);
-        this.setRightIcon(MavenIcon.RIGHT_REMOTE);
+        this.setRightIcon(rightIcon);
         this.setRightText("");
     }
 
