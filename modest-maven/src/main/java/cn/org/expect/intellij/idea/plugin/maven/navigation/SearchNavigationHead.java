@@ -3,7 +3,10 @@ package cn.org.expect.intellij.idea.plugin.maven.navigation;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.*;
+
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.MavenIcon;
 import cn.org.expect.maven.concurrent.ArtifactSearchExtraJob;
@@ -87,6 +90,9 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
 
     public boolean supportMenu() {
         return false;
+    }
+
+    public void displayMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
     }
 
     /**

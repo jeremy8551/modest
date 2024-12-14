@@ -7,7 +7,6 @@ import javax.swing.*;
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.SearchDisplay;
-import cn.org.expect.intellij.idea.plugin.maven.action.MenuAction;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchDownloadJob;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchEDTJob;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginJob;
@@ -45,15 +44,45 @@ public class SearchResultMenu extends AbstractMenu {
     private final JMenuItem openProjectUrl = new JMenuItem(MavenMessage.get("maven.search.btn.open.project.url.text")); // 打开项目URL
     private final JMenuItem openIssueUrl = new JMenuItem(MavenMessage.get("maven.search.btn.open.issue.url.text")); // 打开项目的错误管理页面
     private final JMenuItem openPomFile = new JMenuItem(MavenMessage.get("maven.search.btn.open.pom.text")); // 打开 POM 文件
+    private final JMenuItem copyDetail = new JMenuItem(MavenMessage.get("maven.search.btn.navigation.copy.detail.text")); // 复制详细信息
 
     public SearchResultMenu(MavenSearchPlugin plugin) {
         super(plugin);
         this.addAction(plugin);
     }
 
+    public void mousePressed(MouseEvent e) {
+        MavenSearchPlugin plugin = this.getPlugin();
+        SearchDisplay display = plugin.getIdeaUI().getDisplay();
+        int selectedIndex = display.locationToIndex(e.getPoint()); // 计算鼠标点击的位置
+
+        // 左键点击 more 按钮
+        if (e.getButton() == MouseEvent.BUTTON1 && plugin.canSearch() && selectedIndex != -1 && display.isMore(selectedIndex)) {
+            if (log.isDebugEnabled()) {
+                log.debug("Click more button {}", selectedIndex);
+            }
+
+            plugin.execute(new ArtifactSearchMoreJob());
+            return;
+        }
+
+        // 右键点击
+        if (e.getButton() == MouseEvent.BUTTON3) {
+            Object selectedObject = display.getElement(selectedIndex);
+            if (selectedObject instanceof MavenSearchNavigation) {
+                MavenSearchNavigation navigation = (MavenSearchNavigation) selectedObject;
+                if (navigation.supportMenu()) {
+                    plugin.getContext().setSelectNavigation(navigation); // 保存选中的导航记录
+                    display.setSelectedIndex(selectedIndex); // 选中导航记录
+                    navigation.displayMenu(plugin, navigation, this.topMenu, selectedIndex);
+                }
+            }
+        }
+    }
+
     protected void addAction(MavenSearchPlugin plugin) {
         // 复制 Maven 依赖
-        copyMaven.addActionListener(new MenuAction(plugin) {
+        copyMaven.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 plugin.copyToClipboard(navigation.getArtifact().toMavenPomDependency());
                 plugin.sendNotification(ArtifactSearchNotification.NORMAL, copyMaven.getText());
@@ -61,7 +90,7 @@ public class SearchResultMenu extends AbstractMenu {
         });
 
         // 复制 Gradle 依赖
-        copyGradle.addActionListener(new MenuAction(plugin) {
+        copyGradle.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 String text;
                 boolean isGradlePlugin = GradlePluginRepository.class.getAnnotation(EasyBean.class).value().equals(plugin.getRepositoryInfo().value());
@@ -101,7 +130,7 @@ public class SearchResultMenu extends AbstractMenu {
         });
 
         // 在 Maven 中央仓库浏览
-        openInCentralRepository.addActionListener(new MenuAction(plugin) {
+        openInCentralRepository.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 String id = CentralMavenRepository.class.getAnnotation(EasyBean.class).value();
                 BrowserUtil.browse(plugin.getIoc().getBean(CentralMavenRepository.class, id).toURI(navigation.getArtifact()));
@@ -109,7 +138,7 @@ public class SearchResultMenu extends AbstractMenu {
         });
 
         // 打开文件系统目录
-        openFileSystem.addActionListener(new MenuAction(plugin) {
+        openFileSystem.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 File parent = plugin.getLocalRepository().getParent(navigation.getArtifact());
                 if (FileUtils.isDirectory(parent)) {
@@ -119,7 +148,7 @@ public class SearchResultMenu extends AbstractMenu {
         });
 
         // 下载文件
-        downloadFile.addActionListener(new MenuAction(plugin) {
+        downloadFile.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
                 plugin.setStatusBar(ArtifactSearchStatusMessageType.RUNNING, "maven.search.download.url", artifact.toStandardString());
@@ -129,7 +158,7 @@ public class SearchResultMenu extends AbstractMenu {
         });
 
         // 取消下载
-        cancelDownload.addActionListener(new MenuAction(plugin) {
+        cancelDownload.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 plugin.getService().terminate(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(navigation.getArtifact()));
                 plugin.display();
@@ -137,7 +166,7 @@ public class SearchResultMenu extends AbstractMenu {
         });
 
         // 访问项目地址
-        openProjectUrl.addActionListener(new MenuAction(plugin) {
+        openProjectUrl.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
                 plugin.execute(new MavenSearchPluginJob("maven.search.job.download.artifact.description") { // 异步执行任务
@@ -156,7 +185,7 @@ public class SearchResultMenu extends AbstractMenu {
         });
 
         // 访问项目错误管理页面
-        openIssueUrl.addActionListener(new MenuAction(plugin) {
+        openIssueUrl.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
                 plugin.execute(new MavenSearchPluginJob("maven.search.job.open.project.issue.description") { // 异步执行任务
@@ -176,7 +205,7 @@ public class SearchResultMenu extends AbstractMenu {
         });
 
         // 打开 POM 文件
-        openPomFile.addActionListener(new MenuAction(plugin) {
+        openPomFile.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
                 plugin.execute(new MavenSearchEDTJob(() -> {
@@ -206,7 +235,7 @@ public class SearchResultMenu extends AbstractMenu {
         });
 
         // 删除文件
-        deleteFile.addActionListener(new MenuAction(plugin) {
+        deleteFile.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 File parent = plugin.getLocalRepository().getParent(navigation.getArtifact());
                 if (FileUtils.isDirectory(parent)) {
@@ -221,114 +250,108 @@ public class SearchResultMenu extends AbstractMenu {
         });
     }
 
-    public void mousePressed(MouseEvent e) {
-        MavenSearchPlugin plugin = this.getPlugin();
+    public void displayItemMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, int selectedIndex) {
+        // 复制Maven依赖
+        ArtifactOperation operation = plugin.getRepository().getSupported();
+        if (operation.supportCopyMavenDependency()) {
+            topMenu.add(copyMaven);
+        } else {
+            topMenu.remove(copyMaven);
+        }
+
+        // 复制Gradle依赖
+        if (operation.supportCopyGradleDependency()) {
+            topMenu.add(copyGradle);
+        } else {
+            topMenu.remove(copyGradle);
+        }
+
+        if (operation.supportOpenInCentralRepository()) {
+            topMenu.add(openInCentralRepository);
+        } else {
+            topMenu.remove(openInCentralRepository);
+        }
+
+        if (operation.supportOpenInFileSystem()) {
+            topMenu.add(openFileSystem);
+        } else {
+            topMenu.remove(openFileSystem);
+        }
+
+        if (operation.supportDelete()) {
+            topMenu.add(deleteFile);
+        } else {
+            topMenu.remove(deleteFile);
+        }
+
+        if (operation.supportDownload()) {
+            topMenu.add(downloadFile);
+        } else {
+            topMenu.remove(downloadFile);
+        }
+
+        if (operation.supportDownload()) {
+            topMenu.add(cancelDownload);
+        } else {
+            topMenu.remove(cancelDownload);
+        }
+
+        if (operation.supportOpenProjectURL()) {
+            topMenu.add(openProjectUrl);
+        } else {
+            topMenu.remove(openProjectUrl);
+        }
+
+        if (operation.supportOpenIssueURL()) {
+            topMenu.add(openIssueUrl);
+        } else {
+            topMenu.remove(openIssueUrl);
+        }
+
+        if (operation.supportOpenPomFile()) {
+            topMenu.add(openPomFile);
+        } else {
+            topMenu.remove(openPomFile);
+        }
+
+        // 工件在本地仓库中存在
+        Artifact artifact = navigation.getArtifact();
+        if (plugin.getLocalRepository().exists(artifact)) {
+            topMenu.remove(downloadFile);
+            topMenu.remove(cancelDownload);
+        } else {
+            topMenu.remove(openFileSystem);
+            topMenu.remove(deleteFile);
+
+            if (plugin.getService().isRunning(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(artifact))) {
+                topMenu.remove(downloadFile);
+            } else {
+                topMenu.remove(cancelDownload);
+            }
+        }
+
+        // 在鼠标位置显示弹出菜单
         SearchDisplay display = plugin.getIdeaUI().getDisplay();
-        int selectedIndex = display.locationToIndex(e.getPoint()); // 计算鼠标点击的位置
+        int x = display.getX() + 30;
+        int y = display.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中导航记录之间的高度
+        display.showMenu(topMenu, x, y);
+    }
 
-        // 左键点击 more 按钮
-        if (e.getButton() == MouseEvent.BUTTON1 && plugin.canSearch() && selectedIndex != -1 && display.isMore(selectedIndex)) {
-            if (log.isDebugEnabled()) {
-                log.debug("Click more button {}", selectedIndex);
+    public void displayDetailMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+        topMenu.removeAll();
+        topMenu.add(this.copyDetail);
+
+        this.copyDetail.addActionListener(new MenuItemAction(plugin) {
+            public void execute(MavenSearchNavigation navigation) {
+                plugin.copyToClipboard(navigation.getLocationString());
+                plugin.sendNotification(ArtifactSearchNotification.NORMAL, copyDetail.getText());
             }
-            plugin.execute(new ArtifactSearchMoreJob());
-            return;
-        }
+        });
 
-        // 右键点击
-        if (e.getButton() == MouseEvent.BUTTON3) {
-            Object selectedObject = display.getElement(selectedIndex);
-            if (selectedObject instanceof MavenSearchNavigation) {
-                MavenSearchNavigation navigation = (MavenSearchNavigation) selectedObject;
-                if (navigation.supportMenu()) {
-                    plugin.getContext().setSelectNavigation(navigation); // 保存选中的导航记录
-                    display.setSelectedIndex(selectedIndex); // 选中导航记录
-                    ArtifactOperation operation = plugin.getRepository().getSupported();
-
-                    // 复制Maven依赖
-                    if (operation.supportCopyMavenDependency()) {
-                        topMenu.add(copyMaven);
-                    } else {
-                        topMenu.remove(copyMaven);
-                    }
-
-                    // 复制Gradle依赖
-                    if (operation.supportCopyGradleDependency()) {
-                        topMenu.add(copyGradle);
-                    } else {
-                        topMenu.remove(copyGradle);
-                    }
-
-                    if (operation.supportOpenInCentralRepository()) {
-                        topMenu.add(openInCentralRepository);
-                    } else {
-                        topMenu.remove(openInCentralRepository);
-                    }
-
-                    if (operation.supportOpenInFileSystem()) {
-                        topMenu.add(openFileSystem);
-                    } else {
-                        topMenu.remove(openFileSystem);
-                    }
-
-                    if (operation.supportDelete()) {
-                        topMenu.add(deleteFile);
-                    } else {
-                        topMenu.remove(deleteFile);
-                    }
-
-                    if (operation.supportDownload()) {
-                        topMenu.add(downloadFile);
-                    } else {
-                        topMenu.remove(downloadFile);
-                    }
-
-                    if (operation.supportDownload()) {
-                        topMenu.add(cancelDownload);
-                    } else {
-                        topMenu.remove(cancelDownload);
-                    }
-
-                    if (operation.supportOpenProjectURL()) {
-                        topMenu.add(openProjectUrl);
-                    } else {
-                        topMenu.remove(openProjectUrl);
-                    }
-
-                    if (operation.supportOpenIssueURL()) {
-                        topMenu.add(openIssueUrl);
-                    } else {
-                        topMenu.remove(openIssueUrl);
-                    }
-
-                    if (operation.supportOpenPomFile()) {
-                        topMenu.add(openPomFile);
-                    } else {
-                        topMenu.remove(openPomFile);
-                    }
-
-                    // 工件在本地仓库中存在
-                    Artifact artifact = navigation.getArtifact();
-                    if (plugin.getLocalRepository().exists(artifact)) {
-                        topMenu.remove(downloadFile);
-                        topMenu.remove(cancelDownload);
-                    } else {
-                        topMenu.remove(openFileSystem);
-                        topMenu.remove(deleteFile);
-
-                        if (plugin.getService().isRunning(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(artifact))) {
-                            topMenu.remove(downloadFile);
-                        } else {
-                            topMenu.remove(cancelDownload);
-                        }
-                    }
-
-                    // 在鼠标位置显示弹出菜单
-                    int x = display.getX() + 30;
-                    int y = display.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中行之间的高度
-                    display.showMenu(topMenu, x, y);
-                }
-            }
-        }
+        // 在鼠标位置显示弹出菜单
+        SearchDisplay display = plugin.getIdeaUI().getDisplay();
+        int x = display.getX() + 180;
+        int y = display.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中导航记录之间的高度
+        display.showMenu(topMenu, x, y);
     }
 }

@@ -3,8 +3,10 @@ package cn.org.expect.intellij.idea.plugin.maven.navigation;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPomInfoJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -36,6 +38,10 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
 
     public boolean supportMenu() {
         return true;
+    }
+
+    public void displayMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+        plugin.getResultMenu().displayItemMenu(plugin, navigation, selectedIndex);
     }
 
     public boolean supportFold(MavenSearch search) {

@@ -4,6 +4,7 @@ import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.maven.Artifact;
 
 public class SearchNavigationDetail extends AbstractSearchNavigation {
@@ -23,7 +24,11 @@ public class SearchNavigationDetail extends AbstractSearchNavigation {
     }
 
     public boolean supportMenu() {
-        return false;
+        return true;
+    }
+
+    public void displayMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+        plugin.getResultMenu().displayDetailMenu(plugin, navigation, topMenu, selectedIndex);
     }
 
     public boolean supportFold(MavenSearch search) {

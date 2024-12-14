@@ -7,7 +7,6 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContext;
 import cn.org.expect.intellij.idea.plugin.maven.SearchDisplay;
 import cn.org.expect.intellij.idea.plugin.maven.listener.SearchFieldListener;
 import cn.org.expect.intellij.idea.plugin.maven.menu.SearchFieldMenu;
-import cn.org.expect.intellij.idea.plugin.maven.menu.SearchResultMenu;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
@@ -74,7 +73,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
 
     protected void setPopupMenuUI(MavenSearchPlugin plugin) {
         SearchDisplay display = plugin.getIdeaUI().getDisplay();
-        display.addMouseListener(new SearchResultMenu(plugin)); // 在搜索结果上添加菜单
+        display.addMouseListener(plugin.getResultMenu()); // 在搜索结果上添加菜单
 
         JTextField searchField = plugin.getIdeaUI().getSearchField();
         searchField.addKeyListener(new SearchFieldListener(plugin));

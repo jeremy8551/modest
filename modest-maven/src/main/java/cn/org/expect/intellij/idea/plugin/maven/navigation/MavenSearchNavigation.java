@@ -4,6 +4,7 @@ import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.util.ClassUtils;
 import com.intellij.navigation.NavigationItem;
@@ -170,4 +171,14 @@ public interface MavenSearchNavigation extends NavigationItem {
      * @return 返回true表示支持，false表示不支持
      */
     boolean supportMenu();
+
+    /**
+     * 显示菜单
+     *
+     * @param plugin        搜索接口
+     * @param navigation    导航记录
+     * @param topMenu
+     * @param selectedIndex 导航记录在搜索结果的位置信息，从0开始
+     */
+    void displayMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex);
 }

@@ -2,9 +2,12 @@ package cn.org.expect.intellij.idea.plugin.maven.navigation;
 
 import java.util.List;
 
+import javax.swing.*;
+
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
-import cn.org.expect.maven.MavenIcon;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.MavenIcon;
 
 public class SearchNavigationClass extends AbstractSearchNavigation {
 
@@ -29,6 +32,9 @@ public class SearchNavigationClass extends AbstractSearchNavigation {
 
     public boolean supportMenu() {
         return true;
+    }
+
+    public void displayMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
     }
 
     public void setUnfold(MavenSearch search) {

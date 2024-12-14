@@ -12,6 +12,7 @@ import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPomInfoJob
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchRepaintJob;
 import cn.org.expect.intellij.idea.plugin.maven.impl.SimpleMavenSearchPluginContext;
 import cn.org.expect.intellij.idea.plugin.maven.listener.MavenSearchPluginListener;
+import cn.org.expect.intellij.idea.plugin.maven.menu.SearchResultMenu;
 import cn.org.expect.intellij.idea.plugin.maven.settings.MavenSearchPluginSettings;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
@@ -61,6 +62,8 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements MavenSearc
 
     private final MavenSearchPluginListener listener;
 
+    private final SearchResultMenu resultMenu;
+
     public MavenSearchPlugin(AnActionEvent event) {
         super(MavenSearchPluginApplication.get());
         this.settings = this.getIoc().getBean(MavenSearchPluginSettings.class);
@@ -73,10 +76,15 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements MavenSearc
         this.context = new SimpleMavenSearchPluginContext(event, this);
         this.contributor = new MavenSearchPluginContributor(this);
         this.listener = new MavenSearchPluginListener(this);
+        this.resultMenu = new SearchResultMenu(this);
     }
 
     public MavenSearchPluginListener getSearchListener() {
         return listener;
+    }
+
+    public SearchResultMenu getResultMenu() {
+        return resultMenu;
     }
 
     public IdeaSearchUI getIdeaUI() {

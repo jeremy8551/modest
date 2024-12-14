@@ -6,7 +6,6 @@ import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
-import cn.org.expect.intellij.idea.plugin.maven.action.MenuAction;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
 import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabaseEngine;
@@ -31,7 +30,7 @@ public class SearchFieldMenu extends AbstractMenu {
 
     protected void addAction(MavenSearchPlugin plugin) {
         // 重新执行查询
-        repeat.addActionListener(new MenuAction(plugin) {
+        repeat.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 plugin.asyncRefresh();
                 plugin.sendNotification(ArtifactSearchNotification.NORMAL, repeat.getText());
@@ -39,7 +38,7 @@ public class SearchFieldMenu extends AbstractMenu {
         });
 
         // 清空所有缓存
-        clearCache.addActionListener(new MenuAction(plugin) {
+        clearCache.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 // 清空所有数据库缓存
                 List<EasyBeanInfo> list = plugin.getIoc().getBeanInfoList(ArtifactRepositoryDatabaseEngine.class);

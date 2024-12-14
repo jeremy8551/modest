@@ -1,4 +1,4 @@
-package cn.org.expect.intellij.idea.plugin.maven.action;
+package cn.org.expect.intellij.idea.plugin.maven.menu;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,14 +11,14 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.MavenMessage;
 import cn.org.expect.maven.search.ArtifactSearchNotification;
 
-public abstract class MenuAction implements ActionListener {
-    protected final static Log log = LogFactory.getLog(MenuAction.class);
+public abstract class MenuItemAction implements ActionListener {
+    protected final static Log log = LogFactory.getLog(MenuItemAction.class);
 
     protected MavenSearchPlugin plugin;
 
     protected ActionEvent event;
 
-    public MenuAction(MavenSearchPlugin plugin) {
+    public MenuItemAction(MavenSearchPlugin plugin) {
         this.plugin = plugin;
     }
 
