@@ -248,9 +248,19 @@ public class SearchResultMenu extends AbstractMenu {
                 }
             }
         });
+
+        // 复制详细信息
+        this.copyDetail.addActionListener(new MenuItemAction(plugin) {
+            public void execute(MavenSearchNavigation navigation) {
+                plugin.copyToClipboard(navigation.getLocationString());
+                plugin.sendNotification(ArtifactSearchNotification.NORMAL, copyDetail.getText() + " " + navigation.getRightText());
+            }
+        });
     }
 
-    public void displayItemMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, int selectedIndex) {
+    public void displayItemMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+        topMenu.removeAll();
+
         // 复制Maven依赖
         ArtifactOperation operation = plugin.getRepository().getSupported();
         if (operation.supportCopyMavenDependency()) {
@@ -341,16 +351,9 @@ public class SearchResultMenu extends AbstractMenu {
         topMenu.removeAll();
         topMenu.add(this.copyDetail);
 
-        this.copyDetail.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
-                plugin.copyToClipboard(navigation.getLocationString());
-                plugin.sendNotification(ArtifactSearchNotification.NORMAL, copyDetail.getText());
-            }
-        });
-
         // 在鼠标位置显示弹出菜单
         SearchDisplay display = plugin.getIdeaUI().getDisplay();
-        int x = display.getX() + 180;
+        int x = display.getX() + 184;
         int y = display.getCellBounds(0, selectedIndex).height; // JList 中第一行到选中导航记录之间的高度
         display.showMenu(topMenu, x, y);
     }

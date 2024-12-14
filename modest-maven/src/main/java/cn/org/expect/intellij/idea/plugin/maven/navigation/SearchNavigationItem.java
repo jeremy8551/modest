@@ -41,7 +41,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
     }
 
     public void displayMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
-        plugin.getResultMenu().displayItemMenu(plugin, navigation, selectedIndex);
+        plugin.getResultMenu().displayItemMenu(plugin, navigation, topMenu, selectedIndex);
     }
 
     public boolean supportFold(MavenSearch search) {
