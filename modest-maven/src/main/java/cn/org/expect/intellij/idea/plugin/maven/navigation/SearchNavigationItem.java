@@ -63,42 +63,42 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
                 List<PomInfo.Developer> developers = pomInfo.getDevelopers();
                 for (int i = 0; i < developers.size(); i++) {
                     PomInfo.Developer developer = developers.get(i);
-                    this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", developer.getName()));
+                    this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", developer.getName(), "Name"));
 
                     if (StringUtils.isNotBlank(developer.getEmail())) {
-                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", developer.getEmail()));
+                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", developer.getEmail(), "Email"));
                     }
 
                     if (StringUtils.isNotBlank(developer.getOrganization())) {
-                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", developer.getOrganization()));
+                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", developer.getOrganization(), "Organization"));
                     }
 
                     if (StringUtils.isNotBlank(developer.getOrganizationUrl())) {
-                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", developer.getOrganizationUrl()));
+                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", developer.getOrganizationUrl(), "OrganizationUrl"));
                     }
 
                     if (!developer.getRoles().isEmpty()) {
                         for (String role : developer.getRoles()) {
-                            this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", role));
+                            this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", role, "Role"));
                         }
                     }
 
                     if (StringUtils.isNotBlank(developer.getTimezone())) {
-                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", this.parseTimezone(developer.getTimezone())));
+                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", this.parseTimezone(developer.getTimezone()), "Timezone"));
                     }
                 }
 
                 List<PomInfo.License> licenses = pomInfo.getLicenses();
                 for (int i = 0; i < licenses.size(); i++) {
                     PomInfo.License license = licenses.get(i);
-                    this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_LICENSE, "", license.getName()));
+                    this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_LICENSE, "", license.getName(), "Name"));
 
                     if (StringUtils.isNotBlank(license.getUrl())) {
-                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_LICENSE, "", license.getUrl()));
+                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_LICENSE, "", license.getUrl(), "URL"));
                     }
 
                     if (StringUtils.isNotBlank(license.getComments())) {
-                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_LICENSE, "", license.getComments()));
+                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_LICENSE, "", license.getComments(), "Comment"));
                     }
                 }
             }

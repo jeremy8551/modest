@@ -107,7 +107,7 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
     }
 
     public void setRightText(String rightText) {
-        this.rightText = rightText;
+        this.rightText = StringUtils.defaultString(rightText, "");
     }
 
     public String getRightText() {

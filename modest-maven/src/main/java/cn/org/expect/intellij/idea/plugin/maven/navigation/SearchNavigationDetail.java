@@ -8,14 +8,14 @@ import cn.org.expect.maven.Artifact;
 
 public class SearchNavigationDetail extends AbstractSearchNavigation {
 
-    public SearchNavigationDetail(Artifact artifact, Icon rightIcon, String presentableText, String locationString) {
+    public SearchNavigationDetail(Artifact artifact, Icon rightIcon, String presentableText, String locationString, String rightText) {
         super(artifact);
         this.setDepth(3);
         this.setPresentableText(presentableText);
         this.setLocationString(locationString);
         this.setLeftIcon(null);
         this.setRightIcon(rightIcon);
-        this.setRightText("");
+        this.setRightText(rightText);
     }
 
     public List<? extends MavenSearchNavigation> getNavigationList() {
