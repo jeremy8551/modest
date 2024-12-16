@@ -5,6 +5,7 @@ import java.awt.event.MouseListener;
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
+import cn.org.expect.util.StringComparator;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.ui.components.JBList;
 
@@ -95,7 +96,7 @@ public class SearchDisplay extends SearchDisplayModel {
                 Object object = listModel.getElementAt(i);
                 if (object instanceof MavenSearchNavigation) {
                     MavenSearchNavigation navigation = (MavenSearchNavigation) object;
-                    if (navigation.match(selected)) {
+                    if (StringComparator.compareTo(navigation.getName(), selected.getName()) == 0) {
                         selectedIndex = i;
                         break;
                     }

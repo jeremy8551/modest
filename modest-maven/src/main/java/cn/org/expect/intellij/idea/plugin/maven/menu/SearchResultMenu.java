@@ -154,7 +154,7 @@ public class SearchResultMenu extends AbstractMenu {
         downloadFile.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
-                plugin.setStatusBar(ArtifactSearchStatusMessageType.RUNNING, "maven.search.download.url", artifact.toStandardString());
+                plugin.setStatusBar(ArtifactSearchStatusMessageType.RUNNING, "maven.search.download.url", artifact.toMavenId());
                 plugin.asyncDownload(artifact);
                 plugin.display();
             }

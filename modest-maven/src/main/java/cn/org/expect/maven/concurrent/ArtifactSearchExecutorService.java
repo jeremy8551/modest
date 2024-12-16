@@ -62,7 +62,7 @@ public interface ArtifactSearchExecutorService {
         if (ArtifactSearchExtraJob.class.equals(type)) {
             return this.isRunning(ArtifactSearchExtraJob.class, job -> job.getGroupId().equals(artifact.getGroupId()) && job.getArtifactId().equals(artifact.getArtifactId()));
         } else if (MavenSearchArtifactJob.class.isAssignableFrom(type)) {
-            return this.isRunning(type, job -> ((MavenSearchArtifactJob) job).getArtifact().equalsVersion(artifact));
+            return this.isRunning(type, job -> ((MavenSearchArtifactJob) job).getArtifact().equalMavenId(artifact));
         } else {
             throw new UnsupportedOperationException(type.getName());
         }

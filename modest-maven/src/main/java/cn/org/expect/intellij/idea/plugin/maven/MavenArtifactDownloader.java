@@ -37,7 +37,7 @@ public class MavenArtifactDownloader extends AbstractArtifactDownloader {
             this.job = new MavenSearchEDTJob(() -> { // 必须使用 EDT 线程执行
                 MavenRunnerParameters params = new MavenRunnerParameters();
                 params.setGoals(Collections.singletonList("dependency:get"));
-                params.setCmdOptions("-Dartifact=" + artifact.toStandardString() + ":" + artifact.getType());
+                params.setCmdOptions("-Dartifact=" + artifact.toMavenId() + ":" + artifact.getType());
 
                 Project project = plugin.getContext().getActionEvent().getProject();
                 assert project != null;
@@ -47,7 +47,7 @@ public class MavenArtifactDownloader extends AbstractArtifactDownloader {
                     running = false;
                     plugin.display();
                 });
-            }, "maven.search.job.download.artifact.description", artifact.toStandardString()) {
+            }, "maven.search.job.download.artifact.description", artifact.toMavenId()) {
                 public void terminate() {
                     super.terminate();
                     try {

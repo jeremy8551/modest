@@ -6,13 +6,19 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.maven.Artifact;
-import cn.org.expect.util.ClassUtils;
 import com.intellij.navigation.NavigationItem;
 
 /**
  * 查询结果导航结果中每条记录的接口
  */
 public interface MavenSearchNavigation extends NavigationItem {
+
+    /**
+     * 导航记录名（唯一）
+     *
+     * @return 导航记录名
+     */
+    String getName();
 
     /**
      * 层级深度
@@ -156,16 +162,6 @@ public interface MavenSearchNavigation extends NavigationItem {
     List<? extends MavenSearchNavigation> getNavigationList();
 
     /**
-     * 判断工件信息是否相等
-     *
-     * @param object 对象
-     * @return 返回true表示Class相同且工件相等，false表示不等
-     */
-    default boolean match(Object object) {
-        return object != null && ClassUtils.equals(this.getClass(), object.getClass()) && this.getArtifact().equals(((MavenSearchNavigation) object).getArtifact());
-    }
-
-    /**
      * 是否支持在导航记录上显示菜单
      *
      * @return 返回true表示支持，false表示不支持
@@ -173,12 +169,12 @@ public interface MavenSearchNavigation extends NavigationItem {
     boolean supportMenu();
 
     /**
-     * 显示菜单
+     * 在弹出的菜单上添加子菜单
      *
      * @param plugin        搜索接口
      * @param navigation    导航记录
-     * @param topMenu
-     * @param selectedIndex 导航记录在搜索结果的位置信息，从0开始
+     * @param topMenu       弹出的菜单（添加子菜单）
+     * @param selectedIndex 导航记录在搜索结果的位置信息，从 0 开始
      */
     void displayMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex);
 }

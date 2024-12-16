@@ -14,7 +14,7 @@ import cn.org.expect.maven.repository.ArtifactSearchResult;
 public class MavenSearchOpenParentJob extends MavenSearchArtifactJob {
 
     public MavenSearchOpenParentJob(Artifact artifact) {
-        super(artifact, "maven.search.job.open.parent.project.description", artifact.toStandardString());
+        super(artifact, "maven.search.job.open.parent.project.description", artifact.toMavenId());
     }
 
     public int execute() throws Exception {

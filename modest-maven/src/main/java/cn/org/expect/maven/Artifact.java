@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import cn.org.expect.maven.impl.SimpleArtifact;
 import cn.org.expect.util.NetUtils;
 import cn.org.expect.util.StringComparator;
 import cn.org.expect.util.StringUtils;
@@ -89,7 +88,7 @@ public interface Artifact {
      * @param artifact 工件
      * @return 返回true表示相等，false表示不等
      */
-    default boolean equalsVersion(Artifact artifact) {
+    default boolean equalMavenId(Artifact artifact) {
         return this.equalsId(artifact) && StringComparator.compareTo(this.getVersion(), artifact.getVersion()) == 0;
     }
 
@@ -98,7 +97,7 @@ public interface Artifact {
      *
      * @return 字符串
      */
-    default String toStandardString() {
+    default String toMavenId() {
         return this.getGroupId() + ":" + this.getArtifactId() + ":" + this.getVersion();
     }
 
@@ -198,15 +197,6 @@ public interface Artifact {
         list.add(this.getArtifactId());
         list.add(this.getVersion());
         return NetUtils.joinUri(list.toArray(new String[0]));
-    }
-
-    /**
-     * 返回副本
-     *
-     * @return 副本
-     */
-    default SimpleArtifact copy() {
-        return new SimpleArtifact(this.getGroupId(), this.getArtifactId(), this.getVersion(), this.getType(), this.getTimestamp(), this.getVersionCount());
     }
 
     /**

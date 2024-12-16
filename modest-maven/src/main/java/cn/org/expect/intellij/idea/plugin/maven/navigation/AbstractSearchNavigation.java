@@ -3,9 +3,9 @@ package cn.org.expect.intellij.idea.plugin.maven.navigation;
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchDownloadJob;
 import cn.org.expect.maven.Artifact;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.UniqueSequenceGenerator;
@@ -50,13 +50,8 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
         this.depth = 1;
     }
 
-    /**
-     * 导航记录名，要保证唯一
-     *
-     * @return 导航记录名
-     */
     public String getName() {
-        return this.id + ":" + this.artifact.toStandardString();
+        return this.id + ":" + this.artifact.toMavenId();
     }
 
     /**

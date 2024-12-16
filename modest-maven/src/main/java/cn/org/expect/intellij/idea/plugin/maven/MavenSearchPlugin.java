@@ -126,7 +126,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements MavenSearc
     public void waitDownload(Artifact artifact, long timeout) {
         Throwable e = Dates.waitFor(() -> this.getService().isRunning(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(artifact)), 500, timeout);
         if (e != null) {
-            throw new MavenRuntimeException(e, "Download {} timeout!", artifact.toStandardString());
+            throw new MavenRuntimeException(e, "Download {} timeout!", artifact.toMavenId());
         }
     }
 

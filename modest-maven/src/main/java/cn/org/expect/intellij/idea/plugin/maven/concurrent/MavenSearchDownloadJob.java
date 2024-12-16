@@ -15,7 +15,7 @@ public class MavenSearchDownloadJob extends MavenSearchArtifactJob {
     private volatile ArtifactDownloader downloader;
 
     public MavenSearchDownloadJob(Artifact artifact) {
-        super(artifact, "maven.search.job.download.artifact.description", artifact.toStandardString());
+        super(artifact, "maven.search.job.download.artifact.description", artifact.toMavenId());
     }
 
     public int execute() throws Exception {

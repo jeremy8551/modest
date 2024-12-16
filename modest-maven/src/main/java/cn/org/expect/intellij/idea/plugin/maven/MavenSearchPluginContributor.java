@@ -89,7 +89,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
         if (selectedObject instanceof MavenSearchNavigation) {
             MavenSearchNavigation navigation = (MavenSearchNavigation) selectedObject;
             if (log.isDebugEnabled()) {
-                log.debug("select navigation: {} -> {}", selectedObject.getClass().getName(), navigation.getArtifact().toStandardString());
+                log.debug("select navigation: {} -> {}", selectedObject.getClass().getName(), navigation.getArtifact().toMavenId());
             }
 
             // 保存选中的导航记录
