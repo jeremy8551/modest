@@ -96,14 +96,14 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
             this.plugin.getContext().setSelectNavigation(navigation);
 
             // 左键点击操作：展开还是折叠
-            if (navigation.supportFold(plugin)) {
+            if (navigation.supportFold(this.plugin)) {
                 if (navigation.isFold()) { // 如果是折叠状态
                     navigation.setUnfold(this.plugin);
                 } else {
                     navigation.setFold(this.plugin);
                 }
+                this.plugin.display();
             }
-            this.plugin.display();
             return false;
         }
         return false;

@@ -63,7 +63,7 @@ public class SimpleArtifactRepositoryDatabaseEngine implements ArtifactRepositor
         this.save();
     }
 
-    public void save() {
+    public synchronized void save() {
         this.save(this.pattern, this.artifact);
     }
 
