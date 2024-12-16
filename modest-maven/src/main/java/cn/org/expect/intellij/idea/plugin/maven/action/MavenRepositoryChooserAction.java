@@ -7,7 +7,7 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.ArtifactOption;
+import cn.org.expect.maven.MavenOption;
 import cn.org.expect.util.CollectionUtils;
 import com.intellij.ide.actions.searcheverywhere.ScopeChooserAction;
 import com.intellij.ide.util.scopeChooser.ScopeDescriptor;
@@ -31,8 +31,8 @@ public class MavenRepositoryChooserAction extends ScopeChooserAction {
         this.onChanged = onChanged;
         this.descriptors = new ArrayList<>();
 
-        ArtifactOption[] array = MavenSearchPluginApplication.get().getRepositoryOptions();
-        for (ArtifactOption option : array) {
+        MavenOption[] array = MavenSearchPluginApplication.get().getRepositoryOptions();
+        for (MavenOption option : array) {
             MavenSearchScope scope = new MavenSearchScope(option);
             this.descriptors.add(new MavenSearchScopeDescriptor(scope));
         }
@@ -68,7 +68,7 @@ public class MavenRepositoryChooserAction extends ScopeChooserAction {
      * @param descriptor 选项信息
      */
     protected void onScopeSelected(@NotNull ScopeDescriptor descriptor) {
-        ArtifactOption option = ((MavenSearchScope) descriptor.getScope()).getOption();
+        MavenOption option = ((MavenSearchScope) descriptor.getScope()).getOption();
         plugin.setRepository(option.value());
         onChanged.run(); // 更新：搜索框右侧的广告信息
         plugin.asyncSearch(plugin.getIdeaUI().getSearchField().getText());

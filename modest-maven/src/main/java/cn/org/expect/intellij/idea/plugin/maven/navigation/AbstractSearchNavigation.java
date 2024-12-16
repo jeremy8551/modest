@@ -4,16 +4,18 @@ import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
-import cn.org.expect.maven.concurrent.MavenDownloadJob;
 import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.concurrent.ArtifactDownloadJob;
 import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.maven.search.ArtifactSearchAware;
+import cn.org.expect.maven.search.SearchNavigation;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.UniqueSequenceGenerator;
 import com.intellij.navigation.ItemPresentation;
+import com.intellij.navigation.NavigationItem;
 
-public abstract class AbstractSearchNavigation implements MavenSearchNavigation, ItemPresentation, ArtifactSearchAware {
+public abstract class AbstractSearchNavigation implements SearchNavigation, NavigationItem, ItemPresentation, ArtifactSearchAware {
 
     /** 序号生成器 */
     protected final static UniqueSequenceGenerator UNIQUE = new UniqueSequenceGenerator("Navigation-{}", 1);
@@ -164,7 +166,7 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
         Artifact artifact = this.getArtifact();
 
         // 如果正在下载工件，则更新图标
-        if (this.getSearch().getService().isRunning(MavenDownloadJob.class, job -> job.getArtifact().equals(artifact))) { // 正在下载
+        if (this.getSearch().getService().isRunning(ArtifactDownloadJob.class, job -> job.getArtifact().equals(artifact))) { // 正在下载
             this.setRightIcon(MavenSearchPluginIcon.RIGHT_DOWNLOAD);
             return;
         }

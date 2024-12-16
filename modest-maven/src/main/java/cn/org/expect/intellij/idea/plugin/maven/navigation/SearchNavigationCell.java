@@ -10,7 +10,7 @@ import com.intellij.util.IconUtil;
 import com.intellij.util.ui.UIUtil;
 import org.jetbrains.annotations.NotNull;
 
-public class NavigationCell extends ColoredListCellRenderer<Object> {
+public class SearchNavigationCell extends ColoredListCellRenderer<Object> {
 
     private final String text;
 
@@ -20,7 +20,7 @@ public class NavigationCell extends ColoredListCellRenderer<Object> {
 
     private final Color fgColor;
 
-    public NavigationCell(Icon icon, String text, int style, Color fgColor) {
+    public SearchNavigationCell(Icon icon, String text, int style, Color fgColor) {
         super();
         this.icon = icon;
         this.text = StringUtils.defaultString(text, "");

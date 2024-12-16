@@ -1,15 +1,14 @@
-package cn.org.expect.intellij.idea.plugin.maven.navigation;
+package cn.org.expect.maven.search;
 
 import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.maven.Artifact;
-import com.intellij.navigation.NavigationItem;
 
 /**
- * 查询结果导航结果中每条记录的接口
+ * 搜索结果的导航记录
  */
-public interface MavenSearchNavigation extends NavigationItem {
+public interface SearchNavigation {
 
     /**
      * 导航记录名（唯一）
@@ -148,7 +147,7 @@ public interface MavenSearchNavigation extends NavigationItem {
      *
      * @return 导航记录集合
      */
-    List<? extends MavenSearchNavigation> getNavigationList();
+    List<? extends SearchNavigation> getNavigationList();
 
     /**
      * 是否支持在导航记录上显示菜单
@@ -164,5 +163,5 @@ public interface MavenSearchNavigation extends NavigationItem {
      * @param topMenu       弹出的菜单（添加子菜单）
      * @param selectedIndex 导航记录在搜索结果的位置信息，从 0 开始
      */
-    void displayMenu(MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex);
+    void displayMenu(SearchNavigation navigation, JPopupMenu topMenu, int selectedIndex);
 }

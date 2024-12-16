@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.MouseListener;
 import javax.swing.*;
 
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
+import cn.org.expect.maven.search.SearchNavigation;
 import cn.org.expect.util.StringComparator;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
 import com.intellij.ui.components.JBList;
@@ -88,14 +88,14 @@ public class SearchDisplay extends SearchDisplayModel {
     /**
      * 选中记录
      */
-    public void select(MavenSearchNavigation selected) {
+    public void select(SearchNavigation selected) {
         int selectedIndex = -1;
         if (selected != null) {
             SearchListModel listModel = this.model;
             for (int i = listModel.getSize() - 1; i >= 0; i--) {
                 Object object = listModel.getElementAt(i);
-                if (object instanceof MavenSearchNavigation) {
-                    MavenSearchNavigation navigation = (MavenSearchNavigation) object;
+                if (object instanceof SearchNavigation) {
+                    SearchNavigation navigation = (SearchNavigation) object;
                     if (StringComparator.compareTo(navigation.getName(), selected.getName()) == 0) {
                         selectedIndex = i;
                         break;

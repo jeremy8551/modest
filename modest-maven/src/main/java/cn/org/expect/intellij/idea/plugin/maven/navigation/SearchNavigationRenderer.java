@@ -11,6 +11,7 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.search.SearchNavigation;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.IO;
@@ -24,8 +25,8 @@ import com.intellij.util.TextWithIcon;
 import com.intellij.util.ui.NamedColorUtil;
 import com.intellij.util.ui.UIUtil;
 
-public class MavenSearchNavigationRenderer extends SearchEverywherePsiRenderer {
-    private final static Log log = LogFactory.getLog(MavenSearchNavigationRenderer.class);
+public class SearchNavigationRenderer extends SearchEverywherePsiRenderer {
+    private final static Log log = LogFactory.getLog(SearchNavigationRenderer.class);
 
     public final static int LEFT_CELL_WITH = 150;
 
@@ -33,19 +34,19 @@ public class MavenSearchNavigationRenderer extends SearchEverywherePsiRenderer {
 
     private final MavenSearchPluginContributor contributor;
 
-    public MavenSearchNavigationRenderer(MavenSearchPluginContributor contributor) {
+    public SearchNavigationRenderer(MavenSearchPluginContributor contributor) {
         super(contributor);
         this.contributor = Ensure.notNull(contributor);
     }
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         // 其他搜索类别的导航记录
-        if (!(value instanceof MavenSearchNavigation)) {
+        if (!(value instanceof SearchNavigation)) {
             return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         }
 
         // 导航栏
-        MavenSearchNavigation navigation = (MavenSearchNavigation) value;
+        SearchNavigation navigation = (SearchNavigation) value;
 
         // 第一层
         if (navigation.getDepth() == 1) {
@@ -66,7 +67,7 @@ public class MavenSearchNavigationRenderer extends SearchEverywherePsiRenderer {
         return super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
     }
 
-    private Component renderItem(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus, MavenSearchNavigation navigation) {
+    private Component renderItem(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus, SearchNavigation navigation) {
         this.removeAll();
 
         Icon leftIcon = navigation.getLeftIcon();
@@ -76,8 +77,8 @@ public class MavenSearchNavigationRenderer extends SearchEverywherePsiRenderer {
         String rightText = this.parseJDKVersion(contributor.getPlugin().getLocalRepository().getJarfile(navigation.getArtifact()));
         Icon rightIcon = navigation.getRightIcon();
 
-        Component leftComponent = new NavigationCell(leftIcon, leftText, SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        Component middleComponent = new NavigationCell(null, middleText, SimpleTextAttributes.STYLE_SMALLER, JBColor.GRAY).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        Component leftComponent = new SearchNavigationCell(leftIcon, leftText, SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        Component middleComponent = new SearchNavigationCell(null, middleText, SimpleTextAttributes.STYLE_SMALLER, JBColor.GRAY).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         middleComponent.setPreferredSize(new Dimension(100, middleComponent.getHeight()));
 
         // 左侧的文本，无图标
@@ -86,7 +87,7 @@ public class MavenSearchNavigationRenderer extends SearchEverywherePsiRenderer {
         left.add(leftComponent);
         left.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, UIUtil.getListCellHPadding()));
         left.setForeground(isSelected ? NamedColorUtil.getListSelectionForeground(true) : NamedColorUtil.getInactiveTextColor());
-        left.setPreferredSize(new Dimension(MavenSearchNavigationRenderer.LEFT_CELL_WITH, left.getHeight()));
+        left.setPreferredSize(new Dimension(SearchNavigationRenderer.LEFT_CELL_WITH, left.getHeight()));
         this.add(left, BorderLayout.WEST);
 
         // 中间文本，无图标
@@ -104,7 +105,7 @@ public class MavenSearchNavigationRenderer extends SearchEverywherePsiRenderer {
         right.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, UIUtil.getListCellHPadding()));
         right.setHorizontalTextPosition(SwingConstants.LEFT);
         right.setForeground(isSelected ? NamedColorUtil.getListSelectionForeground(true) : NamedColorUtil.getInactiveTextColor());
-        right.setPreferredSize(new Dimension(MavenSearchNavigationRenderer.RIGHT_CELL_WITH, right.getHeight()));
+        right.setPreferredSize(new Dimension(SearchNavigationRenderer.RIGHT_CELL_WITH, right.getHeight()));
         this.add(right, BorderLayout.EAST);
 
         this.myRightComponentWidth = right.getPreferredSize().width;
@@ -118,7 +119,7 @@ public class MavenSearchNavigationRenderer extends SearchEverywherePsiRenderer {
         return this;
     }
 
-    private Component renderDetail(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus, MavenSearchNavigation navigation) {
+    private Component renderDetail(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus, SearchNavigation navigation) {
         this.removeAll();
 
         String leftText = navigation.getPresentableText();
@@ -126,8 +127,8 @@ public class MavenSearchNavigationRenderer extends SearchEverywherePsiRenderer {
         String rightText = navigation.getRightText();
         Icon rightIcon = navigation.getRightIcon();
 
-        Component leftComponent = new NavigationCell(null, leftText, SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        Component middleComponent = new NavigationCell(null, middleText, SimpleTextAttributes.STYLE_PLAIN, JBColor.GRAY).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        Component leftComponent = new SearchNavigationCell(null, leftText, SimpleTextAttributes.STYLE_PLAIN, JBColor.BLACK).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        Component middleComponent = new SearchNavigationCell(null, middleText, SimpleTextAttributes.STYLE_PLAIN, JBColor.GRAY).getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
         // 左侧的文本，无图标
         JBPanel left = new JBPanel();
@@ -135,7 +136,7 @@ public class MavenSearchNavigationRenderer extends SearchEverywherePsiRenderer {
         left.add(leftComponent);
         left.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, UIUtil.getListCellHPadding()));
         left.setForeground(isSelected ? NamedColorUtil.getListSelectionForeground(true) : NamedColorUtil.getInactiveTextColor());
-        left.setPreferredSize(new Dimension(MavenSearchNavigationRenderer.LEFT_CELL_WITH, left.getHeight()));
+        left.setPreferredSize(new Dimension(SearchNavigationRenderer.LEFT_CELL_WITH, left.getHeight()));
         this.add(left, BorderLayout.WEST);
 
         // 中间文本，无图标
@@ -153,7 +154,7 @@ public class MavenSearchNavigationRenderer extends SearchEverywherePsiRenderer {
         right.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, UIUtil.getListCellHPadding()));
         right.setHorizontalTextPosition(SwingConstants.LEFT);
         right.setForeground(isSelected ? NamedColorUtil.getListSelectionForeground(true) : NamedColorUtil.getInactiveTextColor());
-        right.setPreferredSize(new Dimension(MavenSearchNavigationRenderer.RIGHT_CELL_WITH, right.getHeight()));
+        right.setPreferredSize(new Dimension(SearchNavigationRenderer.RIGHT_CELL_WITH, right.getHeight()));
         this.add(right, BorderLayout.EAST);
 
         this.myRightComponentWidth = right.getPreferredSize().width;
@@ -174,8 +175,8 @@ public class MavenSearchNavigationRenderer extends SearchEverywherePsiRenderer {
      * @return 图标与文字信息
      */
     public TextWithIcon getItemLocation(Object value) {
-        if (value instanceof MavenSearchNavigation) {
-            MavenSearchNavigation navigation = (MavenSearchNavigation) value;
+        if (value instanceof SearchNavigation) {
+            SearchNavigation navigation = (SearchNavigation) value;
             return new TextWithIcon(navigation.getRightText(), navigation.getRightIcon());
         } else {
             return super.getItemLocation(value);

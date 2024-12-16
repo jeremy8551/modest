@@ -9,11 +9,11 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.SearchDisplay;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginEDTJob;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginOpenParentJob;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
+import cn.org.expect.maven.search.SearchNavigation;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.MavenMessage;
 import cn.org.expect.maven.concurrent.MavenJob;
-import cn.org.expect.maven.concurrent.MavenDownloadJob;
+import cn.org.expect.maven.concurrent.ArtifactDownloadJob;
 import cn.org.expect.maven.concurrent.SearchMoreJob;
 import cn.org.expect.maven.pom.Pom;
 import cn.org.expect.maven.repository.ArtifactOperation;
@@ -73,8 +73,8 @@ public class SearchResultMenu extends AbstractMenu {
         // 右键点击
         if (e.getButton() == MouseEvent.BUTTON3) {
             Object selectedObject = display.getElement(selectedIndex);
-            if (selectedObject instanceof MavenSearchNavigation) {
-                MavenSearchNavigation navigation = (MavenSearchNavigation) selectedObject;
+            if (selectedObject instanceof SearchNavigation) {
+                SearchNavigation navigation = (SearchNavigation) selectedObject;
                 if (navigation.supportMenu()) {
                     plugin.getContext().setSelectedNavigation(navigation); // 保存选中的导航记录
                     display.setSelectedIndex(selectedIndex); // 选中导航记录
@@ -87,7 +87,7 @@ public class SearchResultMenu extends AbstractMenu {
     protected void addAction(MavenSearchPlugin plugin) {
         // 复制 Maven 依赖
         copyMaven.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
+            public void execute(SearchNavigation navigation) {
                 plugin.copyToClipboard(navigation.getArtifact().toMavenPomDependency());
                 plugin.sendNotification(ArtifactSearchNotification.NORMAL, copyMaven.getText());
             }
@@ -95,7 +95,7 @@ public class SearchResultMenu extends AbstractMenu {
 
         // 复制 Gradle 依赖
         copyGradle.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
+            public void execute(SearchNavigation navigation) {
                 String text;
                 boolean isGradlePlugin = GradlePluginRepository.class.getAnnotation(EasyBean.class).value().equals(plugin.getRepositoryInfo().value());
 
@@ -135,7 +135,7 @@ public class SearchResultMenu extends AbstractMenu {
 
         // 在 Maven 中央仓库浏览
         openInCentralRepository.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
+            public void execute(SearchNavigation navigation) {
                 String id = CentralMavenRepository.class.getAnnotation(EasyBean.class).value();
                 BrowserUtil.browse(plugin.getIoc().getBean(CentralMavenRepository.class, id).toURI(navigation.getArtifact()));
             }
@@ -143,7 +143,7 @@ public class SearchResultMenu extends AbstractMenu {
 
         // 打开文件系统目录
         openFileSystem.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
+            public void execute(SearchNavigation navigation) {
                 File parent = plugin.getLocalRepository().getParent(navigation.getArtifact());
                 if (FileUtils.isDirectory(parent)) {
                     BrowserUtil.browse(parent);
@@ -153,7 +153,7 @@ public class SearchResultMenu extends AbstractMenu {
 
         // 下载文件
         downloadFile.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
+            public void execute(SearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
                 plugin.setStatusBar(ArtifactSearchStatusMessageType.RUNNING, "maven.search.download.url", artifact.toMavenId());
                 plugin.asyncDownload(artifact);
@@ -163,15 +163,15 @@ public class SearchResultMenu extends AbstractMenu {
 
         // 取消下载
         cancelDownload.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
-                plugin.getService().terminate(MavenDownloadJob.class, job -> job.getArtifact().equals(navigation.getArtifact()));
+            public void execute(SearchNavigation navigation) {
+                plugin.getService().terminate(ArtifactDownloadJob.class, job -> job.getArtifact().equals(navigation.getArtifact()));
                 plugin.display();
             }
         });
 
         // 访问项目地址
         openProjectUrl.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
+            public void execute(SearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
                 plugin.execute(new MavenJob("maven.search.job.download.artifact.description") { // 异步执行任务
                     public int execute() throws Exception {
@@ -190,7 +190,7 @@ public class SearchResultMenu extends AbstractMenu {
 
         // 访问项目错误管理页面
         openIssueUrl.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
+            public void execute(SearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
                 plugin.execute(new MavenJob("maven.search.job.open.project.issue.description") { // 异步执行任务
                     public int execute() throws Exception {
@@ -210,7 +210,7 @@ public class SearchResultMenu extends AbstractMenu {
 
         // 打开 POM 文件
         openPomFile.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
+            public void execute(SearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
                 plugin.execute(new MavenPluginEDTJob(() -> { // 必须使用 EDT 线程执行
                     File pomfile = plugin.getLocalRepository().getFile(artifact, "pom");
@@ -240,7 +240,7 @@ public class SearchResultMenu extends AbstractMenu {
 
         // 删除文件
         deleteFile.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
+            public void execute(SearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
                 File parent = plugin.getLocalRepository().getParent(artifact);
                 if (FileUtils.isDirectory(parent)) {
@@ -259,7 +259,7 @@ public class SearchResultMenu extends AbstractMenu {
 
         // 复制详细信息
         copyDetail.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
+            public void execute(SearchNavigation navigation) {
                 plugin.copyToClipboard(navigation.getLocationString());
                 plugin.sendNotification(ArtifactSearchNotification.NORMAL, copyDetail.getText() + " " + navigation.getRightText());
             }
@@ -267,20 +267,20 @@ public class SearchResultMenu extends AbstractMenu {
 
         // 打开URL链接
         openUrl.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
+            public void execute(SearchNavigation navigation) {
                 BrowserUtil.browse(navigation.getLocationString());
             }
         });
 
         // 打开项目
         openProject.addActionListener(new MenuItemAction(plugin) {
-            public void execute(MavenSearchNavigation navigation) {
+            public void execute(SearchNavigation navigation) {
                 plugin.execute(new MavenPluginOpenParentJob(navigation.getArtifact()));
             }
         });
     }
 
-    public void displayItemMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex, int offset) { // TODO 删除 navigation
+    public void displayItemMenu(MavenSearchPlugin plugin, SearchNavigation navigation, JPopupMenu topMenu, int selectedIndex, int offset) { // TODO 删除 navigation
         topMenu.removeAll();
 
         // 复制Maven依赖
@@ -343,7 +343,7 @@ public class SearchResultMenu extends AbstractMenu {
             topMenu.remove(openFileSystem);
             topMenu.remove(deleteFile);
 
-            if (plugin.getService().isRunning(MavenDownloadJob.class, job -> job.getArtifact().equals(artifact))) {
+            if (plugin.getService().isRunning(ArtifactDownloadJob.class, job -> job.getArtifact().equals(artifact))) {
                 topMenu.remove(downloadFile);
             } else {
                 topMenu.remove(cancelDownload);
@@ -357,7 +357,7 @@ public class SearchResultMenu extends AbstractMenu {
         display.showMenu(topMenu, x, y);
     }
 
-    public void displayDetailMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+    public void displayDetailMenu(MavenSearchPlugin plugin, SearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
         topMenu.removeAll();
 
         // 复制文本

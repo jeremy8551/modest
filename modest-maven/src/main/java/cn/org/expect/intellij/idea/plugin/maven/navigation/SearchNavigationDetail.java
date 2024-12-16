@@ -6,6 +6,7 @@ import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.search.SearchNavigation;
 
 public class SearchNavigationDetail extends AbstractSearchNavigation {
 
@@ -19,7 +20,7 @@ public class SearchNavigationDetail extends AbstractSearchNavigation {
         this.setRightText(rightText);
     }
 
-    public List<? extends MavenSearchNavigation> getNavigationList() {
+    public List<? extends SearchNavigation> getNavigationList() {
         return new ArrayList<>();
     }
 
@@ -27,7 +28,7 @@ public class SearchNavigationDetail extends AbstractSearchNavigation {
         return true;
     }
 
-    public void displayMenu(MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+    public void displayMenu(SearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
         MavenSearchPlugin plugin = this.getSearch();
         plugin.getResultMenu().displayDetailMenu(plugin, navigation, topMenu, selectedIndex);
     }

@@ -5,7 +5,7 @@ import java.awt.*;
 import cn.org.expect.intellij.idea.plugin.maven.IdeaSearchUI;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
-import cn.org.expect.maven.ArtifactOption;
+import cn.org.expect.maven.MavenOption;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -39,7 +39,7 @@ public class MavenPluginPinJob extends MavenPluginJob implements EDTJob {
         String tabID = this.oldPlugin.getContributor().getSearchProviderId();
         String pattern = this.oldPlugin.getIdeaUI().getSearchEverywhereUI().getSearchField().getText();
         IdeaSearchUI.StatusBar statusBar = this.oldPlugin.getIdeaUI().getStatusBar();
-        ArtifactOption repositoryInfo = this.oldPlugin.getRepositoryInfo();
+        MavenOption repositoryInfo = this.oldPlugin.getRepositoryInfo();
         int size = this.oldPlugin.getIdeaUI().getDisplay().size();
         Rectangle visibleRect = this.oldPlugin.getIdeaUI().getDisplay().getVisibleRect();
 

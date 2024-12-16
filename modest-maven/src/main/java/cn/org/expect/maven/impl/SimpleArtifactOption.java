@@ -1,10 +1,10 @@
 package cn.org.expect.maven.impl;
 
-import cn.org.expect.maven.ArtifactOption;
+import cn.org.expect.maven.MavenOption;
 import cn.org.expect.maven.MavenMessage;
 import cn.org.expect.util.Ensure;
 
-public class SimpleArtifactOption implements ArtifactOption {
+public class SimpleArtifactOption implements MavenOption {
 
     private final String key;
 
@@ -24,7 +24,7 @@ public class SimpleArtifactOption implements ArtifactOption {
     }
 
     public boolean equals(Object obj) {
-        return obj instanceof ArtifactOption && ((ArtifactOption) obj).value().equals(this.value());
+        return obj instanceof MavenOption && ((MavenOption) obj).value().equals(this.value());
     }
 
     public String toString() {

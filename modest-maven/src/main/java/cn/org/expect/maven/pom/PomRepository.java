@@ -10,7 +10,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.maven.concurrent.MavenDownloadJob;
+import cn.org.expect.maven.concurrent.ArtifactDownloadJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.Artifact;
@@ -198,7 +198,7 @@ public class PomRepository {
         // 下载 jar 文件
         search.asyncDownload(artifact);
         search.display();
-        search.getService().waitFor(MavenDownloadJob.class, job -> job.getArtifact().equals(artifact), 0);
+        search.getService().waitFor(ArtifactDownloadJob.class, job -> job.getArtifact().equals(artifact), 0);
 
         // 再尝试 pom 文件
         if (FileUtils.isFile(pomFile)) {

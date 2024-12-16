@@ -8,17 +8,17 @@ import cn.org.expect.maven.impl.SimpleArtifactOption;
 import cn.org.expect.maven.repository.ArtifactDownloader;
 import cn.org.expect.maven.repository.ArtifactRepository;
 
-public interface ArtifactSearchIoc extends EasyContext {
+public interface MavenEasyContext extends EasyContext {
 
     /**
      * 已注册工件仓库的数组
      *
      * @return 仓库数组
      */
-    default ArtifactOption[] getRepositoryOptions() {
+    default MavenOption[] getRepositoryOptions() {
         List<EasyBeanInfo> list = this.getBeanInfoList(ArtifactRepository.class).stream().sorted((b1, b2) -> b2.getPriority() - b1.getPriority()).toList();
         int size = list.size();
-        ArtifactOption[] array = new ArtifactOption[size];
+        MavenOption[] array = new MavenOption[size];
         for (int i = 0; i < size; i++) {
             EasyBeanInfo beanInfo = list.get(i);
             array[i] = new SimpleArtifactOption(beanInfo.getName());
@@ -31,10 +31,10 @@ public interface ArtifactSearchIoc extends EasyContext {
      *
      * @return 仓库数组
      */
-    default ArtifactOption[] getDownloaderOptions() {
+    default MavenOption[] getDownloaderOptions() {
         List<EasyBeanInfo> list = this.getBeanInfoList(ArtifactDownloader.class).stream().sorted((b1, b2) -> b2.getPriority() - b1.getPriority()).toList();
         int size = list.size();
-        ArtifactOption[] array = new ArtifactOption[size];
+        MavenOption[] array = new MavenOption[size];
         for (int i = 0; i < size; i++) {
             EasyBeanInfo beanInfo = list.get(i);
             array[i] = new SimpleArtifactOption(beanInfo.getName());

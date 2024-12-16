@@ -1,6 +1,6 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
+import cn.org.expect.maven.search.SearchNavigation;
 import com.intellij.ide.util.gotoByName.FilteringGotoByModel;
 import com.intellij.navigation.ChooseByNameContributor;
 import com.intellij.navigation.NavigationItem;
@@ -22,7 +22,7 @@ public class MavenSearchPluginModel extends FilteringGotoByModel<Object> {
     }
 
     protected boolean acceptItem(NavigationItem item) {
-        return item instanceof MavenSearchNavigation;
+        return item instanceof SearchNavigation;
     }
 
     public String getPromptText() {

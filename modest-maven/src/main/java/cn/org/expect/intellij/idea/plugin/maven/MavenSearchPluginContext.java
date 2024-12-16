@@ -2,8 +2,8 @@ package cn.org.expect.intellij.idea.plugin.maven;
 
 import java.awt.*;
 
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigationList;
+import cn.org.expect.maven.search.SearchNavigation;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchEverywhereNavigationCollection;
 import cn.org.expect.maven.search.ArtifactSearchContext;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -24,14 +24,14 @@ public interface MavenSearchPluginContext extends ArtifactSearchContext {
      *
      * @return 导航记录
      */
-    MavenSearchNavigation geSelectedNavigation();
+    SearchNavigation geSelectedNavigation();
 
     /**
      * 设置选中的导航记录
      *
      * @param selectNavigation 导航记录
      */
-    void setSelectedNavigation(MavenSearchNavigation selectNavigation);
+    void setSelectedNavigation(SearchNavigation selectNavigation);
 
     /**
      * 返回 JList 当前的位置
@@ -52,14 +52,14 @@ public interface MavenSearchPluginContext extends ArtifactSearchContext {
      *
      * @return 导航记录
      */
-    MavenSearchNavigationList getNavigationList();
+    SearchEverywhereNavigationCollection getNavigationList();
 
     /**
      * 设置导航记录
      *
      * @param navigationList 导航记录
      */
-    void setNavigationList(MavenSearchNavigationList navigationList);
+    void setNavigationList(SearchEverywhereNavigationCollection navigationList);
 
     /**
      * 复制上下文信息

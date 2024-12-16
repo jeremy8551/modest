@@ -3,8 +3,8 @@ package cn.org.expect.intellij.idea.plugin.maven.impl;
 import java.awt.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContext;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigationList;
+import cn.org.expect.maven.search.SearchNavigation;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchEverywhereNavigationCollection;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
@@ -14,7 +14,7 @@ public class SimpleMavenSearchPluginContext implements MavenSearchPluginContext 
     private final AnActionEvent event;
 
     /** 选中的版本列表记录 */
-    private volatile MavenSearchNavigation selectedNavigation;
+    private volatile SearchNavigation selectedNavigation;
 
     /** 最近一次模糊搜索结果 */
     private volatile ArtifactSearchResult searchResult;
@@ -23,7 +23,7 @@ public class SimpleMavenSearchPluginContext implements MavenSearchPluginContext 
     private volatile Rectangle visibleRect;
 
     /** 导航信息 */
-    private volatile MavenSearchNavigationList navigationList;
+    private volatile SearchEverywhereNavigationCollection navigationList;
 
     public SimpleMavenSearchPluginContext(AnActionEvent event) {
         this.event = event;
@@ -41,11 +41,11 @@ public class SimpleMavenSearchPluginContext implements MavenSearchPluginContext 
         return this.searchResult;
     }
 
-    public MavenSearchNavigation geSelectedNavigation() {
+    public SearchNavigation geSelectedNavigation() {
         return selectedNavigation;
     }
 
-    public void setSelectedNavigation(MavenSearchNavigation selectNavigation) {
+    public void setSelectedNavigation(SearchNavigation selectNavigation) {
         this.selectedNavigation = selectNavigation;
     }
 
@@ -57,11 +57,11 @@ public class SimpleMavenSearchPluginContext implements MavenSearchPluginContext 
         this.visibleRect = visibleRect;
     }
 
-    public MavenSearchNavigationList getNavigationList() {
+    public SearchEverywhereNavigationCollection getNavigationList() {
         return navigationList;
     }
 
-    public void setNavigationList(MavenSearchNavigationList navigationList) {
+    public void setNavigationList(SearchEverywhereNavigationCollection navigationList) {
         this.navigationList = navigationList;
     }
 }

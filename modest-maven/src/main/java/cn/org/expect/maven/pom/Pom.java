@@ -5,7 +5,7 @@ import java.util.List;
 
 import cn.org.expect.util.StringUtils;
 
-public class Pom {
+public class Pom { // TODO 接口
 
     /** 父POM的坐标 */
     private final Parent parent;

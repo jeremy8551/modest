@@ -6,7 +6,7 @@ import cn.org.expect.intellij.idea.plugin.maven.log.IdeaLogBuilder;
 import cn.org.expect.intellij.idea.plugin.maven.settings.MavenPluginSettings;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.ArtifactSearchIoc;
+import cn.org.expect.maven.MavenEasyContext;
 import cn.org.expect.maven.impl.SimpleArtifactSearchIoc;
 import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.util.ClassUtils;
@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 public class MavenSearchPluginApplication implements AppLifecycleListener {
     private final static Log log = LogFactory.getLog(MavenSearchPluginApplication.class);
 
-    private static volatile ArtifactSearchIoc instance;
+    private static volatile MavenEasyContext instance;
 
     /** 锁 */
     protected final static Object lock = new Object();
@@ -43,7 +43,7 @@ public class MavenSearchPluginApplication implements AppLifecycleListener {
      *
      * @return 容器上下文信息
      */
-    public static ArtifactSearchIoc get() {
+    public static MavenEasyContext get() {
         if (instance == null) {
             synchronized (lock) {
                 if (instance == null) {
@@ -59,14 +59,14 @@ public class MavenSearchPluginApplication implements AppLifecycleListener {
      *
      * @return 容器上下文信息
      */
-    private static ArtifactSearchIoc create() {
+    private static MavenEasyContext create() {
         boolean debug = Boolean.parseBoolean(System.getProperty("idea.is.internal"));
         if (!debug) {
             LogFactory.getContext().setBuilder(new IdeaLogBuilder());
         }
 
         // 容器接口
-        ArtifactSearchIoc ioc = new SimpleArtifactSearchIoc(MavenSearchPluginFactory.class.getClassLoader(), //
+        MavenEasyContext ioc = new SimpleArtifactSearchIoc(MavenSearchPluginFactory.class.getClassLoader(), //
                 debug ? "sout+:info" : "", // 默认日志级别
                 debug ? ClassUtils.getPackageName(MavenSearchPluginApplication.class, 4) + ":debug" : "", //
                 debug ? ClassUtils.getPackageName(ArtifactSearch.class, 4) + ":debug" : "" //

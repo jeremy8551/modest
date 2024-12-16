@@ -3,7 +3,7 @@ package cn.org.expect.maven;
 /**
  * 选项信息接口
  */
-public interface ArtifactOption {
+public interface MavenOption {
 
     /**
      * 选项值

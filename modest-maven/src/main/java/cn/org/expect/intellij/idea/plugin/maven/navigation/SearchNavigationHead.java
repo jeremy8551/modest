@@ -9,6 +9,7 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.concurrent.SearchExtraJob;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
+import cn.org.expect.maven.search.SearchNavigation;
 
 public class SearchNavigationHead extends AbstractSearchNavigation {
 
@@ -26,7 +27,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
         this.setRightText(artifact.getType() + " ");
     }
 
-    public List<? extends MavenSearchNavigation> getNavigationList() {
+    public List<? extends SearchNavigation> getNavigationList() {
         return this.child;
     }
 
@@ -90,7 +91,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
         return false;
     }
 
-    public void displayMenu(MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+    public void displayMenu(SearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
     }
 
     /**

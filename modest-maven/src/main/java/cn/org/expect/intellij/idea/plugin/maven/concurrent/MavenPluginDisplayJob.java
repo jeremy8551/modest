@@ -7,8 +7,9 @@ import java.util.Map;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.SearchDisplay;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigationList;
+import cn.org.expect.maven.search.SearchNavigation;
+import cn.org.expect.intellij.idea.plugin.maven.impl.SimpleSearchEverywhereNavigationCollection;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchEverywhereNavigationCollection;
 import cn.org.expect.maven.concurrent.MavenJob;
 import cn.org.expect.maven.concurrent.SearchMoreJob;
 import cn.org.expect.maven.search.ArtifactSearchStatusMessageType;
@@ -21,9 +22,9 @@ public class MavenPluginDisplayJob extends MavenJob implements EDTJob {
     protected final static Object lock = new Object();
 
     /** 搜索结果的导航记录 */
-    protected final MavenSearchNavigationList navigationList;
+    protected final SearchEverywhereNavigationCollection navigationList;
 
-    public MavenPluginDisplayJob(MavenSearchNavigationList navigationList) {
+    public MavenPluginDisplayJob(SearchEverywhereNavigationCollection navigationList) {
         super("maven.search.job.display.search.result.description");
         this.navigationList = navigationList;
     }
@@ -40,9 +41,9 @@ public class MavenPluginDisplayJob extends MavenJob implements EDTJob {
         return 0;
     }
 
-    protected void display(MavenSearchNavigationList navigationList) {
+    protected void display(SearchEverywhereNavigationCollection navigationList) {
         if (navigationList == null) {
-            navigationList = new MavenSearchNavigationList(new ArrayList<>(0), 0, false);
+            navigationList = new SimpleSearchEverywhereNavigationCollection(new ArrayList<>(0), 0, false);
         }
 
         MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
@@ -71,7 +72,7 @@ public class MavenPluginDisplayJob extends MavenJob implements EDTJob {
         if (log.isTraceEnabled()) {
             log.debug("---->");
             for (SearchEverywhereFoundElementInfo info : infos) {
-                MavenSearchNavigation navigation = (MavenSearchNavigation) info.getElement();
+                SearchNavigation navigation = (SearchNavigation) info.getElement();
                 log.debug(navigation.getArtifact().toMavenId() + ", " + navigation.isFold());
             }
         }

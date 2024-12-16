@@ -1,19 +1,21 @@
-package cn.org.expect.intellij.idea.plugin.maven.navigation;
+package cn.org.expect.intellij.idea.plugin.maven.impl;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchEverywhereNavigationCollection;
 import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.maven.search.ArtifactSearchAware;
+import cn.org.expect.maven.search.SearchNavigation;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 
 /**
- * 导航记录集合 TODO 转为接口
+ * 导航记录集合
  */
-public class MavenSearchNavigationList implements ArtifactSearchAware {
+public class SimpleSearchEverywhereNavigationCollection implements SearchEverywhereNavigationCollection {
 
     /** 总记录数 */
     private final int foundNumber;
@@ -21,10 +23,10 @@ public class MavenSearchNavigationList implements ArtifactSearchAware {
     /** true表示还有未读数据，false表示已全部读取 */
     private final boolean hasMore;
 
-    /** 导航记录 */
-    private final List<MavenSearchNavigation> list;
+    /** 导航记录集合 */
+    private final List<SearchNavigation> list;
 
-    public MavenSearchNavigationList(List<MavenSearchNavigation> list, int foundNumber, boolean hasMore) {
+    public SimpleSearchEverywhereNavigationCollection(List<SearchNavigation> list, int foundNumber, boolean hasMore) {
         this.list = Ensure.notNull(list);
         this.foundNumber = foundNumber;
         this.hasMore = hasMore;
@@ -42,14 +44,14 @@ public class MavenSearchNavigationList implements ArtifactSearchAware {
         return this.list.size();
     }
 
-    public MavenSearchNavigation get(int index) {
+    public SearchNavigation get(int index) {
         return this.list.get(index);
     }
 
     public List<SearchEverywhereFoundElementInfo> toInfos(MavenSearchPlugin plugin) {
         // 展开/折叠导航记录
         for (int i = 0; i < this.list.size(); i++) {
-            MavenSearchNavigation navigation = this.list.get(i);
+            SearchNavigation navigation = this.list.get(i);
             if (navigation.getDepth() == 1) {
                 if (navigation.supportFold()) {
                     if (navigation.isFold()) {
@@ -63,38 +65,38 @@ public class MavenSearchNavigationList implements ArtifactSearchAware {
 
         List<SearchEverywhereFoundElementInfo> infos = new ArrayList<>();
         for (int i = 0; i < this.list.size(); i++) {
-            MavenSearchNavigation navigation = this.list.get(i);
+            SearchNavigation navigation = this.list.get(i);
             this.addInfo(navigation, infos, plugin.getSettings().getNavigationPriority(), plugin.getContributor());
         }
         return infos;
     }
 
-    protected void addInfo(MavenSearchNavigation navigation, List<SearchEverywhereFoundElementInfo> infos, int navigationPriority, SearchEverywhereContributor<?> contributor) {
+    protected void addInfo(SearchNavigation navigation, List<SearchEverywhereFoundElementInfo> infos, int navigationPriority, SearchEverywhereContributor<?> contributor) {
         infos.add(new SearchEverywhereFoundElementInfo(navigation, navigationPriority, contributor));
-        List<? extends MavenSearchNavigation> navigationList = navigation.getNavigationList();
-        for (MavenSearchNavigation child : navigationList) {
+        List<? extends SearchNavigation> navigationList = navigation.getNavigationList();
+        for (SearchNavigation child : navigationList) {
             this.addInfo(child, infos, navigationPriority, contributor);
         }
     }
 
     public void setSearch(ArtifactSearch search) {
-        MavenSearchNavigationList navigationList = this;
+        SearchEverywhereNavigationCollection navigationList = this;
         for (int i = 0; i < navigationList.size(); i++) {
-            MavenSearchNavigation navigation = navigationList.get(i);
+            SearchNavigation navigation = navigationList.get(i);
             if (navigation instanceof ArtifactSearchAware) {
                 ((ArtifactSearchAware) navigation).setSearch(search);
             }
-            this.loopUpdateSearch(search, navigation);
+            this.setSearch(search, navigation);
         }
     }
 
-    protected void loopUpdateSearch(ArtifactSearch search, MavenSearchNavigation navigation) {
-        List<? extends MavenSearchNavigation> childList = navigation.getNavigationList();
-        for (MavenSearchNavigation child : childList) {
+    protected void setSearch(ArtifactSearch search, SearchNavigation navigation) {
+        List<? extends SearchNavigation> childList = navigation.getNavigationList();
+        for (SearchNavigation child : childList) {
             if (child instanceof ArtifactSearchAware) {
                 ((ArtifactSearchAware) child).setSearch(search);
             }
-            this.loopUpdateSearch(search, child);
+            this.setSearch(search, child);
         }
     }
 }

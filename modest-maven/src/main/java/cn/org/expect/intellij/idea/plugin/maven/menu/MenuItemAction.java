@@ -5,7 +5,7 @@ import java.awt.event.ActionListener;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContext;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
+import cn.org.expect.maven.search.SearchNavigation;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.MavenMessage;
@@ -25,7 +25,7 @@ public abstract class MenuItemAction implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         this.event = event;
         MavenSearchPluginContext context = this.plugin.getContext();
-        MavenSearchNavigation navigation = context.geSelectedNavigation();
+        SearchNavigation navigation = context.geSelectedNavigation();
         if (navigation == null) {
             String message = MavenMessage.get("maven.search.error.not.select.search.result");
             if (log.isWarnEnabled()) {
@@ -48,5 +48,5 @@ public abstract class MenuItemAction implements ActionListener {
      * @param navigation 选中的导航记录
      * @throws Exception 发生错误
      */
-    public abstract void execute(MavenSearchNavigation navigation) throws Exception;
+    public abstract void execute(SearchNavigation navigation) throws Exception;
 }

@@ -2,6 +2,7 @@ package cn.org.expect.intellij.idea.plugin.maven.settings;
 
 import java.io.File;
 
+import cn.org.expect.intellij.idea.plugin.maven.impl.SimpleMavenPluginSettings;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.MavenMessage;

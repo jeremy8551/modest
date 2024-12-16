@@ -6,8 +6,8 @@ import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenRepositoryChooserAction;
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigationRenderer;
+import cn.org.expect.maven.search.SearchNavigation;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationRenderer;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import com.intellij.ide.actions.searcheverywhere.AbstractGotoSEContributor;
@@ -33,14 +33,14 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
 
     private final MavenSearchPluginPinAction pinAction;
 
-    private final MavenSearchNavigationRenderer renderer;
+    private final SearchNavigationRenderer renderer;
 
     public MavenSearchPluginContributor(@NotNull MavenSearchPlugin plugin) {
         super(plugin.getContext().getActionEvent());
         this.contributor = new MavenSearchPluginChooseContributor();
         this.plugin = plugin;
         this.pinAction = new MavenSearchPluginPinAction(this.plugin);
-        this.renderer = new MavenSearchNavigationRenderer(this);
+        this.renderer = new SearchNavigationRenderer(this);
     }
 
     public MavenSearchPlugin getPlugin() {
@@ -86,8 +86,8 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
      * @return 返回true表示点击导航结果时马上关闭搜索界面，false表示点击导航结果不会关闭界面
      */
     public boolean processSelectedItem(@NotNull Object selectedObject, int modifiers, @NotNull String searchText) {
-        if (selectedObject instanceof MavenSearchNavigation) {
-            MavenSearchNavigation navigation = (MavenSearchNavigation) selectedObject;
+        if (selectedObject instanceof SearchNavigation) {
+            SearchNavigation navigation = (SearchNavigation) selectedObject;
             if (log.isDebugEnabled()) {
                 log.debug("select navigation: {} -> {}", selectedObject.getClass().getName(), navigation.getArtifact().toMavenId());
             }

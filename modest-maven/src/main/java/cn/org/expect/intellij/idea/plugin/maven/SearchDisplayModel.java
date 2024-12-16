@@ -7,8 +7,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenFoundElementInfoComparator;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigationComparator;
+import cn.org.expect.maven.search.SearchNavigation;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -80,7 +80,7 @@ public abstract class SearchDisplayModel {
             for (int i = 0; i < model.getSize(); i++) {
                 SearchEverywhereFoundElementInfo info = model.getRawFoundElementAt(i);
                 Object element = info.getElement();
-                if (element instanceof MavenSearchNavigation) {
+                if (element instanceof SearchNavigation) {
                     if (add) {
                         all.addAll(infos); // 将查询结果合并到 all 集合中
                         add = false;
@@ -101,7 +101,7 @@ public abstract class SearchDisplayModel {
 
     public void merge(List<SearchEverywhereFoundElementInfo> list) {
         Comparator defaultComparator = this.getComparator(this.model);
-        this.setComparator(this.model, new MavenFoundElementInfoComparator());
+        this.setComparator(this.model, new MavenSearchNavigationComparator());
         try {
             this.model.clear(); // 清空所有数据
             this.model.addElements(list);
@@ -123,7 +123,7 @@ public abstract class SearchDisplayModel {
         for (int i = this.model.getSize() - 1; i >= 0; i--) {
             SearchEverywhereFoundElementInfo info = this.model.getRawFoundElementAt(i);
             Object element = info.getElement();
-            if (element instanceof MavenSearchNavigation) {
+            if (element instanceof SearchNavigation) {
                 this.model.removeElement(element, info.getContributor());
             }
         }

@@ -13,6 +13,7 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.pom.Pom;
+import cn.org.expect.maven.search.SearchNavigation;
 import cn.org.expect.util.StringUtils;
 
 public class SearchNavigationItem extends AbstractSearchNavigation {
@@ -32,7 +33,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
         this.setRightText("");
     }
 
-    public List<? extends MavenSearchNavigation> getNavigationList() {
+    public List<? extends SearchNavigation> getNavigationList() {
         return this.child;
     }
 
@@ -40,7 +41,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
         return true;
     }
 
-    public void displayMenu(MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+    public void displayMenu(SearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
         MavenSearchPlugin plugin = this.getSearch();
         plugin.getResultMenu().displayItemMenu(plugin, navigation, topMenu, selectedIndex, 30);
     }

@@ -1,8 +1,8 @@
 package cn.org.expect.maven.search;
 
 import cn.org.expect.concurrent.ThreadSource;
-import cn.org.expect.maven.ArtifactOption;
-import cn.org.expect.maven.ArtifactSearchIoc;
+import cn.org.expect.maven.MavenOption;
+import cn.org.expect.maven.MavenEasyContext;
 import cn.org.expect.maven.concurrent.SearchInputJob;
 import cn.org.expect.maven.concurrent.MavenService;
 import cn.org.expect.maven.impl.SimpleArtifactOption;
@@ -16,13 +16,13 @@ import cn.org.expect.util.Ensure;
 public abstract class AbstractMavenSearch implements ArtifactSearch {
 
     /** 容器上下文信息 */
-    private final ArtifactSearchIoc ioc;
+    private final MavenEasyContext ioc;
 
     /** 仓库接口 */
     private ArtifactRepository repository;
 
     /** 选择的仓库 */
-    private ArtifactOption selectRepository;
+    private MavenOption selectRepository;
 
     /** 本地Maven仓库接口 */
     private volatile LocalRepository localRepository;
@@ -30,7 +30,7 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
     /** 文本处理器 */
     private final ArtifactSearchPattern pattern;
 
-    public AbstractMavenSearch(ArtifactSearchIoc ioc) {
+    public AbstractMavenSearch(MavenEasyContext ioc) {
         this.pattern = new ArtifactSearchPattern();
         this.ioc = Ensure.notNull(ioc);
     }
@@ -44,7 +44,7 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
         this.selectRepository = new SimpleArtifactOption(repositoryId);
     }
 
-    public ArtifactSearchIoc getIoc() {
+    public MavenEasyContext getIoc() {
         return this.ioc;
     }
 
@@ -56,7 +56,7 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
         return this.ioc.getBean(MavenService.class);
     }
 
-    public ArtifactOption getRepositoryInfo() {
+    public MavenOption getRepositoryInfo() {
         return this.selectRepository;
     }
 

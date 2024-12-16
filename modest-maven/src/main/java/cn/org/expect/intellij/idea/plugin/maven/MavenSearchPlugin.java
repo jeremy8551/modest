@@ -10,14 +10,13 @@ import java.util.Map;
 import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginDisplayJob;
-import cn.org.expect.maven.concurrent.MavenDownloadJob;
-import cn.org.expect.maven.concurrent.SearchPomJob;
 import cn.org.expect.intellij.idea.plugin.maven.impl.SimpleMavenSearchPluginContext;
 import cn.org.expect.intellij.idea.plugin.maven.listener.MavenSearchPluginListener;
 import cn.org.expect.intellij.idea.plugin.maven.menu.SearchResultMenu;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigationList;
+import cn.org.expect.maven.search.SearchNavigation;
+import cn.org.expect.intellij.idea.plugin.maven.impl.SimpleSearchEverywhereNavigationCollection;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationClass;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchEverywhereNavigationCollection;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
 import cn.org.expect.intellij.idea.plugin.maven.settings.MavenPluginSettings;
 import cn.org.expect.jdk.JavaDialectFactory;
@@ -25,7 +24,9 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.MavenMessage;
+import cn.org.expect.maven.concurrent.ArtifactDownloadJob;
 import cn.org.expect.maven.concurrent.SearchExtraJob;
+import cn.org.expect.maven.concurrent.SearchPomJob;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.clazz.SearchClassInRepository;
 import cn.org.expect.maven.repository.local.LocalRepositorySettings;
@@ -122,11 +123,11 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements MavenSearc
     }
 
     public void download(Artifact artifact) {
-        this.aware(new MavenDownloadJob(artifact)).run();
+        this.aware(new ArtifactDownloadJob(artifact)).run();
     }
 
     public void asyncDownload(Artifact artifact) {
-        this.execute(new MavenDownloadJob(artifact));
+        this.execute(new ArtifactDownloadJob(artifact));
     }
 
     /**
@@ -160,27 +161,27 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements MavenSearc
         this.context.setNavigationList(this.toNavigationList(result));
     }
 
-    private MavenSearchNavigationList toNavigationList(ArtifactSearchResult result) {
+    private SearchEverywhereNavigationCollection toNavigationList(ArtifactSearchResult result) {
         if (result == null) {
             return null;
         }
 
         // 按类名搜索
         if (result.isRepository(SearchClassInRepository.class)) {
-            List<MavenSearchNavigation> list = new ArrayList<>();
+            List<SearchNavigation> list = new ArrayList<>();
             for (Artifact artifact : result.getList()) {
                 SearchNavigationClass navigation = new SearchNavigationClass(this, artifact);
                 list.add(navigation);
             }
-            return new MavenSearchNavigationList(list, result.getFoundNumber(), result.isHasMore());
+            return new SimpleSearchEverywhereNavigationCollection(list, result.getFoundNumber(), result.isHasMore());
         }
 
         // 搜索工件
-        List<MavenSearchNavigation> list = new ArrayList<>();
+        List<SearchNavigation> list = new ArrayList<>();
         for (Artifact artifact : result.getList()) {
             list.add(new SearchNavigationHead(this, artifact));
         }
-        return new MavenSearchNavigationList(list, result.getFoundNumber(), result.isHasMore());
+        return new SimpleSearchEverywhereNavigationCollection(list, result.getFoundNumber(), result.isHasMore());
     }
 
     public void asyncPom(Artifact artifact) {

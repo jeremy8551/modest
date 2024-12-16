@@ -1,8 +1,9 @@
-package cn.org.expect.intellij.idea.plugin.maven.settings;
+package cn.org.expect.intellij.idea.plugin.maven.impl;
 
 import java.io.File;
 
 import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.intellij.idea.plugin.maven.settings.MavenPluginSettings;
 import cn.org.expect.maven.repository.central.CentralArtifactDownloader;
 import cn.org.expect.maven.repository.central.CentralMavenRepository;
 import cn.org.expect.util.FileUtils;

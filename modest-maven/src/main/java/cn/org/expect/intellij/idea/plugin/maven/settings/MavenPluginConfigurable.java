@@ -8,7 +8,8 @@ import javax.swing.*;
 
 import cn.org.expect.expression.MillisExpression;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
-import cn.org.expect.maven.ArtifactOption;
+import cn.org.expect.intellij.idea.plugin.maven.impl.SimpleMavenPluginSettings;
+import cn.org.expect.maven.MavenOption;
 import cn.org.expect.maven.MavenMessage;
 import cn.org.expect.maven.impl.SimpleArtifactOption;
 import cn.org.expect.util.StringUtils;
@@ -30,7 +31,7 @@ public class MavenPluginConfigurable implements Configurable {
 
     /** UI组件 */
     private JBSlider inputIntervalTime;
-    private JComboBox<ArtifactOption> repository;
+    private JComboBox<MavenOption> repository;
     private JBCheckBox autoSwitchTab;
     private JBTextField tabIndex;
     private JBCheckBox tabVisible;
@@ -39,7 +40,7 @@ public class MavenPluginConfigurable implements Configurable {
     private JBTextField expireTimeMillis;
     private JBLabel expireTimeMillisMemo;
     private JBTextField elementPriority;
-    private JComboBox<ArtifactOption> downloadType;
+    private JComboBox<MavenOption> downloadType;
 
     public MavenPluginConfigurable() {
         this.settings = MavenSearchPluginApplication.get().getBean(MavenPluginSettings.class);
@@ -70,7 +71,7 @@ public class MavenPluginConfigurable implements Configurable {
         inputIntervalTime.addChangeListener(e -> active.setInputIntervalTime(inputIntervalTime.getValue()));
 
         repository = new JComboBox<>(MavenSearchPluginApplication.get().getRepositoryOptions());
-        repository.addActionListener(e -> active.setRepositoryId(((ArtifactOption) repository.getSelectedItem()).value()));
+        repository.addActionListener(e -> active.setRepositoryId(((MavenOption) repository.getSelectedItem()).value()));
 
         autoSwitchTab = new JBCheckBox(MavenMessage.get("maven.search.settings.auto.select.tab", tabName));
         autoSwitchTab.addActionListener(e -> active.setAutoSwitchTab(autoSwitchTab.isSelected()));
@@ -87,7 +88,7 @@ public class MavenPluginConfigurable implements Configurable {
         tabVisible.addActionListener(e -> active.setTabVisible(tabVisible.isSelected()));
 
         downloadType = new JComboBox<>(MavenSearchPluginApplication.get().getDownloaderOptions());
-        downloadType.addActionListener(e -> active.setDownloadWay(((ArtifactOption) downloadType.getSelectedItem()).value()));
+        downloadType.addActionListener(e -> active.setDownloadWay(((MavenOption) downloadType.getSelectedItem()).value()));
 
         searchInAllTab = new JBCheckBox(MavenMessage.get("maven.search.settings.select.tab", allTabName, pluginName));
         searchInAllTab.addActionListener(e -> active.setUseAllTab(searchInAllTab.isSelected()));
@@ -319,10 +320,10 @@ public class MavenPluginConfigurable implements Configurable {
         useParentPom.setSelected(settings.isUseParentPom());
     }
 
-    public void setSelectedOption(JComboBox<ArtifactOption> comboBox, ArtifactOption selected) {
-        ComboBoxModel<ArtifactOption> model = comboBox.getModel();
+    public void setSelectedOption(JComboBox<MavenOption> comboBox, MavenOption selected) {
+        ComboBoxModel<MavenOption> model = comboBox.getModel();
         for (int i = 0; i < model.getSize(); i++) {
-            ArtifactOption element = model.getElementAt(i);
+            MavenOption element = model.getElementAt(i);
             if (element.equals(selected)) {
                 comboBox.setSelectedItem(element);
                 break;

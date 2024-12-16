@@ -10,11 +10,11 @@ import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.maven.search.ArtifactSearchNotification;
 import cn.org.expect.util.FileUtils;
 
-public class MavenDownloadJob extends MavenArtifactJob {
+public class ArtifactDownloadJob extends MavenArtifactJob {
 
     private volatile ArtifactDownloader downloader;
 
-    public MavenDownloadJob(Artifact artifact) {
+    public ArtifactDownloadJob(Artifact artifact) {
         super(artifact, "maven.search.job.download.artifact.description", artifact.toMavenId());
     }
 

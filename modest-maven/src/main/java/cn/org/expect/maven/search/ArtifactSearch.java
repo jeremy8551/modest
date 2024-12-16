@@ -3,8 +3,8 @@ package cn.org.expect.maven.search;
 import java.io.File;
 
 import cn.org.expect.maven.Artifact;
-import cn.org.expect.maven.ArtifactOption;
-import cn.org.expect.maven.ArtifactSearchIoc;
+import cn.org.expect.maven.MavenOption;
+import cn.org.expect.maven.MavenEasyContext;
 import cn.org.expect.maven.concurrent.MavenService;
 import cn.org.expect.maven.pom.PomRepository;
 import cn.org.expect.maven.repository.ArtifactRepository;
@@ -102,7 +102,7 @@ public interface ArtifactSearch {
      *
      * @return 容器
      */
-    ArtifactSearchIoc getIoc();
+    MavenEasyContext getIoc();
 
     /**
      * 提交到线程池并发执行任务
@@ -123,7 +123,7 @@ public interface ArtifactSearch {
      *
      * @return 仓库信息
      */
-    ArtifactOption getRepositoryInfo();
+    MavenOption getRepositoryInfo();
 
     /**
      * 设置仓库ID

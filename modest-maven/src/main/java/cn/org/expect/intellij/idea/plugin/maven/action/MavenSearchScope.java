@@ -4,7 +4,7 @@ import javax.swing.*;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.ArtifactOption;
+import cn.org.expect.maven.MavenOption;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.search.GlobalSearchScope;
@@ -14,9 +14,9 @@ import org.jetbrains.annotations.NotNull;
 public class MavenSearchScope extends GlobalSearchScope {
     private final static Log log = LogFactory.getLog(MavenSearchScope.class);
 
-    private final ArtifactOption option;
+    private final MavenOption option;
 
-    public MavenSearchScope(@NotNull ArtifactOption option) {
+    public MavenSearchScope(@NotNull MavenOption option) {
         super();
         this.option = option;
     }
@@ -25,7 +25,7 @@ public class MavenSearchScope extends GlobalSearchScope {
         return this.option.getDisplayName();
     }
 
-    public ArtifactOption getOption() {
+    public MavenOption getOption() {
         return option;
     }
 
