@@ -10,7 +10,6 @@ import cn.org.expect.maven.concurrent.ArtifactSearchExtraJob;
 import cn.org.expect.maven.concurrent.ArtifactSearchPatternJob;
 import cn.org.expect.maven.pom.PomInfo;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
-import cn.org.expect.util.Dates;
 
 public class MavenSearchOpenParentJob extends MavenSearchArtifactJob {
 
@@ -39,11 +38,10 @@ public class MavenSearchOpenParentJob extends MavenSearchArtifactJob {
                         List<? extends MavenSearchNavigation> childList = navigation.getNavigationList();
                         for (int j = childList.size() - 1; j >= 0; j--) {
                             MavenSearchNavigation child = childList.get(j);
+
                             Artifact childArtifact = child.getArtifact();
                             if (childArtifact.equals(parent.getGroupId(), parent.getArtifactId(), parent.getVersion())) {
-                                MavenSearchEDTJob jobName = new MavenSearchEDTJob(() -> plugin.getPomInfoRepository().query(plugin, childArtifact), "");
-                                plugin.execute(jobName); // 展开
-                                Dates.waitFor(() -> plugin.getService().isRunning(MavenSearchEDTJob.class, job -> job.equals(jobName)), 200, 10 * 1000);
+                                child.setUnfold(plugin);
                                 plugin.getContext().setSelectNavigation(child);
                                 break;
                             }
@@ -58,7 +56,7 @@ public class MavenSearchOpenParentJob extends MavenSearchArtifactJob {
                 plugin.getContext().setSearchResult(result);
                 plugin.getContext().setNavigationList(navigationList);
                 plugin.getIdeaUI().getSearchField().setText(pattern);
-                plugin.asyncDisplay();
+                // 等待 child.setUnfold(plugin); 代码中执行的显示操作
             }
         }
         return 0;

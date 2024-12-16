@@ -12,7 +12,7 @@ import cn.org.expect.util.StringUtils;
  */
 public class CategoryField extends AbstractField {
 
-    private int level;
+    private final int level;
 
     public CategoryField(int level) {
         this.level = level;
@@ -48,7 +48,7 @@ public class CategoryField extends AbstractField {
                 i = 0;
             }
 
-            for (; i >= 0 && i < array.length; ) {
+            while (i >= 0 && i < array.length) {
                 buf.append(array[i]);
                 if (++i < array.length) {
                     buf.append('.');
