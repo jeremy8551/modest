@@ -12,9 +12,9 @@ import java.util.Set;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
-import cn.org.expect.maven.impl.SimpleArtifact;
 import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.impl.SimpleArtifact;
+import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.ArtifactSearchResultType;
@@ -91,7 +91,7 @@ public class LocalRepositoryDatabase implements ArtifactRepositoryDatabase {
             }
         }
 
-        return new SimpleArtifactSearchResult(ArtifactSearchResultType.ALL, new ArrayList<>(mas), mas.size(), mas.size(), System.currentTimeMillis(), false);
+        return new SimpleArtifactSearchResult(LocalRepository.class.getName(), ArtifactSearchResultType.ALL, new ArrayList<>(mas), mas.size(), mas.size(), System.currentTimeMillis(), false);
     }
 
     public void insert(String id, ArtifactSearchResult resultSet) {
@@ -180,8 +180,8 @@ public class LocalRepositoryDatabase implements ArtifactRepositoryDatabase {
             String ext = FileUtils.getFilenameExt(file.getName());
             Artifact artifact = new SimpleArtifact(groupId, artifactId, version, ext, new Date(file.lastModified()), 0);
             Map<String, ArtifactSearchResult> group = this.map.computeIfAbsent(groupId, k -> new LinkedHashMap<>());
-            ArtifactSearchResult searchResult = group.computeIfAbsent(artifactId, key -> new SimpleArtifactSearchResult(ArtifactSearchResultType.ALL));
-            searchResult.addArtifact(artifact);
+            ArtifactSearchResult result = group.computeIfAbsent(artifactId, key -> new SimpleArtifactSearchResult(LocalRepository.class.getName()));
+            result.addArtifact(artifact);
 
             if (log.isTraceEnabled()) {
                 log.debug("scan: {}  {}  {} file: {}", artifact.getGroupId(), artifact.getArtifactId(), artifact.getVersion(), file.getAbsolutePath());

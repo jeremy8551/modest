@@ -1,16 +1,16 @@
 package cn.org.expect.intellij.idea.plugin.maven.navigation;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.maven.Artifact;
 
 public class SearchNavigationDetail extends AbstractSearchNavigation {
 
-    public SearchNavigationDetail(Artifact artifact, Icon rightIcon, String presentableText, String locationString, String rightText) {
-        super(artifact);
+    public SearchNavigationDetail(MavenSearchPlugin plugin, Artifact artifact, Icon rightIcon, String presentableText, String locationString, String rightText) {
+        super(plugin, artifact);
         this.setDepth(3);
         this.setPresentableText(presentableText);
         this.setLocationString(locationString);
@@ -20,30 +20,31 @@ public class SearchNavigationDetail extends AbstractSearchNavigation {
     }
 
     public List<? extends MavenSearchNavigation> getNavigationList() {
-        return List.of();
+        return new ArrayList<>();
     }
 
     public boolean supportMenu() {
         return true;
     }
 
-    public void displayMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+    public void displayMenu(MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+        MavenSearchPlugin plugin = this.getPlugin();
         plugin.getResultMenu().displayDetailMenu(plugin, navigation, topMenu, selectedIndex);
     }
 
-    public boolean supportFold(MavenSearch search) {
+    public boolean supportFold() {
         return false;
     }
 
-    public void setUnfold(MavenSearch search) {
+    public void setUnfold() {
     }
 
-    public void setFold(MavenSearch search) {
+    public void setFold() {
     }
 
-    public void unfold(MavenSearch search) {
+    public void unfold() {
     }
 
-    public void fold(MavenSearch search) {
+    public void fold() {
     }
 }

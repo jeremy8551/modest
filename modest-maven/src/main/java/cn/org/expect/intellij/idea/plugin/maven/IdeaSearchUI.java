@@ -6,7 +6,6 @@ import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.search.ArtifactSearchStatusMessageType;
-import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.ide.actions.searcheverywhere.SearchListModel;
@@ -155,19 +154,6 @@ public class IdeaSearchUI {
         }
 
         return JavaDialectFactory.get().getField(this.ui, "mySearchProgressIndicator");
-    }
-
-    /**
-     * 等待 idea 默认的搜索功能执行完毕
-     *
-     * @param timeout 超时时间，单位毫秒
-     */
-    public void waitFor(long timeout) {
-        ProgressIndicator indicator = this.getProgressIndicator();
-        Throwable e = Dates.waitFor(() -> indicator != null && indicator.isRunning() && !indicator.isCanceled(), 100, timeout);
-        if (e != null && log.isErrorEnabled()) {
-            log.error(e.getLocalizedMessage(), e);
-        }
     }
 
     public void switchToTab(String tabID) {

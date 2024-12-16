@@ -7,7 +7,6 @@ import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
 import cn.org.expect.maven.repository.ArtifactOperation;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
-import cn.org.expect.maven.repository.ArtifactSearchResultType;
 import cn.org.expect.util.Ensure;
 
 /**
@@ -67,7 +66,7 @@ public class LocalRepositoryImpl implements LocalRepository {
 
     public ArtifactSearchResult query(String groupId, String artifactId) throws Exception {
         ArtifactSearchResult result = this.database.select(groupId, artifactId);
-        return result == null ? new SimpleArtifactSearchResult(ArtifactSearchResultType.ALL) : result;
+        return result == null ? new SimpleArtifactSearchResult(LocalRepository.class.getName()) : result;
     }
 
     public boolean isTerminate() {

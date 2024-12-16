@@ -3,15 +3,14 @@ package cn.org.expect.intellij.idea.plugin.maven.navigation;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.search.ArtifactSearchAware;
 import com.intellij.navigation.NavigationItem;
 
 /**
  * 查询结果导航结果中每条记录的接口
  */
-public interface MavenSearchNavigation extends NavigationItem {
+public interface MavenSearchNavigation extends NavigationItem, ArtifactSearchAware {
 
     /**
      * 导航记录名（唯一）
@@ -114,10 +113,9 @@ public interface MavenSearchNavigation extends NavigationItem {
     /**
      * 是否支持展开与折叠操作
      *
-     * @param search 搜索接口
      * @return 返回true表示支持，false表示不支持
      */
-    boolean supportFold(MavenSearch search);
+    boolean supportFold();
 
     /**
      * 判断是否折叠
@@ -128,31 +126,23 @@ public interface MavenSearchNavigation extends NavigationItem {
 
     /**
      * 设置展开
-     *
-     * @param search 搜索接口
      */
-    void setUnfold(MavenSearch search);
+    void setUnfold();
 
     /**
      * 设置折叠
-     *
-     * @param search 搜索接口
      */
-    void setFold(MavenSearch search);
+    void setFold();
 
     /**
      * 展开操作
-     *
-     * @param search 搜索接口
      */
-    void unfold(MavenSearch search);
+    void unfold();
 
     /**
      * 折叠操作
-     *
-     * @param search 搜索接口
      */
-    void fold(MavenSearch search);
+    void fold();
 
     /**
      * 返回子导航记录集合
@@ -171,10 +161,9 @@ public interface MavenSearchNavigation extends NavigationItem {
     /**
      * 在弹出的菜单上添加子菜单
      *
-     * @param plugin        搜索接口
      * @param navigation    导航记录
      * @param topMenu       弹出的菜单（添加子菜单）
      * @param selectedIndex 导航记录在搜索结果的位置信息，从 0 开始
      */
-    void displayMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex);
+    void displayMenu(MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex);
 }

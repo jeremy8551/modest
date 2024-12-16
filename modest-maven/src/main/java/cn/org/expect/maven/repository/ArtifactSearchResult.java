@@ -18,6 +18,13 @@ import cn.org.expect.util.StringUtils;
 public interface ArtifactSearchResult {
 
     /**
+     * 搜索结果所属的仓库
+     *
+     * @return 仓库的Class信息
+     */
+    String getRepositoryName();
+
+    /**
      * 搜索结果类型
      *
      * @return 类型
@@ -65,6 +72,16 @@ public interface ArtifactSearchResult {
      * @return true表示还有未读数据，false表示已全部读取
      */
     boolean isHasMore();
+
+    /**
+     * 判断搜索结果是否是指定仓库的搜索结果
+     *
+     * @param type 仓库Class信息
+     * @return 返回true表示是 false表示不是
+     */
+    default boolean isRepository(Class<?> type) {
+        return type != null && type.getName().equals(this.getRepositoryName());
+    }
 
     /**
      * 判断查询结果是否过期

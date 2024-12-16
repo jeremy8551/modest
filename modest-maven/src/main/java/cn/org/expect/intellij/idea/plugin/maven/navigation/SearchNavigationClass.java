@@ -1,17 +1,17 @@
 package cn.org.expect.intellij.idea.plugin.maven.navigation;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.*;
 
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
-import cn.org.expect.maven.Artifact;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
+import cn.org.expect.maven.Artifact;
 
 public class SearchNavigationClass extends AbstractSearchNavigation {
 
-    public SearchNavigationClass(Artifact artifact) {
-        super(artifact);
+    public SearchNavigationClass(MavenSearchPlugin plugin, Artifact artifact) {
+        super(plugin, artifact);
         this.setDepth(1);
         this.setPresentableText(artifact.getArtifactId());
         this.setLocationString(" " + artifact.getGroupId() + "  (" + artifact.getVersion() + ")");
@@ -21,11 +21,11 @@ public class SearchNavigationClass extends AbstractSearchNavigation {
     }
 
     public List<? extends MavenSearchNavigation> getNavigationList() {
-        return List.of();
+        return new ArrayList<>();
     }
 
-    public boolean supportFold(MavenSearch search) {
-        this.update(search);
+    public boolean supportFold() {
+        this.update();
         return false;
     }
 
@@ -33,19 +33,20 @@ public class SearchNavigationClass extends AbstractSearchNavigation {
         return true;
     }
 
-    public void displayMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+    public void displayMenu(MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+        MavenSearchPlugin plugin = this.getPlugin();
         plugin.getResultMenu().displayItemMenu(plugin, navigation, topMenu, selectedIndex, 22);
     }
 
-    public void setUnfold(MavenSearch search) {
+    public void setUnfold() {
     }
 
-    public void setFold(MavenSearch search) {
+    public void setFold() {
     }
 
-    public void unfold(MavenSearch search) {
+    public void unfold() {
     }
 
-    public void fold(MavenSearch search) {
+    public void fold() {
     }
 }

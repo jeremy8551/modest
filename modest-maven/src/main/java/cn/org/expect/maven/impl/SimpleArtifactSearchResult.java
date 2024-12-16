@@ -10,6 +10,9 @@ import cn.org.expect.util.Ensure;
 
 public class SimpleArtifactSearchResult implements ArtifactSearchResult {
 
+    /** 搜索结果所属仓库的Class信息 */
+    private final String repositoryName;
+
     /** 搜索结果类型 */
     private final ArtifactSearchResultType type;
 
@@ -28,17 +31,22 @@ public class SimpleArtifactSearchResult implements ArtifactSearchResult {
     /** true表示还有未读数据，false表示已全部读取 */
     private final boolean hasMore;
 
-    public SimpleArtifactSearchResult(ArtifactSearchResultType type) {
-        this(type, new ArrayList<>(0), 0, 0, System.currentTimeMillis(), false);
+    public SimpleArtifactSearchResult(String repository) {
+        this(repository, ArtifactSearchResultType.ALL, new ArrayList<>(0), 0, 0, System.currentTimeMillis(), false);
     }
 
-    public SimpleArtifactSearchResult(ArtifactSearchResultType type, List<Artifact> list, int start, int foundNumber, long queryTime, boolean hasMore) {
+    public SimpleArtifactSearchResult(String repository, ArtifactSearchResultType type, List<Artifact> list, int start, int foundNumber, long queryTime, boolean hasMore) {
+        this.repositoryName = repository;
         this.type = Ensure.notNull(type);
         this.list = Ensure.notNull(list);
         this.start = start;
         this.foundNumber = foundNumber;
         this.queryTime = queryTime;
         this.hasMore = hasMore;
+    }
+
+    public String getRepositoryName() {
+        return repositoryName;
     }
 
     public ArtifactSearchResultType getType() {

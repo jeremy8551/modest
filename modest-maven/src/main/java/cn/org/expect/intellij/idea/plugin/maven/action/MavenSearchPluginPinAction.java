@@ -93,6 +93,7 @@ public class MavenSearchPluginPinAction extends ToggleAction {
                 if (contributor instanceof MavenSearchPluginContributor) {
                     MavenSearchPlugin searchPlugin = ((MavenSearchPluginContributor) contributor).getPlugin();
                     searchPlugin.getContext().clone(this.plugin.getContext());
+                    searchPlugin.getContext().getNavigationList().updateSearch(searchPlugin);
                     searchPlugin.getService().setParameter(MavenSearchExecutorService.PARAMETER, null);
                     searchPlugin.execute(new MavenSearchPluginPinJob(this.plugin, () -> super.actionPerformed(event)));
                 }

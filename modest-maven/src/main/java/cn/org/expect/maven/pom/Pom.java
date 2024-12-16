@@ -5,7 +5,7 @@ import java.util.List;
 
 import cn.org.expect.util.StringUtils;
 
-public class PomInfo {
+public class Pom {
 
     /** 父POM的坐标 */
     private final Parent parent;
@@ -31,7 +31,7 @@ public class PomInfo {
     /** 开发人员 */
     private final List<Developer> developers;
 
-    public PomInfo() {
+    public Pom() {
         this.parent = new Parent();
         this.scm = new Scm();
         this.licenses = new ArrayList<>();

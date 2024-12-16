@@ -25,7 +25,7 @@ public abstract class MenuItemAction implements ActionListener {
     public void actionPerformed(ActionEvent event) {
         this.event = event;
         MavenSearchPluginContext context = this.plugin.getContext();
-        MavenSearchNavigation navigation = context.getSelectNavigation();
+        MavenSearchNavigation navigation = context.geSelectedNavigation();
         if (navigation == null) {
             String message = MavenMessage.get("maven.search.error.not.select.search.result");
             if (log.isWarnEnabled()) {

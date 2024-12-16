@@ -5,6 +5,7 @@ import java.util.List;
 
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
+import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.search.ArtifactSearch;
@@ -18,13 +19,9 @@ public class ArtifactSearchPatternJob extends ArtifactSearchJob {
     /** 模糊搜索的文本 */
     protected final String pattern;
 
-    /** true表示先删除数据库中的记录再执行搜索，false表示直接执行搜索 */
-    protected boolean delete;
-
-    public ArtifactSearchPatternJob(String pattern, boolean delete) {
+    public ArtifactSearchPatternJob(String pattern) {
         super("maven.search.job.search.pattern.description", pattern);
         this.pattern = Ensure.notNull(pattern);
-        this.delete = delete;
     }
 
     public String getPattern() {
@@ -45,7 +42,7 @@ public class ArtifactSearchPatternJob extends ArtifactSearchJob {
         if (this.terminate) {
             return 0;
         } else {
-            search.getContext().setSearchResult(result);
+            search.saveSearchResult(result);
         }
 
         // 查询失败
@@ -70,11 +67,7 @@ public class ArtifactSearchPatternJob extends ArtifactSearchJob {
 
     public ArtifactSearchResult query(ArtifactSearch search, String pattern) throws Exception {
         pattern = StringUtils.trimBlank(pattern);
-        search.getContext().setSearchText(pattern);
         ArtifactRepositoryDatabase database = search.getDatabase();
-        if (this.delete) {
-            database.delete(pattern);
-        }
 
         ArtifactSearchResult result = database.select(pattern);
         if (result == null || result.size() == 0 || result.isExpire(search.getSettings().getExpireTimeMillis())) {
@@ -117,7 +110,8 @@ public class ArtifactSearchPatternJob extends ArtifactSearchJob {
         String artifactId = array[1];
 
         // 精确搜索
-        ArtifactSearchResult result = this.getRemoteRepository().query(groupId, artifactId);
+        ArtifactRepository repository = this.getRemoteRepository();
+        ArtifactSearchResult result = repository.query(groupId, artifactId);
         if (result == null) {
             return null;
         }
@@ -133,7 +127,7 @@ public class ArtifactSearchPatternJob extends ArtifactSearchJob {
         }
 
         // 保存模糊搜索结果
-        SimpleArtifactSearchResult patternResult = new SimpleArtifactSearchResult(result.getType(), list, 1, 1, System.currentTimeMillis(), false);
+        SimpleArtifactSearchResult patternResult = new SimpleArtifactSearchResult(repository.getClass().getName(), result.getType(), list, 1, 1, System.currentTimeMillis(), false);
         database.insert(pattern, patternResult);
         return patternResult;
     }

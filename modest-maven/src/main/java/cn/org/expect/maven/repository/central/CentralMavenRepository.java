@@ -10,6 +10,7 @@ import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.EDTJob;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginJob;
 import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
 import cn.org.expect.maven.repository.AbstractArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactOperation;
@@ -17,7 +18,6 @@ import cn.org.expect.maven.repository.ArtifactRepositoryDatabaseEngine;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.ArtifactSearchResultType;
 import cn.org.expect.maven.repository.HttpClient;
-import cn.org.expect.maven.Artifact;
 import cn.org.expect.util.StringUtils;
 
 /**
@@ -27,7 +27,7 @@ import cn.org.expect.util.StringUtils;
 public class CentralMavenRepository extends AbstractArtifactRepository {
 
     /** 分析工具 */
-    protected CentralMavenRepositoryAnalysis analysis;
+    private final CentralMavenRepositoryAnalysis analysis;
 
     /** 行数 */
     protected int rows = 200;
@@ -125,7 +125,7 @@ public class CentralMavenRepository extends AbstractArtifactRepository {
         service.execute(new EasyJobReaderImpl(jobList)); // 提交到线程池，等待执行完毕
 
         // 搜索结果
-        return new SimpleArtifactSearchResult(ArtifactSearchResultType.ALL, result.sortByTime().getList(), start, result.getFoundNumber(), System.currentTimeMillis(), false);
+        return new SimpleArtifactSearchResult(CentralMavenRepository.class.getName(), ArtifactSearchResultType.ALL, result.sortByTime().getList(), start, result.getFoundNumber(), System.currentTimeMillis(), false);
     }
 
     public static class CentralMavenJob extends MavenSearchPluginJob implements EDTJob {

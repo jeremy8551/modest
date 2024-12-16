@@ -14,17 +14,17 @@ import cn.org.expect.maven.search.ArtifactSearchStatusMessageType;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 
-public class MavenSearchRepaintJob extends MavenSearchPluginJob implements EDTJob {
+public class MavenSearchDisplayJob extends MavenSearchPluginJob implements EDTJob {
 
     /** 锁 */
     protected final static Object lock = new Object();
 
-    /** 查询结果 */
-    protected final MavenSearchNavigationList result;
+    /** 搜索结果的导航记录 */
+    protected final MavenSearchNavigationList navigationList;
 
-    public MavenSearchRepaintJob(MavenSearchNavigationList result) {
+    public MavenSearchDisplayJob(MavenSearchNavigationList navigationList) {
         super("maven.search.job.display.search.result.description");
-        this.result = result;
+        this.navigationList = navigationList;
     }
 
     /**
@@ -34,12 +34,16 @@ public class MavenSearchRepaintJob extends MavenSearchPluginJob implements EDTJo
      */
     public int execute() {
         synchronized (lock) {
-            this.paint();
+            this.display(this.navigationList);
         }
         return 0;
     }
 
-    protected void paint() {
+    protected void display(MavenSearchNavigationList navigationList) {
+        if (navigationList == null) {
+            navigationList = new MavenSearchNavigationList(new ArrayList<>(0), 0, false);
+        }
+
         MavenSearchPlugin plugin = this.getSearch();
         SearchDisplay display = plugin.getIdeaUI().getDisplay();
         boolean isAllTab = plugin.isAllTab();
@@ -60,9 +64,7 @@ public class MavenSearchRepaintJob extends MavenSearchPluginJob implements EDTJo
         Map<SearchEverywhereContributor<?>, Boolean> backup = isAllTab ? display.getContributorMores() : null;
 
         // 生成导航记录
-        MavenSearchNavigationList result = this.result;
-        boolean hasResult = result != null;
-        List<SearchEverywhereFoundElementInfo> infos = hasResult ? result.toInfos(plugin) : new ArrayList<>(0);
+        List<SearchEverywhereFoundElementInfo> infos = navigationList.toInfos(plugin);
 
         if (log.isTraceEnabled()) {
             log.debug("---->");
@@ -74,7 +76,7 @@ public class MavenSearchRepaintJob extends MavenSearchPluginJob implements EDTJo
 
         display.clearMore(); // 一定要先删除 more 按钮
         display.merge(infos, isAllTab); // 将导航记录合并到数据模型中
-        display.select(plugin.getContext().getSelectNavigation());
+        display.select(plugin.getContext().geSelectedNavigation());
 
         if (backup != null) {
             display.setContributorMores(backup); // 恢复所有搜索类别的 more 值
@@ -84,8 +86,8 @@ public class MavenSearchRepaintJob extends MavenSearchPluginJob implements EDTJo
         display.setContributorMore(plugin.getContributor(),  //
                 !plugin.getService().isRunning(ArtifactSearchMoreJob.class)  // 在 MavenSearchPluginListener 中会重复生成 more 按钮，判断如果正在执行 more 搜索，则不能显示 more 按钮
                         && ( //
-                        (hasMore && display.size() > 0 && isAllTab) // ALL标签页，有 more 按钮
-                                || (isSelfTab && result != null && result.isHasMore()) //
+                        (isAllTab && hasMore && display.size() > 0) // ALL标签页，有 more 按钮 TODO
+                                || (isSelfTab && navigationList.isHasMore()) //
                 ) //
         );
 
@@ -96,11 +98,7 @@ public class MavenSearchRepaintJob extends MavenSearchPluginJob implements EDTJo
             log.debug("{} size: {}", this.getName(), display.size());
         }
 
-        // 设置广告信息
-        if (hasResult) {
-            plugin.setStatusBar(ArtifactSearchStatusMessageType.NORMAL, "maven.search.status.text", result.getFoundNumber(), result.size());
-        } else {
-            plugin.setStatusBar(ArtifactSearchStatusMessageType.NORMAL, "maven.search.status.text", 0, 0);
-        }
+        // 设置状态栏信息
+        plugin.setStatusBar(ArtifactSearchStatusMessageType.NORMAL, "maven.search.status.text", navigationList.getFoundNumber(), navigationList.size());
     }
 }

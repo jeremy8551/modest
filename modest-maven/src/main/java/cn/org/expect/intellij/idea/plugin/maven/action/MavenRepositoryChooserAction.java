@@ -71,7 +71,7 @@ public class MavenRepositoryChooserAction extends ScopeChooserAction {
         ArtifactOption option = ((MavenSearchScope) descriptor.getScope()).getOption();
         plugin.setRepository(option.value());
         onChanged.run(); // 更新：搜索框右侧的广告信息
-        plugin.asyncSearch();
+        plugin.asyncSearch(plugin.getIdeaUI().getSearchField().getText());
     }
 
     protected @NotNull ScopeDescriptor getSelectedScope() {

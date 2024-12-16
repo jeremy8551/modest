@@ -6,9 +6,9 @@ import java.util.List;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
-import cn.org.expect.maven.impl.SimpleArtifact;
 import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.impl.SimpleArtifact;
+import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.ArtifactSearchResultType;
 import org.json.JSONArray;
@@ -53,13 +53,13 @@ public class CentralMavenRepositoryAnalysis {
         List<Artifact> list = new ArrayList<>(docs.length());
         for (int i = 0; i < docs.length(); i++) {
             JSONObject json = docs.getJSONObject(i);
-            Artifact item = patternOrExtra ? this.parsePatternResult(json) : this.parseExtraResult(json);
+            Artifact item = patternOrExtra ? parsePatternResult(json) : parseExtraResult(json);
             list.add(item);
         }
-        return new SimpleArtifactSearchResult(ArtifactSearchResultType.LIMIT_PAGE, list, start + list.size() + 1, numFound, System.currentTimeMillis(), numFound > list.size());
+        return new SimpleArtifactSearchResult(CentralMavenRepository.class.getName(), ArtifactSearchResultType.LIMIT_PAGE, list, start + list.size() + 1, numFound, System.currentTimeMillis(), numFound > list.size());
     }
 
-    public Artifact parseExtraResult(JSONObject json) {
+    public static Artifact parseExtraResult(JSONObject json) {
         String groupId = json.getString("g");
         String artifactId = json.getString("a");
         String packaging = json.getString("p");
@@ -74,7 +74,7 @@ public class CentralMavenRepositoryAnalysis {
         return new SimpleArtifact(groupId, artifactId, version, packaging, new Date(timestamp), -1);
     }
 
-    public Artifact parsePatternResult(JSONObject json) {
+    public static Artifact parsePatternResult(JSONObject json) {
         String groupId = json.getString("g");
         String artifactId = json.getString("a");
         String version = json.getString("latestVersion");

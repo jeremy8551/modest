@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
+import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 
 /**
- * 导航记录集合
+ * 导航记录集合 TODO 转为接口
  */
 public class MavenSearchNavigationList {
 
@@ -49,11 +50,11 @@ public class MavenSearchNavigationList {
         for (int i = 0; i < this.list.size(); i++) {
             MavenSearchNavigation navigation = this.list.get(i);
             if (navigation.getDepth() == 1) {
-                if (navigation.supportFold(plugin)) {
+                if (navigation.supportFold()) {
                     if (navigation.isFold()) {
-                        navigation.fold(plugin); // 折叠
+                        navigation.fold(); // 折叠
                     } else {
-                        navigation.unfold(plugin); // 展开
+                        navigation.unfold(); // 展开
                     }
                 }
             }
@@ -72,6 +73,23 @@ public class MavenSearchNavigationList {
         List<? extends MavenSearchNavigation> navigationList = navigation.getNavigationList();
         for (MavenSearchNavigation child : navigationList) {
             this.addInfo(child, infos, navigationPriority, contributor);
+        }
+    }
+
+    public void updateSearch(ArtifactSearch search) {
+        MavenSearchNavigationList navigationList = this;
+        for (int i = 0; i < navigationList.size(); i++) {
+            MavenSearchNavigation navigation = navigationList.get(i);
+            navigation.setSearch(search);
+            this.loopUpdateSearch(search, navigation);
+        }
+    }
+
+    protected void loopUpdateSearch(ArtifactSearch search, MavenSearchNavigation navigation) {
+        List<? extends MavenSearchNavigation> childList = navigation.getNavigationList();
+        for (MavenSearchNavigation child : childList) {
+            child.setSearch(search);
+            this.loopUpdateSearch(search, child);
         }
     }
 }

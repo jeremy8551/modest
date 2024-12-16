@@ -11,8 +11,11 @@ import cn.org.expect.maven.repository.central.CentralMavenRepository;
 @EasyBean(value = "query.use.class", priority = -1)
 public class SearchClassInRepository extends CentralMavenRepository {
 
+    private final SearchInClassRepositoryAnalysis analysis;
+
     public SearchClassInRepository(EasyContext ioc) {
         super(ioc, SearchClassInRepositoryDatabaseEngine.class);
+        this.analysis = new SearchInClassRepositoryAnalysis();
     }
 
     public String getAddress() {
@@ -26,7 +29,7 @@ public class SearchClassInRepository extends CentralMavenRepository {
         if (responseBody == null) {
             return null;
         } else {
-            return this.analysis.parseExtraResult(responseBody).sortByGroup();
+            return this.analysis.parse(responseBody).sortByGroup();
         }
     }
 

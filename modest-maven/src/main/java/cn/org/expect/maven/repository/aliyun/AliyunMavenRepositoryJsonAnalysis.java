@@ -7,10 +7,10 @@ import java.util.List;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.Artifact;
-import cn.org.expect.maven.repository.ArtifactSearchResult;
-import cn.org.expect.maven.repository.ArtifactSearchResultType;
 import cn.org.expect.maven.impl.SimpleArtifact;
 import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
+import cn.org.expect.maven.repository.ArtifactSearchResultType;
 import cn.org.expect.util.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -79,7 +79,7 @@ public class AliyunMavenRepositoryJsonAnalysis {
             }
         }
 
-        return new SimpleArtifactSearchResult(ArtifactSearchResultType.ALL, result, result.size() + 1, result.size(), System.currentTimeMillis(), false);
+        return new SimpleArtifactSearchResult(AliyunMavenRepository.class.getName(), ArtifactSearchResultType.ALL, result, result.size() + 1, result.size(), System.currentTimeMillis(), false);
     }
 
     public SimpleArtifactSearchResult parseExtra(String responseBody) {
@@ -104,7 +104,7 @@ public class AliyunMavenRepositoryJsonAnalysis {
             }
         }
 
-        return new SimpleArtifactSearchResult(ArtifactSearchResultType.ALL, result, result.size() + 1, result.size(), System.currentTimeMillis(), false);
+        return new SimpleArtifactSearchResult(AliyunMavenRepository.class.getName(), ArtifactSearchResultType.ALL, result, result.size() + 1, result.size(), System.currentTimeMillis(), false);
     }
 
     protected List<Artifact> parseList(String responseBody) {

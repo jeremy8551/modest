@@ -4,11 +4,12 @@ import java.io.File;
 
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.ArtifactOption;
-import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
 import cn.org.expect.maven.ArtifactSearchIoc;
-import cn.org.expect.maven.pom.PomInfoRepository;
+import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
+import cn.org.expect.maven.pom.PomRepository;
 import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.local.LocalRepository;
 import cn.org.expect.maven.repository.local.LocalRepositorySettings;
 
@@ -30,16 +31,6 @@ public interface ArtifactSearch {
      * @return 上下文信息
      */
     ArtifactSearchContext getContext();
-
-    /**
-     * 根据输入设备中的文本，异步进行查询
-     */
-    void asyncSearch();
-
-    /**
-     * 刷新查询结果（异步执行删除缓存，再重新查询）
-     */
-    void asyncRefresh();
 
     /**
      * 异步执行模糊搜索
@@ -174,7 +165,7 @@ public interface ArtifactSearch {
      *
      * @return 仓库
      */
-    PomInfoRepository getPomInfoRepository();
+    PomRepository getPomRepository();
 
     /**
      * 下载工件
@@ -199,11 +190,18 @@ public interface ArtifactSearch {
     void waitDownload(Artifact artifact, long timeout);
 
     /**
+     * 保存搜索结果
+     *
+     * @param result 搜索结果
+     */
+    void saveSearchResult(ArtifactSearchResult result);
+
+    /**
      * 异步获取工件的POM信息
      *
      * @param artifact 工件
      */
-    void asyncPomInfo(Artifact artifact);
+    void asyncPom(Artifact artifact);
 
     /**
      * 显示搜索结果

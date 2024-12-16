@@ -130,9 +130,10 @@ public class SimpleArtifactRepositoryDatabaseEngine implements ArtifactRepositor
             JSONObject obj = json.getJSONObject(gid);
             Iterator<String> groupKeys = obj.keys();
             while (groupKeys.hasNext()) {
-                String aid = groupKeys.next();
+                String element = groupKeys.next();
 
-                JSONObject aObj = obj.getJSONObject(aid);
+                JSONObject aObj = obj.getJSONObject(element);
+                String repositoryName = aObj.getString("repositoryName");
                 int start = aObj.getInt("start");
                 int foundNumber = aObj.getInt("foundNumber");
                 long queryTime = aObj.getLong("queryTime");
@@ -154,7 +155,7 @@ public class SimpleArtifactRepositoryDatabaseEngine implements ArtifactRepositor
                 }
 
                 Map<String, ArtifactSearchResult> groupMap = map.computeIfAbsent(gid, k -> new LinkedHashMap<>());
-                groupMap.put(aid, new SimpleArtifactSearchResult(resultType, list, start, foundNumber, queryTime, hasMore));
+                groupMap.put(element, new SimpleArtifactSearchResult(repositoryName, resultType, list, start, foundNumber, queryTime, hasMore));
             }
         }
         return map;
@@ -168,6 +169,7 @@ public class SimpleArtifactRepositoryDatabaseEngine implements ArtifactRepositor
             String pattern = keys.next();
 
             JSONObject obj = json.getJSONObject(pattern);
+            String repositoryName = obj.getString("repositoryName");
             int start = obj.getInt("start");
             int foundNumber = obj.getInt("foundNumber");
             long queryTime = obj.getLong("queryTime");
@@ -188,7 +190,7 @@ public class SimpleArtifactRepositoryDatabaseEngine implements ArtifactRepositor
                 list.add(new SimpleArtifact(groupId, artifactId, version, type, timestamp == -1 ? null : new Date(timestamp), versionCount));
             }
 
-            map.put(pattern, new SimpleArtifactSearchResult(resultType, list, start, foundNumber, queryTime, hasMore));
+            map.put(pattern, new SimpleArtifactSearchResult(repositoryName, resultType, list, start, foundNumber, queryTime, hasMore));
         }
         return map;
     }

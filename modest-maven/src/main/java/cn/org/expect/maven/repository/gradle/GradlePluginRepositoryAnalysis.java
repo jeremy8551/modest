@@ -8,10 +8,10 @@ import java.util.List;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.Artifact;
-import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.impl.SimpleArtifact;
-import cn.org.expect.maven.repository.ArtifactSearchResultType;
 import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
+import cn.org.expect.maven.repository.ArtifactSearchResult;
+import cn.org.expect.maven.repository.ArtifactSearchResultType;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
@@ -77,7 +77,7 @@ public class GradlePluginRepositoryAnalysis {
             }
         }
 
-        return new SimpleArtifactSearchResult(ArtifactSearchResultType.NO_TOTAL, list, start + 1, list.size(), System.currentTimeMillis(), true);
+        return new SimpleArtifactSearchResult(GradlePluginRepository.class.getName(), ArtifactSearchResultType.NO_TOTAL, list, start + 1, list.size(), System.currentTimeMillis(), true);
     }
 
     public List<SimpleArtifact> parseExtraResult(String groupId, String artifactId, String responseBody) {

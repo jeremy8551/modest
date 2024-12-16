@@ -86,9 +86,6 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
      * @param plugin 搜索接口
      */
     private void setEditorSelectText(MavenSearchPlugin plugin) {
-        // 等待 Idea 默认的搜索功能执行完毕
-//        plugin.getIdeaUI().waitFor(3000); TODO ？？
-
         // 在已打开的编辑器中，如果选中了文本，则自动对文本进行查询
         Editor editor = plugin.getContext().getActionEvent().getDataContext().getData(CommonDataKeys.EDITOR);
 
@@ -110,12 +107,12 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
                     // 自动切换 Tab 页
                     if (plugin.getSettings().isAutoSwitchTab() && plugin.getSettings().isTabVisible() && plugin.getPattern().isDependency(editorSelectText)) {
                         plugin.getIdeaUI().switchToTab(plugin.getContributor().getSearchProviderId());
-                        plugin.asyncSearch();
+                        plugin.asyncSearch(pattern);
                     }
                 } else {
-                    // 如果未选中任何内容，则自动搜索输入框中的文本
+                    // （Idea的搜索输入框中会出现上一次搜索的文本）如果未选中任何内容，则自动搜索输入框中的文本
                     if (plugin.canSearch()) {
-                        plugin.asyncSearch();
+                        plugin.asyncSearch(plugin.getIdeaUI().getSearchField().getText());
                     }
                 }
             }, "maven.search.job.select.editor.text.description"));

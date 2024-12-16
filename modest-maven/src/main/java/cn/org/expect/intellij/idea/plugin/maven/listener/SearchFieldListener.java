@@ -22,7 +22,9 @@ public class SearchFieldListener extends KeyAdapter {
 
         if (plugin.isSelfTab()) {
             if (e.getKeyCode() == KeyEvent.VK_F5) { // F5 刷新
-                plugin.asyncRefresh();
+                String pattern = plugin.getIdeaUI().getSearchField().getText();
+                plugin.getDatabase().delete(pattern);
+                plugin.asyncSearch(pattern);
             }
         } else {
             if (e.getKeyCode() == KeyEvent.VK_F2 && plugin.getSettings().isTabVisible()) { // F2 搜索

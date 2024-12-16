@@ -24,14 +24,14 @@ public interface MavenSearchPluginContext extends ArtifactSearchContext {
      *
      * @return 导航记录
      */
-    MavenSearchNavigation getSelectNavigation();
+    MavenSearchNavigation geSelectedNavigation();
 
     /**
      * 设置选中的导航记录
      *
      * @param selectNavigation 导航记录
      */
-    void setSelectNavigation(MavenSearchNavigation selectNavigation);
+    void setSelectedNavigation(MavenSearchNavigation selectNavigation);
 
     /**
      * 返回 JList 当前的位置
@@ -67,10 +67,8 @@ public interface MavenSearchPluginContext extends ArtifactSearchContext {
      * @param context 上下文信息
      */
     default void clone(MavenSearchPluginContext context) {
-        this.setSearchText(context.getSearchText());
-        this.setSelectNavigation(context.getSelectNavigation());
+        this.setSelectedNavigation(context.geSelectedNavigation());
         this.setVisibleRect(context.getVisibleRect());
-        this.setSearchResult(context.getSearchResult());
         this.setNavigationList(context.getNavigationList());
     }
 }

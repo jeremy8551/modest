@@ -26,13 +26,12 @@ public class ArtifactSearchInputJob extends ArtifactSearchJob {
      *
      * @param search  搜索接口
      * @param pattern 字符串
-     * @param delete  true表示先删除数据库中的记录再执行搜索，false表示直接执行搜索
      */
-    public synchronized void search(ArtifactSearch search, String pattern, boolean delete) {
+    public synchronized void search(ArtifactSearch search, String pattern) {
         search.getService().terminate(ArtifactSearchPatternJob.class, job -> job.getClass().equals(ArtifactSearchPatternJob.class)); // 终止正在运行的任务
 
         try {
-            ArtifactSearchPatternJob job = new ArtifactSearchPatternJob(pattern, delete);
+            ArtifactSearchPatternJob job = new ArtifactSearchPatternJob(pattern);
             job.setSearch(search);
             this.queue.put(job);
         } catch (Throwable e) {

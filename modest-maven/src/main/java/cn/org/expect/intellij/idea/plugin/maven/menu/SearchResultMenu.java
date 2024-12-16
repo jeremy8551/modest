@@ -15,7 +15,7 @@ import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.MavenMessage;
 import cn.org.expect.maven.concurrent.ArtifactSearchMoreJob;
-import cn.org.expect.maven.pom.PomInfo;
+import cn.org.expect.maven.pom.Pom;
 import cn.org.expect.maven.repository.ArtifactOperation;
 import cn.org.expect.maven.repository.central.CentralMavenRepository;
 import cn.org.expect.maven.repository.gradle.GradlePluginRepository;
@@ -65,7 +65,8 @@ public class SearchResultMenu extends AbstractMenu {
                 log.debug("Click more button {}", selectedIndex);
             }
 
-            plugin.execute(new ArtifactSearchMoreJob());
+            String pattern = plugin.getIdeaUI().getSearchField().getText();
+            plugin.execute(new ArtifactSearchMoreJob(pattern));
             return;
         }
 
@@ -75,9 +76,9 @@ public class SearchResultMenu extends AbstractMenu {
             if (selectedObject instanceof MavenSearchNavigation) {
                 MavenSearchNavigation navigation = (MavenSearchNavigation) selectedObject;
                 if (navigation.supportMenu()) {
-                    plugin.getContext().setSelectNavigation(navigation); // 保存选中的导航记录
+                    plugin.getContext().setSelectedNavigation(navigation); // 保存选中的导航记录
                     display.setSelectedIndex(selectedIndex); // 选中导航记录
-                    navigation.displayMenu(plugin, navigation, this.topMenu, selectedIndex);
+                    navigation.displayMenu(navigation, this.topMenu, selectedIndex);
                 }
             }
         }
@@ -174,7 +175,7 @@ public class SearchResultMenu extends AbstractMenu {
                 Artifact artifact = navigation.getArtifact();
                 plugin.execute(new MavenSearchPluginJob("maven.search.job.download.artifact.description") { // 异步执行任务
                     public int execute() throws Exception {
-                        PomInfo pomInfo = plugin.getPomInfoRepository().query(plugin, artifact);
+                        Pom pomInfo = plugin.getPomRepository().query(plugin, artifact);
                         if (pomInfo != null && StringUtils.isNotBlank(pomInfo.getProjectUrl())) {
                             BrowserUtil.browse(pomInfo.getProjectUrl());
                             return 0;
@@ -193,7 +194,7 @@ public class SearchResultMenu extends AbstractMenu {
                 Artifact artifact = navigation.getArtifact();
                 plugin.execute(new MavenSearchPluginJob("maven.search.job.open.project.issue.description") { // 异步执行任务
                     public int execute() throws Exception {
-                        PomInfo pomInfo = plugin.getPomInfoRepository().query(plugin, artifact);
+                        Pom pomInfo = plugin.getPomRepository().query(plugin, artifact);
                         if (pomInfo != null && StringUtils.isNotBlank(pomInfo.getIssue().getUrl())) {
                             BrowserUtil.browse(pomInfo.getIssue().getUrl());
                             return 0;
@@ -250,7 +251,7 @@ public class SearchResultMenu extends AbstractMenu {
                     FileUtils.delete(parent);
                 }
 
-                plugin.getPomInfoRepository().delete(artifact); // 删除PomInfo缓存
+                plugin.getPomRepository().delete(artifact); // 删除PomInfo缓存
                 navigation.getNavigationList().clear(); // 删除导航记录
                 plugin.display();
             }
@@ -326,18 +327,6 @@ public class SearchResultMenu extends AbstractMenu {
         } else {
             topMenu.remove(cancelDownload);
         }
-
-//        if (operation.supportOpenProjectURL()) {
-//            topMenu.add(openProjectUrl);
-//        } else {
-//            topMenu.remove(openProjectUrl);
-//        }
-//
-//        if (operation.supportOpenIssueURL()) {
-//            topMenu.add(openIssueUrl);
-//        } else {
-//            topMenu.remove(openIssueUrl);
-//        }
 
         if (operation.supportOpenPomFile()) {
             topMenu.add(openPomFile);

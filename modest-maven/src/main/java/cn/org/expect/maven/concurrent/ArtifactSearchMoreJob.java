@@ -2,36 +2,38 @@ package cn.org.expect.maven.concurrent;
 
 import java.util.List;
 
+import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.MavenMessage;
 import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
-import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.search.ArtifactSearch;
-import cn.org.expect.maven.MavenMessage;
 
 public class ArtifactSearchMoreJob extends ArtifactSearchPatternJob {
 
-    public ArtifactSearchMoreJob() {
-        super("", false);
+    private final String pattern;
+
+    public ArtifactSearchMoreJob(String pattern) {
+        super(pattern);
         this.description = MavenMessage.get("maven.search.job.search.more.description");
+        this.pattern = pattern;
     }
 
     public int execute() throws Exception {
         ArtifactSearch search = this.getSearch();
-        String pattern = search.getContext().getSearchText();
 
         if (log.isDebugEnabled()) {
-            log.debug("{} search more: {}", this.getName(), pattern);
+            log.debug("{} search more: {}", this.getName(), this.pattern);
         }
 
         ArtifactRepositoryDatabase database = search.getDatabase();
-        ArtifactSearchResult result = database.select(pattern);
+        ArtifactSearchResult result = database.select(this.pattern);
         if (result != null && result.isHasMore()) { // 还有未加载的数据
             int start = result.getStart();
             int foundNumber = result.getFoundNumber();
             List<Artifact> list = result.getList();
 
-            ArtifactSearchResult next = this.getRemoteRepository().query(pattern, start);
+            ArtifactSearchResult next = this.getRemoteRepository().query(this.pattern, start);
             if (next != null) {
                 List<Artifact> nextList = next.getList();
                 list.addAll(nextList);
@@ -49,9 +51,9 @@ public class ArtifactSearchMoreJob extends ArtifactSearchPatternJob {
                         break;
                 }
 
-                SimpleArtifactSearchResult newResult = new SimpleArtifactSearchResult(result.getType(), list, next.getStart(), Math.max(list.size(), foundNumber), System.currentTimeMillis(), hasMore);
-                database.insert(pattern, newResult); // 保存到数据库
-                search.getContext().setSearchResult(newResult); // 保存查询记录
+                SimpleArtifactSearchResult newResult = new SimpleArtifactSearchResult(result.getRepositoryName(), result.getType(), list, next.getStart(), Math.max(list.size(), foundNumber), System.currentTimeMillis(), hasMore);
+                database.insert(this.pattern, newResult); // 保存到数据库
+                search.saveSearchResult(newResult);
                 search.asyncDisplay();
             }
         }

@@ -2,12 +2,12 @@ package cn.org.expect.maven.search;
 
 import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.maven.ArtifactOption;
-import cn.org.expect.maven.MavenRuntimeException;
-import cn.org.expect.maven.concurrent.ArtifactSearchInputJob;
-import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
-import cn.org.expect.maven.impl.SimpleArtifactOption;
 import cn.org.expect.maven.ArtifactSearchIoc;
-import cn.org.expect.maven.pom.PomInfoRepository;
+import cn.org.expect.maven.MavenRuntimeException;
+import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
+import cn.org.expect.maven.concurrent.ArtifactSearchInputJob;
+import cn.org.expect.maven.impl.SimpleArtifactOption;
+import cn.org.expect.maven.pom.PomRepository;
 import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.local.LocalRepository;
@@ -105,7 +105,7 @@ public abstract class AbstractMavenSearch implements ArtifactSearch {
         return this.getRepository().getDatabase();
     }
 
-    public PomInfoRepository getPomInfoRepository() {
-        return this.ioc.getBean(PomInfoRepository.class);
+    public PomRepository getPomRepository() {
+        return this.ioc.getBean(PomRepository.class);
     }
 }

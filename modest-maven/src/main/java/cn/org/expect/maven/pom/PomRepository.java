@@ -22,20 +22,20 @@ import cn.org.expect.util.XMLUtils;
 import org.w3c.dom.Node;
 
 @EasyBean(singleton = true)
-public class PomInfoRepository {
-    protected final static Log log = LogFactory.getLog(PomInfoRepository.class);
+public class PomRepository {
+    protected final static Log log = LogFactory.getLog(PomRepository.class);
 
     /** 搜索结果 */
-    protected final Map<String, Map<String, Map<String, PomInfo>>> database;
+    protected final Map<String, Map<String, Map<String, Pom>>> database;
 
-    public PomInfoRepository() {
+    public PomRepository() {
         this.database = new ConcurrentHashMap<>();
     }
 
-    public PomInfo select(Artifact artifact) {
-        Map<String, Map<String, PomInfo>> groupMap = this.database.get(artifact.getGroupId());
+    public Pom select(Artifact artifact) {
+        Map<String, Map<String, Pom>> groupMap = this.database.get(artifact.getGroupId());
         if (groupMap != null) {
-            Map<String, PomInfo> artifactMap = groupMap.get(artifact.getArtifactId());
+            Map<String, Pom> artifactMap = groupMap.get(artifact.getArtifactId());
             if (artifactMap != null) {
                 return artifactMap.get(artifact.getVersion());
             }
@@ -43,10 +43,10 @@ public class PomInfoRepository {
         return null;
     }
 
-    public PomInfo delete(Artifact artifact) {
-        Map<String, Map<String, PomInfo>> groupMap = this.database.get(artifact.getGroupId());
+    public Pom delete(Artifact artifact) {
+        Map<String, Map<String, Pom>> groupMap = this.database.get(artifact.getGroupId());
         if (groupMap != null) {
-            Map<String, PomInfo> artifactMap = groupMap.get(artifact.getArtifactId());
+            Map<String, Pom> artifactMap = groupMap.get(artifact.getArtifactId());
             if (artifactMap != null) {
                 return artifactMap.remove(artifact.getVersion());
             }
@@ -54,14 +54,14 @@ public class PomInfoRepository {
         return null;
     }
 
-    public void insert(Artifact artifact, PomInfo pomInfo) {
-        Map<String, Map<String, PomInfo>> groupMap = this.database.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
-        Map<String, PomInfo> artifactMap = groupMap.computeIfAbsent(artifact.getArtifactId(), k -> new HashMap<>());
+    public void insert(Artifact artifact, Pom pomInfo) {
+        Map<String, Map<String, Pom>> groupMap = this.database.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
+        Map<String, Pom> artifactMap = groupMap.computeIfAbsent(artifact.getArtifactId(), k -> new HashMap<>());
         artifactMap.put(artifact.getVersion(), pomInfo);
     }
 
-    public PomInfo query(ArtifactSearch search, Artifact artifact) throws Exception {
-        PomInfo pomInfo = this.select(artifact);
+    public Pom query(ArtifactSearch search, Artifact artifact) throws Exception {
+        Pom pomInfo = this.select(artifact);
         if (pomInfo != null) {
             return pomInfo;
         }
@@ -73,13 +73,13 @@ public class PomInfoRepository {
 
         // 解析 POM 信息
         Node project = XMLUtils.getRoot(new ByteArrayInputStream(pomXmlBytes), "project");
-        pomInfo = new PomInfo();
+        pomInfo = new Pom();
         this.parsePomXml(project, pomInfo); // 解析 POM
         this.insert(artifact, pomInfo); // 保存搜索结果
         return pomInfo;
     }
 
-    private void parsePomXml(Node project, PomInfo info) {
+    private void parsePomXml(Node project, Pom info) {
         XMLUtils.runChildNodes(project, (i, node) -> {
             if ("url".equalsIgnoreCase(node.getNodeName())) {
                 info.setUrl(node.getTextContent());
@@ -132,7 +132,7 @@ public class PomInfoRepository {
             if ("licenses".equalsIgnoreCase(node.getNodeName())) {
                 XMLUtils.runChildNodes(node, (j, item) -> {
                     if ("license".equalsIgnoreCase(item.getNodeName())) {
-                        PomInfo.License license = new PomInfo.License();
+                        Pom.License license = new Pom.License();
                         XMLUtils.runChildNodes(item, (k, property) -> {
                             if ("name".equalsIgnoreCase(property.getNodeName())) {
                                 license.setName(property.getTextContent());
@@ -152,7 +152,7 @@ public class PomInfoRepository {
             if ("developers".equalsIgnoreCase(node.getNodeName())) {
                 XMLUtils.runChildNodes(node, (j, item) -> {
                     if ("developer".equalsIgnoreCase(item.getNodeName())) {
-                        PomInfo.Developer developer = new PomInfo.Developer();
+                        Pom.Developer developer = new Pom.Developer();
                         XMLUtils.runChildNodes(item, (k, property) -> {
                             if ("id".equalsIgnoreCase(property.getNodeName())) {
                                 developer.setId(property.getTextContent());
@@ -203,7 +203,7 @@ public class PomInfoRepository {
         if (FileUtils.isFile(pomFile)) {
             return FileUtils.readline(pomFile, CharsetName.UTF_8, 0).getBytes(CharsetName.UTF_8);
         }
-        log.warn("{} {} not exists!", PomInfo.class.getSimpleName(), pomFile);
+        log.warn("{} {} not exists!", Pom.class.getSimpleName(), pomFile);
 
         // 尝试解析 jar 文件
         jarfile = repository.getJarfile(artifact);
@@ -214,7 +214,7 @@ public class PomInfoRepository {
             }
         }
 
-        log.warn("{} POM not found in {}", PomInfo.class.getSimpleName(), jarfile);
+        log.warn("{} POM not found in {}", Pom.class.getSimpleName(), jarfile);
         return null;
     }
 
