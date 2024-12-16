@@ -1,4 +1,4 @@
-package cn.org.expect.maven;
+package cn.org.expect.intellij.idea.plugin.maven;
 
 import javax.swing.*;
 
@@ -7,7 +7,7 @@ import com.intellij.openapi.util.IconLoader;
 /**
  * Idea 官方图标: {@linkplain com.intellij.icons.AllIcons}
  */
-public class MavenIcon {
+public class MavenSearchPluginIcon {
 
     public static final Icon CLASS_LEFT = load("/cn/org/expect/intellij/idea/plugin/maven/maven-search-class-left.svg");
 
@@ -37,7 +37,13 @@ public class MavenIcon {
 
     public static final Icon RIGHT_LICENSE = load("/cn/org/expect/intellij/idea/plugin/maven/maven-repository-right-license.svg");
 
+    public static final Icon RIGHT_PROJECT = load("/cn/org/expect/intellij/idea/plugin/maven/maven-repository-right-project.svg");
+
+    public static final Icon RIGHT_PARENT = load("/cn/org/expect/intellij/idea/plugin/maven/maven-repository-right-parent.svg");
+
+    public static final Icon RIGHT_SCM = load("/cn/org/expect/intellij/idea/plugin/maven/maven-repository-right-scm.svg");
+
     public static Icon load(String filepath) {
-        return IconLoader.getIcon(filepath, MavenIcon.class);
+        return IconLoader.getIcon(filepath, MavenSearchPluginIcon.class);
     }
 }

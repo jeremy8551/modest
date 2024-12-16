@@ -62,6 +62,18 @@ public interface Artifact {
     String getType();
 
     /**
+     * 判断工件是否相等
+     *
+     * @param groupId    域名
+     * @param artifactId 工件ID
+     * @param version    版本号
+     * @return 返回true表示相等，false表示不等
+     */
+    default boolean equals(String groupId, String artifactId, String version) {
+        return this.getGroupId().equals(groupId) && this.getArtifactId().equals(artifactId) && this.getVersion().equals(version);
+    }
+
+    /**
      * 判断工件的 groupId 与 artifactId 是否相等
      *
      * @param artifact 工件

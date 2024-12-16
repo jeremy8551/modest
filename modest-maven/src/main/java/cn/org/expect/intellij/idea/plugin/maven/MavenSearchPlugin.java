@@ -145,7 +145,7 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements MavenSearc
     }
 
     public void asyncRefresh() {
-        String pattern = this.context.getSearchText();
+        String pattern = this.context.getSearchText(); // TODO 是否使用搜索框中的文本
         this.asyncSearch(pattern, true);
     }
 
@@ -167,10 +167,6 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements MavenSearc
     }
 
     public void asyncSearch(String groupId, String artifactId) {
-//        if (StringUtils.isBlank(groupId) || StringUtils.isBlank(artifactId)) {
-//            throw new UnsupportedOperationException(groupId + ":" + artifactId);
-//        }
-
         this.setStatusBar(ArtifactSearchStatusMessageType.RUNNING, "maven.search.extra.text", groupId, artifactId, this.getRepositoryInfo().getDisplayName());
         this.execute(new ArtifactSearchExtraJob(groupId, artifactId));
     }

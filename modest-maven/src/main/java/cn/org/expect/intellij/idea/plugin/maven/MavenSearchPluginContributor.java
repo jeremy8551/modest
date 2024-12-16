@@ -103,6 +103,7 @@ public class MavenSearchPluginContributor extends AbstractGotoSEContributor {
                     navigation.setFold(this.plugin);
                 }
             }
+            this.plugin.display();
             return false;
         }
         return false;

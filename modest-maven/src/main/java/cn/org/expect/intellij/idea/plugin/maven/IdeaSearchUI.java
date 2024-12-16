@@ -2,7 +2,6 @@ package cn.org.expect.intellij.idea.plugin.maven;
 
 import javax.swing.*;
 
-import cn.org.expect.maven.MavenIcon;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -120,13 +119,13 @@ public class IdeaSearchUI {
 
         switch (type) {
             case NORMAL:
-                return MavenIcon.BOTTOM;
+                return MavenSearchPluginIcon.BOTTOM;
 
             case RUNNING:
-                return MavenIcon.BOTTOM_WAITING;
+                return MavenSearchPluginIcon.BOTTOM_WAITING;
 
             case ERROR:
-                return MavenIcon.BOTTOM_ERROR;
+                return MavenSearchPluginIcon.BOTTOM_ERROR;
 
             default:
                 throw new UnsupportedOperationException(type.name());

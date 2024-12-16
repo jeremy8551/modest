@@ -6,7 +6,7 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.maven.Artifact;
-import cn.org.expect.maven.MavenIcon;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 
 public class SearchNavigationClass extends AbstractSearchNavigation {
 
@@ -15,8 +15,8 @@ public class SearchNavigationClass extends AbstractSearchNavigation {
         this.setDepth(1);
         this.setPresentableText(artifact.getArtifactId());
         this.setLocationString(" " + artifact.getGroupId() + "  (" + artifact.getVersion() + ")");
-        this.setLeftIcon(MavenIcon.CLASS_LEFT);
-        this.setRightIcon(MavenIcon.RIGHT_REMOTE);
+        this.setLeftIcon(MavenSearchPluginIcon.CLASS_LEFT);
+        this.setRightIcon(MavenSearchPluginIcon.RIGHT_REMOTE);
         this.setRightText(artifact.getType() + " ");
     }
 

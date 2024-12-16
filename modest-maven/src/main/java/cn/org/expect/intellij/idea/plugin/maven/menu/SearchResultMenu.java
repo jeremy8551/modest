@@ -9,6 +9,7 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.SearchDisplay;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchDownloadJob;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchEDTJob;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchOpenParentJob;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginJob;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
 import cn.org.expect.maven.Artifact;
@@ -45,6 +46,8 @@ public class SearchResultMenu extends AbstractMenu {
     private final JMenuItem openIssueUrl = new JMenuItem(MavenMessage.get("maven.search.btn.open.issue.url.text")); // 打开项目的错误管理页面
     private final JMenuItem openPomFile = new JMenuItem(MavenMessage.get("maven.search.btn.open.pom.text")); // 打开 POM 文件
     private final JMenuItem copyDetail = new JMenuItem(MavenMessage.get("maven.search.btn.navigation.copy.detail.text")); // 复制详细信息
+    private final JMenuItem openUrl = new JMenuItem(MavenMessage.get("maven.search.btn.navigation.open.url.text")); // 打开
+    private final JMenuItem openProject = new JMenuItem(MavenMessage.get("maven.search.btn.navigation.open.project.text")); // 打开父项目
 
     public SearchResultMenu(MavenSearchPlugin plugin) {
         super(plugin);
@@ -237,23 +240,41 @@ public class SearchResultMenu extends AbstractMenu {
         // 删除文件
         deleteFile.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
-                File parent = plugin.getLocalRepository().getParent(navigation.getArtifact());
+                Artifact artifact = navigation.getArtifact();
+                File parent = plugin.getLocalRepository().getParent(artifact);
                 if (FileUtils.isDirectory(parent)) {
                     if (log.isDebugEnabled()) {
                         log.debug("delete local repository {} ..", parent.getAbsolutePath());
                     }
 
                     FileUtils.delete(parent);
-                    plugin.display();
                 }
+
+                plugin.getPomInfoRepository().delete(artifact); // 删除PomInfo缓存
+                navigation.getNavigationList().clear(); // 删除导航记录
+                plugin.display();
             }
         });
 
         // 复制详细信息
-        this.copyDetail.addActionListener(new MenuItemAction(plugin) {
+        copyDetail.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 plugin.copyToClipboard(navigation.getLocationString());
                 plugin.sendNotification(ArtifactSearchNotification.NORMAL, copyDetail.getText() + " " + navigation.getRightText());
+            }
+        });
+
+        // 打开URL链接
+        openUrl.addActionListener(new MenuItemAction(plugin) {
+            public void execute(MavenSearchNavigation navigation) {
+                BrowserUtil.browse(navigation.getLocationString());
+            }
+        });
+
+        // 打开项目
+        openProject.addActionListener(new MenuItemAction(plugin) {
+            public void execute(MavenSearchNavigation navigation) {
+                plugin.execute(new MavenSearchOpenParentJob(navigation.getArtifact()));
             }
         });
     }
@@ -306,17 +327,17 @@ public class SearchResultMenu extends AbstractMenu {
             topMenu.remove(cancelDownload);
         }
 
-        if (operation.supportOpenProjectURL()) {
-            topMenu.add(openProjectUrl);
-        } else {
-            topMenu.remove(openProjectUrl);
-        }
-
-        if (operation.supportOpenIssueURL()) {
-            topMenu.add(openIssueUrl);
-        } else {
-            topMenu.remove(openIssueUrl);
-        }
+//        if (operation.supportOpenProjectURL()) {
+//            topMenu.add(openProjectUrl);
+//        } else {
+//            topMenu.remove(openProjectUrl);
+//        }
+//
+//        if (operation.supportOpenIssueURL()) {
+//            topMenu.add(openIssueUrl);
+//        } else {
+//            topMenu.remove(openIssueUrl);
+//        }
 
         if (operation.supportOpenPomFile()) {
             topMenu.add(openPomFile);
@@ -349,7 +370,19 @@ public class SearchResultMenu extends AbstractMenu {
 
     public void displayDetailMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
         topMenu.removeAll();
-        topMenu.add(this.copyDetail);
+
+        // 复制文本
+        topMenu.add(copyDetail);
+
+        // 打开URL
+        if (StringUtils.indexOf(navigation.getRightText(), "URL", 0, true) != -1) {
+            topMenu.add(openUrl);
+        }
+
+        // 打开项目
+        if ("Parent".equalsIgnoreCase(navigation.getRightText()) && !plugin.getService().existsCommand(MavenSearchOpenParentJob.class, navigation.getArtifact())) {
+            topMenu.add(openProject);
+        }
 
         // 在鼠标位置显示弹出菜单
         SearchDisplay display = plugin.getIdeaUI().getDisplay();

@@ -3,10 +3,10 @@ package cn.org.expect.maven.concurrent;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
-import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.maven.search.ArtifactSearchStatusMessageType;
 import cn.org.expect.util.Ensure;
@@ -95,7 +95,7 @@ public class ArtifactSearchPatternJob extends ArtifactSearchJob {
      * @return 搜索结果
      * @throws Exception 发送错误
      */
-    private @Nullable ArtifactSearchResult queryPattern(ArtifactRepositoryDatabase database, String pattern) throws Exception {
+    public @Nullable ArtifactSearchResult queryPattern(ArtifactRepositoryDatabase database, String pattern) throws Exception {
         ArtifactSearchResult result = this.getRemoteRepository().query(pattern, 1);
         if (result != null) {
             database.insert(pattern, result);
@@ -111,7 +111,7 @@ public class ArtifactSearchPatternJob extends ArtifactSearchJob {
      * @return 搜索结果
      * @throws Exception 发生错误
      */
-    private @Nullable ArtifactSearchResult queryExtra(ArtifactRepositoryDatabase database, String pattern) throws Exception {
+    public @Nullable ArtifactSearchResult queryExtra(ArtifactRepositoryDatabase database, String pattern) throws Exception {
         String[] array = StringUtils.split(pattern, ':');
         String groupId = array[0];
         String artifactId = array[1];

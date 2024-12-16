@@ -7,11 +7,11 @@ import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPomInfoJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.Artifact;
-import cn.org.expect.maven.MavenIcon;
 import cn.org.expect.maven.pom.PomInfo;
 import cn.org.expect.util.StringUtils;
 
@@ -28,7 +28,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
         this.setPresentableText(artifact.getVersion());
         this.setLocationString("");
         this.setLeftIcon(null);
-        this.setRightIcon(MavenIcon.RIGHT_REMOTE);
+        this.setRightIcon(MavenSearchPluginIcon.RIGHT_REMOTE);
         this.setRightText("");
     }
 
@@ -52,13 +52,11 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
         this.setFold(false);
         search.asyncPomInfo(this.getArtifact());
         this.update(search, this.getArtifact());
-        search.display();
     }
 
     public void setFold(MavenSearch search) {
         this.setFold(true);
         this.setLeftIcon(null);
-        search.display();
     }
 
     public void unfold(MavenSearch search) {
@@ -66,45 +64,75 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
         PomInfo pomInfo = search.getPomInfoRepository().select(artifact);
         if (pomInfo != null) {
             if (this.child.isEmpty()) {
+                PomInfo.Parent parent = pomInfo.getParent();
+                if (StringUtils.isNotBlank(parent.getGroupId()) && StringUtils.isNotBlank(parent.getArtifactId())) {
+                    this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_PARENT, "", parent.getGroupId() + ":" + parent.getArtifactId() + ":" + parent.getVersion(), "Parent"));
+                }
+
+                if (StringUtils.isNotBlank(pomInfo.getDescription())) {
+                    this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_PROJECT, "", pomInfo.getDescription(), "Description"));
+                }
+
+                if (StringUtils.isNotBlank(pomInfo.getProjectUrl())) {
+                    this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_PROJECT, "", pomInfo.getProjectUrl(), "URL"));
+                }
+
+                // 源代码管理系统
+                PomInfo.Scm scm = pomInfo.getScm();
+                if (StringUtils.isNotBlank(scm.getConnection())) {
+                    this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_SCM, "", scm.getConnection(), "Connection"));
+                }
+                if (StringUtils.isNotBlank(scm.getDeveloperConnection())) {
+                    this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_SCM, "", scm.getDeveloperConnection(), "DeveloperConnection"));
+                }
+                if (StringUtils.isNotBlank(scm.getUrl())) {
+                    this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_SCM, "", scm.getUrl(), "URL"));
+                }
+                if (StringUtils.isNotBlank(scm.getTag())) {
+                    this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_SCM, "", scm.getTag(), "Tag"));
+                }
+
+                // 开发人员
                 List<PomInfo.Developer> developers = pomInfo.getDevelopers();
                 for (int i = 0; i < developers.size(); i++) {
                     PomInfo.Developer developer = developers.get(i);
-                    this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", developer.getName(), "Name"));
+                    this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_DEVELOPER, "", developer.getName(), "Name"));
 
                     if (StringUtils.isNotBlank(developer.getEmail())) {
-                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", developer.getEmail(), "Email"));
+                        this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_DEVELOPER, "", developer.getEmail(), "Email"));
                     }
 
                     if (StringUtils.isNotBlank(developer.getOrganization())) {
-                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", developer.getOrganization(), "Organization"));
+                        this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_DEVELOPER, "", developer.getOrganization(), "Organization"));
                     }
 
                     if (StringUtils.isNotBlank(developer.getOrganizationUrl())) {
-                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", developer.getOrganizationUrl(), "OrganizationUrl"));
+                        this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_DEVELOPER, "", developer.getOrganizationUrl(), "OrganizationUrl"));
                     }
 
                     if (!developer.getRoles().isEmpty()) {
                         for (String role : developer.getRoles()) {
-                            this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", role, "Role"));
+                            this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_DEVELOPER, "", role, "Role"));
                         }
                     }
 
                     if (StringUtils.isNotBlank(developer.getTimezone())) {
-                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_DEVELOPER, "", this.parseTimezone(developer.getTimezone()), "Timezone"));
+                        this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_DEVELOPER, "", this.parseTimezone(developer.getTimezone()), "Timezone"));
                     }
                 }
 
+                // 开源许可证
                 List<PomInfo.License> licenses = pomInfo.getLicenses();
                 for (int i = 0; i < licenses.size(); i++) {
                     PomInfo.License license = licenses.get(i);
-                    this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_LICENSE, "", license.getName(), "Name"));
+                    this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_LICENSE, "", license.getName(), "Name"));
 
                     if (StringUtils.isNotBlank(license.getUrl())) {
-                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_LICENSE, "", license.getUrl(), "URL"));
+                        this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_LICENSE, "", license.getUrl(), "URL"));
                     }
 
                     if (StringUtils.isNotBlank(license.getComments())) {
-                        this.child.add(new SearchNavigationDetail(artifact, MavenIcon.RIGHT_LICENSE, "", license.getComments(), "Comment"));
+                        this.child.add(new SearchNavigationDetail(artifact, MavenSearchPluginIcon.RIGHT_LICENSE, "", license.getComments(), "Comment"));
                     }
                 }
             }
@@ -122,7 +150,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
 
     private void update(MavenSearch search, Artifact artifact) {
         if (search.getService().isRunning(MavenSearchPomInfoJob.class, job -> job.getArtifact().equals(artifact))) {
-            this.setLeftIcon(MavenIcon.LEFT_WAITING);
+            this.setLeftIcon(MavenSearchPluginIcon.LEFT_WAITING);
         } else {
             this.setLeftIcon(null);
         }

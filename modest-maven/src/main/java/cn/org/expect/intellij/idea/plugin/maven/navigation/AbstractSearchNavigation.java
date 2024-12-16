@@ -5,7 +5,7 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchDownloadJob;
 import cn.org.expect.maven.Artifact;
-import cn.org.expect.maven.MavenIcon;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.UniqueSequenceGenerator;
@@ -156,15 +156,15 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
 
         // 如果正在下载工件，则更新图标
         if (search.getService().isRunning(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(artifact))) { // 正在下载
-            this.setRightIcon(MavenIcon.RIGHT_DOWNLOAD);
+            this.setRightIcon(MavenSearchPluginIcon.RIGHT_DOWNLOAD);
             return;
         }
 
         // 如果工件已下载，则更新图标
         if (search.getLocalRepository().exists(artifact)) {
-            this.setRightIcon(MavenIcon.RIGHT_LOCAL);
+            this.setRightIcon(MavenSearchPluginIcon.RIGHT_LOCAL);
         } else {
-            this.setRightIcon(MavenIcon.RIGHT_REMOTE);
+            this.setRightIcon(MavenSearchPluginIcon.RIGHT_REMOTE);
         }
     }
 

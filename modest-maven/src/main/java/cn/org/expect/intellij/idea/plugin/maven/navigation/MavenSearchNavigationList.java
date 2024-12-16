@@ -40,7 +40,11 @@ public class MavenSearchNavigationList {
         return this.list.size();
     }
 
-    public List<SearchEverywhereFoundElementInfo> toInfoList(MavenSearchPlugin plugin) {
+    public MavenSearchNavigation get(int index) {
+        return this.list.get(index);
+    }
+
+    public List<SearchEverywhereFoundElementInfo> toInfos(MavenSearchPlugin plugin) {
         // 展开/折叠导航记录
         for (int i = 0; i < this.list.size(); i++) {
             MavenSearchNavigation navigation = this.list.get(i);

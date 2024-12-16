@@ -4,9 +4,9 @@ import cn.org.expect.util.Ensure;
 
 public class MavenSearchEDTJob extends MavenSearchPluginJob implements EDTJob {
 
-    private final Runnable command;
+    private final Task command;
 
-    public MavenSearchEDTJob(Runnable command, String description, Object... descriptionParams) {
+    public MavenSearchEDTJob(Task command, String description, Object... descriptionParams) {
         super(description, descriptionParams);
         this.command = Ensure.notNull(command);
     }
@@ -14,5 +14,9 @@ public class MavenSearchEDTJob extends MavenSearchPluginJob implements EDTJob {
     public final int execute() throws Exception {
         this.command.run();
         return 0;
+    }
+
+    public interface Task {
+        void run() throws Exception;
     }
 }

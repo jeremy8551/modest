@@ -26,10 +26,9 @@ public interface MavenSearch extends ArtifactSearch {
             return new MavenSearchNavigationList(new ArrayList<>(0), 0, false);
         }
 
-        List<MavenSearchNavigation> list = new ArrayList<>();
-
         // 按类名搜索
         if (ClassUtils.equals(this.getRepository().getClass(), SearchClassInRepository.class)) {
+            List<MavenSearchNavigation> list = new ArrayList<>();
             for (Artifact artifact : result.getList()) {
                 SearchNavigationClass navigation = new SearchNavigationClass(artifact);
                 list.add(navigation);
@@ -38,6 +37,7 @@ public interface MavenSearch extends ArtifactSearch {
         }
 
         // 搜索工件
+        List<MavenSearchNavigation> list = new ArrayList<>();
         for (Artifact artifact : result.getList()) {
             list.add(new SearchNavigationHead(artifact));
         }

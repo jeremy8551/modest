@@ -173,19 +173,8 @@ public class PomInfo {
             this.version = StringUtils.trimBlank(version);
         }
 
-        public boolean isInherit(String groupId) {
-            if (StringUtils.isBlank(this.groupId) || StringUtils.isBlank(this.artifactId) || StringUtils.isBlank(this.version)) {
-                return false;
-            }
-
-            if (this.groupId.startsWith(groupId) || groupId.startsWith(this.groupId)) {
-                return true;
-            }
-
-            // 域名的前两位相等
-            String[] a1 = StringUtils.split(this.groupId, '.');
-            String[] a2 = StringUtils.split(groupId, '.');
-            return a1.length >= 2 && a2.length >= 2 && a1[0].equals(a2[0]) && a1[1].equals(a2[1]);
+        public String toString() {
+            return this.groupId + ":" + this.artifactId + ":" + this.version;
         }
     }
 

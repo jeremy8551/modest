@@ -2,6 +2,11 @@ package cn.org.expect.maven.concurrent;
 
 import java.util.function.Predicate;
 
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchArtifactJob;
+import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.MavenRuntimeException;
+import cn.org.expect.util.Dates;
+
 /**
  * 线程池
  */
@@ -44,6 +49,36 @@ public interface ArtifactSearchExecutorService {
      */
     default <T> boolean isRunning(Class<T> type) {
         return this.isRunning(type, job -> true);
+    }
+
+    /**
+     * 判断是否正在执行任务
+     *
+     * @param type     任务的Class信息
+     * @param artifact 工件信息
+     * @return 返回true表示正在运行 false表示没有运行
+     */
+    default boolean existsCommand(Class<?> type, Artifact artifact) {
+        if (ArtifactSearchExtraJob.class.equals(type)) {
+            return this.isRunning(ArtifactSearchExtraJob.class, job -> job.getGroupId().equals(artifact.getGroupId()) && job.getArtifactId().equals(artifact.getArtifactId()));
+        } else if (MavenSearchArtifactJob.class.isAssignableFrom(type)) {
+            return this.isRunning(type, job -> ((MavenSearchArtifactJob) job).getArtifact().equalsVersion(artifact));
+        } else {
+            throw new UnsupportedOperationException(type.getName());
+        }
+    }
+
+    /**
+     * 等待任务执行完毕
+     *
+     * @param type     任务的Class信息
+     * @param artifact 工件信息
+     */
+    default void waitFor(Class<?> type, Artifact artifact) {
+        Throwable e = Dates.waitFor(() -> this.existsCommand(type, artifact), 200, 10 * 1000);
+        if (e != null) {
+            throw new MavenRuntimeException(e, e.getLocalizedMessage());
+        }
     }
 
     /**
