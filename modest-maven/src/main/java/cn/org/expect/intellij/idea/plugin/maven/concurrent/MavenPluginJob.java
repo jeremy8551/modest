@@ -8,6 +8,7 @@ import cn.org.expect.intellij.idea.plugin.maven.SearchDisplay;
 import cn.org.expect.intellij.idea.plugin.maven.listener.SearchFieldListener;
 import cn.org.expect.intellij.idea.plugin.maven.menu.SearchFieldMenu;
 import cn.org.expect.jdk.JavaDialectFactory;
+import cn.org.expect.maven.concurrent.MavenJob;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
@@ -17,16 +18,16 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.util.concurrency.EdtExecutorService;
 
-public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
+public class MavenPluginJob extends MavenJob {
 
-    public MavenSearchPluginInitJob() {
+    public MavenPluginJob() {
         super("");
     }
 
     public int execute() {
         // 如果 manager.getCurrentlyShownUI() 报错，则捕获异常直接退出
         try {
-            MavenSearchPlugin plugin = this.getSearch();
+            MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
             this.setSearchEverywhereUI(plugin); // 加载 UI 组件
             this.setPopupMenuUI(plugin); // 加载弹出菜单
             this.setEditorSelectText(plugin);
@@ -47,7 +48,7 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
         MavenSearchPluginContext context = plugin.getContext();
         AnActionEvent event = context.getActionEvent();
         SearchEverywhereUI ui = this.getSearchEverywhereUI(event);
-        plugin.getService().setParameter(MavenSearchExecutorService.PARAMETER, JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
+        plugin.getService().setParameter(MavenPluginExecutorService.PARAMETER, JavaDialectFactory.get().getField(ui, "rebuildListAlarm"));
         plugin.getIdeaUI().setSearchEverywhereUI(ui);
         ui.addSearchListener(plugin.getSearchListener());
     }
@@ -88,34 +89,36 @@ public class MavenSearchPluginInitJob extends MavenSearchPluginJob {
     private void setEditorSelectText(MavenSearchPlugin plugin) {
         // 在已打开的编辑器中，如果选中了文本，则自动对文本进行查询
         Editor editor = plugin.getContext().getActionEvent().getDataContext().getData(CommonDataKeys.EDITOR);
-
-        // 只能使用 EdtExecutorService.getInstance() 不能递归调用 plugin.execute() 方法
         if (editor != null) {
-            EdtExecutorService.getInstance().execute(new MavenSearchEDTJob(() -> {
-                String editorSelectText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
-                if (StringUtils.isNotBlank(editorSelectText)) {
+            // 只能使用 EdtExecutorService.getInstance() 不能递归调用 plugin.execute() 方法
+            EdtExecutorService.getInstance().execute(new MavenJob("maven.search.job.select.editor.text.description") {
+                public int execute() {
+                    String editorSelectText = StringUtils.trimBlank(editor.getSelectionModel().getSelectedText());
+                    if (StringUtils.isNotBlank(editorSelectText)) {
 
-                    // 编辑器中选中的文本
-                    String pattern = plugin.getPattern().parse(editorSelectText);
-                    if (log.isDebugEnabled()) {
-                        log.debug("{} Idea editor selected text: {} --> {}", getName(), editorSelectText, pattern);
-                    }
+                        // 编辑器中选中的文本
+                        String pattern = plugin.getPattern().parse(editorSelectText);
+                        if (log.isDebugEnabled()) {
+                            log.debug("{} Idea editor selected text: {} --> {}", getName(), editorSelectText, pattern);
+                        }
 
-                    // 复制选中的文本到搜索栏
-                    plugin.getIdeaUI().getSearchField().setText(pattern);
+                        // 复制选中的文本到搜索栏
+                        plugin.getIdeaUI().getSearchField().setText(pattern);
 
-                    // 自动切换 Tab 页
-                    if (plugin.getSettings().isAutoSwitchTab() && plugin.getSettings().isTabVisible() && plugin.getPattern().isDependency(editorSelectText)) {
-                        plugin.getIdeaUI().switchToTab(plugin.getContributor().getSearchProviderId());
-                        plugin.asyncSearch(pattern);
+                        // 自动切换 Tab 页
+                        if (plugin.getSettings().isAutoSwitchTab() && plugin.getSettings().isTabVisible() && plugin.getPattern().isDependency(editorSelectText)) {
+                            plugin.getIdeaUI().switchToTab(plugin.getContributor().getSearchProviderId());
+                            plugin.asyncSearch(pattern); // TODO 可以去掉？
+                        }
+                    } else {
+                        // （Idea的搜索输入框中会出现上一次搜索的文本）如果未选中任何内容，则自动搜索输入框中的文本
+                        if (plugin.canSearch()) {
+                            plugin.asyncSearch(plugin.getIdeaUI().getSearchField().getText());
+                        }
                     }
-                } else {
-                    // （Idea的搜索输入框中会出现上一次搜索的文本）如果未选中任何内容，则自动搜索输入框中的文本
-                    if (plugin.canSearch()) {
-                        plugin.asyncSearch(plugin.getIdeaUI().getSearchField().getText());
-                    }
+                    return 0;
                 }
-            }, "maven.search.job.select.editor.text.description"));
+            });
         }
     }
 }

@@ -1,12 +1,13 @@
 package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 
+import cn.org.expect.maven.concurrent.MavenJob;
 import cn.org.expect.util.Ensure;
 
-public class MavenSearchEDTJob extends MavenSearchPluginJob implements EDTJob {
+public class MavenPluginEDTJob extends MavenJob implements EDTJob {
 
     private final Task command;
 
-    public MavenSearchEDTJob(Task command, String description, Object... descriptionParams) {
+    public MavenPluginEDTJob(Task command, String description, Object... descriptionParams) {
         super(description, descriptionParams);
         this.command = Ensure.notNull(command);
     }

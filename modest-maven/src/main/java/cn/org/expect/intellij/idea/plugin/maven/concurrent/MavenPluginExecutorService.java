@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -16,16 +15,16 @@ import cn.org.expect.concurrent.BaseJob;
 import cn.org.expect.concurrent.Terminate;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.maven.concurrent.ArtifactSearchJob;
-import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
+import cn.org.expect.maven.concurrent.MavenExecutorService;
+import cn.org.expect.maven.concurrent.MavenJob;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.util.Alarm;
 import com.intellij.util.concurrency.EdtExecutorService;
 import org.jetbrains.annotations.NotNull;
 
 @EasyBean(singleton = true)
-public class MavenSearchExecutorService implements ArtifactSearchExecutorService, ExecutorService {
-    private final static Log log = LogFactory.getLog(MavenSearchExecutorService.class);
+public class MavenPluginExecutorService implements MavenExecutorService {
+    private final static Log log = LogFactory.getLog(MavenPluginExecutorService.class);
 
     /** SearchEverywhereUI 线程池标志 */
     public final static String PARAMETER = "Alarm";
@@ -36,7 +35,7 @@ public class MavenSearchExecutorService implements ArtifactSearchExecutorService
     /** 还未执行完毕的任务集合 */
     private final List<Runnable> list;
 
-    public MavenSearchExecutorService() {
+    public MavenPluginExecutorService() {
         this.list = new Vector<>();
     }
 
@@ -82,8 +81,8 @@ public class MavenSearchExecutorService implements ArtifactSearchExecutorService
     }
 
     public void addJob(Object command) {
-        if (command instanceof ArtifactSearchJob) {
-            ArtifactSearchJob job = (ArtifactSearchJob) command;
+        if (command instanceof MavenJob) {
+            MavenJob job = (MavenJob) command;
             job.setService(this);
             this.list.add(job);
         }

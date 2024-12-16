@@ -7,7 +7,7 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
 import cn.org.expect.maven.Artifact;
-import cn.org.expect.maven.concurrent.ArtifactSearchExtraJob;
+import cn.org.expect.maven.concurrent.SearchExtraJob;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 
 public class SearchNavigationHead extends AbstractSearchNavigation {
@@ -31,7 +31,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
     }
 
     public boolean supportFold() {
-        MavenSearchPlugin plugin = this.getPlugin();
+        MavenSearchPlugin plugin = this.getSearch();
         Artifact artifact = this.getArtifact();
         ArtifactSearchResult result = plugin.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId());
         if (result != null && !result.isExpire(plugin.getSettings().getExpireTimeMillis())) { // 如果导航记录有子节点，则更新图标
@@ -42,7 +42,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
 
     public void setUnfold() {
         this.setFold(false); // 设置为：展开
-        MavenSearchPlugin plugin = this.getPlugin();
+        MavenSearchPlugin plugin = this.getSearch();
         Artifact artifact = this.getArtifact();
         ArtifactSearchResult result = plugin.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId());
         if (result == null || result.isExpire(plugin.getSettings().getExpireTimeMillis())) {
@@ -56,7 +56,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
     }
 
     public void unfold() {
-        MavenSearchPlugin plugin = this.getPlugin();
+        MavenSearchPlugin plugin = this.getSearch();
         Artifact artifact = this.getArtifact();
         ArtifactSearchResult result = plugin.getDatabase().select(artifact.getGroupId(), artifact.getArtifactId());
         if (result != null) {
@@ -98,7 +98,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
      */
     protected void updateWaitingIcon() {
         Artifact artifact = this.getArtifact();
-        if (this.getPlugin().getService().isRunning(ArtifactSearchExtraJob.class, job -> artifact.getGroupId().equals(job.getGroupId()) && artifact.getArtifactId().equals(job.getArtifactId()))) {
+        if (this.getSearch().getService().isRunning(SearchExtraJob.class, job -> artifact.getGroupId().equals(job.getGroupId()) && artifact.getArtifactId().equals(job.getArtifactId()))) {
             this.setLeftIcon(MavenSearchPluginIcon.LEFT_WAITING);
         }
     }

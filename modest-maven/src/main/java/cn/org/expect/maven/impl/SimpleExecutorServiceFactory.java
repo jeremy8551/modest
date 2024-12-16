@@ -8,15 +8,16 @@ import java.util.concurrent.TimeUnit;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.concurrent.ExecutorServiceFactory;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchExecutorService;
+import cn.org.expect.maven.concurrent.MavenExecutorService;
+import cn.org.expect.util.Ensure;
 
 @EasyBean
 public class SimpleExecutorServiceFactory implements ExecutorServiceFactory {
 
-    private final MavenSearchExecutorService service;
+    private final MavenExecutorService service;
 
-    public SimpleExecutorServiceFactory(MavenSearchExecutorService service) {
-        this.service = service;
+    public SimpleExecutorServiceFactory(MavenExecutorService service) {
+        this.service = Ensure.notNull(service);
     }
 
     public ExecutorService create(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {

@@ -12,7 +12,7 @@ import cn.org.expect.util.Settings;
  * 插件配置信息
  */
 @EasyBean(singleton = true)
-public class SimpleMavenSearchPluginSettings implements MavenSearchPluginSettings {
+public class SimpleMavenPluginSettings implements MavenPluginSettings {
 
     /** 插件ID */
     private String id;
@@ -53,7 +53,7 @@ public class SimpleMavenSearchPluginSettings implements MavenSearchPluginSetting
     /** true表示读取父工程POM的项目信息，false表示只读本工程POM中的项目信息 */
     private volatile boolean useParentPom;
 
-    public SimpleMavenSearchPluginSettings() {
+    public SimpleMavenPluginSettings() {
         this.workHome = new File(Settings.getUserHome(), ".maven_plus");
         FileUtils.createDirectory(this.workHome);
         this.id = "";

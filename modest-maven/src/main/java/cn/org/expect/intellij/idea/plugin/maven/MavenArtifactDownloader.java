@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Collections;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchEDTJob;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginEDTJob;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.repository.AbstractArtifactDownloader;
@@ -18,7 +18,7 @@ import org.jetbrains.idea.maven.execution.MavenRunnerSettings;
 @EasyBean(value = "download.use.maven", priority = Integer.MAX_VALUE)
 public class MavenArtifactDownloader extends AbstractArtifactDownloader {
 
-    private volatile MavenSearchEDTJob job;
+    private volatile MavenPluginEDTJob job;
 
     private volatile boolean running;
 
@@ -34,7 +34,7 @@ public class MavenArtifactDownloader extends AbstractArtifactDownloader {
         this.running = true;
         MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
         if (plugin.getIdeaMavenPlugin().isMavenPluginEnable()) {
-            this.job = new MavenSearchEDTJob(() -> { // 必须使用 EDT 线程执行
+            this.job = new MavenPluginEDTJob(() -> { // MavenRunner 必须使用 EDT 线程执行
                 MavenRunnerParameters params = new MavenRunnerParameters();
                 params.setGoals(Collections.singletonList("dependency:get"));
                 params.setCmdOptions("-Dartifact=" + artifact.toMavenId() + ":" + artifact.getType());

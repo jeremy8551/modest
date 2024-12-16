@@ -2,15 +2,13 @@ package cn.org.expect.maven.concurrent;
 
 import java.util.function.Predicate;
 
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchArtifactJob;
-import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.MavenRuntimeException;
 import cn.org.expect.util.Dates;
 
 /**
  * 线程池
  */
-public interface ArtifactSearchExecutorService {
+public interface MavenService {
 
     /**
      * 设置参数
@@ -52,30 +50,14 @@ public interface ArtifactSearchExecutorService {
     }
 
     /**
-     * 判断是否正在执行任务
-     *
-     * @param type     任务的Class信息
-     * @param artifact 工件信息
-     * @return 返回true表示正在运行 false表示没有运行
-     */
-    default boolean existsCommand(Class<?> type, Artifact artifact) {
-        if (ArtifactSearchExtraJob.class.equals(type)) {
-            return this.isRunning(ArtifactSearchExtraJob.class, job -> job.getGroupId().equals(artifact.getGroupId()) && job.getArtifactId().equals(artifact.getArtifactId()));
-        } else if (MavenSearchArtifactJob.class.isAssignableFrom(type)) {
-            return this.isRunning(type, job -> ((MavenSearchArtifactJob) job).getArtifact().equalMavenId(artifact));
-        } else {
-            throw new UnsupportedOperationException(type.getName());
-        }
-    }
-
-    /**
      * 等待任务执行完毕
      *
-     * @param type     任务的Class信息
-     * @param artifact 工件信息
+     * @param type      任务的 Class 信息
+     * @param condition 判断任务运行的规则
+     * @param timeout   超时时间（单位：毫秒），小于等于零表示不设置超时时间
      */
-    default void waitFor(Class<?> type, Artifact artifact) {
-        Throwable e = Dates.waitFor(() -> this.existsCommand(type, artifact), 200, 10 * 1000);
+    default <T> void waitFor(Class<T> type, Predicate<T> condition, long timeout) {
+        Throwable e = Dates.waitFor(() -> this.isRunning(type, condition), 200, timeout);
         if (e != null) {
             throw new MavenRuntimeException(e, e.getLocalizedMessage());
         }

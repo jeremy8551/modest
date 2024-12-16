@@ -7,10 +7,9 @@ import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.concurrent.EasyJobReaderImpl;
 import cn.org.expect.concurrent.EasyJobService;
 import cn.org.expect.concurrent.ThreadSource;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.EDTJob;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginJob;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.concurrent.MavenJob;
 import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
 import cn.org.expect.maven.repository.AbstractArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactOperation;
@@ -128,7 +127,7 @@ public class CentralMavenRepository extends AbstractArtifactRepository {
         return new SimpleArtifactSearchResult(CentralMavenRepository.class.getName(), ArtifactSearchResultType.ALL, result.sortByTime().getList(), start, result.getFoundNumber(), System.currentTimeMillis(), false);
     }
 
-    public static class CentralMavenJob extends MavenSearchPluginJob implements EDTJob {
+    public static class CentralMavenJob extends MavenJob {
 
         private final String url;
 

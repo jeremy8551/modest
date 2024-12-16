@@ -3,7 +3,7 @@ package cn.org.expect.intellij.idea.plugin.maven;
 import java.util.List;
 
 import cn.org.expect.intellij.idea.plugin.maven.log.IdeaLogBuilder;
-import cn.org.expect.intellij.idea.plugin.maven.settings.MavenSearchPluginSettings;
+import cn.org.expect.intellij.idea.plugin.maven.settings.MavenPluginSettings;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.ArtifactSearchIoc;
@@ -78,7 +78,7 @@ public class MavenSearchPluginApplication implements AppLifecycleListener {
         for (IdeaPluginDescriptor descriptor : plugins) {
             String id = descriptor.getPluginId().getIdString();
             if (id.equals(packageName)) {
-                MavenSearchPluginSettings settings = ioc.getBean(MavenSearchPluginSettings.class);
+                MavenPluginSettings settings = ioc.getBean(MavenPluginSettings.class);
                 settings.setId(id); // 插件ID
                 settings.setName(descriptor.getName()); // 插件名
                 settings.load();

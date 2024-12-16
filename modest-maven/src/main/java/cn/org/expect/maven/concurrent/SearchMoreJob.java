@@ -9,11 +9,11 @@ import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.search.ArtifactSearch;
 
-public class ArtifactSearchMoreJob extends ArtifactSearchPatternJob {
+public class SearchMoreJob extends SearchPatternJob {
 
     private final String pattern;
 
-    public ArtifactSearchMoreJob(String pattern) {
+    public SearchMoreJob(String pattern) {
         super(pattern);
         this.description = MavenMessage.get("maven.search.job.search.more.description");
         this.pattern = pattern;

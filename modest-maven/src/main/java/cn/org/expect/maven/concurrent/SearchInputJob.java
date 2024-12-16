@@ -11,12 +11,12 @@ import cn.org.expect.util.StringUtils;
 /**
  * 守护线程任务，监听并执行用户输入的模糊查询
  */
-public class ArtifactSearchInputJob extends ArtifactSearchJob {
+public class SearchInputJob extends MavenJob {
 
     /** 远程调用组件 */
-    protected final BlockingQueue<ArtifactSearchPatternJob> queue;
+    protected final BlockingQueue<SearchPatternJob> queue;
 
-    public ArtifactSearchInputJob() {
+    public SearchInputJob() {
         super("maven.search.job.search.pattern.daemon.description");
         this.queue = new LinkedTransferQueue<>();
     }
@@ -28,10 +28,10 @@ public class ArtifactSearchInputJob extends ArtifactSearchJob {
      * @param pattern 字符串
      */
     public synchronized void search(ArtifactSearch search, String pattern) {
-        search.getService().terminate(ArtifactSearchPatternJob.class, job -> job.getClass().equals(ArtifactSearchPatternJob.class)); // 终止正在运行的任务
+        search.getService().terminate(SearchPatternJob.class, job -> job.getClass().equals(SearchPatternJob.class)); // 终止正在运行的任务
 
         try {
-            ArtifactSearchPatternJob job = new ArtifactSearchPatternJob(pattern);
+            SearchPatternJob job = new SearchPatternJob(pattern);
             job.setSearch(search);
             this.queue.put(job);
         } catch (Throwable e) {
@@ -42,7 +42,7 @@ public class ArtifactSearchInputJob extends ArtifactSearchJob {
     public int execute() throws Exception {
         while (!this.terminate) {
             try {
-                ArtifactSearchPatternJob job = this.queue.take();
+                SearchPatternJob job = this.queue.take();
                 String pattern = job.getPattern();
                 ArtifactSearch search = job.getSearch();
 

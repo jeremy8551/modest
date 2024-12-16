@@ -6,26 +6,27 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigationList;
 import cn.org.expect.maven.Artifact;
-import cn.org.expect.maven.concurrent.ArtifactSearchExtraJob;
-import cn.org.expect.maven.concurrent.ArtifactSearchPatternJob;
+import cn.org.expect.maven.concurrent.MavenArtifactJob;
+import cn.org.expect.maven.concurrent.SearchExtraJob;
+import cn.org.expect.maven.concurrent.SearchPatternJob;
 import cn.org.expect.maven.pom.Pom;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 
-public class MavenSearchOpenParentJob extends MavenSearchArtifactJob {
+public class MavenPluginOpenParentJob extends MavenArtifactJob {
 
-    public MavenSearchOpenParentJob(Artifact artifact) {
+    public MavenPluginOpenParentJob(Artifact artifact) {
         super(artifact, "maven.search.job.open.parent.project.description", artifact.toMavenId());
     }
 
     public int execute() throws Exception {
         Artifact artifact = this.getArtifact();
-        MavenSearchPlugin plugin = this.getSearch();
+        MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
         Pom pomInfo = plugin.getPomRepository().select(artifact);
         if (pomInfo != null) {
             Pom.Parent parent = pomInfo.getParent();
             String pattern = parent.getGroupId() + ":" + parent.getArtifactId();
 
-            ArtifactSearchResult result = plugin.aware(new ArtifactSearchPatternJob(pattern)).queryExtra(plugin.getDatabase(), pattern);
+            ArtifactSearchResult result = plugin.aware(new SearchPatternJob(pattern)).queryExtra(plugin.getDatabase(), pattern);
             if (result != null) {
                 plugin.saveSearchResult(result);
                 MavenSearchNavigationList navigationList = plugin.getContext().getNavigationList();
@@ -33,7 +34,7 @@ public class MavenSearchOpenParentJob extends MavenSearchArtifactJob {
                     MavenSearchNavigation navigation = navigationList.get(i);
                     if (navigation.getDepth() == 1) {
                         navigation.setUnfold(); // 展开
-                        plugin.getService().waitFor(ArtifactSearchExtraJob.class, navigation.getArtifact()); // 等待后台任务执行完毕
+                        plugin.getService().waitFor(SearchExtraJob.class, job -> navigation.getArtifact().equals(job.getGroupId(), job.getArtifactId()), 10 * 1000); // 等待后台任务执行完毕
                         navigation.unfold(); // 展开操作
 
                         List<? extends MavenSearchNavigation> childList = navigation.getNavigationList();

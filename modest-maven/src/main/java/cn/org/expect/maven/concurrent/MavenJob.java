@@ -13,11 +13,11 @@ import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
-public abstract class ArtifactSearchJob extends BaseJob implements Runnable, ArtifactSearchAware {
-    protected final static Log log = LogFactory.getLog(ArtifactSearchJob.class);
+public abstract class MavenJob extends BaseJob implements Runnable, ArtifactSearchAware {
+    protected final static Log log = LogFactory.getLog(MavenJob.class);
 
     /** 线程池 */
-    protected volatile ArtifactSearchExecutorService service;
+    protected volatile MavenService service;
 
     /** 搜索接口 */
     private ArtifactSearch search;
@@ -37,7 +37,7 @@ public abstract class ArtifactSearchJob extends BaseJob implements Runnable, Art
     /** 任务描述信息 */
     protected String description;
 
-    public ArtifactSearchJob(String description, Object... descriptionParams) {
+    public MavenJob(String description, Object... descriptionParams) {
         this.terminate = false;
         this.description = MavenMessage.toString(description, descriptionParams);
         this.setName(this.getClass().getName() + "-" + Dates.format17());
@@ -45,7 +45,7 @@ public abstract class ArtifactSearchJob extends BaseJob implements Runnable, Art
         this.running = false;
     }
 
-    public void setService(ArtifactSearchExecutorService service) {
+    public void setService(MavenService service) {
         this.service = Ensure.notNull(service);
     }
 

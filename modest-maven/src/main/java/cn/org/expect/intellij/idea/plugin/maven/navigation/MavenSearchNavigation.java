@@ -4,13 +4,12 @@ import java.util.List;
 import javax.swing.*;
 
 import cn.org.expect.maven.Artifact;
-import cn.org.expect.maven.search.ArtifactSearchAware;
 import com.intellij.navigation.NavigationItem;
 
 /**
  * 查询结果导航结果中每条记录的接口
  */
-public interface MavenSearchNavigation extends NavigationItem, ArtifactSearchAware {
+public interface MavenSearchNavigation extends NavigationItem {
 
     /**
      * 导航记录名（唯一）

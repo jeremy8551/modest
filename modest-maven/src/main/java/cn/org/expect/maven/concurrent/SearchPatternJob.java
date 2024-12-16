@@ -14,12 +14,12 @@ import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import org.jetbrains.annotations.Nullable;
 
-public class ArtifactSearchPatternJob extends ArtifactSearchJob {
+public class SearchPatternJob extends MavenJob {
 
     /** 模糊搜索的文本 */
     protected final String pattern;
 
-    public ArtifactSearchPatternJob(String pattern) {
+    public SearchPatternJob(String pattern) {
         super("maven.search.job.search.pattern.description", pattern);
         this.pattern = Ensure.notNull(pattern);
     }

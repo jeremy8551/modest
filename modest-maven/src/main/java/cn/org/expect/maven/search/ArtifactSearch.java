@@ -5,7 +5,7 @@ import java.io.File;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.ArtifactOption;
 import cn.org.expect.maven.ArtifactSearchIoc;
-import cn.org.expect.maven.concurrent.ArtifactSearchExecutorService;
+import cn.org.expect.maven.concurrent.MavenService;
 import cn.org.expect.maven.pom.PomRepository;
 import cn.org.expect.maven.repository.ArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
@@ -116,7 +116,7 @@ public interface ArtifactSearch {
      *
      * @return 线程池
      */
-    ArtifactSearchExecutorService getService();
+    MavenService getService();
 
     /**
      * 返回仓库信息
@@ -180,14 +180,6 @@ public interface ArtifactSearch {
      * @param artifact 工件信息
      */
     void asyncDownload(Artifact artifact);
-
-    /**
-     * 等待工件下载完毕
-     *
-     * @param artifact 工件信息
-     * @param timeout  超时时间，单位：毫秒
-     */
-    void waitDownload(Artifact artifact, long timeout);
 
     /**
      * 保存搜索结果

@@ -12,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
 /**
  * 打开 Maven 配置的 settings.xml
  */
-public class OpenMavenSettingsXml extends AnAction {
+public class OpenMavenSettingsXmlAction extends AnAction {
 
-    public OpenMavenSettingsXml() {
+    public OpenMavenSettingsXmlAction() {
         super(MavenMessage.get("maven.search.open.local.settings.xml.menu"));
     }
 

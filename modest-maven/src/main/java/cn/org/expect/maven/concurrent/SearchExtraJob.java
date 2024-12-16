@@ -4,13 +4,13 @@ import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.util.StringUtils;
 
-public class ArtifactSearchExtraJob extends ArtifactSearchJob {
+public class SearchExtraJob extends MavenJob {
 
     private final String groupId;
 
     private final String artifactId;
 
-    public ArtifactSearchExtraJob(String groupId, String artifactId) {
+    public SearchExtraJob(String groupId, String artifactId) {
         super("maven.search.job.search.extra.description", groupId + ":" + artifactId);
         this.groupId = StringUtils.trimBlank(groupId);
         this.artifactId = StringUtils.trimBlank(artifactId);

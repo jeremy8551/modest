@@ -14,10 +14,10 @@ import org.json.JSONObject;
 /**
  * Idea搜索接口的配置信息
  */
-public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
+public interface MavenPluginSettings extends ArtifactSearchSettings {
 
     /** 日志接口 */
-    Log log = LogFactory.getLog(MavenSearchPluginSettings.class);
+    Log log = LogFactory.getLog(MavenPluginSettings.class); // TODO 删除
 
     /** 搜索接口配置信息存储的文件名 */
     String SETTINGS_TABLE_NAME = "MAVEN_SEARCH_PLUGIN_SETTINGS.json";
@@ -107,20 +107,6 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
     void setNavigationPriority(int navigationPriority);
 
     /**
-     * 下载工件的方式
-     *
-     * @return 下载方式
-     */
-    String getDownloadWay();
-
-    /**
-     * 设置下载工件的方式
-     *
-     * @param downSource 下载方式
-     */
-    void setDownloadWay(String downSource);
-
-    /**
      * 返回选项卡名
      *
      * @return 选项卡名
@@ -158,7 +144,7 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
      * @param filename 文件名
      */
     default void save(String filename) {
-        MavenSearchPluginSettings settings = this;
+        MavenPluginSettings settings = this;
         File file = new File(settings.getWorkHome(), filename);
         try {
             ObjectMapper mapper = new ObjectMapper();
@@ -180,18 +166,18 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
      * @param filename 文件名
      */
     default void load(String filename) {
-        MavenSearchPluginSettings settings = this;
+        MavenPluginSettings settings = this;
         File file = new File(settings.getWorkHome(), filename);
         try {
             if (file.exists() && file.isFile()) {
                 String jsonStr = FileUtils.readline(file, CharsetName.UTF_8, 0);
 
                 if (log.isDebugEnabled()) {
-                    log.debug("load {}, {}", MavenSearchPluginSettings.class.getSimpleName(), jsonStr);
+                    log.debug("load {}, {}", MavenPluginSettings.class.getSimpleName(), jsonStr);
                 }
 
                 // 默认值
-                SimpleMavenSearchPluginSettings def = new SimpleMavenSearchPluginSettings();
+                SimpleMavenPluginSettings def = new SimpleMavenPluginSettings();
 
                 JSONObject jsonObject = new JSONObject(jsonStr);
                 long inputIntervalTime = jsonObject.optLong("inputIntervalTime", def.getInputIntervalTime());
@@ -226,8 +212,8 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
      *
      * @return 副本
      */
-    default MavenSearchPluginSettings copy() {
-        SimpleMavenSearchPluginSettings copy = new SimpleMavenSearchPluginSettings();
+    default MavenPluginSettings copy() {
+        SimpleMavenPluginSettings copy = new SimpleMavenPluginSettings();
         copy.setId(this.getId());
         copy.setName(this.getName());
         copy.setWorkHome(this.getWorkHome());
@@ -249,7 +235,7 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
      *
      * @param settings 配置信息
      */
-    default MavenSearchPluginSettings merge(MavenSearchPluginSettings settings) {
+    default MavenPluginSettings merge(MavenPluginSettings settings) {
         this.setUseAllTab(settings.isUseAllTab());
         this.setNavigationPriority(settings.getNavigationPriority());
         this.setTabVisible(settings.isTabVisible());
@@ -269,7 +255,7 @@ public interface MavenSearchPluginSettings extends ArtifactSearchSettings {
      * @param settings 配置信息
      * @return 返回true表示不同
      */
-    default boolean isEquals(MavenSearchPluginSettings settings) {
+    default boolean isEquals(MavenPluginSettings settings) {
         return settings != null //
                 && settings.isUseAllTab() == this.isUseAllTab() //
                 && settings.getNavigationPriority() == this.getNavigationPriority() //

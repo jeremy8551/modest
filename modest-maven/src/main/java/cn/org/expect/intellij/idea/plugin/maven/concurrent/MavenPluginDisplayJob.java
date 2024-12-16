@@ -9,12 +9,13 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.SearchDisplay;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigationList;
-import cn.org.expect.maven.concurrent.ArtifactSearchMoreJob;
+import cn.org.expect.maven.concurrent.MavenJob;
+import cn.org.expect.maven.concurrent.SearchMoreJob;
 import cn.org.expect.maven.search.ArtifactSearchStatusMessageType;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 
-public class MavenSearchDisplayJob extends MavenSearchPluginJob implements EDTJob {
+public class MavenPluginDisplayJob extends MavenJob implements EDTJob {
 
     /** 锁 */
     protected final static Object lock = new Object();
@@ -22,7 +23,7 @@ public class MavenSearchDisplayJob extends MavenSearchPluginJob implements EDTJo
     /** 搜索结果的导航记录 */
     protected final MavenSearchNavigationList navigationList;
 
-    public MavenSearchDisplayJob(MavenSearchNavigationList navigationList) {
+    public MavenPluginDisplayJob(MavenSearchNavigationList navigationList) {
         super("maven.search.job.display.search.result.description");
         this.navigationList = navigationList;
     }
@@ -44,7 +45,7 @@ public class MavenSearchDisplayJob extends MavenSearchPluginJob implements EDTJo
             navigationList = new MavenSearchNavigationList(new ArrayList<>(0), 0, false);
         }
 
-        MavenSearchPlugin plugin = this.getSearch();
+        MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
         SearchDisplay display = plugin.getIdeaUI().getDisplay();
         boolean isAllTab = plugin.isAllTab();
         boolean isSelfTab = plugin.isSelfTab();
@@ -64,6 +65,7 @@ public class MavenSearchDisplayJob extends MavenSearchPluginJob implements EDTJo
         Map<SearchEverywhereContributor<?>, Boolean> backup = isAllTab ? display.getContributorMores() : null;
 
         // 生成导航记录
+        plugin.aware(navigationList);
         List<SearchEverywhereFoundElementInfo> infos = navigationList.toInfos(plugin);
 
         if (log.isTraceEnabled()) {
@@ -84,7 +86,7 @@ public class MavenSearchDisplayJob extends MavenSearchPluginJob implements EDTJo
 
         // 设置 more 按钮
         display.setContributorMore(plugin.getContributor(),  //
-                !plugin.getService().isRunning(ArtifactSearchMoreJob.class)  // 在 MavenSearchPluginListener 中会重复生成 more 按钮，判断如果正在执行 more 搜索，则不能显示 more 按钮
+                !plugin.getService().isRunning(SearchMoreJob.class)  // 在 MavenSearchPluginListener 中会重复生成 more 按钮，判断如果正在执行 more 搜索，则不能显示 more 按钮
                         && ( //
                         (isAllTab && hasMore && display.size() > 0) // ALL标签页，有 more 按钮 TODO
                                 || (isSelfTab && navigationList.isHasMore()) //

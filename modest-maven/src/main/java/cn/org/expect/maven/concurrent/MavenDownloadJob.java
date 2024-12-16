@@ -1,25 +1,25 @@
-package cn.org.expect.intellij.idea.plugin.maven.concurrent;
+package cn.org.expect.maven.concurrent;
 
 import java.io.File;
 
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.repository.ArtifactDownloader;
 import cn.org.expect.maven.repository.local.LocalRepositoryNotFoundException;
 import cn.org.expect.maven.repository.local.LocalRepositorySettings;
+import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.maven.search.ArtifactSearchNotification;
 import cn.org.expect.util.FileUtils;
 
-public class MavenSearchDownloadJob extends MavenSearchArtifactJob {
+public class MavenDownloadJob extends MavenArtifactJob {
 
     private volatile ArtifactDownloader downloader;
 
-    public MavenSearchDownloadJob(Artifact artifact) {
+    public MavenDownloadJob(Artifact artifact) {
         super(artifact, "maven.search.job.download.artifact.description", artifact.toMavenId());
     }
 
     public int execute() throws Exception {
-        MavenSearchPlugin plugin = this.getSearch();
+        ArtifactSearch plugin = this.getSearch();
         LocalRepositorySettings settings = plugin.getLocalRepositorySettings();
         File parent = plugin.getLocalRepository().getParent(this.getArtifact());
         FileUtils.createDirectory(parent, true);

@@ -14,8 +14,8 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginContributor;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginFactory;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchExecutorService;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginPinJob;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginExecutorService;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginPinJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.MavenMessage;
@@ -93,9 +93,8 @@ public class MavenSearchPluginPinAction extends ToggleAction {
                 if (contributor instanceof MavenSearchPluginContributor) {
                     MavenSearchPlugin searchPlugin = ((MavenSearchPluginContributor) contributor).getPlugin();
                     searchPlugin.getContext().clone(this.plugin.getContext());
-                    searchPlugin.getContext().getNavigationList().updateSearch(searchPlugin);
-                    searchPlugin.getService().setParameter(MavenSearchExecutorService.PARAMETER, null);
-                    searchPlugin.execute(new MavenSearchPluginPinJob(this.plugin, () -> super.actionPerformed(event)));
+                    searchPlugin.getService().setParameter(MavenPluginExecutorService.PARAMETER, null);
+                    searchPlugin.execute(new MavenPluginPinJob(this.plugin, () -> super.actionPerformed(event)));
                 }
             }
         } catch (Throwable e) {

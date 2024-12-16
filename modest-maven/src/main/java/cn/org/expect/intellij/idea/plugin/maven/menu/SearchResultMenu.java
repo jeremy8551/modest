@@ -7,14 +7,14 @@ import javax.swing.*;
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.SearchDisplay;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchDownloadJob;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchEDTJob;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchOpenParentJob;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginJob;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginEDTJob;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginOpenParentJob;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.MavenSearchNavigation;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.MavenMessage;
-import cn.org.expect.maven.concurrent.ArtifactSearchMoreJob;
+import cn.org.expect.maven.concurrent.MavenJob;
+import cn.org.expect.maven.concurrent.MavenDownloadJob;
+import cn.org.expect.maven.concurrent.SearchMoreJob;
 import cn.org.expect.maven.pom.Pom;
 import cn.org.expect.maven.repository.ArtifactOperation;
 import cn.org.expect.maven.repository.central.CentralMavenRepository;
@@ -66,7 +66,7 @@ public class SearchResultMenu extends AbstractMenu {
             }
 
             String pattern = plugin.getIdeaUI().getSearchField().getText();
-            plugin.execute(new ArtifactSearchMoreJob(pattern));
+            plugin.execute(new SearchMoreJob(pattern));
             return;
         }
 
@@ -164,7 +164,7 @@ public class SearchResultMenu extends AbstractMenu {
         // 取消下载
         cancelDownload.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
-                plugin.getService().terminate(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(navigation.getArtifact()));
+                plugin.getService().terminate(MavenDownloadJob.class, job -> job.getArtifact().equals(navigation.getArtifact()));
                 plugin.display();
             }
         });
@@ -173,7 +173,7 @@ public class SearchResultMenu extends AbstractMenu {
         openProjectUrl.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
-                plugin.execute(new MavenSearchPluginJob("maven.search.job.download.artifact.description") { // 异步执行任务
+                plugin.execute(new MavenJob("maven.search.job.download.artifact.description") { // 异步执行任务
                     public int execute() throws Exception {
                         Pom pomInfo = plugin.getPomRepository().query(plugin, artifact);
                         if (pomInfo != null && StringUtils.isNotBlank(pomInfo.getProjectUrl())) {
@@ -192,7 +192,7 @@ public class SearchResultMenu extends AbstractMenu {
         openIssueUrl.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
-                plugin.execute(new MavenSearchPluginJob("maven.search.job.open.project.issue.description") { // 异步执行任务
+                plugin.execute(new MavenJob("maven.search.job.open.project.issue.description") { // 异步执行任务
                     public int execute() throws Exception {
                         Pom pomInfo = plugin.getPomRepository().query(plugin, artifact);
                         if (pomInfo != null && StringUtils.isNotBlank(pomInfo.getIssue().getUrl())) {
@@ -212,7 +212,7 @@ public class SearchResultMenu extends AbstractMenu {
         openPomFile.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
                 Artifact artifact = navigation.getArtifact();
-                plugin.execute(new MavenSearchEDTJob(() -> {
+                plugin.execute(new MavenPluginEDTJob(() -> { // 必须使用 EDT 线程执行
                     File pomfile = plugin.getLocalRepository().getFile(artifact, "pom");
                     if (!FileUtils.isDirectory(pomfile.getParentFile()) || !FileUtils.isFile(pomfile)) {
                         plugin.download(artifact);
@@ -275,12 +275,12 @@ public class SearchResultMenu extends AbstractMenu {
         // 打开项目
         openProject.addActionListener(new MenuItemAction(plugin) {
             public void execute(MavenSearchNavigation navigation) {
-                plugin.execute(new MavenSearchOpenParentJob(navigation.getArtifact()));
+                plugin.execute(new MavenPluginOpenParentJob(navigation.getArtifact()));
             }
         });
     }
 
-    public void displayItemMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex, int offset) {
+    public void displayItemMenu(MavenSearchPlugin plugin, MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex, int offset) { // TODO 删除 navigation
         topMenu.removeAll();
 
         // 复制Maven依赖
@@ -343,7 +343,7 @@ public class SearchResultMenu extends AbstractMenu {
             topMenu.remove(openFileSystem);
             topMenu.remove(deleteFile);
 
-            if (plugin.getService().isRunning(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(artifact))) {
+            if (plugin.getService().isRunning(MavenDownloadJob.class, job -> job.getArtifact().equals(artifact))) {
                 topMenu.remove(downloadFile);
             } else {
                 topMenu.remove(cancelDownload);
@@ -369,7 +369,7 @@ public class SearchResultMenu extends AbstractMenu {
         }
 
         // 打开项目
-        if ("Parent".equalsIgnoreCase(navigation.getRightText()) && !plugin.getService().existsCommand(MavenSearchOpenParentJob.class, navigation.getArtifact())) {
+        if ("Parent".equalsIgnoreCase(navigation.getRightText()) && !plugin.getService().isRunning(MavenPluginOpenParentJob.class, job -> job.getArtifact().equals(navigation.getArtifact()))) {
             topMenu.add(openProject);
         }
 

@@ -10,7 +10,7 @@ import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereUI;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 
-public class MavenSearchPluginPinJob extends MavenSearchPluginInitJob implements EDTJob {
+public class MavenPluginPinJob extends MavenPluginJob implements EDTJob {
 
     /** 生成 pin 窗口的原生窗口使用的 MavenSearchPlugin */
     private final MavenSearchPlugin oldPlugin;
@@ -19,7 +19,7 @@ public class MavenSearchPluginPinJob extends MavenSearchPluginInitJob implements
 
     private final Runnable actionPerformed;
 
-    public MavenSearchPluginPinJob(MavenSearchPlugin plugin, Runnable actionPerformed) {
+    public MavenPluginPinJob(MavenSearchPlugin plugin, Runnable actionPerformed) {
         super();
         this.oldPlugin = plugin;
         this.oldUI = plugin.getIdeaUI().getSearchEverywhereUI();
@@ -31,7 +31,7 @@ public class MavenSearchPluginPinJob extends MavenSearchPluginInitJob implements
     }
 
     public int execute() {
-        MavenSearchPlugin plugin = this.getSearch();
+        MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
         plugin.getSearchListener().setDisplay(true);
 
         super.execute();

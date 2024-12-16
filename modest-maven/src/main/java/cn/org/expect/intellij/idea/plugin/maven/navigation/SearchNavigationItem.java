@@ -8,7 +8,7 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPomJob;
+import cn.org.expect.maven.concurrent.SearchPomJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.Artifact;
@@ -41,7 +41,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
     }
 
     public void displayMenu(MavenSearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
-        MavenSearchPlugin plugin = this.getPlugin();
+        MavenSearchPlugin plugin = this.getSearch();
         plugin.getResultMenu().displayItemMenu(plugin, navigation, topMenu, selectedIndex, 30);
     }
 
@@ -51,7 +51,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
 
     public void setUnfold() {
         this.setFold(false);
-        MavenSearchPlugin plugin = this.getPlugin();
+        MavenSearchPlugin plugin = this.getSearch();
         plugin.asyncPom(this.getArtifact());
         this.update(plugin, this.getArtifact());
     }
@@ -62,7 +62,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
     }
 
     public void unfold() {
-        MavenSearchPlugin plugin = this.getPlugin();
+        MavenSearchPlugin plugin = this.getSearch();
         Artifact artifact = this.getArtifact();
         Pom pom = plugin.getPomRepository().select(artifact);
         if (pom != null) {
@@ -152,7 +152,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
     }
 
     private void update(MavenSearch search, Artifact artifact) {
-        if (search.getService().isRunning(MavenSearchPomJob.class, job -> job.getArtifact().equals(artifact))) {
+        if (search.getService().isRunning(SearchPomJob.class, job -> job.getArtifact().equals(artifact))) {
             this.setLeftIcon(MavenSearchPluginIcon.LEFT_WAITING);
         } else {
             this.setLeftIcon(null);

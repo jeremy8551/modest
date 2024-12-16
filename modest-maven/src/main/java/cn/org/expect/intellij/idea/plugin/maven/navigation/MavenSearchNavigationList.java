@@ -5,6 +5,7 @@ import java.util.List;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.maven.search.ArtifactSearch;
+import cn.org.expect.maven.search.ArtifactSearchAware;
 import cn.org.expect.util.Ensure;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
@@ -12,7 +13,7 @@ import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInf
 /**
  * 导航记录集合 TODO 转为接口
  */
-public class MavenSearchNavigationList {
+public class MavenSearchNavigationList implements ArtifactSearchAware {
 
     /** 总记录数 */
     private final int foundNumber;
@@ -76,11 +77,13 @@ public class MavenSearchNavigationList {
         }
     }
 
-    public void updateSearch(ArtifactSearch search) {
+    public void setSearch(ArtifactSearch search) {
         MavenSearchNavigationList navigationList = this;
         for (int i = 0; i < navigationList.size(); i++) {
             MavenSearchNavigation navigation = navigationList.get(i);
-            navigation.setSearch(search);
+            if (navigation instanceof ArtifactSearchAware) {
+                ((ArtifactSearchAware) navigation).setSearch(search);
+            }
             this.loopUpdateSearch(search, navigation);
         }
     }
@@ -88,7 +91,9 @@ public class MavenSearchNavigationList {
     protected void loopUpdateSearch(ArtifactSearch search, MavenSearchNavigation navigation) {
         List<? extends MavenSearchNavigation> childList = navigation.getNavigationList();
         for (MavenSearchNavigation child : childList) {
-            child.setSearch(search);
+            if (child instanceof ArtifactSearchAware) {
+                ((ArtifactSearchAware) child).setSearch(search);
+            }
             this.loopUpdateSearch(search, child);
         }
     }

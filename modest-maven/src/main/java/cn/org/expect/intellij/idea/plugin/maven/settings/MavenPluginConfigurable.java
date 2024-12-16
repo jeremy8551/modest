@@ -8,9 +8,9 @@ import javax.swing.*;
 
 import cn.org.expect.expression.MillisExpression;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
-import cn.org.expect.maven.impl.SimpleArtifactOption;
 import cn.org.expect.maven.ArtifactOption;
 import cn.org.expect.maven.MavenMessage;
+import cn.org.expect.maven.impl.SimpleArtifactOption;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.XMLUtils;
 import com.intellij.openapi.options.Configurable;
@@ -20,13 +20,13 @@ import com.intellij.ui.components.JBPanel;
 import com.intellij.ui.components.JBSlider;
 import com.intellij.ui.components.JBTextField;
 
-public class MavenSearchPluginConfigurable implements Configurable {
+public class MavenPluginConfigurable implements Configurable {
 
     /** 配置信息 */
-    private final MavenSearchPluginSettings settings;
+    private final MavenPluginSettings settings;
 
     /** 未持久化的配置 */
-    private final MavenSearchPluginSettings active;
+    private final MavenPluginSettings active;
 
     /** UI组件 */
     private JBSlider inputIntervalTime;
@@ -41,8 +41,8 @@ public class MavenSearchPluginConfigurable implements Configurable {
     private JBTextField elementPriority;
     private JComboBox<ArtifactOption> downloadType;
 
-    public MavenSearchPluginConfigurable() {
-        this.settings = MavenSearchPluginApplication.get().getBean(MavenSearchPluginSettings.class);
+    public MavenPluginConfigurable() {
+        this.settings = MavenSearchPluginApplication.get().getBean(MavenPluginSettings.class);
         this.active = this.settings.copy(); // 返回一个副本
     }
 
@@ -59,7 +59,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
         String pluginName = this.settings.getName();
         String tabName = this.settings.getTabName();
         String allTabName = this.settings.getAllTabName();
-        SimpleMavenSearchPluginSettings def = new SimpleMavenSearchPluginSettings();
+        SimpleMavenPluginSettings def = new SimpleMavenPluginSettings();
 
         inputIntervalTime = new JBSlider(100, 2000); // 最小值 0，最大值 100
         inputIntervalTime.setMajorTickSpacing(200); // 主刻度间隔
@@ -305,7 +305,7 @@ public class MavenSearchPluginConfigurable implements Configurable {
      *
      * @param settings 配置信息
      */
-    public void autowired(MavenSearchPluginSettings settings) {
+    public void autowired(MavenPluginSettings settings) {
         inputIntervalTime.setValue((int) settings.getInputIntervalTime());
         autoSwitchTab.setSelected(settings.isAutoSwitchTab());
         tabIndex.setText(String.valueOf(settings.getTabIndex()));

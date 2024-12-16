@@ -90,4 +90,18 @@ public interface ArtifactSearchSettings {
      * @param useParentPom true表示读取父工程POM的项目信息，false表示只读本工程POM中的项目信息
      */
     void setUseParentPom(boolean useParentPom);
+
+    /**
+     * 下载工件的方式
+     *
+     * @return 下载方式
+     */
+    String getDownloadWay();
+
+    /**
+     * 设置下载工件的方式
+     *
+     * @param downSource 下载方式
+     */
+    void setDownloadWay(String downSource);
 }

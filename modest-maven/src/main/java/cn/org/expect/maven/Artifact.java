@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import cn.org.expect.util.NetUtils;
-import cn.org.expect.util.StringComparator;
 import cn.org.expect.util.StringUtils;
 
 /**
@@ -73,23 +72,14 @@ public interface Artifact {
     }
 
     /**
-     * 判断工件的 groupId 与 artifactId 是否相等
+     * 判断工件是否相等
      *
-     * @param artifact 工件
+     * @param groupId    域名
+     * @param artifactId 工件ID
      * @return 返回true表示相等，false表示不等
      */
-    default boolean equalsId(Artifact artifact) {
-        return artifact != null && StringComparator.compareTo(this.getGroupId(), artifact.getGroupId()) == 0 && StringComparator.compareTo(this.getArtifactId(), artifact.getArtifactId()) == 0;
-    }
-
-    /**
-     * 判断工件的 groupId、artifactId、version 是否相等
-     *
-     * @param artifact 工件
-     * @return 返回true表示相等，false表示不等
-     */
-    default boolean equalMavenId(Artifact artifact) {
-        return this.equalsId(artifact) && StringComparator.compareTo(this.getVersion(), artifact.getVersion()) == 0;
+    default boolean equals(String groupId, String artifactId) {
+        return this.getGroupId().equals(groupId) && this.getArtifactId().equals(artifactId);
     }
 
     /**

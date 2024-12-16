@@ -3,20 +3,18 @@ package cn.org.expect.intellij.idea.plugin.maven.action;
 import java.io.File;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
-import cn.org.expect.maven.MavenMessage;
 import cn.org.expect.maven.search.ArtifactSearchNotification;
-import com.intellij.ide.BrowserUtil;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * 打开 Maven 本地仓库
+ * Maven 本地仓库
  */
-public class OpenLocalRepository extends AnAction {
+public abstract class LocalRepositoryAction extends AnAction {
 
-    public OpenLocalRepository() {
-        super(MavenMessage.get("maven.search.open.local.repository.menu"));
+    public LocalRepositoryAction(String title) {
+        super(title);
     }
 
     public void actionPerformed(@NotNull AnActionEvent event) {
@@ -27,7 +25,14 @@ public class OpenLocalRepository extends AnAction {
             return;
         }
 
-        plugin.sendNotification(ArtifactSearchNotification.NORMAL, repository.getAbsolutePath());
-        BrowserUtil.browse(repository);
+        this.execute(plugin, repository);
     }
+
+    /**
+     * 执行业务逻辑
+     *
+     * @param plugin     插件接口
+     * @param repository 本地仓库目录
+     */
+    public abstract void execute(MavenSearchPlugin plugin, File repository);
 }

@@ -1,7 +1,7 @@
 package cn.org.expect.intellij.idea.plugin.maven;
 
 import cn.org.expect.intellij.idea.plugin.maven.action.MavenSearchPluginPinAction;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchPluginInitJob;
+import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginJob;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributor;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereContributorFactory;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -12,7 +12,7 @@ public class MavenSearchPluginFactory implements SearchEverywhereContributorFact
     public @NotNull SearchEverywhereContributor<Object> createContributor(@NotNull AnActionEvent event) {
         MavenSearchPluginPinAction.PIN.dispose();
         MavenSearchPluginContributor contributor = this.create(event);
-        contributor.getPlugin().execute(new MavenSearchPluginInitJob());
+        contributor.getPlugin().execute(new MavenPluginJob());
         return contributor;
     }
 

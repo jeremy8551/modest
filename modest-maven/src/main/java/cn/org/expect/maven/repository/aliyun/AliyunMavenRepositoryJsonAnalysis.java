@@ -68,7 +68,7 @@ public class AliyunMavenRepositoryJsonAnalysis {
             boolean find = false;
             for (int j = i + 1; j < list.size(); j++) {
                 Artifact next = list.get(j);
-                if (!artifact.equalsId(next)) { // 按名字判断是否相等
+                if (!artifact.equals(next.getGroupId(), next.getArtifactId())) { // 按名字判断是否相等
                     i = j - 1;
                     find = true;
                     break;
@@ -93,7 +93,7 @@ public class AliyunMavenRepositoryJsonAnalysis {
             boolean find = false;
             for (int j = i + 1; j < list.size(); j++) {
                 Artifact next = list.get(j);
-                if (!artifact.equalMavenId(next)) { // 按版本号判断是否相等
+                if (!artifact.equals(next.getGroupId(), next.getArtifactId(), next.getVersion())) { // 按版本号判断是否相等
                     i = j - 1;
                     find = true;
                     break;

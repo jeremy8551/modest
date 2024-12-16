@@ -11,15 +11,12 @@ import cn.org.expect.maven.search.ArtifactSearchNotification;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
-import com.intellij.openapi.actionSystem.AnAction;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * 删除 Maven 本地仓库中的 *.lastUpdated 文件
  */
-public class CleanRepositoryLastUpdated extends AnAction {
-    private final static Log log = LogFactory.getLog(CleanRepositoryLastUpdated.class);
+public class CleanLocalRepositoryActioin extends LocalRepositoryAction {
+    private final static Log log = LogFactory.getLog(CleanLocalRepositoryActioin.class);
 
     /** 锁 */
     protected final static Object lock = new Object();
@@ -30,20 +27,13 @@ public class CleanRepositoryLastUpdated extends AnAction {
     /** 删除的文件数量 */
     private int success;
 
-    public CleanRepositoryLastUpdated() {
+    public CleanLocalRepositoryActioin() {
         super(MavenMessage.get("maven.search.delete.local.repository.lastUpdated.menu"));
     }
 
-    public void actionPerformed(@NotNull AnActionEvent event) {
+    public void execute(MavenSearchPlugin plugin, File repository) {
         this.find = 0;
         this.success = 0;
-
-        MavenSearchPlugin plugin = new MavenSearchPlugin(event);
-        File repository = plugin.getLocalRepositorySettings().getRepository();
-        if (repository == null) {
-            plugin.sendNotification(ArtifactSearchNotification.ERROR, "maven.search.error.cannot.found.local.repository");
-            return;
-        }
 
         synchronized (lock) {
             File logfile = FileUtils.createTempFile("clean_last_updated.log");

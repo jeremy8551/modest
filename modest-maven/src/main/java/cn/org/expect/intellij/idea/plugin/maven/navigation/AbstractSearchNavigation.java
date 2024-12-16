@@ -4,15 +4,16 @@ import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
-import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenSearchDownloadJob;
+import cn.org.expect.maven.concurrent.MavenDownloadJob;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.search.ArtifactSearch;
+import cn.org.expect.maven.search.ArtifactSearchAware;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.UniqueSequenceGenerator;
 import com.intellij.navigation.ItemPresentation;
 
-public abstract class AbstractSearchNavigation implements MavenSearchNavigation, ItemPresentation {
+public abstract class AbstractSearchNavigation implements MavenSearchNavigation, ItemPresentation, ArtifactSearchAware {
 
     /** 序号生成器 */
     protected final static UniqueSequenceGenerator UNIQUE = new UniqueSequenceGenerator("Navigation-{}", 1);
@@ -90,7 +91,7 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
         this.plugin = (MavenSearchPlugin) plugin;
     }
 
-    public MavenSearchPlugin getPlugin() {
+    public MavenSearchPlugin getSearch() {
         return plugin;
     }
 
@@ -163,13 +164,13 @@ public abstract class AbstractSearchNavigation implements MavenSearchNavigation,
         Artifact artifact = this.getArtifact();
 
         // 如果正在下载工件，则更新图标
-        if (this.getPlugin().getService().isRunning(MavenSearchDownloadJob.class, job -> job.getArtifact().equals(artifact))) { // 正在下载
+        if (this.getSearch().getService().isRunning(MavenDownloadJob.class, job -> job.getArtifact().equals(artifact))) { // 正在下载
             this.setRightIcon(MavenSearchPluginIcon.RIGHT_DOWNLOAD);
             return;
         }
 
         // 如果工件已下载，则更新图标
-        if (this.getPlugin().getLocalRepository().exists(artifact)) {
+        if (this.getSearch().getLocalRepository().exists(artifact)) {
             this.setRightIcon(MavenSearchPluginIcon.RIGHT_LOCAL);
         } else {
             this.setRightIcon(MavenSearchPluginIcon.RIGHT_REMOTE);
