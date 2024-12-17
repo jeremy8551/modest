@@ -11,13 +11,13 @@ import javax.swing.*;
 
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginDisplayJob;
 import cn.org.expect.intellij.idea.plugin.maven.impl.SimpleMavenSearchPluginContext;
+import cn.org.expect.intellij.idea.plugin.maven.impl.SimpleSearchEverywhereNavigationCollection;
 import cn.org.expect.intellij.idea.plugin.maven.listener.MavenSearchPluginListener;
 import cn.org.expect.intellij.idea.plugin.maven.menu.SearchResultMenu;
-import cn.org.expect.maven.search.SearchNavigation;
-import cn.org.expect.intellij.idea.plugin.maven.impl.SimpleSearchEverywhereNavigationCollection;
-import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationClass;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchEverywhereNavigationCollection;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationClass;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationHead;
+import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchNavigationItem;
 import cn.org.expect.intellij.idea.plugin.maven.settings.MavenPluginSettings;
 import cn.org.expect.jdk.JavaDialectFactory;
 import cn.org.expect.log.Log;
@@ -29,10 +29,12 @@ import cn.org.expect.maven.concurrent.SearchExtraJob;
 import cn.org.expect.maven.concurrent.SearchPomJob;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.clazz.SearchClassInRepository;
+import cn.org.expect.maven.repository.gradle.GradlePluginRepository;
 import cn.org.expect.maven.repository.local.LocalRepositorySettings;
 import cn.org.expect.maven.search.AbstractMavenSearch;
 import cn.org.expect.maven.search.ArtifactSearchNotification;
 import cn.org.expect.maven.search.ArtifactSearchStatusMessageType;
+import cn.org.expect.maven.search.SearchNavigation;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereManager;
 import com.intellij.notification.Notification;
@@ -172,6 +174,19 @@ public class MavenSearchPlugin extends AbstractMavenSearch implements MavenSearc
             for (Artifact artifact : result.getList()) {
                 SearchNavigationClass navigation = new SearchNavigationClass(this, artifact);
                 list.add(navigation);
+            }
+            return new SimpleSearchEverywhereNavigationCollection(list, result.getFoundNumber(), result.isHasMore());
+        }
+
+        // 搜索 Gradle 插件
+        if (result.isRepository(GradlePluginRepository.class)) {
+            List<SearchNavigation> list = new ArrayList<>();
+            for (Artifact artifact : result.getList()) {
+                list.add(new SearchNavigationHead(this, artifact) {
+                    protected SearchNavigationItem createItem(Artifact itemArtifact, MavenSearchPlugin plugin) {
+                        return new SearchNavigationItem(plugin, itemArtifact, false);
+                    }
+                });
             }
             return new SimpleSearchEverywhereNavigationCollection(list, result.getFoundNumber(), result.isHasMore());
         }

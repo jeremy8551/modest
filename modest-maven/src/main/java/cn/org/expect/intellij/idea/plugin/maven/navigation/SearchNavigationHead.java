@@ -65,7 +65,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
 
             if (this.child.isEmpty()) {
                 for (Artifact itemArtifact : result.getList()) {
-                    this.child.add(new SearchNavigationItem(plugin, itemArtifact));
+                    this.child.add(this.createItem(itemArtifact, plugin));
                 }
             }
 
@@ -80,6 +80,10 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
         }
 
         this.updateWaitingIcon();
+    }
+
+    protected SearchNavigationItem createItem(Artifact itemArtifact, MavenSearchPlugin plugin) {
+        return new SearchNavigationItem(plugin, itemArtifact, true);
     }
 
     public void fold() {

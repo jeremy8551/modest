@@ -13,8 +13,6 @@ import cn.org.expect.collection.CaseSensitivSet;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
-import cn.org.expect.log.Log;
-import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.concurrent.SearchPomJob;
 import cn.org.expect.maven.pom.Developer;
@@ -27,14 +25,16 @@ import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.StringUtils;
 
 public class SearchNavigationItem extends AbstractSearchNavigation {
-    private final static Log log = LogFactory.getLog(SearchNavigationItem.class);
+
+    private final boolean unfold;
 
     /** 子节点 */
     private final List<SearchNavigationDetail> child;
 
-    public SearchNavigationItem(MavenSearchPlugin plugin, Artifact artifact) {
+    public SearchNavigationItem(MavenSearchPlugin plugin, Artifact artifact, boolean unfold) {
         super(plugin, artifact);
         this.child = new ArrayList<>();
+        this.unfold = unfold;
         this.setDepth(2);
         this.setPresentableText(artifact.getVersion());
         this.setLocationString("");
@@ -57,7 +57,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
     }
 
     public boolean supportFold() {
-        return true;
+        return this.unfold;
     }
 
     public void setUnfold() {
