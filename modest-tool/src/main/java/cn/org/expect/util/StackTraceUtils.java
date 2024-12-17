@@ -34,19 +34,34 @@ public class StackTraceUtils {
             }
         }
 
-        for (int i = 0; i < array.length; i++) {
-            StackTraceElement trace = array[i];
-            if (fqcn.equals(trace.getClassName())) {
-                int next = i + 1;
-
-                if (next < array.length) {
-                    StackTraceElement element = array[next];
-                    if (fqcn.equals(element.getClassName())) {
-                        continue;
+        if (fqcn.length() > 0 && fqcn.charAt(0) == '^') {
+            fqcn = fqcn.substring(1);
+            for (int i = array.length - 1; i >= 0; i--) {
+                StackTraceElement trace = array[i];
+                if (fqcn.equals(trace.getClassName())) {
+                    int next = i + 1;
+                    if (next < array.length) {
+                        return array[next];
+                    } else {
+                        return trace;
                     }
-                    return element;
-                } else {
-                    return trace;
+                }
+            }
+        } else {
+            for (int i = 0; i < array.length; i++) {
+                StackTraceElement trace = array[i];
+                if (fqcn.equals(trace.getClassName())) {
+                    int next = i + 1;
+
+                    if (next < array.length) {
+                        StackTraceElement element = array[next];
+                        if (fqcn.equals(element.getClassName())) {
+                            continue;
+                        }
+                        return element;
+                    } else {
+                        return trace;
+                    }
                 }
             }
         }
