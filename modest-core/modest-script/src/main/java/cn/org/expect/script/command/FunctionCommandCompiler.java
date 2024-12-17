@@ -3,7 +3,7 @@ package cn.org.expect.script.command;
 import java.io.IOException;
 import java.util.List;
 
-import cn.org.expect.annotation.ScriptCommand;
+import cn.org.expect.script.annotation.ScriptCommand;
 import cn.org.expect.expression.WordIterator;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptChecker;

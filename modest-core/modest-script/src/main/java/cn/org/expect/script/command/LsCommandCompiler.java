@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.annotation.ScriptCommand;
+import cn.org.expect.script.annotation.ScriptCommand;
 import cn.org.expect.expression.CommandExpression;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;

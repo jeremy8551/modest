@@ -1,4 +1,4 @@
-package cn.org.expect.script.spi;
+package cn.org.expect.javax.script;
 
 import java.io.CharArrayReader;
 import java.io.Reader;

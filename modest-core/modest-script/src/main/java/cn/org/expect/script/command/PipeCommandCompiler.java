@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import cn.org.expect.annotation.ScriptCommand;
+import cn.org.expect.script.annotation.ScriptCommand;
 import cn.org.expect.script.UniversalCommandCompilerResult;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptCommand;

@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Set;
 
 import cn.org.expect.ProjectPom;
-import cn.org.expect.annotation.ScriptCommand;
-import cn.org.expect.annotation.ScriptFunction;
+import cn.org.expect.script.annotation.ScriptCommand;
+import cn.org.expect.script.annotation.ScriptFunction;
 import cn.org.expect.collection.CaseSensitivSet;
 import cn.org.expect.database.DatabaseDialect;
 import cn.org.expect.database.Jdbc;

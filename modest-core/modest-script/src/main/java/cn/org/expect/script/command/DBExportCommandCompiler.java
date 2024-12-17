@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import cn.org.expect.annotation.ScriptCommand;
+import cn.org.expect.script.annotation.ScriptCommand;
 import cn.org.expect.database.JdbcObjectConverter;
 import cn.org.expect.database.export.ExtractUserListener;
 import cn.org.expect.database.export.ExtractWriter;

@@ -1,4 +1,4 @@
-package cn.org.expect.script.spi;
+package cn.org.expect.javax.script;
 
 import java.util.List;
 import javax.script.ScriptEngine;

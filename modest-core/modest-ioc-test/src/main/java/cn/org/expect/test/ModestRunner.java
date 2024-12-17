@@ -34,10 +34,10 @@ import org.junit.runners.model.TestClass;
 public class ModestRunner extends BlockJUnit4ClassRunner {
     protected static Log log;
 
-    /** 容器上下文信息 */
+    /** 参数名 */
     public static String YAML_FILE_NAME = "modest";
 
-    /** 容器上下文信息 */
+    /** 参数名 */
     public final static String ACTIVE_PROFILE = Modest.class.getPackage().getName() + ".test.mode";
 
     /** 容器上下文信息 */
@@ -222,7 +222,6 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
             synchronized (this) {
                 if (this.properties == null) {
                     this.properties = this.loadProperties();
-//                    System.out.println(StringUtils.toString(this.properties));
                 }
             }
         }

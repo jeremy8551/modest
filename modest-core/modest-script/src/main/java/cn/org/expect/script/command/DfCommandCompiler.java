@@ -2,7 +2,7 @@ package cn.org.expect.script.command;
 
 import java.io.IOException;
 
-import cn.org.expect.annotation.ScriptCommand;
+import cn.org.expect.script.annotation.ScriptCommand;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptParser;

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.regex.Pattern;
 
-import cn.org.expect.annotation.ScriptCommand;
+import cn.org.expect.script.annotation.ScriptCommand;
 import cn.org.expect.database.Jdbc;
 import cn.org.expect.expression.WordIterator;
 import cn.org.expect.os.OSConnectCommand;

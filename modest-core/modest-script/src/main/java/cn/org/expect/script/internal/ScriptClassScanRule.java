@@ -2,8 +2,8 @@ package cn.org.expect.script.internal;
 
 import java.lang.reflect.Modifier;
 
-import cn.org.expect.annotation.ScriptCommand;
-import cn.org.expect.annotation.ScriptFunction;
+import cn.org.expect.script.annotation.ScriptCommand;
+import cn.org.expect.script.annotation.ScriptFunction;
 import cn.org.expect.ioc.EasyBeanRegister;
 import cn.org.expect.ioc.scan.ClassScanRule;
 import cn.org.expect.script.UniversalCommandCompiler;

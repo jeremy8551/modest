@@ -2,7 +2,7 @@ package cn.org.expect.script.method;
 
 import java.io.File;
 
-import cn.org.expect.annotation.ScriptFunction;
+import cn.org.expect.script.annotation.ScriptFunction;
 import cn.org.expect.os.linux.LinuxLocalOS;
 import cn.org.expect.os.linux.Linuxs;
 import cn.org.expect.script.UniversalScriptAnalysis;

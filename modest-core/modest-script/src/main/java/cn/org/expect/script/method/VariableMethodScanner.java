@@ -2,7 +2,7 @@ package cn.org.expect.script.method;
 
 import java.util.List;
 
-import cn.org.expect.annotation.ScriptFunction;
+import cn.org.expect.script.annotation.ScriptFunction;
 import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;

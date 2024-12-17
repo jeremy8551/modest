@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.annotation.ScriptCommand;
+import cn.org.expect.script.annotation.ScriptCommand;
 import cn.org.expect.expression.LoginExpression;
 import cn.org.expect.expression.WordIterator;
 import cn.org.expect.ioc.EasyContext;

@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import cn.org.expect.annotation.ScriptCommand;
+import cn.org.expect.script.annotation.ScriptCommand;
 import cn.org.expect.script.UniversalCommandCompiler;
 import cn.org.expect.script.UniversalCommandCompilerResult;
 import cn.org.expect.script.UniversalCommandRepository;

@@ -3,7 +3,7 @@ package cn.org.expect.script.internal;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import cn.org.expect.annotation.ScriptCommand;
+import cn.org.expect.script.annotation.ScriptCommand;
 import cn.org.expect.ioc.EasyBeanInfo;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.log.Log;

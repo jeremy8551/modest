@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
 
-import cn.org.expect.annotation.ScriptCommand;
+import cn.org.expect.script.annotation.ScriptCommand;
 import cn.org.expect.database.Jdbc;
 import cn.org.expect.database.JdbcObjectConverter;
 import cn.org.expect.database.export.ExtractUserListener;

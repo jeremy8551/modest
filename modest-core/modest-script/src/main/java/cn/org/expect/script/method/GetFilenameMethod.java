@@ -1,6 +1,6 @@
 package cn.org.expect.script.method;
 
-import cn.org.expect.annotation.ScriptFunction;
+import cn.org.expect.script.annotation.ScriptFunction;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptCommand;
 import cn.org.expect.script.UniversalScriptContext;
