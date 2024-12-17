@@ -28,10 +28,6 @@ public class PatternLog extends AbstractLogger {
         this.template = new LogEventImpl(fqcn == null ? FQCN : fqcn, this, type.getName(), context, dynamicCategory, null, null, null, null);
     }
 
-    public void setFqcn(String fqcn) {
-        this.template.setFqcn(fqcn == null ? FQCN : fqcn);
-    }
-
     public void printTrace(String message, Object... args) {
         LogEvent event = this.template.clone(LogLevel.TRACE, message, args, null);
         for (int i = 0; i < this.appenderList.size(); i++) {
