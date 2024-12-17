@@ -31,5 +31,4 @@ public class ScriptSteper extends StandardPrinter implements UniversalScriptStep
         this.setWriter(writer);
         this.setFormatter(format);
     }
-
 }

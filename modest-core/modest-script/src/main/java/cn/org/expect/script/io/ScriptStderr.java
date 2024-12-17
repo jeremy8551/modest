@@ -28,5 +28,4 @@ public class ScriptStderr extends ScriptStdout implements UniversalScriptStderr 
     public ScriptStderr(Writer writer, Format format) {
         super(writer, format);
     }
-
 }

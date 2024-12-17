@@ -110,5 +110,4 @@ public class ScriptStdbuf implements UniversalScriptStdout {
     public String toString() {
         return this.buf.toString();
     }
-
 }

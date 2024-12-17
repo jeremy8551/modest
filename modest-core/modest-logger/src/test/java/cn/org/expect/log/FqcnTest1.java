@@ -13,10 +13,7 @@ public class FqcnTest1 {
     public void test() throws Exception {
         LogFactory.load("sout+");
         Log log = LogFactory.getLog(DefaultLogTest.class);
-
-        if (log instanceof FqcnAware) {
-            ((FqcnAware) log).setFqcn("^" + LevelLogger.class.getName());
-        }
+        LogFactory.setFQCN(log, "^" + LevelLogger.class.getName());
 
         Log target = new LogProxy(LogFactory.getContext(), log);
         System.out.println(target.getClass().getName());

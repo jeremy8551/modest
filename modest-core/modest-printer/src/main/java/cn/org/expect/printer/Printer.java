@@ -77,5 +77,4 @@ public interface Printer extends ProgressPrinter, Closeable {
      * 关闭输出流
      */
     void close();
-
 }

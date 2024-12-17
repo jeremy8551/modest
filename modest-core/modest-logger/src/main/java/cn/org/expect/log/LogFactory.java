@@ -90,6 +90,13 @@ public class LogFactory {
         }
     }
 
+    public static void setFQCN(Object object, Object value) {
+        if (object instanceof FqcnAware) {
+            String fqcn = value instanceof String ? value.toString() : value instanceof Class ? ((Class<?>) value).getName() : value.getClass().getName();
+            ((FqcnAware) object).setFqcn(fqcn);
+        }
+    }
+
     /**
      * 返回日志输出格式
      *

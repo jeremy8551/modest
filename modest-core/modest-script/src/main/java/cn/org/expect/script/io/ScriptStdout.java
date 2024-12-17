@@ -31,5 +31,4 @@ public class ScriptStdout extends StandardPrinter implements UniversalScriptStdo
         this.setWriter(writer);
         this.setFormatter(format);
     }
-
 }

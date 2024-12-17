@@ -97,4 +97,11 @@ public interface LogEvent extends FqcnAware {
      * @return 异常信息
      */
     Throwable getThrowable();
+
+    /**
+     * 用于定位输出日志的代码位置信息的标识符，详见 {@linkplain FqcnAware#setFqcn(String)}
+     *
+     * @return 标识符
+     */
+    String getFqcn();
 }

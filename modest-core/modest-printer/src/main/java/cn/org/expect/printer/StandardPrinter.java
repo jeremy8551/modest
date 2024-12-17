@@ -24,7 +24,7 @@ public class StandardPrinter implements Printer, java.io.Closeable {
     protected Log log;
 
     /** 多任务程序使用的缓存 */
-    protected LinkedHashMap<String, CharSequence> mulityTask;
+    protected LinkedHashMap<String, CharSequence> multipleTask;
 
     /** 缓存，每次输出信息之前需要清空缓存 */
     protected StringBuilder buffer;
@@ -39,7 +39,7 @@ public class StandardPrinter implements Printer, java.io.Closeable {
     private final Object printLock = new Object();
 
     /** 输出锁 */
-    private final Object multyLock = new Object();
+    private final Object multipleLock = new Object();
 
     /**
      * 初始化
@@ -47,19 +47,19 @@ public class StandardPrinter implements Printer, java.io.Closeable {
     public StandardPrinter() {
         this.log = LogFactory.getLog(LogFactory.getContext(), this.getClass(), StandardPrinter.class.getName(), false);
         this.buffer = new StringBuilder(100);
-        this.mulityTask = new LinkedHashMap<String, CharSequence>();
+        this.multipleTask = new LinkedHashMap<String, CharSequence>();
     }
 
     /**
      * 初始化
      *
      * @param writer    信息输出接口, 为 null 时默认使用 {@linkplain Log} 接口输出信息
-     * @param conterter 类型转换器(用于将 Object 对象转为字符串, 为 null 时默认使用 {@linkplain Object#toString()})
+     * @param converter 类型转换器(用于将 Object 对象转为字符串, 为 null 时默认使用 {@linkplain Object#toString()})
      */
-    public StandardPrinter(Writer writer, Format conterter) {
+    public StandardPrinter(Writer writer, Format converter) {
         this();
         this.setWriter(writer);
-        this.setFormatter(conterter);
+        this.setFormatter(converter);
     }
 
     /**
@@ -117,15 +117,15 @@ public class StandardPrinter implements Printer, java.io.Closeable {
     }
 
     public void println(String id, CharSequence msg) {
-        synchronized (this.multyLock) {
-            this.mulityTask.put(id, msg); // 保存某个任务信息
+        synchronized (this.multipleLock) {
+            this.multipleTask.put(id, msg); // 保存某个任务信息
         }
 
-        Set<String> keys = this.mulityTask.keySet();
+        Set<String> keys = this.multipleTask.keySet();
         StringBuilder buf = new StringBuilder(keys.size() * 30);
         for (Iterator<String> it = keys.iterator(); it.hasNext(); ) { // 保存某个任务信息后，重新生成最新的任务信息
             String taskId = it.next();
-            buf.append(StringUtils.escapeLineSeparator(this.mulityTask.get(taskId)));
+            buf.append(StringUtils.escapeLineSeparator(this.multipleTask.get(taskId)));
             if (it.hasNext()) {
                 buf.append(FileUtils.lineSeparator);
             }
@@ -185,7 +185,7 @@ public class StandardPrinter implements Printer, java.io.Closeable {
     public void close() {
         this.flush();
         IO.close(this.writer);
-        this.mulityTask.clear();
+        this.multipleTask.clear();
         this.buffer = new StringBuilder(100);
     }
 
@@ -198,6 +198,6 @@ public class StandardPrinter implements Printer, java.io.Closeable {
     }
 
     public String toString() {
-        return StandardPrinter.class.getSimpleName() + "[mulityTask=" + StringUtils.toString(this.mulityTask) + ", writer=" + writer + "]";
+        return StandardPrinter.class.getSimpleName() + "[mulityTask=" + StringUtils.toString(this.multipleTask) + ", writer=" + writer + "]";
     }
 }

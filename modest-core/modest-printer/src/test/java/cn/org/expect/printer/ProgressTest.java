@@ -8,7 +8,7 @@ import org.junit.Test;
 public class ProgressTest {
 
     @Test
-    public void test0() throws IOException {
+    public void test0() {
         StandardPrinter printer = new StandardPrinter();
 
         long count = 100;
@@ -55,5 +55,4 @@ public class ProgressTest {
         Assert.assertEquals(process.getPrinter(), printer);
         Assert.assertNotNull(process.toString());
     }
-
 }

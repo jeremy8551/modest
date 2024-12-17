@@ -170,5 +170,4 @@ public class StandardPrinterTest {
         out.println("test", new IOException());
         out.close();
     }
-
 }
