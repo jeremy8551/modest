@@ -200,5 +200,4 @@ public class StandardPrinter implements Printer, java.io.Closeable {
     public String toString() {
         return StandardPrinter.class.getSimpleName() + "[mulityTask=" + StringUtils.toString(this.mulityTask) + ", writer=" + writer + "]";
     }
-
 }

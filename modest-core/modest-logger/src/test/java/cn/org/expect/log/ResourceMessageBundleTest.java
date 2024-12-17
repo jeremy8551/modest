@@ -15,7 +15,7 @@ public class ResourceMessageBundleTest {
     public void test() throws Exception {
         File tempFile = FileUtils.createTempFile("testLog.txt");
         System.out.println("file://" + tempFile.getAbsolutePath());
-        LogFactory.set("sout+,>" + tempFile.getAbsolutePath());
+        LogFactory.load("sout+,>" + tempFile.getAbsolutePath());
 
         LogContext context = LogFactory.getContext();
         context.setResourceBundle(new ResourceMessageBundleMap(null));

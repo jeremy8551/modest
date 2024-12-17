@@ -19,5 +19,4 @@ public interface ProgressPrinter {
      * @param message 输出信息
      */
     void println(String id, CharSequence message);
-
 }

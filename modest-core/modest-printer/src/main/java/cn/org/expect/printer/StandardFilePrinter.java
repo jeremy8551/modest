@@ -61,5 +61,4 @@ public class StandardFilePrinter extends StandardPrinter implements Printer {
     protected void open() throws IOException {
         this.setWriter(IO.getFileWriter(this.file, this.charsetName, this.append));
     }
-
 }

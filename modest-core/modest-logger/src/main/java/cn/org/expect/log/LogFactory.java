@@ -1,7 +1,6 @@
 package cn.org.expect.log;
 
 import cn.org.expect.Modest;
-import cn.org.expect.log.apd.LogEvent;
 import cn.org.expect.log.apd.LogPattern;
 import cn.org.expect.util.Ensure;
 
@@ -76,7 +75,7 @@ public class LogFactory {
      *
      * @param context         日志模块上下文信息
      * @param type            日志归属的类
-     * @param fqcn            用于定位输出日志的代码位置信息的标识符，详见 {@linkplain LogEvent#setFqcn(String)}
+     * @param fqcn            用于定位输出日志的代码位置信息的标识符，详见 {@linkplain FqcnAware#setFqcn(String)}
      * @param dynamicCategory true表示使用 StackTraceElement 动态生成日志归属的类名, false表示使用 {@code type} 作为日志接口归属的类名
      * @return 日志接口
      */
@@ -113,9 +112,10 @@ public class LogFactory {
      * 设置日志参数
      *
      * @param args 参数数组，详见 {@linkplain LogSettings#load(LogContext, String...)}
+     * @return 返回参数数组中与日志配置无关的配置信息
      */
-    public static synchronized void set(String... args) {
+    public static synchronized String[] load(String... args) {
         LogContext context = LogFactory.getContext();
-        LogSettings.load(context, args);
+        return LogSettings.load(context, args);
     }
 }

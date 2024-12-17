@@ -15,7 +15,7 @@ public interface LogBuilder {
      *
      * @param context         日志工厂对象
      * @param type            日志归属的类
-     * @param fqcn            用于定位输出日志的代码位置信息的标识符，详见 {@linkplain LogEvent#setFqcn(String)}
+     * @param fqcn            用于定位输出日志的代码位置信息的标识符，详见 {@linkplain FqcnAware#setFqcn(String)}
      * @param dynamicCategory true表示使用 StackTraceElement 动态生成日志归属的类名, false表示使用 {@code type} 作为日志接口归属的类名
      * @return 日志接口
      * @throws Exception 创建日志发生错误

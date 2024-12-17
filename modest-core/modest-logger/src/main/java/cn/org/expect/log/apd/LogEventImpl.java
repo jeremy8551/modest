@@ -1,5 +1,6 @@
 package cn.org.expect.log.apd;
 
+import cn.org.expect.log.FqcnAware;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogLevel;
@@ -13,18 +14,22 @@ import cn.org.expect.util.StackTraceUtils;
  */
 public class LogEventImpl implements LogEvent {
 
-    private String fqcn;
-    private StackTraceElement stackTraceElement;
-    private Log log;
-    private LogContext context;
-    private LogLevel level;
-    private String message;
-    private Throwable throwable;
-    private Object[] args;
-    private String category;
+    private final Log log;
+    private final LogContext context;
+    private final LogLevel level;
+    private final String message;
+    private final Throwable throwable;
+    private final Object[] args;
+    private final String category;
 
     /** true表示动态生成日志接口归属的类名, false表示使用 {@code type} 作为日志接口归属的类名 */
-    private boolean dynamicCategory;
+    private final boolean dynamicCategory;
+
+    /** 用于定位输出日志的代码位置信息的标识符，详见 {@linkplain FqcnAware#setFqcn(String)} */
+    private String fqcn;
+
+    /** 堆栈信息 */
+    private StackTraceElement stackTraceElement;
 
     public LogEventImpl(String fqcn, Log log, String category, LogContext context, boolean dynamicCategory, LogLevel level, String message, Object[] args, Throwable throwable) {
         this.fqcn = fqcn;
@@ -38,8 +43,8 @@ public class LogEventImpl implements LogEvent {
         this.dynamicCategory = dynamicCategory;
     }
 
-    public LogEvent clone(LogLevel level, String message, Object[] args, Throwable throwable) {
-        return new LogEventImpl(this.fqcn, this.log, this.category, this.context, this.dynamicCategory, level, message, args, throwable);
+    public LogEvent clone(String fqcn, LogLevel level, String message, Object[] args, Throwable throwable) {
+        return new LogEventImpl(fqcn, this.log, this.category, this.context, this.dynamicCategory, level, message, args, throwable);
     }
 
     public LogEvent clone(String message, Object[] args, Throwable throwable) {
@@ -99,9 +104,5 @@ public class LogEventImpl implements LogEvent {
 
     public boolean isDynamicCategory() {
         return dynamicCategory;
-    }
-
-    public void setDynamicCategory(boolean dynamicCategory) {
-        this.dynamicCategory = dynamicCategory;
     }
 }

@@ -20,6 +20,9 @@ public abstract class AbstractLogger extends LevelLogger {
     /** 创建日志的堆栈信息 */
     protected StackTraceElement stackTrace;
 
+    /** 用于定位输出日志的代码位置信息的标识符 */
+    private volatile String fqcn;
+
     /**
      * 抽象日志
      *
@@ -37,6 +40,14 @@ public abstract class AbstractLogger extends LevelLogger {
 
     public String getName() {
         return name;
+    }
+
+    public String getFqcn() {
+        return this.fqcn;
+    }
+
+    public void setFqcn(String fqcn) {
+        this.fqcn = fqcn;
     }
 
     public String toString() {
@@ -57,6 +68,7 @@ public abstract class AbstractLogger extends LevelLogger {
             str += "off";
         }
         str += ", class=" + this.name;
+        str += ", fqcn=" + this.fqcn;
         str += ", line=(" + stackTrace.getFileName() + ":" + this.stackTrace.getLineNumber() + ")";
         return str;
     }
