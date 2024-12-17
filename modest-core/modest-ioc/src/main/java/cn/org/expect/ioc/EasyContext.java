@@ -69,5 +69,4 @@ public interface EasyContext extends EasyContainerContext, EasyBeanRegister, Eas
      * 刷新组件信息
      */
     void refresh();
-
 }

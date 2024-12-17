@@ -15,7 +15,7 @@ import cn.org.expect.util.StringUtils;
 public class EasyContainerContextManager {
 
     /** 容器上下文的集合 */
-    private List<EasyContainerContext> list;
+    private final List<EasyContainerContext> list;
 
     /**
      * 容器上下文信息管理器
@@ -98,5 +98,4 @@ public class EasyContainerContextManager {
         }
         return null;
     }
-
 }

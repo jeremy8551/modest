@@ -87,5 +87,4 @@ public interface EasyBeanInfo extends Comparator<EasyBeanInfo> {
      * @return 0表示组件相同 大于0表示参数1要排在参数2的后面 小于0表示参数1要排在参数2的前面
      */
     int compare(EasyBeanInfo o1, EasyBeanInfo o2);
-
 }

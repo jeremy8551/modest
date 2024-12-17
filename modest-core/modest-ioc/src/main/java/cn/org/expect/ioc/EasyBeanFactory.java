@@ -16,5 +16,4 @@ public interface EasyBeanFactory {
      * @return 返回组件实例对象
      */
     <E> E createBean(Class<?> type, Object... args);
-
 }

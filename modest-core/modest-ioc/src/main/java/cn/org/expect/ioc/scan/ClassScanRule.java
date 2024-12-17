@@ -17,5 +17,4 @@ public interface ClassScanRule {
      * @return 返回true表示类信息 {@code cls} 被使用, false表示未使用类
      */
     boolean process(Class<?> cls, EasyBeanRegister register);
-
 }

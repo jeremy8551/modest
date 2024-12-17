@@ -87,5 +87,4 @@ public interface EasyBeanInfoContext {
      * 删除所有已注册的组件信息
      */
     void removeBeanInfo();
-
 }

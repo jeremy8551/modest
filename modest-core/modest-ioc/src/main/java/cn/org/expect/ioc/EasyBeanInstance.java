@@ -19,5 +19,4 @@ public interface EasyBeanInstance {
      * @param bean 实例对象
      */
     void setBean(Object bean);
-
 }
