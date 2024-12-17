@@ -1,4 +1,4 @@
-package cn.org.expect.maven.impl;
+package cn.org.expect.maven.repository.local.impl;
 
 import java.io.File;
 

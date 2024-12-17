@@ -7,7 +7,7 @@ import cn.org.expect.intellij.idea.plugin.maven.settings.MavenPluginSettings;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.MavenEasyContext;
-import cn.org.expect.maven.impl.SimpleArtifactSearchIoc;
+import cn.org.expect.maven.impl.SimpleMavenEasyContext;
 import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.StringUtils;
@@ -66,7 +66,7 @@ public class MavenSearchPluginApplication implements AppLifecycleListener {
         }
 
         // 容器接口
-        MavenEasyContext ioc = new SimpleArtifactSearchIoc(MavenSearchPluginFactory.class.getClassLoader(), //
+        MavenEasyContext ioc = new SimpleMavenEasyContext(MavenSearchPluginFactory.class.getClassLoader(), //
                 debug ? "sout+:info" : "", // 默认日志级别
                 debug ? ClassUtils.getPackageName(MavenSearchPluginApplication.class, 4) + ":debug" : "", //
                 debug ? ClassUtils.getPackageName(ArtifactSearch.class, 4) + ":debug" : "" //

@@ -13,7 +13,7 @@ import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.concurrent.MavenJob;
 import cn.org.expect.maven.impl.SimpleArtifact;
-import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
+import cn.org.expect.maven.repository.impl.SimpleArtifactSearchResult;
 import cn.org.expect.maven.repository.AbstractArtifactRepository;
 import cn.org.expect.maven.repository.ArtifactOperation;
 import cn.org.expect.maven.repository.ArtifactSearchResult;

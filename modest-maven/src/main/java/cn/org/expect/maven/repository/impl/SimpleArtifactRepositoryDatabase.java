@@ -1,4 +1,4 @@
-package cn.org.expect.maven.impl;
+package cn.org.expect.maven.repository.impl;
 
 import java.util.HashMap;
 import java.util.Map;

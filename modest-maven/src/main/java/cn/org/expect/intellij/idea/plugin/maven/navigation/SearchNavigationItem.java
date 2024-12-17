@@ -8,11 +8,15 @@ import javax.swing.*;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
-import cn.org.expect.maven.concurrent.SearchPomJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.concurrent.SearchPomJob;
+import cn.org.expect.maven.pom.Developer;
+import cn.org.expect.maven.pom.License;
+import cn.org.expect.maven.pom.Parent;
 import cn.org.expect.maven.pom.Pom;
+import cn.org.expect.maven.pom.Scm;
 import cn.org.expect.maven.search.SearchNavigation;
 import cn.org.expect.util.StringUtils;
 
@@ -68,7 +72,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
         Pom pom = plugin.getPomRepository().select(artifact);
         if (pom != null) {
             if (this.child.isEmpty()) {
-                Pom.Parent parent = pom.getParent();
+                Parent parent = pom.getParent();
                 if (StringUtils.isNotBlank(parent.getGroupId()) && StringUtils.isNotBlank(parent.getArtifactId())) {
                     this.child.add(new SearchNavigationDetail(plugin, artifact, MavenSearchPluginIcon.RIGHT_PARENT, "", parent.getGroupId() + ":" + parent.getArtifactId() + ":" + parent.getVersion(), "Parent"));
                 }
@@ -82,7 +86,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
                 }
 
                 // 源代码管理系统
-                Pom.Scm scm = pom.getScm();
+                Scm scm = pom.getScm();
                 if (StringUtils.isNotBlank(scm.getConnection())) {
                     this.child.add(new SearchNavigationDetail(plugin, artifact, MavenSearchPluginIcon.RIGHT_SCM, "", scm.getConnection(), "Connection"));
                 }
@@ -97,9 +101,9 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
                 }
 
                 // 开发人员
-                List<Pom.Developer> developers = pom.getDevelopers();
+                List<Developer> developers = pom.getDevelopers();
                 for (int i = 0; i < developers.size(); i++) {
-                    Pom.Developer developer = developers.get(i);
+                    Developer developer = developers.get(i);
                     this.child.add(new SearchNavigationDetail(plugin, artifact, MavenSearchPluginIcon.RIGHT_DEVELOPER, "", developer.getName(), "Name"));
 
                     if (StringUtils.isNotBlank(developer.getEmail())) {
@@ -126,9 +130,9 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
                 }
 
                 // 开源许可证
-                List<Pom.License> licenses = pom.getLicenses();
+                List<License> licenses = pom.getLicenses();
                 for (int i = 0; i < licenses.size(); i++) {
-                    Pom.License license = licenses.get(i);
+                    License license = licenses.get(i);
                     this.child.add(new SearchNavigationDetail(plugin, artifact, MavenSearchPluginIcon.RIGHT_LICENSE, "", license.getName(), "Name"));
 
                     if (StringUtils.isNotBlank(license.getUrl())) {

@@ -2,7 +2,7 @@ package cn.org.expect.intellij.idea.plugin.maven.navigation;
 
 import java.util.List;
 
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.maven.search.SearchNavigationCollection;
 import com.intellij.ide.actions.searcheverywhere.SearchEverywhereFoundElementInfo;
 
@@ -14,5 +14,5 @@ public interface SearchEverywhereNavigationCollection extends SearchNavigationCo
      * @param plugin 搜索接口
      * @return 导航记录集合
      */
-    List<SearchEverywhereFoundElementInfo> toInfos(MavenSearchPlugin plugin);
+    List<SearchEverywhereFoundElementInfo> toInfos(MavenSearch plugin);
 }

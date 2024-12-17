@@ -1,4 +1,4 @@
-package cn.org.expect.maven.impl;
+package cn.org.expect.maven.repository.impl;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.impl.SimpleArtifact;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabaseEngine;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
 import cn.org.expect.maven.repository.ArtifactSearchResultType;

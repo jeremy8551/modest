@@ -3,6 +3,7 @@ package cn.org.expect.maven.pom;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -10,10 +11,13 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.maven.concurrent.ArtifactDownloadJob;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.Artifact;
+import cn.org.expect.maven.concurrent.ArtifactDownloadJob;
+import cn.org.expect.maven.pom.impl.SimplePom;
+import cn.org.expect.maven.pom.impl.SimpleDeveloper;
+import cn.org.expect.maven.pom.impl.SimpleLicense;
 import cn.org.expect.maven.repository.local.LocalRepository;
 import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.util.CharsetName;
@@ -27,16 +31,16 @@ public class PomRepository {
     protected final static Log log = LogFactory.getLog(PomRepository.class);
 
     /** 搜索结果 */
-    protected final Map<String, Map<String, Map<String, Pom>>> database;
+    protected final Map<String, Map<String, Map<String, SimplePom>>> database;
 
     public PomRepository() {
         this.database = new ConcurrentHashMap<>();
     }
 
     public Pom select(Artifact artifact) {
-        Map<String, Map<String, Pom>> groupMap = this.database.get(artifact.getGroupId());
+        Map<String, Map<String, SimplePom>> groupMap = this.database.get(artifact.getGroupId());
         if (groupMap != null) {
-            Map<String, Pom> artifactMap = groupMap.get(artifact.getArtifactId());
+            Map<String, SimplePom> artifactMap = groupMap.get(artifact.getArtifactId());
             if (artifactMap != null) {
                 return artifactMap.get(artifact.getVersion());
             }
@@ -45,9 +49,9 @@ public class PomRepository {
     }
 
     public Pom delete(Artifact artifact) {
-        Map<String, Map<String, Pom>> groupMap = this.database.get(artifact.getGroupId());
+        Map<String, Map<String, SimplePom>> groupMap = this.database.get(artifact.getGroupId());
         if (groupMap != null) {
-            Map<String, Pom> artifactMap = groupMap.get(artifact.getArtifactId());
+            Map<String, SimplePom> artifactMap = groupMap.get(artifact.getArtifactId());
             if (artifactMap != null) {
                 return artifactMap.remove(artifact.getVersion());
             }
@@ -55,9 +59,9 @@ public class PomRepository {
         return null;
     }
 
-    public void insert(Artifact artifact, Pom pomInfo) {
-        Map<String, Map<String, Pom>> groupMap = this.database.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
-        Map<String, Pom> artifactMap = groupMap.computeIfAbsent(artifact.getArtifactId(), k -> new HashMap<>());
+    public void insert(Artifact artifact, SimplePom pomInfo) {
+        Map<String, Map<String, SimplePom>> groupMap = this.database.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
+        Map<String, SimplePom> artifactMap = groupMap.computeIfAbsent(artifact.getArtifactId(), k -> new HashMap<>());
         artifactMap.put(artifact.getVersion(), pomInfo);
     }
 
@@ -74,13 +78,13 @@ public class PomRepository {
 
         // 解析 POM 信息
         Node project = XMLUtils.getRoot(new ByteArrayInputStream(pomXmlBytes), "project");
-        pomInfo = new Pom();
-        this.parsePomXml(project, pomInfo); // 解析 POM
-        this.insert(artifact, pomInfo); // 保存搜索结果
-        return pomInfo;
+        SimplePom pom = new SimplePom();
+        this.parsePomXml(project, pom); // 解析 POM
+        this.insert(artifact, pom); // 保存搜索结果
+        return pom;
     }
 
-    private void parsePomXml(Node project, Pom info) {
+    private void parsePomXml(Node project, SimplePom info) {
         XMLUtils.runChildNodes(project, (i, node) -> {
             if ("url".equalsIgnoreCase(node.getNodeName())) {
                 info.setUrl(node.getTextContent());
@@ -133,7 +137,7 @@ public class PomRepository {
             if ("licenses".equalsIgnoreCase(node.getNodeName())) {
                 XMLUtils.runChildNodes(node, (j, item) -> {
                     if ("license".equalsIgnoreCase(item.getNodeName())) {
-                        Pom.License license = new Pom.License();
+                        SimpleLicense license = new SimpleLicense();
                         XMLUtils.runChildNodes(item, (k, property) -> {
                             if ("name".equalsIgnoreCase(property.getNodeName())) {
                                 license.setName(property.getTextContent());
@@ -153,7 +157,7 @@ public class PomRepository {
             if ("developers".equalsIgnoreCase(node.getNodeName())) {
                 XMLUtils.runChildNodes(node, (j, item) -> {
                     if ("developer".equalsIgnoreCase(item.getNodeName())) {
-                        Pom.Developer developer = new Pom.Developer();
+                        SimpleDeveloper developer = new SimpleDeveloper();
                         XMLUtils.runChildNodes(item, (k, property) -> {
                             if ("id".equalsIgnoreCase(property.getNodeName())) {
                                 developer.setId(property.getTextContent());
@@ -186,7 +190,7 @@ public class PomRepository {
         LocalRepository repository = search.getLocalRepository();
         File pomFile = repository.getFile(artifact, "pom");
         if (FileUtils.isFile(pomFile)) {
-            return FileUtils.readline(pomFile, CharsetName.UTF_8, 0).getBytes(CharsetName.UTF_8);
+            return FileUtils.readline(pomFile, CharsetName.UTF_8, 0).getBytes(StandardCharsets.UTF_8);
         }
 
         // 尝试解析jar文件
@@ -202,9 +206,9 @@ public class PomRepository {
 
         // 再尝试 pom 文件
         if (FileUtils.isFile(pomFile)) {
-            return FileUtils.readline(pomFile, CharsetName.UTF_8, 0).getBytes(CharsetName.UTF_8);
+            return FileUtils.readline(pomFile, CharsetName.UTF_8, 0).getBytes(StandardCharsets.UTF_8);
         }
-        log.warn("{} {} not exists!", Pom.class.getSimpleName(), pomFile);
+        log.warn("{} {} not exists!", artifact.toMavenId(), pomFile);
 
         // 尝试解析 jar 文件
         jarfile = repository.getJarfile(artifact);
@@ -215,7 +219,7 @@ public class PomRepository {
             }
         }
 
-        log.warn("{} POM not found in {}", Pom.class.getSimpleName(), jarfile);
+        log.warn("{} POM not found in {}", artifact.toMavenId(), jarfile);
         return null;
     }
 

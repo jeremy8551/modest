@@ -32,7 +32,7 @@ public class MavenPluginJob extends MavenJob {
             this.setPopupMenuUI(plugin); // 加载弹出菜单
             this.setEditorSelectText(plugin);
         } catch (SearchEverywhereUIShownException es) {
-            log.warn("SearchEverywhereUI is Shown!");
+            log.warn("SearchEverywhereUI is Shown!", es);
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
         }

@@ -3,14 +3,15 @@ package cn.org.expect.intellij.idea.plugin.maven.concurrent;
 import java.util.List;
 
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
-import cn.org.expect.maven.search.SearchNavigation;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchEverywhereNavigationCollection;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.concurrent.MavenArtifactJob;
 import cn.org.expect.maven.concurrent.SearchExtraJob;
 import cn.org.expect.maven.concurrent.SearchPatternJob;
+import cn.org.expect.maven.pom.Parent;
 import cn.org.expect.maven.pom.Pom;
 import cn.org.expect.maven.repository.ArtifactSearchResult;
+import cn.org.expect.maven.search.SearchNavigation;
 
 public class MavenPluginOpenParentJob extends MavenArtifactJob {
 
@@ -23,7 +24,7 @@ public class MavenPluginOpenParentJob extends MavenArtifactJob {
         MavenSearchPlugin plugin = (MavenSearchPlugin) this.getSearch();
         Pom pomInfo = plugin.getPomRepository().select(artifact);
         if (pomInfo != null) {
-            Pom.Parent parent = pomInfo.getParent();
+            Parent parent = pomInfo.getParent();
             String pattern = parent.getGroupId() + ":" + parent.getArtifactId();
 
             ArtifactSearchResult result = plugin.aware(new SearchPatternJob(pattern)).queryExtra(plugin.getDatabase(), pattern);

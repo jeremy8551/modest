@@ -3,7 +3,7 @@ package cn.org.expect.maven.repository.local;
 import java.io.File;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.maven.impl.SimpleArtifactSearchResult;
+import cn.org.expect.maven.repository.impl.SimpleArtifactSearchResult;
 import cn.org.expect.maven.repository.ArtifactOperation;
 import cn.org.expect.maven.repository.ArtifactRepositoryDatabase;
 import cn.org.expect.maven.repository.ArtifactSearchResult;

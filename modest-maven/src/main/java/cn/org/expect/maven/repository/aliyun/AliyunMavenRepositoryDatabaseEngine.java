@@ -1,7 +1,7 @@
 package cn.org.expect.maven.repository.aliyun;
 
 import cn.org.expect.annotation.EasyBean;
-import cn.org.expect.maven.impl.SimpleArtifactRepositoryDatabaseEngine;
+import cn.org.expect.maven.repository.impl.SimpleArtifactRepositoryDatabaseEngine;
 import cn.org.expect.maven.search.ArtifactSearchSettings;
 
 @EasyBean(singleton = true)

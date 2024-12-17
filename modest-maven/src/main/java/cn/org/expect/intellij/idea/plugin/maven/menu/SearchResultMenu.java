@@ -9,11 +9,10 @@ import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.SearchDisplay;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginEDTJob;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginOpenParentJob;
-import cn.org.expect.maven.search.SearchNavigation;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.MavenMessage;
-import cn.org.expect.maven.concurrent.MavenJob;
 import cn.org.expect.maven.concurrent.ArtifactDownloadJob;
+import cn.org.expect.maven.concurrent.MavenJob;
 import cn.org.expect.maven.concurrent.SearchMoreJob;
 import cn.org.expect.maven.pom.Pom;
 import cn.org.expect.maven.repository.ArtifactOperation;
@@ -21,6 +20,7 @@ import cn.org.expect.maven.repository.central.CentralMavenRepository;
 import cn.org.expect.maven.repository.gradle.GradlePluginRepository;
 import cn.org.expect.maven.search.ArtifactSearchNotification;
 import cn.org.expect.maven.search.ArtifactSearchStatusMessageType;
+import cn.org.expect.maven.search.SearchNavigation;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 import com.intellij.ide.BrowserUtil;
@@ -175,9 +175,9 @@ public class SearchResultMenu extends AbstractMenu {
                 Artifact artifact = navigation.getArtifact();
                 plugin.execute(new MavenJob("maven.search.job.download.artifact.description") { // 异步执行任务
                     public int execute() throws Exception {
-                        Pom pomInfo = plugin.getPomRepository().query(plugin, artifact);
-                        if (pomInfo != null && StringUtils.isNotBlank(pomInfo.getProjectUrl())) {
-                            BrowserUtil.browse(pomInfo.getProjectUrl());
+                        Pom pom = plugin.getPomRepository().query(plugin, artifact);
+                        if (pom != null && StringUtils.isNotBlank(pom.getProjectUrl())) {
+                            BrowserUtil.browse(pom.getProjectUrl());
                             return 0;
                         } else {
                             plugin.sendNotification(ArtifactSearchNotification.ERROR, "maven.search.error.cannot.open.project.url");

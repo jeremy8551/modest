@@ -3,7 +3,7 @@ package cn.org.expect.intellij.idea.plugin.maven.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
+import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.navigation.SearchEverywhereNavigationCollection;
 import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.maven.search.ArtifactSearchAware;
@@ -48,7 +48,7 @@ public class SimpleSearchEverywhereNavigationCollection implements SearchEverywh
         return this.list.get(index);
     }
 
-    public List<SearchEverywhereFoundElementInfo> toInfos(MavenSearchPlugin plugin) {
+    public List<SearchEverywhereFoundElementInfo> toInfos(MavenSearch plugin) {
         // 展开/折叠导航记录
         for (int i = 0; i < this.list.size(); i++) {
             SearchNavigation navigation = this.list.get(i);

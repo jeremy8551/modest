@@ -1,7 +1,7 @@
 package cn.org.expect.maven.repository;
 
 import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.maven.impl.SimpleArtifactRepositoryDatabase;
+import cn.org.expect.maven.repository.impl.SimpleArtifactRepositoryDatabase;
 import cn.org.expect.util.Ensure;
 
 public abstract class AbstractArtifactRepository extends HttpClient implements ArtifactRepository {
