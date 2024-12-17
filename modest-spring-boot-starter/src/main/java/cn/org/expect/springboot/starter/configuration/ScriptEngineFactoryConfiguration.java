@@ -3,8 +3,8 @@ package cn.org.expect.springboot.starter.configuration;
 import javax.script.ScriptEngineFactory;
 
 import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.javax.script.ScriptEngineFactoryImpl;
 import cn.org.expect.script.UniversalScriptEngineFactory;
-import cn.org.expect.script.spi.ScriptEngineFactoryImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
