@@ -1,10 +1,15 @@
 package cn.org.expect.intellij.idea.plugin.maven.navigation;
 
 import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import javax.swing.*;
 
+import cn.org.expect.collection.CaseSensitivSet;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearch;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginIcon;
@@ -18,6 +23,7 @@ import cn.org.expect.maven.pom.Parent;
 import cn.org.expect.maven.pom.Pom;
 import cn.org.expect.maven.pom.Scm;
 import cn.org.expect.maven.search.SearchNavigation;
+import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.StringUtils;
 
 public class SearchNavigationItem extends AbstractSearchNavigation {
@@ -125,7 +131,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
                     }
 
                     if (StringUtils.isNotBlank(developer.getTimezone())) {
-                        String timezone = this.parseTimezone(developer.getTimezone()); // TODO 解析不准 org.apache:apache:31
+                        String timezone = this.parseTimezone(developer.getTimezone()); // 测试 org.apache.maven:maven-parent
                         if (StringUtils.isNotBlank(timezone)) {
                             this.child.add(new SearchNavigationDetail(plugin, artifact, MavenSearchPluginIcon.RIGHT_DEVELOPER, "", timezone, "Timezone"));
                         }
@@ -171,7 +177,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
      * 解析时区字符串为 ZoneId。
      *
      * @param timezone 时区字符串，例如 "+8", "-05:30", "Asia/Shanghai"
-     * @return ZoneId 对象，解析失败返回系统默认时区。
+     * @return ZoneId 对象，解析失败返回系统默认时区
      */
     private String parseTimezone(String timezone) {
         if (StringUtils.isBlank(timezone)) {
@@ -179,17 +185,79 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
         }
 
         try {
-            return ZoneId.of(timezone).toString(); // 尝试解析为标准时区 ID
+            ZoneId zoneId = ZoneId.of(timezone);
+            return zoneId + " " + this.getZone(zoneId); // 尝试解析为标准时区 ID
         } catch (Throwable ex) {
             try {
-                return ZoneId.ofOffset("UTC", java.time.ZoneOffset.of(timezone)).toString(); // 如果解析失败，尝试解析为 UTC 偏移量
+                ZoneId zoneId = ZoneId.ofOffset("UTC", ZoneOffset.of(timezone)); // 如果解析失败，尝试解析为 UTC 偏移量
+                return zoneId + " " + this.getZone(zoneId);
             } catch (Throwable e) {
-                // 最终解析失败，使用默认时区
-                if (log.isWarnEnabled()) {
-                    log.warn("can not parse Timezone: {} ", timezone);
-                }
                 return null;
             }
         }
+    }
+
+    private String getZone(ZoneId offset) {
+        CaseSensitivSet names = new CaseSensitivSet();
+        Set<String> set = ZoneId.getAvailableZoneIds();
+        for (String zoneIdStr : set) {
+            ZoneId zoneId = ZoneId.of(zoneIdStr);
+            ZonedDateTime zdt = ZonedDateTime.now(zoneId);
+            if (zdt.getOffset().equals(offset)) {
+                String str = StringUtils.trimBlank(zoneId.toString()); // GMT +08:00: Asia/Kuching
+                String name = ArrayUtils.firstElement(StringUtils.split(str, '/'));
+                if (name.equals("PRC")) {
+                    names.add("China");
+                    continue;
+                }
+
+                if (this.match(name)) {
+                    names.add(name);
+                }
+            }
+        }
+
+        if (names.isEmpty()) {
+            return "";
+        }
+
+        StringBuilder buf = new StringBuilder();
+        buf.append('(');
+        for (Iterator<String> it = names.iterator(); it.hasNext(); ) {
+            buf.append(it.next());
+            if (it.hasNext()) {
+                buf.append(", ");
+            }
+        }
+        buf.append(')');
+        return buf.toString();
+    }
+
+    private boolean match(String str) {
+        if (StringUtils.isBlank(str)) {
+            return false;
+        }
+
+        if (StringUtils.inArrayIgnoreCase(str, "etc", "cet", "systemv")) {
+            return false;
+        }
+
+        // 不能有数字
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (!StringUtils.isLetter(c)) {
+                return false;
+            }
+        }
+
+        // 是否是全大写
+        boolean litte = false;
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+            if (!Character.isUpperCase(c)) {
+                litte = true;
+            }
+        }
+        return litte;
     }
 }
