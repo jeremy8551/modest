@@ -888,7 +888,7 @@ public class ClassUtils {
             }
         }
 
-        return table.toString(CharTable.Style.standard);
+        return table.toString(CharTable.Style.STANDARD);
     }
 
     /**

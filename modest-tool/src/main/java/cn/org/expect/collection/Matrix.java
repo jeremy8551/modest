@@ -435,7 +435,7 @@ public class Matrix<E> implements Cloneable {
             }
         }
 
-        return table.toString(CharTable.Style.standard);
+        return table.toString(CharTable.Style.STANDARD);
     }
 
 }

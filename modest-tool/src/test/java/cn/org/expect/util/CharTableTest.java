@@ -34,7 +34,7 @@ public class CharTableTest {
         CharTable ct = new CharTable();
         ct.addTitle("a");
         ct.addCell("1").addCell("2").addCell("3");
-        System.out.println(ct.toString(CharTable.Style.standard));
+        System.out.println(ct.toString(CharTable.Style.STANDARD));
         System.out.println(SEPARATOR);
 
         String r = "";
@@ -56,7 +56,7 @@ public class CharTableTest {
         ct.addTitle("a");
         ct.addTitle("b");
         ct.addCell("1").addCell("2").addCell("3").addCell("4");
-        System.out.println(ct.toString(CharTable.Style.standard));
+        System.out.println(ct.toString(CharTable.Style.STANDARD));
         System.out.println(SEPARATOR);
 
         String r = "";
@@ -76,7 +76,7 @@ public class CharTableTest {
         ct.addTitle("列");
         ct.addTitle("b");
         ct.addCell("1").addCell("2").addCell("3").addCell("4");
-        System.out.println(ct.toString(CharTable.Style.standard));
+        System.out.println(ct.toString(CharTable.Style.STANDARD));
         System.out.println(SEPARATOR);
 
         String r = "";
@@ -96,7 +96,7 @@ public class CharTableTest {
         ct.addTitle("列");
         ct.addTitle("b");
         ct.addCell("1").addCell("2").addCell("3").addCell("4");
-        System.out.println(ct.toString(CharTable.Style.standard));
+        System.out.println(ct.toString(CharTable.Style.STANDARD));
         System.out.println(SEPARATOR);
 
         String r = "";
@@ -116,7 +116,7 @@ public class CharTableTest {
         ct.addTitle("列");
         ct.addTitle("b");
         ct.addCell("第一列").addCell("测试换行列\n你好啊俄式一下水电费水电费\n世界\n").addCell("3").addCell("4");
-        ct.toString(CharTable.Style.standard);
+        ct.toString(CharTable.Style.STANDARD);
         for (String str : ct) {
             System.out.println(str);
         }
@@ -141,7 +141,7 @@ public class CharTableTest {
         ct.addTitle("列");
         ct.addTitle("b");
         ct.addCell("第一列").addCell("测试换行列\n你好啊俄式一下水电费水电费\n世界\n").addCell("3").addCell("4");
-        ct.toString(CharTable.Style.db2);
+        ct.toString(CharTable.Style.DB2);
         for (String str : ct) {
             System.out.println(str);
         }
@@ -164,7 +164,7 @@ public class CharTableTest {
         ct.addTitle("列");
         ct.addTitle("b");
         ct.addCell("第一列").addCell("测试换行列\n你好啊俄式一下水电费水电费\n世界\n").addCell("3").addCell("4");
-        ct.toString(CharTable.Style.shell);
+        ct.toString(CharTable.Style.SHELL);
         for (String str : ct) {
             System.out.println(str);
         }
@@ -186,7 +186,7 @@ public class CharTableTest {
         ct.addTitle("列");
         ct.addTitle("b");
         ct.addCell("第一列").addCell("测试换行列\n你好啊俄式一下水电费水电费\n世界\n").addCell("3").addCell("4");
-        ct.toString(CharTable.Style.db2);
+        ct.toString(CharTable.Style.DB2);
         for (String str : ct) {
             System.out.println(str);
         }
@@ -218,7 +218,7 @@ public class CharTableTest {
         ct.addCell("----");
         ct.addCell("");
         ct.addCell("");
-        ct.toString(CharTable.Style.markdown);
+        ct.toString(CharTable.Style.MARKDOWN);
         for (String str : ct) {
             System.out.println(str);
         }
@@ -248,7 +248,7 @@ public class CharTableTest {
         ct.addCell("o");
         ct.addCell("p\r\nq\ns\ni");
         ct.addCell("p");
-        ct.toString(CharTable.Style.simple);
+        ct.toString(CharTable.Style.SIMPLE);
         for (String str : ct) {
             System.out.println(str);
         }

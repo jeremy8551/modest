@@ -250,11 +250,11 @@ public class CharTable implements Iterable<String> {
      * 字符图形样式枚举
      */
     public enum Style implements Render {
-        markdown(new MarkdownSytle()) //
-        , db2(new DB2Sytle()) //
-        , shell(new ShellSytle()) //
-        , simple(new SimpleSytle()) //
-        , standard(new StandardSytle()) //
+        MARKDOWN(new MarkdownSytle()) //
+        , DB2(new DB2Sytle()) //
+        , SHELL(new ShellSytle()) //
+        , SIMPLE(new SimpleSytle()) //
+        , STANDARD(new StandardSytle()) //
         ;
 
         private Render rendor;
