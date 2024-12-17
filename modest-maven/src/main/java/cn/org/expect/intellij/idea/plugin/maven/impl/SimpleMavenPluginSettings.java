@@ -232,7 +232,6 @@ public class SimpleMavenPluginSettings implements MavenPluginSettings {
                 long expireTimeMillis = jsonObject.optLong("expireTimeMillis", def.getExpireTimeMillis());
                 boolean searchInAllTab = jsonObject.optBoolean("useAllTab", def.isUseAllTab());
                 String downloadWay = jsonObject.optString("downloadWay", def.getDownloadWay());
-                boolean useParentPom = jsonObject.optBoolean("useParentPom", def.isUseParentPom());
 
                 settings.setInputIntervalTime(inputIntervalTime);
                 settings.setRepositoryId(repositoryId);
@@ -243,7 +242,6 @@ public class SimpleMavenPluginSettings implements MavenPluginSettings {
                 settings.setExpireTimeMillis(expireTimeMillis);
                 settings.setUseAllTab(searchInAllTab);
                 settings.setDownloadWay(downloadWay);
-                settings.setUseParentPom(useParentPom);
             }
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);

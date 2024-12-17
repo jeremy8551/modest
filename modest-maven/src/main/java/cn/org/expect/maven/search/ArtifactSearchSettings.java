@@ -78,20 +78,6 @@ public interface ArtifactSearchSettings {
     void setExpireTimeMillis(long millis);
 
     /**
-     * 是否读取父工程POM的项目信息
-     *
-     * @return true表示读取父工程POM的项目信息，false表示只读本工程POM中的项目信息
-     */
-    boolean isUseParentPom();
-
-    /**
-     * 设置是否读取父工程POM的项目信息
-     *
-     * @param useParentPom true表示读取父工程POM的项目信息，false表示只读本工程POM中的项目信息
-     */
-    void setUseParentPom(boolean useParentPom);
-
-    /**
      * 下载工件的方式
      *
      * @return 下载方式

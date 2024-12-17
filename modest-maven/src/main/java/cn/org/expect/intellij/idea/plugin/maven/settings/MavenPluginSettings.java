@@ -161,7 +161,6 @@ public interface MavenPluginSettings extends ArtifactSearchSettings {
         copy.setRepositoryId(this.getRepositoryId());
         copy.setInputIntervalTime(this.getInputIntervalTime());
         copy.setDownloadWay(this.getDownloadWay());
-        copy.setUseParentPom(this.isUseParentPom());
         return copy;
     }
 
@@ -180,7 +179,6 @@ public interface MavenPluginSettings extends ArtifactSearchSettings {
         this.setRepositoryId(settings.getRepositoryId());
         this.setInputIntervalTime(settings.getInputIntervalTime());
         this.setDownloadWay(settings.getDownloadWay());
-        this.setUseParentPom(settings.isUseParentPom());
         return this;
     }
 
@@ -201,7 +199,6 @@ public interface MavenPluginSettings extends ArtifactSearchSettings {
                 && settings.getRepositoryId().equals(this.getRepositoryId()) //
                 && settings.getInputIntervalTime() == this.getInputIntervalTime() //
                 && settings.getDownloadWay().equals(this.getDownloadWay()) //
-                && settings.isUseParentPom() == this.isUseParentPom() //
                 ;
     }
 }

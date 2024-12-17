@@ -9,8 +9,8 @@ import javax.swing.*;
 import cn.org.expect.expression.MillisExpression;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPluginApplication;
 import cn.org.expect.intellij.idea.plugin.maven.impl.SimpleMavenPluginSettings;
-import cn.org.expect.maven.MavenOption;
 import cn.org.expect.maven.MavenMessage;
+import cn.org.expect.maven.MavenOption;
 import cn.org.expect.maven.impl.SimpleArtifactOption;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.XMLUtils;
@@ -36,7 +36,6 @@ public class MavenPluginConfigurable implements Configurable {
     private JBTextField tabIndex;
     private JBCheckBox tabVisible;
     private JBCheckBox searchInAllTab;
-    private JBCheckBox useParentPom;
     private JBTextField expireTimeMillis;
     private JBLabel expireTimeMillisMemo;
     private JBTextField elementPriority;
@@ -84,7 +83,7 @@ public class MavenPluginConfigurable implements Configurable {
             }
         });
 
-        tabVisible = new JBCheckBox(MavenMessage.get("maven.search.settings.select.tab", tabName, pluginName));
+        tabVisible = new JBCheckBox(MavenMessage.get("maven.search.settings.display.self.tab", tabName));
         tabVisible.addActionListener(e -> active.setTabVisible(tabVisible.isSelected()));
 
         downloadType = new JComboBox<>(MavenSearchPluginApplication.get().getDownloaderOptions());
@@ -92,9 +91,6 @@ public class MavenPluginConfigurable implements Configurable {
 
         searchInAllTab = new JBCheckBox(MavenMessage.get("maven.search.settings.select.tab", allTabName, pluginName));
         searchInAllTab.addActionListener(e -> active.setUseAllTab(searchInAllTab.isSelected()));
-
-        useParentPom = new JBCheckBox(MavenMessage.get("maven.search.settings.use.parent.pom"));
-        useParentPom.addActionListener(e -> active.setUseParentPom(useParentPom.isSelected()));
 
         expireTimeMillisMemo = new JBLabel("");
         expireTimeMillis = new JBTextField(10);
@@ -131,8 +127,8 @@ public class MavenPluginConfigurable implements Configurable {
         String intUnit = MavenMessage.get("maven.search.settings.unit.integer");
 
         this.addSeparator(panel, gbc, "maven.search.settings.group.tab");
-        this.addRow(panel, gbc, true, tabVisible, "maven.search.settings.select.tab.description", tabName);
-        this.addRow(panel, gbc, true, searchInAllTab, "maven.search.settings.select.tab.description", allTabName);
+        this.addRow(panel, gbc, true, tabVisible, "maven.search.settings.display.self.tab.description", tabName);
+        this.addRow(panel, gbc, true, searchInAllTab, "maven.search.settings.select.tab.description", allTabName, pluginName);
         this.addRow(panel, gbc, true, autoSwitchTab, "maven.search.settings.auto.select.tab.description", tabName);
         this.addRow(panel, gbc, true, "maven.search.settings.tab.position", tabIndex, new JBLabel(intUnit), "maven.search.settings.tab.position.description", tabName);
 
@@ -146,10 +142,6 @@ public class MavenPluginConfigurable implements Configurable {
         this.addRow(panel, gbc);
         this.addSeparator(panel, gbc, "maven.search.settings.group.download");
         this.addRow(panel, gbc, true, "maven.search.settings.download.source", downloadType, null, "maven.search.settings.download.source.description");
-
-        this.addRow(panel, gbc);
-        this.addSeparator(panel, gbc, "maven.search.settings.group.project");
-        this.addRow(panel, gbc, true, useParentPom, "maven.search.settings.use.parent.pom.description");
 
         // 添加占位组件
         gbc.gridx = 0;
@@ -317,7 +309,6 @@ public class MavenPluginConfigurable implements Configurable {
         elementPriority.setText(String.valueOf(settings.getNavigationPriority()));
         this.setSelectedOption(repository, new SimpleArtifactOption(settings.getRepositoryId()));
         this.setSelectedOption(downloadType, new SimpleArtifactOption(settings.getDownloadWay()));
-        useParentPom.setSelected(settings.isUseParentPom());
     }
 
     public void setSelectedOption(JComboBox<MavenOption> comboBox, MavenOption selected) {
