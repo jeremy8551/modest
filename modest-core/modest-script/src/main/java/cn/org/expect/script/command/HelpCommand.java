@@ -389,7 +389,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
             buf.append("### ").append(cls.getSimpleName());
             buf.append(FileUtils.lineSeparatorUnix);
 
-            buf.append(ct.toString(CharTable.Style.markdown));
+            buf.append(ct.toString(CharTable.Style.MARKDOWN));
             buf.append(FileUtils.lineSeparatorUnix);
             buf.append(FileUtils.lineSeparatorUnix);
             buf.append(FileUtils.lineSeparatorUnix);
@@ -425,7 +425,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
 
             buf.append("### ").append(cls.getSimpleName()).append(FileUtils.lineSeparatorUnix);
             buf.append("**Use Bean Builder：").append(beanBuilder.getClass().getName()).append("**").append(FileUtils.lineSeparatorUnix);
-            buf.append(ct.toString(CharTable.Style.markdown));
+            buf.append(ct.toString(CharTable.Style.MARKDOWN));
             buf.append(FileUtils.lineSeparatorUnix);
             buf.append(FileUtils.lineSeparatorUnix);
             buf.append(FileUtils.lineSeparatorUnix);
@@ -459,7 +459,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
             table.addCell(StringUtils.defaultString(beanInfo.getDescription(), "") + "     ");
             table.addCell("          " + beanInfo.getType().getName());
         }
-        return table.toString(CharTable.Style.markdown);
+        return table.toString(CharTable.Style.MARKDOWN);
     }
 
     public boolean enableNohup() {

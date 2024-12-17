@@ -110,7 +110,7 @@ public class LogLevelManager {
             ct.addCell(entry.name);
             ct.addCell(entry.level);
         }
-        return ct.toString(CharTable.Style.db2);
+        return ct.toString(CharTable.Style.DB2);
     }
 
     /**

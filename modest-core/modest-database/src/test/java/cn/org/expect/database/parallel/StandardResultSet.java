@@ -95,7 +95,7 @@ public class StandardResultSet implements ResultSet {
         table.addCell("Number of rows committed");
         table.addCell("    = ");
         table.addCell(String.valueOf(this.commit));
-        return table.toString(CharTable.Style.simple);
+        return table.toString(CharTable.Style.SIMPLE);
     }
 
 }

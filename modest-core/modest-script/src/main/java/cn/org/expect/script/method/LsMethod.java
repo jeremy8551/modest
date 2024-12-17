@@ -62,7 +62,7 @@ public class LsMethod extends AbstractMethod {
                 table.addCell(Linuxs.toLongname(file));
             }
 
-            this.value = table.toString(CharTable.Style.simple);
+            this.value = table.toString(CharTable.Style.SIMPLE);
             int next = end + 1;
             return this.executeNextMethod(session, context, stdout, stderr, analysis, variableName, methodHandle, this.value, next);
         } else {

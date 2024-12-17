@@ -68,7 +68,7 @@ public class IncrementCommandCompiler extends AbstractTraceCommandCompiler {
             table.addCell(beanInfo.getType().getName());
         }
 
-        out.println(new ScriptUsage(this.getClass(), table.toString(CharTable.Style.simple), TableColumnComparator.class.getName()));
+        out.println(new ScriptUsage(this.getClass(), table.toString(CharTable.Style.SIMPLE), TableColumnComparator.class.getName()));
     }
 
 }

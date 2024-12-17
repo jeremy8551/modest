@@ -105,8 +105,8 @@ public class DBExportCommandCompiler extends AbstractTraceCommandCompiler {
                 , ExtractUserListener.class.getName() // 2
                 , JdbcObjectConverter.class.getName() // 3
                 , ExtractWriter.class.getName() // 4
-                , ct1.toString(CharTable.Style.simple) // 5
-                , ct2.toString(CharTable.Style.simple) // 6
+                , ct1.toString(CharTable.Style.SIMPLE) // 5
+                , ct2.toString(CharTable.Style.SIMPLE) // 6
                 , TextTable.class.getName() // 7
         ));
     }

@@ -260,7 +260,7 @@ public class Jdbc {
             }
         }
 
-        return table.toString(CharTable.Style.db2);
+        return table.toString(CharTable.Style.DB2);
     }
 
     /**

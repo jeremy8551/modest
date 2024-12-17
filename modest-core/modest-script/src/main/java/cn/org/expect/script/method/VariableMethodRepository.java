@@ -125,7 +125,7 @@ public class VariableMethodRepository {
             ct.addCell(obj.getClass().getName());
         }
 
-        return ct.toString(CharTable.Style.standard);
+        return ct.toString(CharTable.Style.STANDARD);
     }
 
     private static class ComparatorImpl implements Comparator<String> {

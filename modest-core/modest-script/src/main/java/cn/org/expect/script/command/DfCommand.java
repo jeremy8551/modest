@@ -45,7 +45,7 @@ public class DfCommand extends AbstractTraceCommand implements NohupCommandSuppo
             }
 
             if (session.isEchoEnable() || forceStdout) {
-                stdout.println(table.toString(CharTable.Style.shell));
+                stdout.println(table.toString(CharTable.Style.SHELL));
             }
             return 0;
         } finally {

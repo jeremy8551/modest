@@ -85,7 +85,7 @@ public class SortTableFileCommandCompiler extends AbstractTraceCommandCompiler {
             ct.addCell(beanInfo.getType().getName());
         }
 
-        out.println(new ScriptUsage(this.getClass(), ct.toString(CharTable.Style.simple)));
+        out.println(new ScriptUsage(this.getClass(), ct.toString(CharTable.Style.SIMPLE)));
     }
 
 }

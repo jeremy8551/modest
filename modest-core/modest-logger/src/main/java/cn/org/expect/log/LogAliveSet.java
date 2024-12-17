@@ -73,6 +73,6 @@ public class LogAliveSet {
                 ct.addCell(log.toString());
             }
         }
-        return ct.toString(CharTable.Style.db2);
+        return ct.toString(CharTable.Style.DB2);
     }
 }

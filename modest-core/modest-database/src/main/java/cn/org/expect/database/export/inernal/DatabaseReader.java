@@ -244,8 +244,8 @@ public class DatabaseReader implements ExtractReader {
         cb.addTitle("");
         cb.addCell(ResourcesUtils.getMessage("extract.standard.output.msg005", source));
         cb.addCell(ResourcesUtils.getMessage("extract.standard.output.msg006", target));
-        cb.addCell(table.toString(CharTable.Style.standard));
-        return FileUtils.lineSeparator + cb.toString(CharTable.Style.simple);
+        cb.addCell(table.toString(CharTable.Style.STANDARD));
+        return FileUtils.lineSeparator + cb.toString(CharTable.Style.SIMPLE);
     }
 
     public boolean isColumnBlank(int position) {

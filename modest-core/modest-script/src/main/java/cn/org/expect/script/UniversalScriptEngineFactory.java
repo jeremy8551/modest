@@ -282,6 +282,6 @@ public class UniversalScriptEngineFactory {
         table.addCell("cat `pwd`/text | tail -n 1 ");
         table.addCell(titles[12]);
         table.addCell("set processId=`nothup script.txt & | tail -n 1`");
-        return table.toString(CharTable.Style.db2);
+        return table.toString(CharTable.Style.DB2);
     }
 }

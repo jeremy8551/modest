@@ -63,7 +63,7 @@ public class StandardDatabaseTypes implements DatabaseTypeSet {
             cb.addCell(type.getLocalName());
         }
 
-        return cb.toString(CharTable.Style.db2);
+        return cb.toString(CharTable.Style.DB2);
     }
 
 }

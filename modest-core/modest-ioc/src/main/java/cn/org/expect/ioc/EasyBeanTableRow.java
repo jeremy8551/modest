@@ -196,6 +196,6 @@ public class EasyBeanTableRow extends ArrayList<EasyBeanDefine> {
             }
         }
 
-        return ct.toString(CharTable.Style.db2);
+        return ct.toString(CharTable.Style.DB2);
     }
 }

@@ -1,6 +1,6 @@
 package cn.org.expect.script.session;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -23,7 +23,7 @@ import cn.org.expect.util.StringUtils;
 public class ScriptMainProcess {
 
     /** 会话创建时间 */
-    private Date create;
+    private final Date create;
 
     /** 最后执行的命令的返回值 */
     private Integer exitcode;
@@ -32,7 +32,7 @@ public class ScriptMainProcess {
     private UniversalScriptCommand failCommand;
 
     /** 编号与命令的映射关系 */
-    private LinkedHashMap<String, UniversalScriptCommand> cache;
+    private final LinkedHashMap<String, UniversalScriptCommand> cache;
 
     /**
      * 初始化
@@ -115,7 +115,7 @@ public class ScriptMainProcess {
      * @return 命令便利器
      */
     public Iterator<UniversalScriptCommand> iterator() {
-        return Collections.unmodifiableCollection(this.cache.values()).iterator();
+        return new ArrayList<UniversalScriptCommand>(this.cache.values()).iterator();
     }
 
     /**
@@ -144,5 +144,4 @@ public class ScriptMainProcess {
     public String getErrorScript() {
         return this.failCommand == null ? null : this.failCommand.getScript();
     }
-
 }

@@ -196,7 +196,7 @@ public class LogContextImpl implements LogContext {
         }
 
         ct.addCell("appenders");
-        ct.addCell(ct1.toString(CharTable.Style.db2));
+        ct.addCell(ct1.toString(CharTable.Style.DB2));
         ct.addCells("", "");
 
         ct.addCell("alives");
@@ -206,6 +206,6 @@ public class LogContextImpl implements LogContext {
         ct.addCell("levelManager");
         ct.addCell(this.levelManager.toString());
         ct.addCells("", "");
-        return ct.toString(CharTable.Style.db2);
+        return ct.toString(CharTable.Style.DB2);
     }
 }

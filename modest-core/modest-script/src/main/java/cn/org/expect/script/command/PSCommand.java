@@ -28,7 +28,7 @@ import cn.org.expect.util.StringUtils;
 public class PSCommand extends AbstractTraceCommand implements NohupCommandSupported {
 
     /** 0-表示显示后台进程 1-表示显示用户会话 */
-    private int type;
+    private final int type;
 
     public PSCommand(UniversalCommandCompiler compiler, String command, int type) {
         super(compiler, command);
@@ -38,9 +38,9 @@ public class PSCommand extends AbstractTraceCommand implements NohupCommandSuppo
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         String log;
         if (this.type == 1) {
-            log = this.printAllSession(session).toString(CharTable.Style.shell);
+            log = this.printAllSession(session).toString(CharTable.Style.SHELL);
         } else {
-            log = this.printAllProcess(session).toString(CharTable.Style.shell);
+            log = this.printAllProcess(session).toString(CharTable.Style.SHELL);
         }
 
         if (session.isEchoEnable() || forceStdout) {

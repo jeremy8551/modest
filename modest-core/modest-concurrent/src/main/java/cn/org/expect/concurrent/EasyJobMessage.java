@@ -217,7 +217,7 @@ public class EasyJobMessage {
                 ct.addCell("");
             }
         }
-        return ct.toString(CharTable.Style.simple);
+        return ct.toString(CharTable.Style.SIMPLE);
     }
 
 }
