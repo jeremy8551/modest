@@ -18,6 +18,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import cn.org.expect.Modest;
+import cn.org.expect.concurrent.Terminate;
 import cn.org.expect.ioc.EasyBeanRegister;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -33,7 +34,7 @@ import cn.org.expect.util.StringUtils;
  *
  * @author jeremy8551@qq.com
  */
-public class ClassScanner {
+public class ClassScanner implements Terminate {
     private final static Log log = LogFactory.getLog(ClassScanner.class);
 
     /** 扫描的 JAVA 包名与 jar 文件名 */
@@ -43,19 +44,22 @@ public class ClassScanner {
     private ClassLoader classLoader;
 
     /** 需要扫描的JAVA包名 */
-    private LinkedHashSet<String> includePackageNames;
+    private final LinkedHashSet<String> includePackageNames;
 
     /** 扫描时，需要排除的包名 */
-    private HashSet<String> excludePackageNames;
+    private final HashSet<String> excludePackageNames;
 
     /** 过滤器数组 */
-    private List<ClassScanRule> rules;
+    private final List<ClassScanRule> rules;
 
     /** 防止重复扫描相同 jar 文件建立的集合 */
-    private HashSet<File> jarfiles;
+    private final HashSet<File> jarfiles;
 
     /** 注册组件 */
     private EasyBeanRegister register;
+
+    /** true表示任务终止，false表示未终止 */
+    private volatile boolean terminate;
 
     /**
      * 扫描所有类信息
@@ -115,6 +119,9 @@ public class ClassScanner {
         try {
             for (String packageName : this.includePackageNames) {
                 count += this.scanPackage(this.classLoader, packageName);
+                if (this.terminate) {
+                    break;
+                }
             }
         } finally {
             this.jarfiles.clear();
@@ -134,12 +141,12 @@ public class ClassScanner {
      * @return 扫描到复合条件类的总数
      */
     protected int scanPackage(ClassLoader classLoader, String packageName) {
-        String uri = packageName.replace(".", "/"); // 格式: xxx/xxx
+        String uri = packageName.replace('.', '/'); // 格式: xxx/xxx
         if (StringUtils.isNotBlank(uri) && !uri.endsWith("/")) {
             uri += "/"; // 右端需要有分隔符
         }
 
-        Enumeration<URL> enu = null;
+        Enumeration<URL> enu;
         try {
             enu = classLoader.getResources(uri);
         } catch (Throwable e) {
@@ -154,6 +161,10 @@ public class ClassScanner {
             URL url = enu.nextElement();
             if (url == null) {
                 continue;
+            }
+
+            if (this.terminate) {
+                break;
             }
 
             String urlpath = StringUtils.decodeJvmUtf8HexString(url.getPath());
@@ -185,7 +196,7 @@ public class ClassScanner {
                 if (jarfile == null) {
                     continue;
                 } else {
-                    count += this.scanJarfile(classLoader, jarfile, jarfile.getName());
+                    count += this.scanJarFile(classLoader, jarfile, jarfile.getName());
                 }
             }
 
@@ -246,6 +257,10 @@ public class ClassScanner {
             String lowderpath = filepath.toLowerCase();
             String extname = FileUtils.getFilenameExt(filename).toLowerCase();
 
+            if (this.terminate) {
+                break;
+            }
+
             if (log.isTraceEnabled()) {
                 if (file.isDirectory()) {
                     log.trace(ResourcesUtils.getMessage("class.standard.output.msg024", packageName, filename, FileUtils.joinPath(StringUtils.decodeJvmUtf8HexString(packagefile.getAbsolutePath()), filename)));
@@ -264,7 +279,7 @@ public class ClassScanner {
                 if (jarfile == null) {
                     continue;
                 } else {
-                    count += this.scanJarfile(loader, jarfile, jarfile.getName());
+                    count += this.scanJarFile(loader, jarfile, jarfile.getName());
                 }
             }
 
@@ -345,7 +360,7 @@ public class ClassScanner {
             URL url = (URL) obj;
             String urlpath = StringUtils.decodeJvmUtf8HexString(url.getPath());
 
-            JarFile jarfile = null;
+            JarFile jarfile;
             try {
                 JarURLConnection conn = (JarURLConnection) url.openConnection();
                 jarfile = conn.getJarFile();
@@ -401,7 +416,7 @@ public class ClassScanner {
      * @param name    jar文件描述信息
      * @return 返回加载类的个数
      */
-    private int scanJarfile(ClassLoader loader, JarFile jarfile, String name) {
+    private int scanJarFile(ClassLoader loader, JarFile jarfile, String name) {
         int count = 0;
         if (jarfile == null) {
             return count;
@@ -412,7 +427,7 @@ public class ClassScanner {
         }
 
         // 读取类路径的上级目录
-        Set<String> prefixs = new HashSet<String>();
+        Set<String> parents = new HashSet<String>();
         try {
             Manifest mf = jarfile.getManifest();
             if (mf != null) {
@@ -425,9 +440,14 @@ public class ClassScanner {
 
                     for (Entry<Object, Object> entry : entrySet) {
                         String value = StringUtils.trimBlank(entry.getValue(), '/', '\\');
+
+                        if (this.terminate) {
+                            break;
+                        }
+
                         if (StringUtils.isNotBlank(value) && (value.indexOf('/') != -1 || value.indexOf('\\') != -1)) {
                             String classpathPrefix = value.replace('/', '.').replace('\\', '.') + ".";
-                            prefixs.add(classpathPrefix);
+                            parents.add(classpathPrefix);
 
                             if (log.isTraceEnabled()) {
                                 log.trace(entry.getKey() + " = " + value + " *");
@@ -450,13 +470,17 @@ public class ClassScanner {
         while (it.hasMoreElements()) {
             JarEntry entry = it.nextElement();
             String filename = entry.getName();
-            String extname = FileUtils.getFilenameExt(filename);
+            String extName = FileUtils.getFilenameExt(filename);
+
+            if (this.terminate) {
+                break;
+            }
 
             // 扫描类文件
-            if ("class".equalsIgnoreCase(extname)) {
-                String className = filename.substring(0, filename.lastIndexOf(".")).replace("/", ".").replace('\\', '.');
+            if ("class".equalsIgnoreCase(extName)) {
+                String className = filename.substring(0, filename.lastIndexOf(".")).replace('/', '.').replace('\\', '.');
 
-                for (String classpathPrefix : prefixs) {
+                for (String classpathPrefix : parents) {
                     if (className.startsWith(classpathPrefix)) {
                         className = className.substring(classpathPrefix.length()); // 删除前缀 BOOT-INF/classes
                     }
@@ -477,7 +501,7 @@ public class ClassScanner {
             }
 
             // 扫描 jar 中嵌套的 jar 文件
-            else if ("jar".equalsIgnoreCase(extname) && !entry.isDirectory()) {
+            else if ("jar".equalsIgnoreCase(extName) && !entry.isDirectory()) {
                 File tempDir = FileUtils.getTempDir(ClassScanner.class.getSimpleName(), "jar");
                 File unzipJarfile = FileUtils.allocate(tempDir, filename); // 解压后的jar文件
 
@@ -486,9 +510,9 @@ public class ClassScanner {
                 }
 
                 FileUtils.assertCreateFile(unzipJarfile);
-                JarFile newJarfile = null;
+                JarFile newJarfile;
                 try {
-                    IO.write(jarfile.getInputStream(entry), new FileOutputStream(unzipJarfile), null); // 解压jar包中的jar文件
+                    IO.write(jarfile.getInputStream(entry), new FileOutputStream(unzipJarfile), this); // 解压jar包中的jar文件
                     newJarfile = new JarFile(unzipJarfile);
                 } catch (Throwable e) {
                     if (log.isDebugEnabled()) {
@@ -498,7 +522,7 @@ public class ClassScanner {
                 }
 
                 // 扫描解压后的jar文件
-                count += this.scanJarfile(loader, newJarfile, jarfile.getName() + "!/" + filename); // 扫描 jar 文件
+                count += this.scanJarFile(loader, newJarfile, jarfile.getName() + "!/" + filename); // 扫描 jar 文件
             }
         }
         return count;
@@ -507,21 +531,21 @@ public class ClassScanner {
     /**
      * 使用过滤器对类信息进行筛选
      *
-     * @param cls 类信息
+     * @param type 类信息
      * @return true表示加载 false表示过滤
      */
-    public boolean load(Class<?> cls) {
-        if (cls == null) {
+    public boolean load(Class<?> type) {
+        if (type == null) {
             return false;
         }
 
-        boolean load = false;
+        boolean value = false;
         for (ClassScanRule rule : this.rules) {
-            if (rule != null && rule.process(cls, this.register)) {
-                load = true;
+            if (rule != null && rule.process(type, this.register)) {
+                value = true;
             }
         }
-        return load;
+        return value;
     }
 
     /**
@@ -602,4 +626,11 @@ public class ClassScanner {
         return Collections.unmodifiableList(this.rules);
     }
 
+    public boolean isTerminate() {
+        return this.terminate;
+    }
+
+    public void terminate() {
+        this.terminate = true;
+    }
 }
