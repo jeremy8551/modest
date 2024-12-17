@@ -144,5 +144,4 @@ public class CopyDependencyMojo extends AbstractMojo {
         dest.setOriginalModel(newModel);
         dest.setModel(newModel);
     }
-
 }

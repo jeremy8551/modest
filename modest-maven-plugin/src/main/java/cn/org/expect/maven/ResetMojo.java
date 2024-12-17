@@ -79,6 +79,5 @@ public class ResetMojo extends AbstractMojo {
             throw new MojoExecutionException("reset fail!");
         }
     }
-
 }
 

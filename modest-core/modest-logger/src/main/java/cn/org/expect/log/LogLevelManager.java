@@ -1,11 +1,10 @@
-package cn.org.expect;
+package cn.org.expect.log;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import cn.org.expect.log.LogLevel;
 import cn.org.expect.util.CharTable;
 import cn.org.expect.util.Ensure;
 

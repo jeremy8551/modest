@@ -62,5 +62,4 @@ public class LastupdatedMojo extends AbstractMojo {
             }
         }
     }
-
 }

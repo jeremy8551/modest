@@ -231,6 +231,5 @@ public class CopySourceMojo extends AbstractMojo {
             in.close();
         }
     }
-
 }
 

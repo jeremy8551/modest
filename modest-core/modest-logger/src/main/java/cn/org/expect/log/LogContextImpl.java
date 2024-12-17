@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import cn.org.expect.LogLevelManager;
 import cn.org.expect.log.slf4j.Slf4jLogBuilder;
 import cn.org.expect.util.CharTable;
 import cn.org.expect.util.Dates;

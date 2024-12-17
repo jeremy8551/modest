@@ -119,6 +119,4 @@ public class UninstallMojo extends AbstractMojo {
             getLog().info("Delete file " + file.getAbsolutePath() + " " + (file.delete() ? "[success]" : "[fail]"));
         }
     }
-
 }
-

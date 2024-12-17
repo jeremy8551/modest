@@ -127,6 +127,5 @@ public class DeleteFileMojo extends AbstractMojo {
         }
         return false;
     }
-
 }
 

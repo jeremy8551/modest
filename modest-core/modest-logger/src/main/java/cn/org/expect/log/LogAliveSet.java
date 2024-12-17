@@ -6,7 +6,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.WeakHashMap;
 
-import cn.org.expect.LogLevelManager;
 import cn.org.expect.util.CharTable;
 
 /**

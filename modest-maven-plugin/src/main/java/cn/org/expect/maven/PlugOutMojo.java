@@ -134,5 +134,4 @@ public class PlugOutMojo extends AbstractMojo {
         project.setOriginalModel(newModel);
         project.setModel(newModel);
     }
-
 }

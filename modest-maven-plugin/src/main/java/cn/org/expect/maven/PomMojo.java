@@ -92,5 +92,4 @@ public class PomMojo extends AbstractMojo {
         String src = StringUtils.replaceVariable(str, "packageName", packageName, "className", name, "groupId", projectGroupId, "artifactId", projectArtifactId, "version", projectVersion);
         FileUtils.assertWrite(classfile, charsetName, false, src);
     }
-
 }

@@ -257,6 +257,4 @@ public class JdkMojo extends AbstractMojo {
 
         return null;
     }
-
 }
-

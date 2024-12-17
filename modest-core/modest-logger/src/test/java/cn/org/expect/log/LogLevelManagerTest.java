@@ -2,7 +2,6 @@ package cn.org.expect.log;
 
 import java.util.List;
 
-import cn.org.expect.LogLevelManager;
 import org.junit.Assert;
 import org.junit.Test;
 

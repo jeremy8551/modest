@@ -30,6 +30,4 @@ public class CleanMojo extends AbstractMojo {
             getLog().info("skip not existing targetDirectory  " + this.target.getAbsolutePath());
         }
     }
-
 }
-
