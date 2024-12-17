@@ -66,7 +66,7 @@ public class MavenPluginJob extends MavenJob {
 
         // 得到当前已显示的 SearchEverywhere 对象
         if (manager.isShown()) {
-            return manager.getCurrentlyShownUI(); // TODO 修改注册项后，再打开查询界面，这个位置报错 isShown
+            return manager.getCurrentlyShownUI();
         } else {
             throw new SearchEverywhereUIShownException();
         }

@@ -197,7 +197,7 @@ public class PomRepository {
         }
 
         // 尝试解析jar文件
-        File jarfile = repository.getJarfile(artifact); // TODO 增加对 war ear 的支持
+        File jarfile = repository.getJarfile(artifact);
         if (FileUtils.isFile(jarfile)) {
             return this.readPomXmlFromJar(artifact, jarfile);
         }
