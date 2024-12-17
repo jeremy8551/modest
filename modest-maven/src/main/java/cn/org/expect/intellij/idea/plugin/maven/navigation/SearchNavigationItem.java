@@ -192,7 +192,7 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
                 ZoneId zoneId = ZoneId.ofOffset("UTC", ZoneOffset.of(timezone)); // 如果解析失败，尝试解析为 UTC 偏移量
                 return zoneId + " " + this.getZone(zoneId);
             } catch (Throwable e) {
-                return null;
+                return timezone;
             }
         }
     }
