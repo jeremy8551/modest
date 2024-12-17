@@ -106,6 +106,14 @@ public class ClassScanner implements Terminate {
         }
     }
 
+    public boolean isTerminate() {
+        return this.terminate;
+    }
+
+    public void terminate() {
+        this.terminate = true;
+    }
+
     /**
      * 扫描类
      *
@@ -115,6 +123,7 @@ public class ClassScanner implements Terminate {
     public synchronized int load(EasyBeanRegister register) {
         this.register = Ensure.notNull(register);
         int count = 0;
+        this.terminate = false;
         this.jarfiles.clear();
         try {
             for (String packageName : this.includePackageNames) {
@@ -167,30 +176,31 @@ public class ClassScanner implements Terminate {
                 break;
             }
 
-            String urlpath = StringUtils.decodeJvmUtf8HexString(url.getPath());
-            String lowderPath = urlpath.toLowerCase();
+            String urlPath = StringUtils.decodeJvmUtf8HexString(url.getPath());
+            String lowerCase = urlPath.toLowerCase();
+
             if (log.isDebugEnabled()) {
-                log.debug(ResourcesUtils.getMessage("class.standard.output.msg001", urlpath, packageName));
+                log.debug(ResourcesUtils.getMessage("class.standard.output.msg001", urlPath, packageName));
             }
 
             // 加载类文件
             String protocol = url.getProtocol();
             if (protocol.toLowerCase().contains("file")) {
                 try {
-                    count += this.scanPackage(classLoader, packageName, urlpath);
+                    count += this.scanPackage(classLoader, packageName, urlPath);
                 } catch (Throwable e) {
                     if (log.isDebugEnabled()) {
-                        log.debug(ResourcesUtils.getMessage("class.standard.output.msg010", packageName, urlpath), e);
+                        log.debug(ResourcesUtils.getMessage("class.standard.output.msg010", packageName, urlPath), e);
                     }
                 }
             }
 
             // 加载 jar 文件
             else if (protocol.toLowerCase().contains("jar") //
-                    || lowderPath.endsWith(".jar") //
-                    || lowderPath.contains(".jar!") //
-                    || lowderPath.contains(".jar/") //
-                    || lowderPath.endsWith(".jar/") //
+                    || lowerCase.endsWith(".jar") //
+                    || lowerCase.contains(".jar!") //
+                    || lowerCase.contains(".jar/") //
+                    || lowerCase.endsWith(".jar/") //
             ) {
                 JarFile jarfile = this.loadJarFile(url);
                 if (jarfile == null) {
@@ -203,7 +213,7 @@ public class ClassScanner implements Terminate {
             // 不能识别的资源信息
             else {
                 if (log.isDebugEnabled()) {
-                    log.debug(ResourcesUtils.getMessage("class.standard.output.msg017", protocol, urlpath));
+                    log.debug(ResourcesUtils.getMessage("class.standard.output.msg017", protocol, urlPath));
                 }
             }
 
@@ -264,8 +274,6 @@ public class ClassScanner implements Terminate {
             if (log.isTraceEnabled()) {
                 if (file.isDirectory()) {
                     log.trace(ResourcesUtils.getMessage("class.standard.output.msg024", packageName, filename, FileUtils.joinPath(StringUtils.decodeJvmUtf8HexString(packagefile.getAbsolutePath()), filename)));
-//                } else { 与下面日志重复，需要注释掉
-//                    log.trace(ResourcesUtils.getMessage("class.standard.output.msg007", StringUtils.decodeJvmUtf8HexString(packagefile.getAbsolutePath()), filename, packageName));
                 }
             }
 
@@ -355,10 +363,9 @@ public class ClassScanner implements Terminate {
      * @return jar文件
      */
     private JarFile loadJarFile(Object obj) {
-        // url 路径
-        if (obj instanceof URL) {
+        if (obj instanceof URL) { // url 路径
             URL url = (URL) obj;
-            String urlpath = StringUtils.decodeJvmUtf8HexString(url.getPath());
+            String urlPath = StringUtils.decodeJvmUtf8HexString(url.getPath());
 
             JarFile jarfile;
             try {
@@ -366,7 +373,7 @@ public class ClassScanner implements Terminate {
                 jarfile = conn.getJarFile();
             } catch (Throwable e) {
                 if (log.isWarnEnabled()) {
-                    log.warn(ResourcesUtils.getMessage("class.standard.output.msg028", urlpath));
+                    log.warn(ResourcesUtils.getMessage("class.standard.output.msg028", urlPath));
                 }
                 return null;
             }
@@ -429,9 +436,9 @@ public class ClassScanner implements Terminate {
         // 读取类路径的上级目录
         Set<String> parents = new HashSet<String>();
         try {
-            Manifest mf = jarfile.getManifest();
-            if (mf != null) {
-                Attributes mainAttributes = mf.getMainAttributes();
+            Manifest manifest = jarfile.getManifest();
+            if (manifest != null) {
+                Attributes mainAttributes = manifest.getMainAttributes();
                 Set<Entry<Object, Object>> entrySet = mainAttributes.entrySet();
                 if (!entrySet.isEmpty()) {
                     if (log.isTraceEnabled()) {
@@ -466,9 +473,9 @@ public class ClassScanner implements Terminate {
             }
         }
 
-        Enumeration<JarEntry> it = jarfile.entries();
-        while (it.hasMoreElements()) {
-            JarEntry entry = it.nextElement();
+        Enumeration<JarEntry> enu = jarfile.entries();
+        while (enu.hasMoreElements()) {
+            JarEntry entry = enu.nextElement();
             String filename = entry.getName();
             String extName = FileUtils.getFilenameExt(filename);
 
@@ -494,8 +501,8 @@ public class ClassScanner implements Terminate {
                     log.debug(ResourcesUtils.getMessage("class.standard.output.msg004", className));
                 }
 
-                Class<?> cls = this.forName(className, false, loader);
-                if (this.load(cls)) {
+                Class<?> type = this.forName(className, false, loader);
+                if (this.load(type)) {
                     count++;
                 }
             }
@@ -624,13 +631,5 @@ public class ClassScanner implements Terminate {
      */
     public List<ClassScanRule> getRules() {
         return Collections.unmodifiableList(this.rules);
-    }
-
-    public boolean isTerminate() {
-        return this.terminate;
-    }
-
-    public void terminate() {
-        this.terminate = true;
     }
 }
