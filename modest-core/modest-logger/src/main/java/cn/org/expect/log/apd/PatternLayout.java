@@ -13,13 +13,14 @@ import cn.org.expect.util.StringUtils;
  */
 public class PatternLayout implements Layout {
 
-    private StringBuilder buf;
+    /** 缓存 */
+    private final StringBuilder buf;
 
     /** 临时集合 */
-    private List<CharSequence> list;
+    private final List<CharSequence> list;
 
     /** 日志格式 */
-    private LogPattern pattern;
+    private final LogPattern pattern;
 
     public PatternLayout(String pattern) {
         this.buf = new StringBuilder(100);

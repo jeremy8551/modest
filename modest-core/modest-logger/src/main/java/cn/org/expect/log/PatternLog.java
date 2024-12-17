@@ -20,7 +20,7 @@ public class PatternLog extends AbstractLogger {
     private final List<Appender> appenderList;
 
     /** 用于定位输出日志的代码位置信息的标识符 */
-    public static String FQCN = PatternLog.class.getName();
+    public static String FQCN = LevelLogger.class.getName();
 
     public PatternLog(LogContext context, Class<?> type, LogLevel level, String fqcn, boolean dynamicCategory) {
         super(context, type, level);

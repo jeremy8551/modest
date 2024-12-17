@@ -28,9 +28,9 @@ public class StackTraceUtils {
         StackTraceElement[] array = new Throwable().getStackTrace();
 
         if (print) {
-            JUL.out.info("search FQCN " + fqcn + " in StackTrace:");
+            System.out.println("search FQCN " + fqcn + " in StackTrace:");
             for (StackTraceElement e : array) {
-                JUL.out.info("    " + e.getClassName() + "." + e.getMethodName() + ":" + e.getLineNumber());
+                System.out.println("    " + e.getClassName() + "." + e.getMethodName() + ":" + e.getLineNumber());
             }
         }
 
