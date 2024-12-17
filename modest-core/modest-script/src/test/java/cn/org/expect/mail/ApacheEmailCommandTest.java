@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.test.ModestRunner;
 import cn.org.expect.test.annotation.RunIf;

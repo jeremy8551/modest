@@ -2,7 +2,7 @@ package cn.org.expect.increment;
 
 import java.util.Date;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.database.DatabaseTableColumn;
 import cn.org.expect.database.DatabaseTableColumnList;
 import cn.org.expect.expression.Analysis;

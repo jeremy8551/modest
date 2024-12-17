@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.EasyBeanBuilder;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.util.ArrayUtils;

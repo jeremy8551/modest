@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import cn.org.expect.Modest;
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.ioc.EasyBeanBuilder;
 import cn.org.expect.ioc.EasyBeanDefine;

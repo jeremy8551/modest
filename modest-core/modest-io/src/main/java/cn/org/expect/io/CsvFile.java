@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;

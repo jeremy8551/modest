@@ -1,4 +1,4 @@
-package cn.org.expect.annotation;
+package cn.org.expect.ioc.annotation;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 组件注解
+ * 组件注解 <br>
  * IOC容器启动时会扫描带 {@linkplain EasyBean} 注解的类
  *
  * @author jeremy8551@qq.com

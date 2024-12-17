@@ -1,6 +1,6 @@
 package cn.org.expect.database.export;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.database.export.inernal.ExtractFileWriter;
 import cn.org.expect.database.export.inernal.FtpFileWriter;
 import cn.org.expect.database.export.inernal.HttpRequestWriter;

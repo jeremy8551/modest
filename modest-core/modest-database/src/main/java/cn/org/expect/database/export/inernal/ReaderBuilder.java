@@ -1,6 +1,6 @@
 package cn.org.expect.database.export.inernal;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.database.export.ExtractReader;
 import cn.org.expect.database.export.ExtracterContext;
 import cn.org.expect.ioc.EasyBeanBuilder;

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.expression.DataUnitExpression;
 import cn.org.expect.expression.Expression;
 import cn.org.expect.io.BufferedLineReader;

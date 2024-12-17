@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.collection.CaseSensitivSet;
 import cn.org.expect.database.DatabaseDDL;
 import cn.org.expect.database.DatabaseIndex;

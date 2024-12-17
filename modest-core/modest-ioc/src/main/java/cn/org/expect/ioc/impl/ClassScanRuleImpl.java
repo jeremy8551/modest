@@ -1,6 +1,6 @@
 package cn.org.expect.ioc.impl;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.EasyBeanRegister;
 import cn.org.expect.ioc.scan.ClassScanRule;
 

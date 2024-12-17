@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.collection.CaseSensitivMap;
 import cn.org.expect.database.DatabaseConfiguration;
 import cn.org.expect.database.DatabaseConfigurationContainer;

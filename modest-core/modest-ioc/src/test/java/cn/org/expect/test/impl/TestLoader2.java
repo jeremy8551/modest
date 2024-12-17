@@ -1,6 +1,6 @@
 package cn.org.expect.test.impl;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.test.bean.TestLoader;
 
 @EasyBean(value = "1", description = "")

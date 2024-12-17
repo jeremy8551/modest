@@ -1,6 +1,6 @@
 package cn.org.expect.ioc;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 
 /**
  * IOC容器的上下文接口

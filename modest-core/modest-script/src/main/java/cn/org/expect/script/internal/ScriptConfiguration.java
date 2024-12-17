@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.Properties;
 import java.util.Set;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.collection.CaseSensitivSet;
 import cn.org.expect.script.UniversalScriptConfiguration;
 import cn.org.expect.util.Ensure;

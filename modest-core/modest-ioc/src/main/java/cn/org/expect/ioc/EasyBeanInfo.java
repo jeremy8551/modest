@@ -2,8 +2,10 @@ package cn.org.expect.ioc;
 
 import java.util.Comparator;
 
+import cn.org.expect.ioc.annotation.EasyBean;
+
 /**
- * {@linkplain cn.org.expect.annotation.EasyBean} 注解对应的接口
+ * {@linkplain EasyBean} 注解对应的接口
  */
 public interface EasyBeanInfo extends Comparator<EasyBeanInfo> {
 
@@ -26,7 +28,7 @@ public interface EasyBeanInfo extends Comparator<EasyBeanInfo> {
     /**
      * 组件管理模式
      *
-     * @return 详见 {@linkplain cn.org.expect.annotation.EasyBean#singleton()}
+     * @return 详见 {@linkplain EasyBean#singleton()}
      */
     boolean singleton();
 
@@ -35,7 +37,7 @@ public interface EasyBeanInfo extends Comparator<EasyBeanInfo> {
      * <p>
      * 组件重名时，优先使用权重高的组件
      *
-     * @return 详见 {@linkplain cn.org.expect.annotation.EasyBean#priority()}
+     * @return 详见 {@linkplain EasyBean#priority()}
      */
     int getPriority();
 

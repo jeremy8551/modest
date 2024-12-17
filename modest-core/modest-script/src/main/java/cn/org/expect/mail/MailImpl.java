@@ -3,7 +3,7 @@ package cn.org.expect.mail;
 import java.util.Date;
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.util.Dates;
 
 /**

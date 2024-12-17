@@ -1,6 +1,6 @@
 package cn.org.expect.ioc.impl;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
 
 public class CeshiBean {

@@ -3,7 +3,7 @@ package cn.org.expect.database.parallel;
 import java.util.Date;
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.concurrent.EasyJobReaderImpl;
 import cn.org.expect.concurrent.EasyJobService;
 import cn.org.expect.concurrent.ThreadSource;

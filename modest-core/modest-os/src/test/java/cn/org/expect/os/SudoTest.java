@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.test.ModestRunner;
 import cn.org.expect.test.annotation.RunIf;
 import com.jcraft.jsch.Channel;

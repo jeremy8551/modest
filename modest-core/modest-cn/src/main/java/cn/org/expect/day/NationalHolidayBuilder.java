@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.collection.CaseSensitivMap;
 import cn.org.expect.ioc.EasyBeanBuilder;
 import cn.org.expect.ioc.EasyBeanDefine;

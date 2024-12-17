@@ -4,7 +4,7 @@ import java.io.Reader;
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.UniversalCommandCompiler;
 import cn.org.expect.script.UniversalCommandRepository;

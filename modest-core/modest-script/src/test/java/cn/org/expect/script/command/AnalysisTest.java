@@ -3,7 +3,7 @@ package cn.org.expect.script.command;
 import java.io.File;
 import java.io.IOException;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptEngine;

@@ -2,7 +2,7 @@ package cn.org.expect.os;
 
 import java.io.IOException;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.os.ssh.SecureShellCommand;
 import cn.org.expect.os.ssh.SftpCommand;
 import cn.org.expect.test.ModestRunner;

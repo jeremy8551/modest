@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.collection.ByteBuffer;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;

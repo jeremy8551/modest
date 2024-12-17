@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.EasyBeanEventListener;
 import cn.org.expect.ioc.EasyBeanBuilder;
 import cn.org.expect.ioc.EasyBeanEvent;

@@ -3,7 +3,7 @@ package cn.org.expect.script.session;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.script.UniversalScriptEngine;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptSessionFactory;

@@ -2,7 +2,7 @@ package cn.org.expect.os.ssh;
 
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.os.OSFile;
 import cn.org.expect.os.OSFtpCommand;

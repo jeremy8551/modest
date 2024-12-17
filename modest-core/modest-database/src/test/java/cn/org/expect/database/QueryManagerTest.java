@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.test.ModestRunner;
 import org.junit.Assert;

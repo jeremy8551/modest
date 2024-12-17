@@ -2,7 +2,7 @@ package cn.org.expect.script.compiler;
 
 import java.util.Set;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.script.UniversalScriptChecker;
 import cn.org.expect.util.StringUtils;
 

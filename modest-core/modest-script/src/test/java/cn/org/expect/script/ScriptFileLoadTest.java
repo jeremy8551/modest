@@ -3,7 +3,7 @@ package cn.org.expect.script;
 import java.io.IOException;
 import java.util.Properties;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.test.ModestRunner;
 import org.junit.Test;

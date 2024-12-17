@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.database.DatabaseTable;
 import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.load.DestTable;

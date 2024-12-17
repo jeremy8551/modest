@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileReader;
 import cn.org.expect.io.TextTableLine;

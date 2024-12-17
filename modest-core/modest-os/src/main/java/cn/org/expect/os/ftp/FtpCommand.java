@@ -14,7 +14,7 @@ import java.util.List;
 
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.parser.FTPFileEntryParserFactory;
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.expression.GPatternExpression;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.EasyContextAware;

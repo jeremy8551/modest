@@ -6,7 +6,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.util.ClassUtils;

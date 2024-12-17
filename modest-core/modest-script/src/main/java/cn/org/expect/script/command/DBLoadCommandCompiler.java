@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 import javax.sql.DataSource;
 
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.script.annotation.ScriptCommand;
 import cn.org.expect.database.Jdbc;
 import cn.org.expect.database.JdbcObjectConverter;
@@ -314,7 +315,7 @@ public class DBLoadCommandCompiler extends AbstractTraceCommandCompiler {
 
         out.println(new ScriptUsage(this.getClass() //
                 , TextTable.class.getName() // 0
-                , cn.org.expect.annotation.EasyBean.class.getName() // 1
+                , EasyBean.class.getName() // 1
                 , ExtractUserListener.class.getName() // 2
                 , JdbcObjectConverter.class.getName() // 3
                 , ExtractWriter.class.getName() // 4

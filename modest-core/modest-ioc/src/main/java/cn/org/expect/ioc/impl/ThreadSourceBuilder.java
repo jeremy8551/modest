@@ -2,7 +2,7 @@ package cn.org.expect.ioc.impl;
 
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.concurrent.ExecutorServiceFactory;
 import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.ioc.EasyBeanBuilder;

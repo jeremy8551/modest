@@ -6,7 +6,7 @@ import java.io.Writer;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.database.export.ExtractMessage;
 import cn.org.expect.database.export.ExtractWriter;
 import cn.org.expect.database.export.ExtracterContext;

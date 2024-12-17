@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import cn.org.expect.ProjectPom;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.script.annotation.ScriptCommand;
 import cn.org.expect.script.annotation.ScriptFunction;
 import cn.org.expect.collection.CaseSensitivSet;
@@ -115,14 +116,14 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
                 , UniversalScriptVariable.SESSION_VARNAME_SCRIPTFILE // 19
                 , UniversalScriptVariable.VARNAME_CATALOG // 20
                 , StringUtils.addLinePrefix(repository.toString(charsetName), "\t") // 21 方法
-                , cn.org.expect.annotation.EasyBean.class.getSimpleName() // 22
+                , EasyBean.class.getSimpleName() // 22
                 , TextTableFile.class.getSimpleName() // 23
                 , ExtractWriter.class.getSimpleName() // 24
                 , AbstractDialect.class.getName() // 25 基础数据库方言类
                 , DatabaseDialect.class.getName() // 26 数据库方言类
                 , this.supportedDatabase(context) // 27 所有数据库方言类
                 , EasyContext.class.getName()  // 28
-                , cn.org.expect.annotation.EasyBean.class.getName() // 29
+                , EasyBean.class.getName() // 29
                 , DatabaseDialect.class.getSimpleName() // 30
                 , DatabaseDialectBuilder.class.getName() // 31
                 , EasyContext.class.getSimpleName() // 32

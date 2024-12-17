@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.CharTable;
@@ -95,7 +96,7 @@ public class EasyBeanTableRow extends ArrayList<EasyBeanDefine> {
     }
 
     /**
-     * 查询与参数 {@code name} 相等的组件名（{@linkplain cn.org.expect.annotation.EasyBean#value()}）的集合
+     * 查询与参数 {@code name} 相等的组件名（{@linkplain EasyBean#value()}）的集合
      *
      * @param name 组件名
      * @return 组件信息集合

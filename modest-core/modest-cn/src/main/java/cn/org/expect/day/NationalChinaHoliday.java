@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.util.Dates;
 
 @EasyBean(value = "zh_cn", description = "从2013年开始至今的中国法定节假日")

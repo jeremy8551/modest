@@ -1,6 +1,6 @@
 package cn.org.expect.database.db2;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 
 @EasyBean(value = "db2")
 public class DB2LinuxCommand implements DB2Command {

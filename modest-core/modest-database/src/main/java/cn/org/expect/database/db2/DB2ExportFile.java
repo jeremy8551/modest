@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.collection.CharBuffer;
 import cn.org.expect.database.DatabaseException;
 import cn.org.expect.database.db2.format.DB2DecimalFormat;

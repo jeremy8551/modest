@@ -2,7 +2,7 @@ package cn.org.expect.database.h2;
 
 import java.sql.Connection;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.database.DatabaseDDL;
 import cn.org.expect.database.DatabaseProcedure;
 import cn.org.expect.database.JdbcDao;

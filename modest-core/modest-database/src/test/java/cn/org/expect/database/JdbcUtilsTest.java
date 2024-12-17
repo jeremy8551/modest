@@ -5,7 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.collection.CaseSensitivSet;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.test.ModestRunner;

@@ -5,7 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.EasyBeanFactory;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.EasyContextAware;

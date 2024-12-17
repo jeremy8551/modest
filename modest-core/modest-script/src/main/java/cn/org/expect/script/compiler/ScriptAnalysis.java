@@ -4,7 +4,7 @@ import java.text.Format;
 import java.util.Arrays;
 import java.util.Map;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.expression.AnalysisImpl;
 import cn.org.expect.expression.WordIterator;
 import cn.org.expect.script.UniversalScriptAnalysis;

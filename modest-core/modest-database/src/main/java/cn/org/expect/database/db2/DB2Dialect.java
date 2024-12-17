@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.database.DatabaseConfiguration;
 import cn.org.expect.database.DatabaseConfigurationContainer;
 import cn.org.expect.database.DatabaseDDL;

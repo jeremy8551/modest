@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 import javax.sql.DataSource;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.database.internal.StandardDatabaseIndex;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.test.ModestRunner;

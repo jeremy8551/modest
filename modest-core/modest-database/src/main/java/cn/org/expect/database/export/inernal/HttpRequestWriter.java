@@ -6,7 +6,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.database.export.ExtractMessage;
 import cn.org.expect.database.export.ExtractWriter;
 import cn.org.expect.io.TableLine;

@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.Types;
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.database.DatabaseDDL;
 import cn.org.expect.database.DatabaseProcedure;
 import cn.org.expect.database.DatabaseProcedureParameter;

@@ -3,7 +3,7 @@ package cn.org.expect.database.db2;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.database.DatabaseDialect;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.test.ModestRunner;
