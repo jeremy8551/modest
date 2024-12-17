@@ -159,9 +159,8 @@ public interface SearchNavigation {
     /**
      * 在弹出的菜单上添加子菜单
      *
-     * @param navigation    导航记录
      * @param topMenu       弹出的菜单（添加子菜单）
      * @param selectedIndex 导航记录在搜索结果的位置信息，从 0 开始
      */
-    void displayMenu(SearchNavigation navigation, JPopupMenu topMenu, int selectedIndex);
+    void displayMenu(JPopupMenu topMenu, int selectedIndex);
 }

@@ -4,16 +4,22 @@ import java.io.File;
 
 import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.intellij.idea.plugin.maven.settings.MavenPluginSettings;
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.repository.central.CentralArtifactDownloader;
 import cn.org.expect.maven.repository.central.CentralMavenRepository;
+import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.Settings;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 
 /**
  * 插件配置信息
  */
 @EasyBean(singleton = true)
 public class SimpleMavenPluginSettings implements MavenPluginSettings {
+    protected final static Log log = LogFactory.getLog(SimpleMavenPluginSettings.class);
 
     /** 插件ID */
     private String id;
@@ -173,5 +179,74 @@ public class SimpleMavenPluginSettings implements MavenPluginSettings {
 
     public void setUseParentPom(boolean useParentPom) {
         this.useParentPom = useParentPom;
+    }
+
+    /**
+     * 将配置信息持久化到文件
+     *
+     * @param filename 文件名
+     */
+    public void save(String filename) {
+        MavenPluginSettings settings = this;
+        File file = new File(settings.getWorkHome(), filename);
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            String jsonStr = mapper.writeValueAsString(settings);
+
+            if (log.isDebugEnabled()) {
+                log.debug("save {}, {}, {}", settings.getClass().getSimpleName(), file.getAbsolutePath(), jsonStr);
+            }
+
+            FileUtils.write(file, CharsetName.UTF_8, false, jsonStr);
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+    }
+
+    /**
+     * 加载配置文件
+     *
+     * @param filename 文件名
+     */
+    public void load(String filename) {
+        MavenPluginSettings settings = this;
+        File file = new File(settings.getWorkHome(), filename);
+        try {
+            if (file.exists() && file.isFile()) {
+                String jsonStr = FileUtils.readline(file, CharsetName.UTF_8, 0);
+
+                if (log.isDebugEnabled()) {
+                    log.debug("load {}, {}", MavenPluginSettings.class.getSimpleName(), jsonStr);
+                }
+
+                // 默认值
+                SimpleMavenPluginSettings def = new SimpleMavenPluginSettings();
+
+                JSONObject jsonObject = new JSONObject(jsonStr);
+                long inputIntervalTime = jsonObject.optLong("inputIntervalTime", def.getInputIntervalTime());
+                String repositoryId = jsonObject.optString("repositoryId", def.getRepositoryId());
+                boolean autoSwitchTab = jsonObject.optBoolean("autoSwitchTab", def.isAutoSwitchTab());
+                int tabIndex = jsonObject.optInt("tabIndex", def.getTabIndex());
+                boolean tabVisible = jsonObject.optBoolean("tabVisible", def.isTabVisible());
+                int elementPriority = jsonObject.optInt("elementPriority", def.getNavigationPriority());
+                long expireTimeMillis = jsonObject.optLong("expireTimeMillis", def.getExpireTimeMillis());
+                boolean searchInAllTab = jsonObject.optBoolean("useAllTab", def.isUseAllTab());
+                String downloadWay = jsonObject.optString("downloadWay", def.getDownloadWay());
+                boolean useParentPom = jsonObject.optBoolean("useParentPom", def.isUseParentPom());
+
+                settings.setInputIntervalTime(inputIntervalTime);
+                settings.setRepositoryId(repositoryId);
+                settings.setAutoSwitchTab(autoSwitchTab);
+                settings.setTabIndex(tabIndex);
+                settings.setTabVisible(tabVisible);
+                settings.setNavigationPriority(elementPriority);
+                settings.setExpireTimeMillis(expireTimeMillis);
+                settings.setUseAllTab(searchInAllTab);
+                settings.setDownloadWay(downloadWay);
+                settings.setUseParentPom(useParentPom);
+            }
+        } catch (Throwable e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
     }
 }

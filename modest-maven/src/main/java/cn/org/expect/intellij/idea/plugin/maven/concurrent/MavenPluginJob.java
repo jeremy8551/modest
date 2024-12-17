@@ -108,7 +108,6 @@ public class MavenPluginJob extends MavenJob {
                         // 自动切换 Tab 页
                         if (plugin.getSettings().isAutoSwitchTab() && plugin.getSettings().isTabVisible() && plugin.getPattern().isDependency(editorSelectText)) {
                             plugin.getIdeaUI().switchToTab(plugin.getContributor().getSearchProviderId());
-                            plugin.asyncSearch(pattern); // TODO 可以去掉？
                         }
                     } else {
                         // （Idea的搜索输入框中会出现上一次搜索的文本）如果未选中任何内容，则自动搜索输入框中的文本

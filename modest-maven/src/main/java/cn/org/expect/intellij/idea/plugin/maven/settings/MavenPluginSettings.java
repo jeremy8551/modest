@@ -1,24 +1,13 @@
 package cn.org.expect.intellij.idea.plugin.maven.settings;
 
-import java.io.File;
-
 import cn.org.expect.intellij.idea.plugin.maven.impl.SimpleMavenPluginSettings;
-import cn.org.expect.log.Log;
-import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.MavenMessage;
 import cn.org.expect.maven.search.ArtifactSearchSettings;
-import cn.org.expect.util.CharsetName;
-import cn.org.expect.util.FileUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONObject;
 
 /**
  * Idea搜索接口的配置信息
  */
 public interface MavenPluginSettings extends ArtifactSearchSettings {
-
-    /** 日志接口 */
-    Log log = LogFactory.getLog(MavenPluginSettings.class); // TODO 删除
 
     /** 搜索接口配置信息存储的文件名 */
     String SETTINGS_TABLE_NAME = "MAVEN_SEARCH_PLUGIN_SETTINGS.json";
@@ -108,6 +97,20 @@ public interface MavenPluginSettings extends ArtifactSearchSettings {
     void setNavigationPriority(int navigationPriority);
 
     /**
+     * 将配置信息持久化到文件
+     *
+     * @param filename 文件名
+     */
+    void save(String filename);
+
+    /**
+     * 加载配置文件
+     *
+     * @param filename 文件名
+     */
+    void load(String filename);
+
+    /**
      * 返回选项卡名
      *
      * @return 选项卡名
@@ -137,75 +140,6 @@ public interface MavenPluginSettings extends ArtifactSearchSettings {
      */
     default void load() {
         this.load(SETTINGS_TABLE_NAME);
-    }
-
-    /**
-     * 将配置信息持久化到文件
-     *
-     * @param filename 文件名
-     */
-    default void save(String filename) {
-        MavenPluginSettings settings = this;
-        File file = new File(settings.getWorkHome(), filename);
-        try {
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonStr = mapper.writeValueAsString(settings);
-
-            if (log.isDebugEnabled()) {
-                log.debug("save {}, {}, {}", settings.getClass().getSimpleName(), file.getAbsolutePath(), jsonStr);
-            }
-
-            FileUtils.write(file, CharsetName.UTF_8, false, jsonStr);
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-    }
-
-    /**
-     * 加载配置文件
-     *
-     * @param filename 文件名
-     */
-    default void load(String filename) {
-        MavenPluginSettings settings = this;
-        File file = new File(settings.getWorkHome(), filename);
-        try {
-            if (file.exists() && file.isFile()) {
-                String jsonStr = FileUtils.readline(file, CharsetName.UTF_8, 0);
-
-                if (log.isDebugEnabled()) {
-                    log.debug("load {}, {}", MavenPluginSettings.class.getSimpleName(), jsonStr);
-                }
-
-                // 默认值
-                SimpleMavenPluginSettings def = new SimpleMavenPluginSettings();
-
-                JSONObject jsonObject = new JSONObject(jsonStr);
-                long inputIntervalTime = jsonObject.optLong("inputIntervalTime", def.getInputIntervalTime());
-                String repositoryId = jsonObject.optString("repositoryId", def.getRepositoryId());
-                boolean autoSwitchTab = jsonObject.optBoolean("autoSwitchTab", def.isAutoSwitchTab());
-                int tabIndex = jsonObject.optInt("tabIndex", def.getTabIndex());
-                boolean tabVisible = jsonObject.optBoolean("tabVisible", def.isTabVisible());
-                int elementPriority = jsonObject.optInt("elementPriority", def.getNavigationPriority());
-                long expireTimeMillis = jsonObject.optLong("expireTimeMillis", def.getExpireTimeMillis());
-                boolean searchInAllTab = jsonObject.optBoolean("useAllTab", def.isUseAllTab());
-                String downloadWay = jsonObject.optString("downloadWay", def.getDownloadWay());
-                boolean useParentPom = jsonObject.optBoolean("useParentPom", def.isUseParentPom());
-
-                settings.setInputIntervalTime(inputIntervalTime);
-                settings.setRepositoryId(repositoryId);
-                settings.setAutoSwitchTab(autoSwitchTab);
-                settings.setTabIndex(tabIndex);
-                settings.setTabVisible(tabVisible);
-                settings.setNavigationPriority(elementPriority);
-                settings.setExpireTimeMillis(expireTimeMillis);
-                settings.setUseAllTab(searchInAllTab);
-                settings.setDownloadWay(downloadWay);
-                settings.setUseParentPom(useParentPom);
-            }
-        } catch (Throwable e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
     }
 
     /**

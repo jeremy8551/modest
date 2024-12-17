@@ -78,7 +78,7 @@ public class SearchResultMenu extends AbstractMenu {
                 if (navigation.supportMenu()) {
                     plugin.getContext().setSelectedNavigation(navigation); // 保存选中的导航记录
                     display.setSelectedIndex(selectedIndex); // 选中导航记录
-                    navigation.displayMenu(navigation, this.topMenu, selectedIndex);
+                    navigation.displayMenu(this.topMenu, selectedIndex);
                 }
             }
         }
@@ -280,7 +280,7 @@ public class SearchResultMenu extends AbstractMenu {
         });
     }
 
-    public void displayItemMenu(MavenSearchPlugin plugin, SearchNavigation navigation, JPopupMenu topMenu, int selectedIndex, int offset) { // TODO 删除 navigation
+    public void displayItemMenu(MavenSearchPlugin plugin, SearchNavigation navigation, JPopupMenu topMenu, int selectedIndex, int offset) {
         topMenu.removeAll();
 
         // 复制Maven依赖

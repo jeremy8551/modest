@@ -45,9 +45,9 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
         return true;
     }
 
-    public void displayMenu(SearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+    public void displayMenu(JPopupMenu topMenu, int selectedIndex) {
         MavenSearchPlugin plugin = this.getSearch();
-        plugin.getResultMenu().displayItemMenu(plugin, navigation, topMenu, selectedIndex, 30);
+        plugin.getResultMenu().displayItemMenu(plugin, this, topMenu, selectedIndex, 30);
     }
 
     public boolean supportFold() {
@@ -125,7 +125,10 @@ public class SearchNavigationItem extends AbstractSearchNavigation {
                     }
 
                     if (StringUtils.isNotBlank(developer.getTimezone())) {
-                        this.child.add(new SearchNavigationDetail(plugin, artifact, MavenSearchPluginIcon.RIGHT_DEVELOPER, "", this.parseTimezone(developer.getTimezone()), "Timezone"));
+                        String timezone = this.parseTimezone(developer.getTimezone()); // TODO 解析不准 org.apache:apache:31
+                        if (StringUtils.isNotBlank(timezone)) {
+                            this.child.add(new SearchNavigationDetail(plugin, artifact, MavenSearchPluginIcon.RIGHT_DEVELOPER, "", timezone, "Timezone"));
+                        }
                     }
                 }
 

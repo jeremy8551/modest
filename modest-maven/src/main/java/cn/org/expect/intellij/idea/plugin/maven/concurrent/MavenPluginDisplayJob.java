@@ -89,7 +89,7 @@ public class MavenPluginDisplayJob extends MavenJob implements EDTJob {
         display.setContributorMore(plugin.getContributor(),  //
                 !plugin.getService().isRunning(SearchMoreJob.class)  // 在 MavenSearchPluginListener 中会重复生成 more 按钮，判断如果正在执行 more 搜索，则不能显示 more 按钮
                         && ( //
-                        (isAllTab && hasMore && display.size() > 0) // ALL标签页，有 more 按钮 TODO
+                        (isAllTab && hasMore && display.size() > 0) // ALL标签页，有 more 按钮
                                 || (isSelfTab && navigationList.isHasMore()) //
                 ) //
         );

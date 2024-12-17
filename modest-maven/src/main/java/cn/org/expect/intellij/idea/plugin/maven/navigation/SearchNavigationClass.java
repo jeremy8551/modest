@@ -34,9 +34,9 @@ public class SearchNavigationClass extends AbstractSearchNavigation {
         return true;
     }
 
-    public void displayMenu(SearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+    public void displayMenu(JPopupMenu topMenu, int selectedIndex) {
         MavenSearchPlugin plugin = this.getSearch();
-        plugin.getResultMenu().displayItemMenu(plugin, navigation, topMenu, selectedIndex, 22);
+        plugin.getResultMenu().displayItemMenu(plugin, this, topMenu, selectedIndex, 22);
     }
 
     public void setUnfold() {

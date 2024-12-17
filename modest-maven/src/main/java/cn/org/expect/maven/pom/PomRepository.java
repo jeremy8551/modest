@@ -15,9 +15,9 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.concurrent.ArtifactDownloadJob;
-import cn.org.expect.maven.pom.impl.SimplePom;
 import cn.org.expect.maven.pom.impl.SimpleDeveloper;
 import cn.org.expect.maven.pom.impl.SimpleLicense;
+import cn.org.expect.maven.pom.impl.SimplePom;
 import cn.org.expect.maven.repository.local.LocalRepository;
 import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.util.CharsetName;
@@ -31,16 +31,16 @@ public class PomRepository {
     protected final static Log log = LogFactory.getLog(PomRepository.class);
 
     /** 搜索结果 */
-    protected final Map<String, Map<String, Map<String, SimplePom>>> database;
+    protected final Map<String, Map<String, Map<String, Pom>>> database;
 
     public PomRepository() {
         this.database = new ConcurrentHashMap<>();
     }
 
     public Pom select(Artifact artifact) {
-        Map<String, Map<String, SimplePom>> groupMap = this.database.get(artifact.getGroupId());
+        Map<String, Map<String, Pom>> groupMap = this.database.get(artifact.getGroupId());
         if (groupMap != null) {
-            Map<String, SimplePom> artifactMap = groupMap.get(artifact.getArtifactId());
+            Map<String, Pom> artifactMap = groupMap.get(artifact.getArtifactId());
             if (artifactMap != null) {
                 return artifactMap.get(artifact.getVersion());
             }
@@ -49,9 +49,9 @@ public class PomRepository {
     }
 
     public Pom delete(Artifact artifact) {
-        Map<String, Map<String, SimplePom>> groupMap = this.database.get(artifact.getGroupId());
+        Map<String, Map<String, Pom>> groupMap = this.database.get(artifact.getGroupId());
         if (groupMap != null) {
-            Map<String, SimplePom> artifactMap = groupMap.get(artifact.getArtifactId());
+            Map<String, Pom> artifactMap = groupMap.get(artifact.getArtifactId());
             if (artifactMap != null) {
                 return artifactMap.remove(artifact.getVersion());
             }
@@ -59,32 +59,34 @@ public class PomRepository {
         return null;
     }
 
-    public void insert(Artifact artifact, SimplePom pomInfo) {
-        Map<String, Map<String, SimplePom>> groupMap = this.database.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
-        Map<String, SimplePom> artifactMap = groupMap.computeIfAbsent(artifact.getArtifactId(), k -> new HashMap<>());
-        artifactMap.put(artifact.getVersion(), pomInfo);
+    public void insert(Artifact artifact, Pom pom) {
+        Map<String, Map<String, Pom>> groupMap = this.database.computeIfAbsent(artifact.getGroupId(), k -> new HashMap<>());
+        Map<String, Pom> artifactMap = groupMap.computeIfAbsent(artifact.getArtifactId(), k -> new HashMap<>());
+        artifactMap.put(artifact.getVersion(), pom);
     }
 
     public Pom query(ArtifactSearch search, Artifact artifact) throws Exception {
-        Pom pomInfo = this.select(artifact);
-        if (pomInfo != null) {
-            return pomInfo;
+        Pom pom = this.select(artifact);
+        if (pom != null) {
+            return pom;
         }
 
         byte[] pomXmlBytes = this.readPomXml(search, artifact);
         if (pomXmlBytes == null) {
-            return null;
+            pom = new SimplePom();
+            this.insert(artifact, pom); // 保存搜索结果
+            return pom;
         }
 
         // 解析 POM 信息
         Node project = XMLUtils.getRoot(new ByteArrayInputStream(pomXmlBytes), "project");
-        SimplePom pom = new SimplePom();
-        this.parsePomXml(project, pom); // 解析 POM
+        pom = this.parsePomXml(project); // 解析 POM
         this.insert(artifact, pom); // 保存搜索结果
         return pom;
     }
 
-    private void parsePomXml(Node project, SimplePom info) {
+    private SimplePom parsePomXml(Node project) {
+        SimplePom info = new SimplePom();
         XMLUtils.runChildNodes(project, (i, node) -> {
             if ("url".equalsIgnoreCase(node.getNodeName())) {
                 info.setUrl(node.getTextContent());
@@ -184,6 +186,7 @@ public class PomRepository {
                 });
             }
         });
+        return info;
     }
 
     protected byte[] readPomXml(ArtifactSearch search, Artifact artifact) throws IOException {

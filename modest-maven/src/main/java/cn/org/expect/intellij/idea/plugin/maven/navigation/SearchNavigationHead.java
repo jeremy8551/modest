@@ -91,7 +91,7 @@ public class SearchNavigationHead extends AbstractSearchNavigation {
         return false;
     }
 
-    public void displayMenu(SearchNavigation navigation, JPopupMenu topMenu, int selectedIndex) {
+    public void displayMenu(JPopupMenu topMenu, int selectedIndex) {
     }
 
     /**
