@@ -3,7 +3,7 @@ package cn.org.expect.maven.repository.central;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.concurrent.EasyJobReaderImpl;
 import cn.org.expect.concurrent.EasyJobService;
 import cn.org.expect.concurrent.ThreadSource;

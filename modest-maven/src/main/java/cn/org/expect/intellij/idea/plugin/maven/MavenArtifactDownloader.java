@@ -3,7 +3,7 @@ package cn.org.expect.intellij.idea.plugin.maven;
 import java.io.File;
 import java.util.Collections;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginEDTJob;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.Artifact;

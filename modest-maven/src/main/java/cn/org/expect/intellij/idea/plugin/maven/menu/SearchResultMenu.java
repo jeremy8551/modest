@@ -4,7 +4,7 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import javax.swing.*;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.intellij.idea.plugin.maven.MavenSearchPlugin;
 import cn.org.expect.intellij.idea.plugin.maven.SearchDisplay;
 import cn.org.expect.intellij.idea.plugin.maven.concurrent.MavenPluginEDTJob;

@@ -6,7 +6,7 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.concurrent.ExecutorServiceFactory;
 import cn.org.expect.maven.concurrent.MavenExecutorService;
 import cn.org.expect.util.Ensure;

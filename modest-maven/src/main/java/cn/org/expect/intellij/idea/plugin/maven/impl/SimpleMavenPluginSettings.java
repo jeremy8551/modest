@@ -2,7 +2,7 @@ package cn.org.expect.intellij.idea.plugin.maven.impl;
 
 import java.io.File;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.intellij.idea.plugin.maven.settings.MavenPluginSettings;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;

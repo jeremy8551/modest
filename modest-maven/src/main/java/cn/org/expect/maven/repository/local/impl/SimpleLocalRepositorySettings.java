@@ -2,7 +2,7 @@ package cn.org.expect.maven.repository.local.impl;
 
 import java.io.File;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.maven.repository.local.LocalRepositorySettings;
 import cn.org.expect.util.Ensure;
 

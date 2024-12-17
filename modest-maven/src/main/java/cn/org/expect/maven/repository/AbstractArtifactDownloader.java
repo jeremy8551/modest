@@ -11,8 +11,8 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cn.org.expect.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.maven.Artifact;
 import cn.org.expect.maven.search.ArtifactSearch;
 import cn.org.expect.maven.search.ArtifactSearchSettings;

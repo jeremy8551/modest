@@ -1,6 +1,6 @@
 package cn.org.expect.maven.repository.tencent;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.maven.repository.huawei.HuaweiArtifactDownloader;
 

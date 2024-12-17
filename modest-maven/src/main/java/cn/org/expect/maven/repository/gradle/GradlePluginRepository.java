@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import cn.org.expect.annotation.EasyBean;
+import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.concurrent.EasyJob;
 import cn.org.expect.concurrent.EasyJobReaderImpl;
 import cn.org.expect.concurrent.EasyJobService;
