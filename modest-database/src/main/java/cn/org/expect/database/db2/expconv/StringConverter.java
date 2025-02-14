@@ -1,0 +1,95 @@
+package cn.org.expect.database.db2.expconv;
+
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
+
+import cn.org.expect.collection.CharBuffer;
+import cn.org.expect.util.StringUtils;
+
+/**
+ * DB2 数据库对字符类型字段的处理 <br>
+ * 如果字段中存在双引号则替换为二个双引号 <br>
+ *
+ * @author jeremy8551@gmail.com
+ * @createtime 2017-03-21
+ */
+public class StringConverter extends cn.org.expect.database.export.converter.StringConverter {
+
+    public void init() throws Exception {
+        super.init();
+        String charsetName = (String) this.getAttribute(PARAM_CHARSET);
+        this.process = StringUtils.isNotBlank(charsetName) && this.contains(PARAM_MESSY) ? new Messy(charsetName) : new Nomal();
+    }
+
+    public void execute() throws Exception {
+        String str = this.resultSet.getString(this.column);
+        if (str == null) {
+            this.array[this.column] = "";
+        } else {
+            this.array[this.column] = this.process.execute(str);
+        }
+    }
+
+    /**
+     * 处理乱码
+     *
+     * @author jeremy8551@gmail.com
+     */
+    static class Messy implements Process {
+
+        private CharsetEncoder encoder;
+
+        private CharBuffer buffer;
+
+        public Messy(String charsetName) {
+            this.buffer = new CharBuffer(100, 30);
+            Charset charset = Charset.forName(charsetName);
+            this.encoder = charset.newEncoder();
+        }
+
+        public String execute(String str) {
+            this.buffer.setLength(0);
+            this.buffer.append('\"');
+            for (int i = 0; i < str.length(); i++) {
+                char c = str.charAt(i);
+                if (this.encoder.canEncode(c)) { // 检查字符是否正确
+                    if (c == '\"' || c == ',') { // 对字符串中的半角逗号与双引号进行转义
+                        this.buffer.append('\"');
+                    }
+                    this.buffer.append(c);
+                }
+            }
+            this.buffer.append('\"');
+            return this.buffer.toString();
+        }
+    }
+
+    /**
+     * 乱码处理接口
+     *
+     * @author jeremy8551@gmail.com
+     */
+    static class Nomal implements Process {
+
+        private CharBuffer buffer;
+
+        public Nomal() {
+            this.buffer = new CharBuffer(100, 30);
+        }
+
+        public String execute(String str) {
+            this.buffer.setLength(0);
+            this.buffer.expandCapacity(str.length() + 2);
+            this.buffer.append('\"');
+            for (int i = 0; i < str.length(); i++) {
+                char c = str.charAt(i);
+                if (c == '\"' || c == ',') { // 对字符串中的半角逗号与双引号进行转义
+                    this.buffer.append('\"');
+                }
+                this.buffer.append(c);
+            }
+            this.buffer.append('\"');
+            return this.buffer.toString();
+        }
+    }
+}

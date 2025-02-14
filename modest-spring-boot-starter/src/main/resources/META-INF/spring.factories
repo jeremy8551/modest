@@ -1,0 +1,8 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  cn.org.expect.springboot.starter.configuration.EasyContextConfiguration,\
+  cn.org.expect.springboot.starter.configuration.ScriptEngineFactoryConfiguration,\
+  cn.org.expect.springboot.starter.configuration.ScriptEngineConfiguration,\
+  cn.org.expect.springboot.starter.configuration.SpringArgumentConfiguration,\
+  cn.org.expect.springboot.starter.ModestProperties
+org.springframework.boot.SpringApplicationRunListener=cn.org.expect.springboot.starter.listener.ScriptRunListener
+org.springframework.context.ApplicationListener=cn.org.expect.springboot.starter.listener.ScriptListener

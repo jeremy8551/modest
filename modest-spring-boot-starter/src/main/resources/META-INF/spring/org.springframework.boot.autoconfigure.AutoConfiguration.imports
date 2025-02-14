@@ -1,0 +1,5 @@
+cn.org.expect.springboot.starter.configuration.SpringApplicationArgumentConfiguration
+cn.org.expect.springboot.starter.configuration.EasyContextConfiguration
+cn.org.expect.springboot.starter.configuration.ScriptEngineFactoryConfiguration
+cn.org.expect.springboot.starter.configuration.ScriptEngineConfiguration
+cn.org.expect.springboot.starter.ModestProperties

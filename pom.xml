@@ -1,0 +1,930 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cn.org.expect</groupId>
+    <artifactId>modest</artifactId>
+    <version>${revision}</version>
+
+    <name>modest</name>
+    <url>https://github.com/jeremy8551/modest</url>
+    <description>项目是一个模块化的脚本引擎与工具集，提供表达式解析、动态脚本执行、并发处理、加密解密、数据库操作等功能，帮助开发者快速集成和扩展应用能力。</description>
+    <packaging>pom</packaging>
+
+    <!-- 属性集合（子模块可以继承直接使用） -->
+    <properties>
+        <revision>1.0.0</revision> <!-- 统一的项目版本号 -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>5</maven.compiler.source>
+        <maven.compiler.target>5</maven.compiler.target>
+        <maven.plugin.version>3.5.2</maven.plugin.version> <!-- Maven插件版本 -->
+        <skipTests>false</skipTests> <!-- true 表示不执行单元测试 -->
+    </properties>
+
+    <!-- 子模块 -->
+    <modules>
+        <module>modest-tool</module>
+        <module>modest-maven-plugin</module>
+        <module>modest-jdk</module>
+        <module>modest-crypto</module>
+        <module>modest-logger</module>
+        <module>modest-concurrent</module>
+        <module>modest-expression</module>
+        <module>modest-markdown</module>
+        <module>modest-printer</module>
+        <module>modest-ioc</module>
+        <module>modest-ioc-test</module>
+        <module>modest-compress</module>
+        <module>modest-cn</module>
+        <module>modest-io</module>
+        <module>modest-os</module>
+        <module>modest-database</module>
+        <module>modest-increment</module>
+        <module>modest-script</module>
+    </modules>
+
+    <!-- Apache Licene 2.0 开源软件许可证 -->
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <!-- 问题工单 -->
+    <issueManagement>
+        <system>Github Issue</system>
+        <url>https://github.com/jeremy8551/modest/issues</url>
+    </issueManagement>
+
+    <!-- 开发人员 -->
+    <developers>
+        <developer>
+            <name>jeremy</name>
+            <email>jeremy8551@gmail.com</email>
+            <timezone>+8</timezone>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
+
+    <!-- Source Code Management，源代码版本管理信息 -->
+    <scm>
+        <!-- connection 用于一般用户访问代码仓库的URL，通常用于只读访问 -->
+        <connection>scm:git:https://github.com/jeremy8551/modest.git</connection>
+        <!-- developerConnection：用于开发者访问代码仓库的URL，可以读写 -->
+        <developerConnection>scm:git:https://github.com/jeremy8551/modest.git</developerConnection>
+        <!-- url：项目的Web页面或信息页面的URL -->
+        <url>https://github.com/jeremy8551/modest</url>
+    </scm>
+
+    <!-- jar 包分发管理信息 -->
+    <distributionManagement>
+        <snapshotRepository> <!-- 快照版本 -->
+            <id>sonatype-repository</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
+            <!-- 这里的 https://s01.oss.sonatype.org/ 是生成 sonatype 的issues工单时, 机器人评论的那个地址-->
+        </snapshotRepository>
+        <repository> <!-- 发布正式版 -->
+            <id>sonatype-repository</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <!-- 依赖管理 -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- JUnit Platform 定义了测试引擎的 API，是 JVM 上用于启动测试框架的基础服务，支持通过 IDE、构建工具、命令行等方式运行单元测试 -->
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>1.10.0</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- 用于编写和扩展测试代码，提供了 TestEngine 在平台上运行基于 Jupiter 的测试的功能 -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>5.10.0</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- 用于兼容 JUnit 3 和 JUnit 4 的测试代码，使旧代码能够继续运行 -->
+            <dependency>
+                <groupId>org.junit.vintage</groupId>
+                <artifactId>junit-vintage-engine</artifactId>
+                <version>5.10.0</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- 生成 SPI 配置文件 -->
+            <dependency>
+                <groupId>com.google.auto.service</groupId>
+                <artifactId>auto-service</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+
+            <!-- 内存数据库 -->
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>2.2.224</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- Maven 核心库（apache-maven 默认会提供）-->
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-core</artifactId>
+                <version>${maven.plugin.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Maven 插件API（apache-maven 默认会提供）-->
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-plugin-api</artifactId>
+                <version>${maven.plugin.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Maven 工件管理API（apache-maven 默认会提供）-->
+            <dependency>
+                <groupId>org.apache.maven</groupId>
+                <artifactId>maven-artifact</artifactId>
+                <version>${maven.plugin.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Maven 插件注解库 -->
+            <dependency>
+                <groupId>org.apache.maven.plugin-tools</groupId>
+                <artifactId>maven-plugin-annotations</artifactId>
+                <version>${maven.plugin.version}</version>
+            </dependency>
+
+            <!-- Servlet-API -->
+            <dependency>
+                <groupId>javax.servlet</groupId>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>3.1.0</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- DB2数据库驱动 -->
+            <dependency>
+                <groupId>com.ibm.db2.jcc</groupId>
+                <artifactId>db2jcc</artifactId>
+                <version>db2jcc4</version>
+                <scope>runtime</scope>
+            </dependency>
+
+            <!-- SSH2客户端 -->
+            <dependency>
+                <groupId>com.jcraft</groupId>
+                <artifactId>jsch</artifactId>
+                <version>0.1.54</version>
+            </dependency>
+
+            <!-- 用于实现压缩与解压（tar、zip）文件 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-compress</artifactId>
+                <version>1.14</version>
+            </dependency>
+
+            <!-- 用于实现rar解压功能 -->
+            <dependency>
+                <groupId>com.github.junrar</groupId>
+                <artifactId>junrar</artifactId>
+                <version>7.4.0</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-api</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- 用于实现 FTP、SFTP 功能 -->
+            <dependency>
+                <groupId>commons-net</groupId>
+                <artifactId>commons-net</artifactId>
+                <version>2.2</version>
+            </dependency>
+
+            <!-- 用于实现收发邮件功能 -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-email</artifactId>
+                <version>1.4</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>javax.activation</groupId>
+                        <artifactId>activation</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- org.apache.commons:commons-email 使用的组件 -->
+            <dependency>
+                <groupId>javax.activation</groupId>
+                <artifactId>activation</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+
+            <!-- modest 工具包 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-tool</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- 核心API扩展 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 插件 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 日志模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-logger</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 输出模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-printer</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 容器模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-ioc</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 容器测试 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-ioc-test</artifactId>
+                <version>${revision}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <!-- modest 表达式模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-expression</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest IO模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-io</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 中文模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-cn</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest JDK适配器 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-jdk</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 线程池模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-concurrent</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 操作系统模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-os</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 数据库模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-database</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 增量剥离模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-increment</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 压缩模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-compress</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 加密模块 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-crypto</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 脚本引擎 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-script</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 脚本引擎 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-script-engine</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- modest 场景启动器 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-spring-boot-starter</artifactId>
+                <version>${revision}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- JUnit Platform 定义了测试引擎的 API，是 JVM 上用于启动测试框架的基础服务，支持通过 IDE、构建工具、命令行等方式运行单元测试 -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-launcher</artifactId>
+        </dependency>
+
+        <!-- 用于编写和扩展测试代码，提供了 TestEngine 在平台上运行基于 Jupiter 的测试的功能 -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+
+        <!-- 用于兼容 JUnit 3 和 JUnit 4 的测试代码，使旧代码能够继续运行 -->
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- modest插件 -->
+                <plugin>
+                    <groupId>cn.org.expect</groupId>
+                    <artifactId>modest-maven-plugin</artifactId>
+                    <version>${revision}</version>
+                    <executions>
+                        <execution>
+                            <id>clean</id>
+                            <goals>
+                                <goal>lastupdated</goal> <!-- 删除所有lastupdated结尾的文件 -->
+                                <goal>uninstall</goal> <!-- 从本地仓库中卸载jar包 -->
+                                <goal>deleteFile</goal> <!-- 删除文件 -->
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <uninstall>*</uninstall> <!-- 卸载本地maven库中所有版本的jar文件 -->
+                        <deletePattern>\.DS_Store</deletePattern>
+                    </configuration>
+                </plugin>
+
+                <!-- 解析版本号 -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>flatten-maven-plugin</artifactId>
+                    <version>1.5.0</version>
+                    <configuration>
+                        <updatePomFile>true</updatePomFile> <!-- packing=pom的module也进行reversion变量替换，默认为false -->
+                        <flattenMode>resolveCiFriendliesOnly</flattenMode> <!-- 只替换原始pom中的revision, sha1 and changelist，其他否保持原样 -->
+                        <outputDirectory>${project.build.directory}</outputDirectory> <!-- 修改生成 .flattened-pom.xml 文件的目录 -->
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>install</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>flatten</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- 生成全量 effective-pom.xml -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-help-plugin</artifactId>
+                    <version>3.2.0</version>
+                    <executions>
+                        <execution>
+                            <id>install</id>
+                            <phase>process-resources</phase>
+                            <goals>
+                                <goal>effective-pom</goal>
+                            </goals>
+                            <configuration>
+                                <output>${project.build.directory}/.effective-pom.xml</output>
+                                <verbose>true</verbose>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- 在构建过程中执行 Java 代码或外部命令 -->
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+
+                <!-- 单元测试插件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.12.4</version>
+                    <configuration>
+                        <skipTests>${skipTests}</skipTests>
+                        <testFailureIgnore>false</testFailureIgnore>
+                        <forkMode>once</forkMode>
+                    </configuration>
+                </plugin>
+
+                <!-- 生成单元测试覆盖率 -->
+                <plugin>
+                    <!--
+                        Code Coverage
+                        config example: https://github.com/codecov/example-java
+                        plugin docs: https://eclemma.org/jacoco/trunk/doc/
+                    -->
+                    <groupId>org.jacoco</groupId>
+                    <artifactId>jacoco-maven-plugin</artifactId>
+                    <version>0.8.11</version>
+                    <executions>
+                        <execution>
+                            <id>jacoco-prepare</id>
+                            <goals>
+                                <goal>prepare-agent</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>jacoco-report</id>
+                            <goals>
+                                <goal>report</goal>
+                            </goals>
+                            <configuration>
+                                <skip>${skipTests}</skip>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- 编译插件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.1</version>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.target}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <verbose>false</verbose>
+                    </configuration>
+                </plugin>
+
+                <!-- 生成源代码jar文件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>3.2.1</version>
+                    <executions>
+                        <execution>
+                            <id>java-source</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar-no-fork</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- 生成 Javadoc 文件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>3.5.0</version>
+                    <executions>
+                        <execution>
+                            <id>javadoc</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                    <configuration>
+                        <failOnError>false</failOnError> <!-- false表示发生错误时继续向下执行 -->
+                        <show>private</show>
+                        <nohelp>true</nohelp>
+                        <charset>UTF-8</charset>
+                        <encoding>UTF-8</encoding>
+                        <docencoding>UTF-8</docencoding>
+                        <doclint>none</doclint> <!-- 禁用DocLint检查,屏蔽警告和报错信息 -->
+                        <excludePackageNames>javax.script.*</excludePackageNames> <!-- 配置不需要校验的包名,用半角逗号分隔 -->
+                        <!-- https://maven.apache.org/plugins/maven-javadoc-plugin/examples/exclude-package-names.html -->
+                        <tags>
+                            <tag>
+                                <!-- https://maven.apache.org/plugins/maven-javadoc-plugin/examples/tag-configuration.html -->
+                                <name>createtime</name> <!-- 自定义 @createtime 标记，屏蔽生成javadoc时的错误信息 -->
+                                <placement>a</placement> <!-- 指定标签的放置位置，a表示能在所有位置使用 -->
+                                <head>创建时间:</head> <!-- 定义标签的前缀，例如 "作者:" 或 "版本:" -->
+                            </tag>
+                            <tag>
+                                <name>Ignore</name> <!-- 因为脚本引擎中 int 使用 long 存储，所以定义重载方法，生成脚本引擎文档时需要用 @Ignore 标记忽略 -->
+                                <placement>a</placement>
+                                <head>忽略重载方法</head>
+                            </tag>
+                        </tags>
+                    </configuration>
+                </plugin>
+
+                <!-- GPG签名插件，对项目最后生成的jar包进行签名 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>3.0.1</version>
+                    <executions>
+                        <execution>
+                            <id>sign</id>
+                            <phase>verify</phase> <!-- 验证阶段 -->
+                            <goals>
+                                <goal>sign</goal> <!-- 插件目标: 在验证阶段执行 GPG 签名操作 -->
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- sonatype插件，用于登录验证、上传jar到sonatype的maven仓库 -->
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>0.4.0</version>
+                    <extensions>true</extensions>
+                    <configuration>
+                        <!-- 这里的serverId是之前在本地settings.xml中配置的<server><id>标签值（上述三(1)步骤） -->
+                        <publishingServerId>sonatype-repository</publishingServerId>
+                        <tokenAuth>true</tokenAuth>
+                        <autoPublish>true</autoPublish>
+                    </configuration>
+                </plugin>
+
+                <!-- 打包插件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+
+                <!-- 安装插件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+
+                <!-- 发布插件 -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>3.1.1</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <!-- 统一版本号 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- 生成全量POM -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-help-plugin</artifactId>
+            </plugin>
+
+            <!-- 编译插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+
+            <!-- 单元测试 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+
+            <!-- 单元测试覆盖率 -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- 生成 javaSource.jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+
+            <!-- 生成 javadoc.jar -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
+
+            <!-- jar文件插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+
+            <!-- jar文件签名插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+            </plugin>
+
+            <!-- 本地仓库插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+            </plugin>
+
+            <!-- 发布插件 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+            </plugin>
+
+            <!-- 上传中央仓库插件 -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <!-- JDK6 -->
+        <profile>
+            <id>enable-jdk6</id>
+            <activation>
+                <jdk>[1.6.0,)</jdk> <!-- <jdk>[1.6.0,1.7.999]</jdk> -->
+            </activation>
+            <modules>
+                <module>modest-script-engine</module>
+                <module>modest-spring-boot-starter</module>
+            </modules>
+        </profile>
+
+        <!-- JDK8 -->
+        <profile>
+            <id>enable-jdk8</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <modules>
+                <module>modest-api</module>
+            </modules>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <!-- 插件将构建时 Git 仓库信息写入到 properties 文件中，让别人知道是从哪个版本构建的（适合大型分布式系统）-->
+                        <plugin>
+                            <groupId>io.github.git-commit-id</groupId>
+                            <artifactId>git-commit-id-maven-plugin</artifactId>
+                            <version>4.9.9</version>
+                            <!-- DO NOT upgrade to v5+, since don't support java 8 -->
+                            <!-- https://github.com/git-commit-id/git-commit-id-maven-plugin -->
+                            <executions>
+                                <execution>
+                                    <id>get-the-git-infos</id>
+                                    <goals>
+                                        <goal>revision</goal>
+                                    </goals>
+                                </execution>
+                                <execution>
+                                    <id>validate-the-git-infos</id>
+                                    <goals>
+                                        <goal>validateRevision</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                            <configuration>
+                                <!--                        <validationProperties>-->
+                                <!--                            &lt;!&ndash; verify that the current repository is not dirty &ndash;&gt;-->
+                                <!--                            <validationProperty>-->
+                                <!--                                <name>validating git dirty</name>-->
+                                <!--                                <value>${git.dirty}</value>-->
+                                <!--                                <shouldMatchTo>false</shouldMatchTo>-->
+                                <!--                            </validationProperty>-->
+                                <!--                        </validationProperties>-->
+                                <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                                <generateGitPropertiesFilename>${project.build.outputDirectory}/META-INF/scm/${project.groupId}/${project.artifactId}/git.properties</generateGitPropertiesFilename>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+                <plugins>
+                    <!-- Git插件：检查是否有未提交代码 -->
+                    <plugin>
+                        <groupId>io.github.git-commit-id</groupId>
+                        <artifactId>git-commit-id-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- 校验代码格式 -->
+        <profile>
+            <id>enable-checkstyle</id>
+            <activation>
+                <jdk>[1.5.0,)</jdk>
+            </activation>
+
+            <build>
+                <plugins>
+                    <!-- 生成 Source XRef, 与 maven-pmd-plugin 插件配合使用 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jxr-plugin</artifactId>
+                        <version>2.5</version>
+                        <executions>
+                            <execution>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>jxr</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- 代码质量控制: 代码冗余、复杂度过高、重复代码、自定义规则集 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-pmd-plugin</artifactId>
+                        <version>3.1</version>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                    <goal>cpd-check</goal> <!-- 重复代码检测 -->
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <failOnViolation>false</failOnViolation> <!-- 检查到违规报错 -->
+                            <!-- <rulesets> -->
+                            <!--   &lt;!&ndash; PMD 规则集，默认使用 quickstart.xml（可以换成 bestpractices.xml、design.xml 等）&ndash;&gt; -->
+                            <!--   <ruleset>${project.basedir}/src/maven-pmd-plugin/quickstart.xml</ruleset> -->
+                            <!-- </rulesets> -->
+                            <!-- <linkXref>true</linkXref> &lt;!&ndash; 生成带超链接的 HTML 报告 &ndash;&gt;-->
+                            <!-- <outputDirectory>${project.build.directory}/pmd</outputDirectory> &lt;!&ndash; HTML 报告文件名 &ndash;&gt;-->
+                            <!-- <minimumTokenCount>3</minimumTokenCount> &lt;!&ndash; 重复代码的最小 token 数，超过这个数量才会被检测 &ndash;&gt;-->
+                        </configuration>
+                    </plugin>
+
+                    <!-- Bug 检测: 潜在的 bug、线程安全问题、性能问题 和 安全漏洞 -->
+                    <plugin>
+                        <groupId>com.github.spotbugs</groupId>
+                        <artifactId>spotbugs-maven-plugin</artifactId>
+                        <version>3.1.0-RC5</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.github.spotbugs</groupId>
+                                <artifactId>spotbugs-annotations</artifactId>
+                                <version>4.8.3</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <effort>Max</effort>
+                            <threshold>Low</threshold>
+                            <failOnError>false</failOnError>
+                            <xmlOutput>false</xmlOutput>
+                            <!-- <htmlOutput>true</htmlOutput>-->
+                            <outputDirectory>${project.build.directory}/spotbugs</outputDirectory>
+                        </configuration>
+                    </plugin>
+
+                    <!-- 代码格式检查 -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <version>3.1.2</version>
+                        <dependencies>
+                            <!-- 代码检查的核心库，用来执行 Java 代码风格检查 -->
+                            <dependency>
+                                <groupId>com.puppycrawl.tools</groupId>
+                                <artifactId>checkstyle</artifactId>
+                                <version>8.45.1</version>
+                            </dependency>
+                            <!-- Spring 提供的 NoHTTP 规则集，用于检测 http:// 资源，并强制使用 https://  -->
+                            <dependency>
+                                <groupId>io.spring.nohttp</groupId>
+                                <artifactId>nohttp-checkstyle</artifactId>
+                                <version>0.0.10</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>checkstyle-validation</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <configuration>
+                                    <skip>false</skip>
+                                    <failsOnError>false</failsOnError>
+                                    <failOnViolation>false</failOnViolation>
+                                    <sourceDirectories>${project.basedir}</sourceDirectories>
+                                    <!-- <configLocation>sun_checks.xml</configLocation>-->
+                                    <configLocation>google_checks.xml</configLocation>
+                                    <!-- <configLocation>${project.basedir}/src/maven-checkstyle-plugin/modest-checks.xml</configLocation>-->
+                                    <includes>**/*</includes>
+                                    <excludes>**/.git/**/*,**/.idea/**/*,**/target/**/,**/*.xml,mvnw*,**/*.txt,**/resources**,**/.gitignore,**/.sdkmanrc,**/*.md</excludes>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- 代码格式化工具 -->
+                    <plugin>
+                        <groupId>io.spring.javaformat</groupId>
+                        <artifactId>spring-javaformat-maven-plugin</artifactId>
+                        <version>0.0.31</version>
+                        <executions>
+                            <execution>
+                                <!--<phase>generate-sources</phase>-->
+                                <phase>none</phase>
+                                <goals>
+                                    <goal>apply</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <skip>false</skip>
+                            <lineSeparator>LF</lineSeparator>
+                            <encoding>${project.build.sourceEncoding}</encoding>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

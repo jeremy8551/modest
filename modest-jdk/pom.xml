@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.org.expect</groupId>
+        <artifactId>modest</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>modest-jdk</artifactId>
+    <description>适配不同版本的JDK（从1.5版本开始）</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-tool</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+                <executions>
+                    <!-- 编译再打开 -->
+                    <!--                    <execution>-->
+                    <!--                        <id>install</id>-->
+                    <!--                        <goals>-->
+                    <!--                            <goal>jdk</goal>-->
+                    <!--                        </goals>-->
+                    <!--                    </execution>-->
+                    <execution>
+                        <id>format-java-source</id>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                        <configuration>
+                            <format>
+                                <module>modest-tool</module>
+                                <module>modest-maven-plugin</module>
+                                <module>modest-jdk</module>
+                                <module>modest-crypto</module>
+                                <module>modest-logger</module>
+                                <module>modest-concurrent</module>
+                                <module>modest-expression</module>
+                                <module>modest-markdown</module>
+                                <module>modest-printer</module>
+                                <module>modest-ioc</module>
+                                <module>modest-ioc-test</module>
+                                <module>modest-compress</module>
+                                <module>modest-cn</module>
+                                <module>modest-io</module>
+                                <module>modest-os</module>
+                                <module>modest-database</module>
+                                <module>modest-increment</module>
+                                <module>modest-script</module>
+                            </format>
+                            <verbose>false</verbose>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,32 @@
+package cn.org.expect.database.load.converter;
+
+import java.sql.Types;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import cn.org.expect.util.StringUtils;
+
+/**
+ * 把字符串转为时间撮
+ *
+ * @author jeremy8551@gmail.com
+ * @createtime 2011-11-08
+ */
+public class TimestampConverter extends DateConverter {
+
+    public void init() throws Exception {
+        this.format = new SimpleDateFormat();
+        this.format.applyPattern(StringUtils.coalesce((String) this.getAttribute(PARAM_TIMESTAMPFORMAT), "yyyy-MM-dd HH:mm:ss"));
+    }
+
+    public void execute(String value) throws Exception {
+        value = StringUtils.unquotes(value);
+        if (this.isBlank(value)) {
+            this.statement.setNull(this.position, Types.TIME);
+        } else {
+            Date date = this.format.parse(value);
+            long val = date.getTime();
+            this.statement.setTimestamp(this.position, new java.sql.Timestamp(val));
+        }
+    }
+}

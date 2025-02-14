@@ -1,0 +1,193 @@
+package cn.org.expect.expression;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import cn.org.expect.util.Numbers;
+import cn.org.expect.util.StringUtils;
+
+/**
+ * 解析登录服务器的表达式, 格式: name user@host:port?password=
+ *
+ * @author jeremy8551@gmail.com
+ */
+public class LoginExpression extends CommandExpression {
+
+    /** 登录属性 */
+    private String host;
+    private String port;
+    private String username;
+    private String password;
+
+    /** 属性集合 */
+    private Map<String, String> attributes;
+
+    /**
+     * 解析登陆命令表达式
+     *
+     * @param analysis   语句分析器
+     * @param expression 表达式, 格式: {@literal commandName username@host:port?password=password } <br>
+     *                   {@literal ssh username@host:port?password=&key=value} <br>
+     *                   {@literal ftp username@host:port?password=&key=value} <br>
+     *                   {@literal sftp username@host:port?password=&key=value} <br>
+     */
+    public LoginExpression(Analysis analysis, String expression) {
+        super(analysis, "", expression);
+    }
+
+    protected void prepared(Analysis analysis) {
+        super.prepared(analysis);
+        this.attributes = new LinkedHashMap<String, String>();
+    }
+
+    protected void parse(String pattern) {
+        super.parse(pattern);
+    }
+
+    public void setValue(String command) {
+        super.setValue(command);
+
+        int index = this.indexOfLogin();
+        if (index != -1) {
+            String expr = this.parameter.get(index);
+            this.parseLogin(expr);
+        }
+    }
+
+    /**
+     * 查询登录参数位置
+     *
+     * @return 位置信息
+     */
+    protected int indexOfLogin() {
+        for (int i = 0; i < this.parameter.size(); i++) {
+            String str = this.parameter.get(i);
+            if (this.analysis.indexOf(str, "@", 0, 2, 2) != -1 && this.analysis.indexOf(str, "?password=", 0, 2, 2) != -1) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * 解析登陆命令参数 <br>
+     *
+     * @param loginExpr 表达式 <br>
+     *                  {@literal ssh username@host:port?password=&key=value} <br>
+     *                  {@literal ftp username@host:port?password=&key=value} <br>
+     *                  {@literal sftp username@host:port?password=&key=value} <br>
+     */
+    protected void parseLogin(String loginExpr) {
+        int mp = loginExpr.indexOf(':');
+        int wp = loginExpr.indexOf('?');
+        int pp = StringUtils.indexOf(loginExpr, "?password", 0, true);
+        int rp = Numbers.max(mp, wp, pp); // 最右侧的位置
+
+        int index = loginExpr.lastIndexOf('@', rp < 0 ? loginExpr.length() - 1 : rp);
+        if (index != -1) {
+            String hostPort = loginExpr.substring(index + 1); // host:port
+            int passwordIndex = hostPort.lastIndexOf('?');
+            if (passwordIndex != -1) { // host:port?password=&key=value
+                String attributes = hostPort.substring(passwordIndex + 1);
+                List<String> properties = new ArrayList<String>();
+                this.analysis.split(attributes, properties, '&');
+                for (String str : properties) {
+                    String[] array = StringUtils.splitProperty(str);
+                    if (array.length != 2) {
+                        throw new ExpressionException("expression.stdout.message059", this.command, str);
+                    }
+
+                    String key = array[0];
+                    if ("password".equalsIgnoreCase(key)) {
+                        this.password = array[1];
+                    } else {
+                        this.attributes.put(key, array[1]); // 保存所有属性信息
+                    }
+                }
+                hostPort = hostPort.substring(0, passwordIndex);
+            }
+
+            int end = hostPort.indexOf(':');
+            if (end != -1) {
+                this.host = hostPort.substring(0, end);
+                this.port = hostPort.substring(end + 1); // port
+            } else {
+                this.host = hostPort; // host
+                String key = this.getName();
+                if ("ftp".equalsIgnoreCase(key)) {
+                    this.port = "21";
+                } else if ("sftp".equalsIgnoreCase(key)) {
+                    this.port = "22";
+                } else if ("telnet".equalsIgnoreCase(key)) {
+                    this.port = "23";
+                } else if ("ssh".equalsIgnoreCase(key)) {
+                    this.port = "22";
+                } else {
+                    this.port = "";
+                }
+            }
+
+            this.username = loginExpr.substring(0, index);
+        }
+
+        if (!StringUtils.isInt(this.port)) {
+            throw new ExpressionException("expression.stdout.message041", this.command, this.port);
+        }
+
+        if (StringUtils.isBlank(this.host)) {
+            throw new ExpressionException("expression.stdout.message042", this.command);
+        }
+
+        if (StringUtils.isBlank(this.username)) {
+            throw new ExpressionException("expression.stdout.message043", this.command);
+        }
+    }
+
+    /**
+     * 返回服务器host
+     *
+     * @return 服务器host
+     */
+    public String getLoginHost() {
+        return this.host;
+    }
+
+    /**
+     * 返回登录服务器的端口
+     *
+     * @return 登陆端口
+     */
+    public String getLoginPort() {
+        return this.port;
+    }
+
+    /**
+     * 返回登录用户名
+     *
+     * @return 登陆用户名
+     */
+    public String getLoginUsername() {
+        return this.username;
+    }
+
+    /**
+     * 返回登录密码
+     *
+     * @return 登陆密码
+     */
+    public String getLoginPassword() {
+        return this.password;
+    }
+
+    /**
+     * 返回属性值
+     *
+     * @param name 属性名
+     * @return 属性值
+     */
+    public String getAttribute(String name) {
+        return this.attributes.get(name);
+    }
+}

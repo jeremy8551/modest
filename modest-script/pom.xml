@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.org.expect</groupId>
+        <artifactId>modest</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>modest-script</artifactId>
+    <description>脚本引擎</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-compress</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-increment</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-ioc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-email</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+        </dependency>
+
+        <!-- 脚本引擎变量方法 JSON  -->
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20231013</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- H2数据库 -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>pom</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 在构建过程中执行 Java 代码或外部命令 -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>process-classes</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>cn.org.expect.script.internal.ScriptReadme</mainClass>
+                    <arguments>
+                        <argument>${project.build.sourceDirectory}</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

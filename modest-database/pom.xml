@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.org.expect</groupId>
+        <artifactId>modest</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>modest-database</artifactId>
+    <description>数据库工具</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-jdk</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-compress</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-os</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-printer</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-ioc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ibm.db2.jcc</groupId>
+            <artifactId>db2jcc</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

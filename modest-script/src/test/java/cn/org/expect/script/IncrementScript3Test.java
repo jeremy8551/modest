@@ -1,0 +1,198 @@
+package cn.org.expect.script;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Date;
+
+import cn.org.expect.ProjectPom;
+import cn.org.expect.io.BufferedWriter;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.annotation.EasyBean;
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
+import cn.org.expect.test.ModestRunner;
+import cn.org.expect.test.annotation.EasyLog;
+import cn.org.expect.util.ArrayUtils;
+import cn.org.expect.util.CharsetUtils;
+import cn.org.expect.util.Dates;
+import cn.org.expect.util.FileUtils;
+import cn.org.expect.util.Settings;
+import cn.org.expect.zh.ChineseRandom;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+/**
+ * 测试使用数据文件所在目录做临时目录
+ */
+@EasyLog("sout+:info")
+@RunWith(ModestRunner.class)
+public class IncrementScript3Test {
+    private final static Log log = LogFactory.getLog(IncrementScript3Test.class);
+
+    @EasyBean
+    private EasyContext context;
+
+    public synchronized File[] getTempFiles(int rows) throws IOException {
+        File tempDir = FileUtils.getTempDir(this.getClass().getSimpleName());
+        FileUtils.deleteDirectory(tempDir);
+        FileUtils.createDirectory(tempDir);
+
+        File newfile = FileUtils.allocate(tempDir, "NEWFILE.txt");
+        FileUtils.createFile(newfile);
+
+        File oldfile = FileUtils.allocate(tempDir, "OLDFILE.txt");
+        FileUtils.createFile(oldfile);
+
+        File resultfile = FileUtils.allocate(tempDir, "RESULT.txt");
+        FileUtils.createFile(resultfile);
+
+        Date start = Dates.parse("1960-01-01");
+        Date end = new Date();
+        String coldel = ",";
+
+        // 写入旧文件
+        BufferedWriter oldOut = new BufferedWriter(oldfile, CharsetUtils.get());
+        try {
+            StringBuilder buf = new StringBuilder(500);
+            for (int i = 1; i <= rows; i++) {
+                buf.setLength(0);
+                buf.append("姓名").append(coldel);
+                buf.append("Line").append(i).append(coldel);
+                buf.append("身份证号").append(coldel);
+                buf.append("手机号").append(coldel);
+                buf.append(Dates.format19(start)).append(coldel);
+                buf.append(Dates.format19(end)).append(coldel);
+                for (int j = 1; j <= 20; j++) {
+                    buf.append("Column").append(j).append(coldel);
+                }
+                oldOut.writeLine(buf.toString());
+            }
+        } finally {
+            oldOut.close();
+        }
+
+        // 生成新文件
+        BufferedWriter result = new BufferedWriter(resultfile, CharsetUtils.get());
+        BufferedWriter newOut = new BufferedWriter(newfile, CharsetUtils.get());
+        try {
+            ChineseRandom cr = new ChineseRandom();
+            StringBuilder buf = new StringBuilder(500);
+
+            // 写入不变数据与变化数据，已删除数据
+            for (int i = 1; i <= rows; i++) {
+                boolean m = false;
+
+                buf.setLength(0);
+                buf.append("姓名").append(coldel);
+                buf.append("Line").append(i).append(coldel);
+                buf.append("身份证号").append(coldel);
+                buf.append("手机号").append(coldel);
+
+                if (i == 1000 || i == 2002 || i == 4003) {
+                    buf.append(coldel);
+                    m = true;
+                } else {
+                    buf.append(Dates.format19(start)).append(coldel);
+                }
+                buf.append(Dates.format19(end)).append(coldel);
+
+                for (int j = 1; j <= 20; j++) {
+                    buf.append("Column").append(j).append(coldel);
+                }
+
+                // 删除 2001 行与 4000 行内容
+                if (i == 2001 || i == 4000) {
+                    result.writeLine(buf.toString());
+                    continue;
+                }
+
+                // 写入变化记录
+                if (m) {
+                    result.writeLine(buf.toString());
+                }
+
+                newOut.writeLine(buf.toString());
+            }
+
+            // 写入一行新增数据
+            buf.setLength(0);
+            buf.append(cr.nextName()).append(coldel);
+            buf.append("M1").append(coldel);
+            buf.append(cr.nextIdCard()).append(coldel);
+            buf.append(cr.nextMobile()).append(coldel);
+            buf.append(Dates.format19(cr.nextBirthday(start, end))).append(coldel);
+            buf.append(Dates.format19(cr.nextBirthday(start, end))).append(coldel);
+            for (int j = 1; j <= 20; j++) {
+                buf.append("Column").append(j).append(coldel);
+            }
+            newOut.writeLine(buf.toString());
+            result.writeLine(buf.toString());
+        } finally {
+            newOut.close();
+            result.close();
+        }
+
+        return new File[]{oldfile, newfile, resultfile};
+    }
+
+    @Test
+    public void test() throws IOException {
+        File[] files = this.getTempFiles(100000);
+        File oldfile = files[0];
+        File newfile = files[1];
+        File resultfile = files[2];
+        File logfile = new File(newfile.getParentFile(), FileUtils.changeFilenameExt(newfile.getName(), "log"));
+        File incfile = new File(newfile.getParentFile(), "INC_" + newfile.getName());
+        log.info(FileUtils.readline(newfile, CharsetUtils.get(), 1));
+
+        File dir = FileUtils.createDirectory(Settings.getUserHome(), "." + ProjectPom.getArtifactID(), "inc");
+        FileUtils.assertClearDirectory(dir);
+
+        // 当前目录
+        log.info("新文件: " + newfile);
+        log.info("旧文件: " + oldfile);
+        log.info("增量文件: " + incfile.getAbsolutePath());
+        log.info("日志文件: " + logfile.getAbsolutePath());
+        log.info("正确文件: " + resultfile.getAbsolutePath());
+
+        UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
+        UniversalScriptEngine engine = manager.getScriptEngine();
+        try {
+            // 设置命令中使用的文件路径与索引字段位置信息
+            engine.evaluate("set newfile='" + newfile.getAbsolutePath() + "'");
+            engine.evaluate("set oldfile='" + oldfile.getAbsolutePath() + "'");
+            engine.evaluate("set incfile='" + incfile.getAbsolutePath() + "'");
+            engine.evaluate("set index='2'");
+            engine.evaluate("set compare=");
+
+            // 增量剥离命令
+            String cmd = "";
+            cmd += "extract increment compare ";
+            cmd += " $newfile of txt modified by index=$index temp=/dev/null";
+            cmd += " and";
+            cmd += " $oldfile of txt modified by index=$index temp=/dev/null";
+            cmd += " write new and upd and del into $incfile ";
+            cmd += " write log into " + logfile.getAbsolutePath();
+            engine.evaluate(cmd);
+        } finally {
+            engine.evaluate("exit 0");
+        }
+
+        Assert.assertTrue(dir.exists());
+        Assert.assertTrue(ArrayUtils.isEmpty(dir.listFiles()));
+
+        File parent = newfile.getParentFile();
+        Assert.assertEquals(5, FileUtils.array(parent.listFiles()).length);
+
+        // 判断剥离增量结果文件与正确文件是否相等
+        long n = FileUtils.equalsIgnoreLineSeparator(incfile, CharsetUtils.get(), resultfile, CharsetUtils.get(), 0);
+        if (n != 0) {
+            String msg = "第 " + n + " 行不同!" + Settings.LINE_SEPARATOR;
+            msg += FileUtils.readline(incfile, CharsetUtils.get(), n) + Settings.LINE_SEPARATOR; // 读取文件中的指定行内容
+            msg += FileUtils.readline(resultfile, CharsetUtils.get(), n); // 读取文件中的指定行内容
+            log.error(msg);
+            Assert.fail();
+        }
+    }
+}

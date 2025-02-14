@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.org.expect</groupId>
+        <artifactId>modest</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>modest-script-engine</artifactId>
+    <description>实现 JSR-223 脚本引擎标准接口</description>
+
+    <properties>
+        <maven.compiler.source>6</maven.compiler.source>
+        <maven.compiler.target>6</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-script</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-ioc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

@@ -1,0 +1,37 @@
+<!-- Logback configuration. See http://logback.qos.ch/manual/index.html -->
+<configuration scan="true" scanPeriod="10 seconds">
+    <!-- <turboFilter class="cn.org.expect.log.slf4j.Slf4jFQCNFilter"/> -->
+
+    <!-- 日志样式 -->
+    <property name="PATTERN" value="%d{HH:mm:ss.SSS}|%thread|%-5level|%c|%C|%F:%L|%msg%n"/>
+
+    <!-- 标准输出 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 日志文件 -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${java.io.tmpdir}cn/org/expect/slf4j/test.log</file>
+
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>info</level>
+        </filter>
+
+        <!-- Safely log to the same file from multiple JVMs. Degrades performance! -->
+        <prudent>true</prudent>
+    </appender>
+
+    <!-- Enable FILE and STDOUT appenders for all log messages. By default, only log at level INFO and above. -->
+    <root level="info">
+<!--        <appender-ref ref="STDOUT"/>-->
+        <appender-ref ref="FILE"/>
+    </root>
+</configuration>

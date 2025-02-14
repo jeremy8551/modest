@@ -1,0 +1,24 @@
+# EditorConfig is awesome: https://editorconfig.org
+# https://github.com/editorconfig/editorconfig
+
+# 确定 .editorconfig 文件是否为项目根目录配置。设置为 true 时，停止在父目录查找 .editorconfig 文件。
+root = true
+
+# Unix-style newlines with a newline ending every file
+[*]
+end_of_line = lf # 设置行间分隔符
+indent_style = space # 设置缩进风格 space 或 tab
+
+# Matches multiple files with brace expansion notation
+# Set default charset
+[*.{js,py,java}]
+charset = UTF-8
+
+[*.java]
+indent_size = 4 # 设置每个缩进级别使用的空格数
+tab_width = 4 # 如果 indent_style 为 tab，则指定制表符宽度
+insert_final_newline = true # 文件末尾插入一个新的空行
+ij_java_class_count_to_use_import_on_demand = 99 # 避免 import *
+# ij_java_blank_lines_between_import_groups = true # import 语句按包名分组
+trim_trailing_whitespace = true # 删除行尾多余的空格
+max_line_length = 9999 # 限制每行的最大字符数
