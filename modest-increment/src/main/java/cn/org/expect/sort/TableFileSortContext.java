@@ -87,7 +87,7 @@ public class TableFileSortContext {
         this.mergeLineNumber = 0;
         this.readLineNumber = 0;
         this.keepSource = false;
-        this.readerBuffer = IO.FILE_BYTES_BUFFER_SIZE;
+        this.readerBuffer = IO.getCharArrayLength();
         this.removeRightField = false;
     }
 

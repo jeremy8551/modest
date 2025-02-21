@@ -1,0 +1,244 @@
+spring:
+  application:
+    name: modest-ssm-demo
+  devtools:
+    restart:
+      enabled: true
+      additional-paths:
+        - src/main/java
+        - resources
+        - target/classes
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:modest-ssm-db;DB_CLOSE_DELAY=-1;INIT=runscript from '~/.modest/modest-ssm/build.sql'
+    username: root
+    password: 222222
+    druid:
+      # 初始化连接数量
+      initial-size: 5
+      # 最小线连接数量
+      min-idle: 5
+      # 最大连接数量
+      max-active: 20
+      # 获取连接时最大等待时间，单位毫秒
+      max-wait: 60000
+      # 销毁线程时检测当前连接的最后活动时间和当前时间差大于该值时，关闭当前连接
+      min-evictable-idle-time-millis: 30000
+      # 用来检测连接是否有效的sql 必须是一个查询语句
+      # mysql中为 select 'x'
+      # oracle中为 select 1 from dual
+      validation-query: select 'x'
+      # 申请连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为true
+      test-on-borrow: false
+      # 归还连接时会执行validationQuery检测连接是否有效,开启会降低性能,默认为tru
+      test-on-return: false
+      # 配置监控统计拦截的 filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+      # 配置监拉统计挡成的 filters. stat: 监控统计、Log4j:日志记录、waLL: 防御sqL注入
+      filters: stat,wall,log4j2
+      # 配置后台监控
+      stat-view-servlet:
+        # 允许访问的地址，这里因为时本地所以配置当前机器
+        allow: 127.0.0.1
+        # 是否开启访问
+        enabled: true
+        # 是否能够重置数据
+        reset-enable: false
+        # 管理页面登陆的用户名
+        login-username: admin
+        # 管理页面登陆的密码
+        login-password: admin
+
+# https://baomidou.com/reference/
+mybatis-plus:
+  # 指定 MyBatis 配置文件的位置。如果有单独的 MyBatis 配置文件，应将其路径配置到 configLocation
+  # config-location: classpath:/mybatis-config.xml
+
+  # 指定 MyBatis Mapper 对应的 XML 文件位置。如果在 Mapper 中有自定义方法，需要配置此项
+  # mapper-locations: classpath:/mapper/**.xml
+
+  # 指定 MyBatis 别名包扫描路径，用于给包中的类注册别名。注册后，在 Mapper 对应的 XML 文件中可以直接使用类名，无需使用全限定类名
+  # type-aliases-package: com.your.domain
+
+  # 与 typeAliasesPackage 一起使用，仅扫描指定父类的子类
+  # type-aliases-super-type: com.your.domain.BaseEntity
+
+  # 指定 TypeHandler 扫描路径，用于注册自定义类型转换器
+  # type-handlers-package: com.your.typehandlers
+
+  # 指定启动时是否检查 MyBatis XML 文件的存在，默认不检查
+  # check-config-location: true
+
+  # 指定 MyBatis 的执行器类型，包括 SIMPLE、REUSE 和 BATCH
+  # executor-type: reuse
+
+  # 指定外部化 MyBatis Properties 配置，用于抽离配置，实现不同环境的配置部署
+  # configuration-properties: classpath:/mybatis-properties.properties
+
+  configuration: #  原生 MyBatis 所支持的配置
+    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+    # 开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN（下划线命名） 到经典 Java 属性名 aColumn（驼峰命名） 的类似映射
+    # 用于生成最终的 SQL 的 select body。如果您的数据库命名符合规则，无需使用 @TableField 注解指定数据库字段名
+    map-underscore-to-camel-case: true
+
+    # 默认枚举处理类，如果配置了该属性，枚举将统一使用指定处理器进行处理
+    # default-enum-type-handler: org.apache.ibatis.type.EnumOrdinalTypeHandler
+
+    # 当设置为 true 时，懒加载的对象可能被任何懒属性全部加载，否则，每个属性都按需加载。需要和 lazyLoadingEnabled 一起使用
+    # aggressive-lazy-loading: false
+
+    # MyBatis 自动映射策略，通过该配置可指定 MyBatis 是否并且如何来自动映射数据表字段与对象的属性
+    # AutoMappingBehavior.NONE：不启用自动映射
+    # AutoMappingBehavior.PARTIAL：只对非嵌套的 resultMap 进行自动映射
+    # AutoMappingBehavior.FULL：对所有的 resultMap 都进行自动映射
+    # auto-mapping-behavior: full
+
+    # MyBatis 自动映射时未知列或未知属性处理策略，通过该配置可指定 MyBatis 在自动映射过程中遇到未知列或者未知属性时如何处理
+    # AutoMappingUnknownColumnBehavior.NONE：不做任何处理 (默认值)
+    # AutoMappingUnknownColumnBehavior.WARNING：以日志的形式打印相关警告信息
+    # AutoMappingUnknownColumnBehavior.FAILING：当作映射失败处理，并抛出异常和详细信息
+    # auto-mapping-unknown-column-behavior: warning
+
+    # Mybatis 一级缓存，默认为 SESSION
+    #   SESSION：Session 级别缓存，同一个 Session 相同查询语句不会再次查询数据库
+    #   STATEMENT：关闭一级缓存
+    # local-cache-scope: statement
+
+    # 是否开启 MyBatis 二级缓存
+    # cache-enabled: false
+
+    # 指定当结果集中值为 null 时是否调用映射对象的 Setter 方法（Map 对象时为 put 方法）。通常用于有 Map.keySet() 依赖或 null 值初始化的情况
+    # call-setters-on-nulls: true
+
+    # 指定一个提供 Configuration 实例的工厂类
+    # 该工厂生产的实例将用来加载已被反序列化对象的懒加载属性值。工厂类必须包含一个签名方法 static Configuration getConfiguration()
+    # configuration-factory: com.your.config.MyConfigurationFactory
+  global-config:
+    # 控制是否在控制台打印 MyBatis-Plus 的 LOGO
+    banner: false
+
+    # SQL 注入器，用于注入 MyBatis-Plus 提供的通用方法。Starter 下支持@Bean注入
+    # @Bean
+    # public MybatisPlusInterceptor mybatisPlusInterceptor() {
+    #    MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+    #    interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
+    #    return interceptor;
+    # }
+    #
+    # sql-injector: com.baomidou.mybatisplus.core.injector.DefaultSqlInjector
+
+    # 通用Mapper父类(影响sqlInjector，只有这个的子类的 mapper 才会注入 sqlInjector 内的 method)
+    # super-mapper-class: com.baomidou.mybatisplus.core.mapper.Mapper
+
+    # 元对象字段填充控制器，用于自动填充实体类的字段。Starter 下支持@Bean注入
+    # @Bean
+    # public MetaObjectHandler metaObjectHandler() {
+    #    return new MyMetaObjectHandler();
+    # }
+    #
+    # meta-object-handler: com.example.MyMetaObjectHandler
+
+    # Id 生成器，用于生成实体类的唯一标识。Starter 下支持@Bean注入
+    # @Bean
+    # public IdentifierGenerator identifierGenerator() {
+    #    return new CustomIdentifierGenerator();
+    # }
+    #
+    # identifier-generator: com.baomidou.mybatisplus.core.incrementer.DefaultIdentifierGenerator
+
+    # MyBatis-Plus 全局策略中的 DB 策略配置
+    db-config:
+      # 指定数据库的 Schema 名称，通常不用设置
+      # schema: my_schema
+
+      # 用于在生成 SQL 时对字段名进行格式化，例如添加前缀或后缀，对主键无效，例: %s
+      # column-format: %s_field
+
+      # 在生成 SQL 时对表名进行格式化，例: %s
+      # table-format: tbl_%s
+
+      # 用于在 Entity 的字段映射到数据库字段时进行格式化，只有在 column as property 这种情况下生效，对主键无效，例: %s
+      # property-format: %s_prop
+
+      # 控制表名是否使用驼峰转下划线命名
+      table-underline: true
+
+      # 控制表名和字段名是否使用大写命名
+      capital-mode: true
+
+      # 自定义表主键生成器。Starter 下支持@Bean注入
+      # @Bean
+      # public IKeyGenerator keyGenerator() {
+      #    return new CustomKeyGenerator();
+      # }
+      #
+      # key-generator: com.example.CustomKeyGenerator
+
+      # 全局默认主键类型
+      # IdType.AUTO：使用数据库自增 ID 作为主键
+      # IdType.NONE：无特定生成策略，如果全局配置中有 IdType 相关的配置，则会跟随全局配置
+      # IdType.INPUT：在插入数据前，由用户自行设置主键值。
+      # IdType.ASSIGN_ID：自动分配 ID，适用于 Long、Integer、String 类型的主键。默认使用雪花算法通过 IdentifierGenerator 的 nextId 实现。 @since 3.3.0
+      # IdType.ASSIGN_UUID：自动分配 UUID，适用于 String 类型的主键。默认实现为 IdentifierGenerator 的 nextUUID 方法。 @since 3.3.0
+      id-type: ASSIGN_ID
+
+      # 表名前缀
+      # table-prefix: tbl_
+
+      # 控制是否初始化 SqlRunner（com.baomidou.mybatisplus.extension.toolkit.SqlRunner）
+      # enable-sql-runner: true
+
+      # 全局的 Entity 逻辑删除字段属性名，仅在逻辑删除功能打开时有效
+      # logic-delete-field: deleted
+
+      # 逻辑已删除值，仅在逻辑删除功能打开时有效。
+      # logic-delete-value: true
+
+      # 逻辑未删除值，仅在逻辑删除功能打开时有效。
+      # logic-not-delete-value: false
+
+      # 控制字段在 Insert 时的字段验证策略。
+      # FieldStrategy.DEFAULT：遵循全局配置的策略。如果全局配置未指定，默认行为是仅在字段值不为 NULL 时插入该字段
+      # FieldStrategy.ALWAYS：总是插入该字段，无论字段值是否为 NULL
+      # FieldStrategy.NOT_NULL：仅在字段值不为 NULL 时插入该字段
+      # FieldStrategy.NOT_EMPTY：仅在字段值不为空（对于字符串类型）或不为 NULL（对于其他类型）时插入该字段
+      # FieldStrategy.NEVER：从不插入该字段，即使字段值不为 NULL
+      # FieldStrategy.IGNORED： 忽略判断，效果等同于”ALWAYS” @Deprecated
+      #
+      # insert-strategy: NEVER
+
+      # 控制字段在 Update 时的字段验证策略
+      # update-strategy: IGNORED
+
+      # 控制字段在 Update 时的字段验证策略。既 Wrapper 根据内部 Entity 生成的 Where 条件
+      # where-strategy: ALWAYS
+
+# swagger3 配置
+springdoc:
+  swagger-ui:
+    # 使用 http://127.0.0.1:8080/swagger 访问页面
+    path: /swagger
+
+# JDBC接口代理工具
+decorator:
+  datasource:
+    p6spy:
+      # 日志格式
+      log-format: "\ntime: %(executionTime) || sql:%(sql)\n"
+      # 自定义日志类
+      # logging: custom
+      # custom-appender-class: icu.etl.config.MybatisPlusStdLogger
+
+# 脚本引擎
+modest:
+  log:
+    print-sql: true
+    print-trace: false
+    level: slf4j
+    packages:
+      - icu.etl.ioc:info
+      - icu.etl.log:info
+  charset: utf-8
+  io:
+    byte-array-length: 1024 * 1024 * 1
+    char-array-length: 1024 * 1024 * 1

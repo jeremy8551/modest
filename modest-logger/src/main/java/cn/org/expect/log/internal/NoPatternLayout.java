@@ -23,15 +23,15 @@ public class NoPatternLayout implements Layout {
         if (e == null) {
             StringBuilder buf = new StringBuilder(msg.length() + 2);
             buf.append(msg);
-            buf.append(Settings.LINE_SEPARATOR);
+            buf.append(Settings.getLineSeparator());
             return buf.toString();
         } else {
             String error = StringUtils.toString(e);
             StringBuilder buf = new StringBuilder(msg.length() + error.length() + 4);
             buf.append(msg);
-            buf.append(Settings.LINE_SEPARATOR);
+            buf.append(Settings.getLineSeparator());
             buf.append(error);
-            buf.append(Settings.LINE_SEPARATOR);
+            buf.append(Settings.getLineSeparator());
             return buf.toString();
         }
     }

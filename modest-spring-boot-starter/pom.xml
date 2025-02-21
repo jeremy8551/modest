@@ -15,7 +15,7 @@
     <properties>
         <maven.compiler.source>6</maven.compiler.source>
         <maven.compiler.target>6</maven.compiler.target>
-        <modest.springboot.version>1.5.10.RELEASE</modest.springboot.version>
+        <modest.springboot.version>2.7.18</modest.springboot.version>
     </properties>
 
     <dependencyManagement>
@@ -75,6 +75,25 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <toolchains>
+                        <jdk>
+                            <version>6</version>
+                        </jdk>
+                    </toolchains>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-maven-plugin</artifactId>

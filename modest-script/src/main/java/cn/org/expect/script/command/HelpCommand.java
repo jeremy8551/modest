@@ -103,7 +103,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
             , UniversalScriptVariable.VARNAME_CHARSET // 6
             , CharsetUtils.get() // 7
             , UniversalScriptVariable.SESSION_VARNAME_LINESEPARATOR // 8
-            , StringUtils.escapeLineSeparator(Settings.LINE_SEPARATOR) // 9
+            , StringUtils.escapeLineSeparator(Settings.getLineSeparator()) // 9
             , UniversalScriptVariable.VARNAME_EXCEPTION // 10
             , UniversalScriptVariable.VARNAME_ERRORSCRIPT // 11
             , UniversalScriptVariable.VARNAME_ERRORCODE // 12
@@ -168,21 +168,21 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
             , LogFactory.PROPERTY_LOGGER // 71
             , LogFactory.PROPERTY_LOG_SOUT // 72
             , CharsetUtils.PROPERTY_CHARSET // 73
-            , "" // 74
+            , IO.PROPERTY_BYTE_ARRAY_LENGTH // 74
             , ResourcesUtils.PROPERTY_RESOURCE // 75
-            , IO.PROPERTY_READ_BUFFER // 76
+            , IO.PROPERTY_CHAR_ARRAY_LENGTH // 76
             , FileUtils.PROPERTY_TEMP_DIR // 77
             , StackTraceUtils.PROPERTY_LOG_STACKTRACE // 78
             , Jdbc.PROPERTY_DATABASE_LOG // 79
             , Linuxs.PROPERTY_LINUX_BUILTIN_ACCT // 80
             , LogFactory.SOUT_PLUS_PATTERN // 81
-            , "" // 82
-            , "" // 83
-            , "" // 84
+            , ResourcesUtils.PROPERTY_RESOURCE_NAME // 82
+            , ResourcesUtils.PROPERTY_RESOURCE_LOCALE // 83
+            , ResourceMessageInternalBundle.RESOURCE_NAME // 84
             , "" // 85
             , "" // 86
             , "" // 87
-            , ResourceMessageInternalBundle.RESOURCE_NAME // 88
+            , "" // 88
             , ResourcesUtils.class.getPackage().getName() // 89
             , UniversalScriptEngineFactory.class.getName() // 90
             , UniversalScriptEngine.class.getName() // 91
@@ -263,9 +263,9 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
             String line;
             while ((line = in.readLine()) != null) {
                 if (line.startsWith("#")) {
-                    buf.append(prefix).append(line).append(Settings.LINE_SEPARATOR);
+                    buf.append(prefix).append(line).append(Settings.getLineSeparator());
                 } else {
-                    buf.append(line).append(Settings.LINE_SEPARATOR);
+                    buf.append(line).append(Settings.getLineSeparator());
                 }
             }
 

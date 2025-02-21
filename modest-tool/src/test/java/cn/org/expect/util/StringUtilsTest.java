@@ -1557,7 +1557,7 @@ public class StringUtilsTest {
 
     @Test
     public void testGetJvmLineSeparator() {
-        Assert.assertTrue(StringUtils.inArray(Settings.LINE_SEPARATOR, "\r", "\n", "\r\n"));
+        Assert.assertTrue(StringUtils.inArray(Settings.getLineSeparator(), "\r", "\n", "\r\n"));
     }
 
     @Test
@@ -1594,9 +1594,9 @@ public class StringUtilsTest {
     public void joinLineSeparator() {
         Assert.assertEquals("", StringUtils.joinLineSeparator());
         Assert.assertEquals("1", StringUtils.joinLineSeparator("1"));
-        Assert.assertEquals("1" + Settings.LINE_SEPARATOR + "2", StringUtils.joinLineSeparator("1", "2"));
-        Assert.assertEquals("1" + Settings.LINE_SEPARATOR + "2" + Settings.LINE_SEPARATOR + "3", StringUtils.joinLineSeparator("1", "2", "3"));
-        Assert.assertEquals(Settings.LINE_SEPARATOR + "1" + Settings.LINE_SEPARATOR + "2" + Settings.LINE_SEPARATOR + "3", StringUtils.joinLineSeparator(Settings.LINE_SEPARATOR + "1" + Settings.LINE_SEPARATOR, Settings.LINE_SEPARATOR + "2" + Settings.LINE_SEPARATOR, Settings.LINE_SEPARATOR + "3"));
+        Assert.assertEquals("1" + Settings.getLineSeparator() + "2", StringUtils.joinLineSeparator("1", "2"));
+        Assert.assertEquals("1" + Settings.getLineSeparator() + "2" + Settings.getLineSeparator() + "3", StringUtils.joinLineSeparator("1", "2", "3"));
+        Assert.assertEquals(Settings.getLineSeparator() + "1" + Settings.getLineSeparator() + "2" + Settings.getLineSeparator() + "3", StringUtils.joinLineSeparator(Settings.getLineSeparator() + "1" + Settings.getLineSeparator(), Settings.getLineSeparator() + "2" + Settings.getLineSeparator(), Settings.getLineSeparator() + "3"));
     }
 
     @Test
@@ -1950,7 +1950,7 @@ public class StringUtilsTest {
 
     @Test
     public void testGetLongestString() {
-        Assert.assertEquals(4, StringUtils.maxlength("123", "1234", "1"));
+        Assert.assertEquals(4, StringUtils.maxLength("123", "1234", "1"));
     }
 
     @Test

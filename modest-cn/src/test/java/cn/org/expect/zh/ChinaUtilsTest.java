@@ -186,7 +186,7 @@ public class ChinaUtilsTest {
                 if (letter) {
                     String line = "汉字字符: " + Long.toHexString(i) + " " + i + " " + c + " " + letter;
                     out.write(line);
-                    out.write(Settings.LINE_SEPARATOR);
+                    out.write(Settings.getLineSeparator());
                 }
             }
             out.flush();

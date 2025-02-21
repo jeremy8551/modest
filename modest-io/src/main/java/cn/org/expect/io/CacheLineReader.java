@@ -341,7 +341,7 @@ public class CacheLineReader extends Reader implements TextFileReader {
                 return this.lineReader.getLineSeparator();
             }
 
-            return Settings.LINE_SEPARATOR;
+            return Settings.getLineSeparator();
         }
 
         /**

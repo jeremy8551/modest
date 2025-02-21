@@ -1,6 +1,8 @@
 package cn.org.expect.util;
 
 import java.io.File;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import cn.org.expect.Modest;
 
@@ -13,7 +15,34 @@ import cn.org.expect.Modest;
 public class Settings {
 
     /** 文件系统的换行符 */
-    public final static String LINE_SEPARATOR = System.getProperty("line.separator");
+    protected final static String LINE_SEPARATOR = System.getProperty("line.separator");
+
+    /** 属性集合 */
+    protected final static Map<String, String> map = new ConcurrentHashMap<String, String>();
+
+    /**
+     * 返回属性
+     *
+     * @param key 属性名
+     * @return 属性值
+     */
+    public static String getProperty(String key) {
+        String value = System.getProperty(key);
+        if (value == null) {
+            value = map.get(key);
+        }
+        return value == null ? "" : value;
+    }
+
+    /**
+     * 设置属性
+     *
+     * @param key   属性名
+     * @param value 属性值
+     */
+    public static void setProperty(String key, Object value) {
+        map.put(key, String.valueOf(value));
+    }
 
     /**
      * 返回当前项目名
@@ -203,7 +232,7 @@ public class Settings {
      *
      * @return 属性值
      */
-    public static String getLang() {
+    public static String getUserLocale() {
         StringBuilder buf = new StringBuilder(10);
         buf.append(System.getProperty("user.language")); // zh
         String country = System.getProperty("user.country"); // CN
@@ -226,6 +255,15 @@ public class Settings {
     }
 
     /**
+     * 返回行分隔符
+     *
+     * @return 行分隔符
+     */
+    public static String getLineSeparator() {
+        return LINE_SEPARATOR;
+    }
+
+    /**
      * 返回 JDK 的大版本号
      *
      * @return 大版本号 <br>
@@ -235,16 +273,16 @@ public class Settings {
      * JDK21 返回 21 <br>
      */
     public static int getJDKVersion() {
-        String value = System.getProperty("java.version");
-        if (value == null) {
+        String version = System.getProperty("java.version");
+        if (version == null) {
             throw new NullPointerException("java.version");
         }
 
-        String[] version = value.split("\\.");
-        if (version.length < 3) {
-            throw new UnsupportedOperationException(value);
+        String[] array = version.split("\\.");
+        if (array.length < 3) {
+            throw new UnsupportedOperationException(version);
         }
 
-        return version[0].equals("1") ? Integer.parseInt(version[1]) : Integer.parseInt(version[0]);
+        return array[0].equals("1") ? Integer.parseInt(array[1]) : Integer.parseInt(array[0]);
     }
 }

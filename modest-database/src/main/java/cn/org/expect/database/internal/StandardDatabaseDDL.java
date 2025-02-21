@@ -27,6 +27,6 @@ public class StandardDatabaseDDL extends ArrayList<String> implements DatabaseDD
     }
 
     public String toString() {
-        return StringUtils.join(this, String.valueOf(Settings.LINE_SEPARATOR));
+        return StringUtils.join(this, String.valueOf(Settings.getLineSeparator()));
     }
 }

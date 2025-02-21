@@ -25,7 +25,7 @@ public class LogSettings {
      * @return 日志格式
      */
     public static String getPattern() {
-        String pattern = System.getProperty(LogFactory.PROPERTY_LOG_SOUT);
+        String pattern = Settings.getProperty(LogFactory.PROPERTY_LOG_SOUT);
         if (StringUtils.isBlank(pattern)) {
             pattern = LogFactory.SOUT_PLUS_PATTERN;
         }

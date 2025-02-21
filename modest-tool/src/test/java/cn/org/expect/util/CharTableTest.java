@@ -7,13 +7,13 @@ public class CharTableTest {
 
     private static String getString() {
         String str = "";
-        str += "----------------------------------" + Settings.LINE_SEPARATOR;
-        str += "列      b                         " + Settings.LINE_SEPARATOR;
-        str += "------  --------------------------" + Settings.LINE_SEPARATOR;
-        str += "第一列  测试换行列                " + Settings.LINE_SEPARATOR;
-        str += "        你好啊俄式一下水电费水电费" + Settings.LINE_SEPARATOR;
-        str += "        世界                      " + Settings.LINE_SEPARATOR;
-        str += "3       4                         " + Settings.LINE_SEPARATOR;
+        str += "----------------------------------" + Settings.getLineSeparator();
+        str += "列      b                         " + Settings.getLineSeparator();
+        str += "------  --------------------------" + Settings.getLineSeparator();
+        str += "第一列  测试换行列                " + Settings.getLineSeparator();
+        str += "        你好啊俄式一下水电费水电费" + Settings.getLineSeparator();
+        str += "        世界                      " + Settings.getLineSeparator();
+        str += "3       4                         " + Settings.getLineSeparator();
         str += "----------------------------------";
         return str;
     }
@@ -26,13 +26,13 @@ public class CharTableTest {
         ct.toString(CharTable.Style.STANDARD);
 
         String str = "";
-        str += Settings.LINE_SEPARATOR;
-        str += "-" + Settings.LINE_SEPARATOR;
-        str += "a" + Settings.LINE_SEPARATOR;
-        str += "-" + Settings.LINE_SEPARATOR;
-        str += "1" + Settings.LINE_SEPARATOR;
-        str += "2" + Settings.LINE_SEPARATOR;
-        str += "3" + Settings.LINE_SEPARATOR;
+        str += Settings.getLineSeparator();
+        str += "-" + Settings.getLineSeparator();
+        str += "a" + Settings.getLineSeparator();
+        str += "-" + Settings.getLineSeparator();
+        str += "1" + Settings.getLineSeparator();
+        str += "2" + Settings.getLineSeparator();
+        str += "3" + Settings.getLineSeparator();
         str += "-";
         Assert.assertEquals(StringUtils.trimBlank(str), StringUtils.trimBlank(ct.toString()));
     }
@@ -46,11 +46,11 @@ public class CharTableTest {
         ct.toString(CharTable.Style.STANDARD);
 
         String r = "";
-        r += "----" + Settings.LINE_SEPARATOR;
-        r += "a  b" + Settings.LINE_SEPARATOR;
-        r += "-  -" + Settings.LINE_SEPARATOR;
-        r += "1  2" + Settings.LINE_SEPARATOR;
-        r += "3  4" + Settings.LINE_SEPARATOR;
+        r += "----" + Settings.getLineSeparator();
+        r += "a  b" + Settings.getLineSeparator();
+        r += "-  -" + Settings.getLineSeparator();
+        r += "1  2" + Settings.getLineSeparator();
+        r += "3  4" + Settings.getLineSeparator();
         r += "----";
         Assert.assertEquals(StringUtils.trimBlank(r), StringUtils.trimBlank(ct.toString()));
     }
@@ -64,11 +64,11 @@ public class CharTableTest {
         ct.toString(CharTable.Style.STANDARD);
 
         String r = "";
-        r += "-----" + Settings.LINE_SEPARATOR;
-        r += "列  b" + Settings.LINE_SEPARATOR;
-        r += "--  -" + Settings.LINE_SEPARATOR;
-        r += "1   2" + Settings.LINE_SEPARATOR;
-        r += "3   4" + Settings.LINE_SEPARATOR;
+        r += "-----" + Settings.getLineSeparator();
+        r += "列  b" + Settings.getLineSeparator();
+        r += "--  -" + Settings.getLineSeparator();
+        r += "1   2" + Settings.getLineSeparator();
+        r += "3   4" + Settings.getLineSeparator();
         r += "-----";
         Assert.assertEquals(StringUtils.trimBlank(r), StringUtils.trimBlank(ct.toString()));
     }
@@ -82,11 +82,11 @@ public class CharTableTest {
         ct.toString(CharTable.Style.STANDARD);
 
         String r = "";
-        r += "-----" + Settings.LINE_SEPARATOR;
-        r += "列  b" + Settings.LINE_SEPARATOR;
-        r += "--  -" + Settings.LINE_SEPARATOR;
-        r += "1   2" + Settings.LINE_SEPARATOR;
-        r += "3   4" + Settings.LINE_SEPARATOR;
+        r += "-----" + Settings.getLineSeparator();
+        r += "列  b" + Settings.getLineSeparator();
+        r += "--  -" + Settings.getLineSeparator();
+        r += "1   2" + Settings.getLineSeparator();
+        r += "3   4" + Settings.getLineSeparator();
         r += "-----";
         Assert.assertEquals(StringUtils.trimBlank(r), StringUtils.trimBlank(ct.toString()));
     }
@@ -111,11 +111,11 @@ public class CharTableTest {
         ct.toString(CharTable.Style.DB2);
 
         String r = "";
-        r += "列      b                         " + Settings.LINE_SEPARATOR;
-        r += "------  --------------------------" + Settings.LINE_SEPARATOR;
-        r += "第一列  测试换行列                " + Settings.LINE_SEPARATOR;
-        r += "        你好啊俄式一下水电费水电费" + Settings.LINE_SEPARATOR;
-        r += "        世界                      " + Settings.LINE_SEPARATOR;
+        r += "列      b                         " + Settings.getLineSeparator();
+        r += "------  --------------------------" + Settings.getLineSeparator();
+        r += "第一列  测试换行列                " + Settings.getLineSeparator();
+        r += "        你好啊俄式一下水电费水电费" + Settings.getLineSeparator();
+        r += "        世界                      " + Settings.getLineSeparator();
         r += "3       4                         ";
 
         Assert.assertEquals(StringUtils.trimBlank(r), StringUtils.trimBlank(ct.toString()));
@@ -130,10 +130,10 @@ public class CharTableTest {
         ct.toString(CharTable.Style.SHELL);
 
         String r = "";
-        r += "列      b                         " + Settings.LINE_SEPARATOR;
-        r += "第一列  测试换行列                " + Settings.LINE_SEPARATOR;
-        r += "        你好啊俄式一下水电费水电费" + Settings.LINE_SEPARATOR;
-        r += "        世界                      " + Settings.LINE_SEPARATOR;
+        r += "列      b                         " + Settings.getLineSeparator();
+        r += "第一列  测试换行列                " + Settings.getLineSeparator();
+        r += "        你好啊俄式一下水电费水电费" + Settings.getLineSeparator();
+        r += "        世界                      " + Settings.getLineSeparator();
         r += "3       4                         ";
 
         Assert.assertEquals(StringUtils.trimBlank(r), StringUtils.trimBlank(ct.toString()));
@@ -148,11 +148,11 @@ public class CharTableTest {
         ct.toString(CharTable.Style.DB2);
 
         String r = "";
-        r += "列      b                         " + Settings.LINE_SEPARATOR;
-        r += "------  --------------------------" + Settings.LINE_SEPARATOR;
-        r += "第一列  测试换行列                " + Settings.LINE_SEPARATOR;
-        r += "        你好啊俄式一下水电费水电费" + Settings.LINE_SEPARATOR;
-        r += "        世界                      " + Settings.LINE_SEPARATOR;
+        r += "列      b                         " + Settings.getLineSeparator();
+        r += "------  --------------------------" + Settings.getLineSeparator();
+        r += "第一列  测试换行列                " + Settings.getLineSeparator();
+        r += "        你好啊俄式一下水电费水电费" + Settings.getLineSeparator();
+        r += "        世界                      " + Settings.getLineSeparator();
         r += "3       4";
 
         Assert.assertEquals(StringUtils.trimBlank(r), StringUtils.trimBlank(ct.toString()));
@@ -176,10 +176,10 @@ public class CharTableTest {
         ct.toString(CharTable.Style.MARKDOWN);
 
         String r = "";
-        r += "| 测试1- | 测试2        | 测试3 |" + Settings.LINE_SEPARATOR;
-        r += "| ------ | ------------ | ----- |" + Settings.LINE_SEPARATOR;
-        r += "| 1      | 测试<br>ksdf |       |" + Settings.LINE_SEPARATOR;
-        r += "| s      | \\|           | _     |" + Settings.LINE_SEPARATOR;
+        r += "| 测试1- | 测试2        | 测试3 |" + Settings.getLineSeparator();
+        r += "| ------ | ------------ | ----- |" + Settings.getLineSeparator();
+        r += "| 1      | 测试<br>ksdf |       |" + Settings.getLineSeparator();
+        r += "| s      | \\|           | _     |" + Settings.getLineSeparator();
         r += "| ----   |              |       |";
 
         Assert.assertEquals(StringUtils.trimBlank(r), StringUtils.trimBlank(ct.toString()));
@@ -203,13 +203,13 @@ public class CharTableTest {
         ct.toString(CharTable.Style.SIMPLE);
 
         String r = "";
-        r += "1       2      3    " + Settings.LINE_SEPARATOR;
-        r += "        3      4    " + Settings.LINE_SEPARATOR;
-        r += "        5           " + Settings.LINE_SEPARATOR;
-        r += "s       k      m    " + Settings.LINE_SEPARATOR;
-        r += "o       p      p    " + Settings.LINE_SEPARATOR;
-        r += "        q           " + Settings.LINE_SEPARATOR;
-        r += "        s           " + Settings.LINE_SEPARATOR;
+        r += "1       2      3    " + Settings.getLineSeparator();
+        r += "        3      4    " + Settings.getLineSeparator();
+        r += "        5           " + Settings.getLineSeparator();
+        r += "s       k      m    " + Settings.getLineSeparator();
+        r += "o       p      p    " + Settings.getLineSeparator();
+        r += "        q           " + Settings.getLineSeparator();
+        r += "        s           " + Settings.getLineSeparator();
         r += "        i           ";
 
         Assert.assertEquals(StringUtils.trimBlank(r), StringUtils.trimBlank(ct.toString()));

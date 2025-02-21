@@ -1,6 +1,5 @@
 package cn.org.expect.log.apd;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,6 @@ import cn.org.expect.log.internal.LogContextImpl;
 import cn.org.expect.log.internal.PatternConsoleAppender;
 import cn.org.expect.log.internal.PatternLogBuilder;
 import cn.org.expect.util.ArrayUtils;
-import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;

@@ -32,12 +32,12 @@ public class StacktraceCommand extends AbstractTraceCommand implements NohupComm
 
                 // 添加发生错误的脚本语句
                 if (this.printScript) {
-                    buf.append(exp.getScript()).append(Settings.LINE_SEPARATOR);
+                    buf.append(exp.getScript()).append(Settings.getLineSeparator());
                 }
 
                 // 添加行号
                 if (this.printLineNumber) {
-                    buf.append(exp.getLineNumber()).append(Settings.LINE_SEPARATOR);
+                    buf.append(exp.getLineNumber()).append(Settings.getLineSeparator());
                 }
 
                 // 格式化异常错误信息

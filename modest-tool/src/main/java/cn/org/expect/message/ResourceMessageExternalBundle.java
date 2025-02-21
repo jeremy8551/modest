@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 
 import cn.org.expect.util.Logs;
 import cn.org.expect.util.ResourcesUtils;
+import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 
 public class ResourceMessageExternalBundle extends ResourceMessageInternalBundle {
@@ -41,7 +42,7 @@ public class ResourceMessageExternalBundle extends ResourceMessageInternalBundle
      * @return 外部资源文件
      */
     public File getExternalFile() {
-        String filepath = System.getProperty(ResourcesUtils.PROPERTY_RESOURCE);
+        String filepath = Settings.getProperty(ResourcesUtils.PROPERTY_RESOURCE);
         if (StringUtils.isBlank(filepath)) {
             return null;
         }

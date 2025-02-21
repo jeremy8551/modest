@@ -49,7 +49,7 @@ public class TextTableFileTest {
         File testFile = this.getTestFile(file);
         file.setAbsolutePath(testFile.getAbsolutePath());
 
-        TextTableFileReader in = file.getReader(IO.FILE_BYTES_BUFFER_SIZE);
+        TextTableFileReader in = file.getReader(IO.getCharArrayLength());
         try {
             Assert.assertEquals(file.getCharsetName(), CharsetUtils.get());
             Assert.assertEquals(21, file.getColumn());
@@ -110,7 +110,7 @@ public class TextTableFileTest {
         tablefile.setCharsetName("UTF-8");
         tablefile.setDelimiter(",");
 
-        TextTableFileReader in = tablefile.getReader(IO.FILE_BYTES_BUFFER_SIZE);
+        TextTableFileReader in = tablefile.getReader(IO.getCharArrayLength());
         in.setListener(new CommonTextTableFileReaderListener());
         int i = 1;
         TextTableLine line;
@@ -161,7 +161,7 @@ public class TextTableFileTest {
         tablefile.setAbsolutePath(file.getAbsolutePath());
         tablefile.setCharsetName("UTF-8");
         tablefile.setDelimiter(",");
-        TextTableFileReader in = tablefile.getReader(IO.FILE_BYTES_BUFFER_SIZE);
+        TextTableFileReader in = tablefile.getReader(IO.getCharArrayLength());
         in.setListener(new CommonTextTableFileReaderListener() {
             public void processLineSeparator(TextTableFile file, TextTableLine line, long lineNumber) {
             }
@@ -277,7 +277,7 @@ public class TextTableFileTest {
         TableFileSorter sorter = new TableFileSorter(cxt);
         sorter.execute(context, file, "1 desc");
         int i = 50000;
-        TextTableFileReader in = file.getReader(IO.FILE_BYTES_BUFFER_SIZE);
+        TextTableFileReader in = file.getReader(IO.getCharArrayLength());
         TextTableLine line;
         while ((line = in.readLine()) != null) {
             if (i != Integer.parseInt(StringUtils.trimBlank(line.getColumn(1)))) {
@@ -324,17 +324,17 @@ public class TextTableFileTest {
             }
 
             if (++z <= count) {
-                chars += buf.length() + String.valueOf(Settings.LINE_SEPARATOR).length();
+                chars += buf.length() + String.valueOf(Settings.getLineSeparator()).length();
             }
 
-            if (out.writeLine(buf.toString(), String.valueOf(Settings.LINE_SEPARATOR))) {
+            if (out.writeLine(buf.toString(), String.valueOf(Settings.getLineSeparator()))) {
                 out.flush();
             }
         }
         out.close();
 
         // 向下读取数据文件判断行数是否相等
-        TextTableFileReader in = file.getReader(IO.FILE_BYTES_BUFFER_SIZE);
+        TextTableFileReader in = file.getReader(IO.getCharArrayLength());
         Assert.assertTrue("越过文件 " + f.getAbsolutePath() + " 失败! rows: " + count + ", chars: " + chars, in.skip(chars, count));
         try {
             int c = 0;
@@ -380,7 +380,7 @@ public class TextTableFileTest {
 
     protected void checkFile(TextTableFile file) throws NumberFormatException, IOException {
         int i = 0;
-        TextTableFileReader in = file.getReader(IO.FILE_BYTES_BUFFER_SIZE);
+        TextTableFileReader in = file.getReader(IO.getCharArrayLength());
         TextTableLine line;
         while ((line = in.readLine()) != null) {
             if (++i != Integer.parseInt(StringUtils.trimBlank(line.getColumn(1)))) {
@@ -410,7 +410,7 @@ public class TextTableFileTest {
                 buf.append(StringUtils.right(i + j, 8, ' '));
                 buf.append(file.getDelimiter());
             }
-            out.write(buf + String.valueOf(Settings.LINE_SEPARATOR));
+            out.write(buf + String.valueOf(Settings.getLineSeparator()));
 
             if (i % 20 == 0) {
                 out.flush();

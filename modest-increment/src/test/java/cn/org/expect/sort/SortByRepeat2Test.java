@@ -54,7 +54,7 @@ public class SortByRepeat2Test {
 
         log.info("复制文件 {} 中第 {} 行到第 {} 行", tmpfile.getAbsoluteFile(), line, next);
 
-        TextTableFileWriter out = txt.getWriter(false, IO.FILE_BYTES_BUFFER_SIZE);
+        TextTableFileWriter out = txt.getWriter(false, IO.getCharArrayLength());
         for (int i = 1; i <= 50000; i++) {
             // 在指定行写入重复行
             if (i == next) {

@@ -79,40 +79,40 @@ public class StandardPrinterTest {
 
         writer.reset();
         printer.println();
-        Assert.assertEquals(Settings.LINE_SEPARATOR, writer.toString());
+        Assert.assertEquals(Settings.getLineSeparator(), writer.toString());
 
         writer.reset();
         printer.println(true);
-        Assert.assertEquals("true" + Settings.LINE_SEPARATOR, writer.toString());
+        Assert.assertEquals("true" + Settings.getLineSeparator(), writer.toString());
 
         writer.reset();
         printer.println('0');
-        Assert.assertEquals("0" + Settings.LINE_SEPARATOR, writer.toString());
+        Assert.assertEquals("0" + Settings.getLineSeparator(), writer.toString());
 
         writer.reset();
         printer.println("456");
-        Assert.assertEquals("456" + Settings.LINE_SEPARATOR, writer.toString());
+        Assert.assertEquals("456" + Settings.getLineSeparator(), writer.toString());
 
         writer.reset();
         double d = 789.0123;
         printer.println(d);
-        Assert.assertEquals("789.0123" + Settings.LINE_SEPARATOR, writer.toString());
+        Assert.assertEquals("789.0123" + Settings.getLineSeparator(), writer.toString());
 
         writer.reset();
         printer.println((float) 456.789);
-        Assert.assertEquals("456.789" + Settings.LINE_SEPARATOR, writer.toString());
+        Assert.assertEquals("456.789" + Settings.getLineSeparator(), writer.toString());
 
         writer.reset();
         printer.println(0);
-        Assert.assertEquals("0" + Settings.LINE_SEPARATOR, writer.toString());
+        Assert.assertEquals("0" + Settings.getLineSeparator(), writer.toString());
 
         writer.reset();
         printer.println((long) 123456);
-        Assert.assertEquals("123456" + Settings.LINE_SEPARATOR, writer.toString());
+        Assert.assertEquals("123456" + Settings.getLineSeparator(), writer.toString());
 
         writer.reset();
         printer.println(new StringBuilder().append("7890"));
-        Assert.assertEquals("7890" + Settings.LINE_SEPARATOR, writer.toString());
+        Assert.assertEquals("7890" + Settings.getLineSeparator(), writer.toString());
 
         writer.reset();
         printer.println("test", new Exception("common exception"));
@@ -143,7 +143,7 @@ public class StandardPrinterTest {
 
         writer.reset();
         printer.println(1);
-        Assert.assertEquals("1" + Settings.LINE_SEPARATOR, writer.toString());
+        Assert.assertEquals("1" + Settings.getLineSeparator(), writer.toString());
 
         printer.close();
     }

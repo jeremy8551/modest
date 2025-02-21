@@ -65,7 +65,7 @@ public class LsCommand extends AbstractFileCommand implements UniversalScriptInp
             filepaths.add(filepath);
         }
 
-        StringBuilder buf = new StringBuilder("ls " + StringUtils.join(filepaths, " ")).append(Settings.LINE_SEPARATOR);
+        StringBuilder buf = new StringBuilder("ls " + StringUtils.join(filepaths, " ")).append(Settings.getLineSeparator());
 
         CharTable table = new CharTable();
         table.addTitle("filename");

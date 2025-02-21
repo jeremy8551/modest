@@ -5,6 +5,7 @@ import cn.org.expect.log.LogBuilder;
 import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogLevel;
+import cn.org.expect.util.Settings;
 
 /**
  * 默认的日志工厂
@@ -20,7 +21,7 @@ public class PatternLogBuilder implements LogBuilder {
      * @return 返回true表示支持使用控制台输出日志
      */
     public static boolean support() {
-        return System.getProperty(LogFactory.PROPERTY_LOG_SOUT) != null;
+        return Settings.getProperty(LogFactory.PROPERTY_LOG_SOUT) != null;
     }
 
     public PatternLogBuilder() {

@@ -54,7 +54,7 @@ public class StringUtils {
      * @param array 字符串数组
      * @return 长度
      */
-    public static int maxlength(String... array) {
+    public static int maxLength(String... array) {
         if (array == null || array.length == 0) {
             return 0;
         }
@@ -310,7 +310,7 @@ public class StringUtils {
      * @return 返回参数map
      */
     public static Map<String, String> trim(Map<String, String> map) {
-        if (map != null && map.size() > 0) {
+        if (map != null && !map.isEmpty()) {
             Set<String> keys = map.keySet();
             for (Iterator<String> it = keys.iterator(); it.hasNext(); ) {
                 String key = it.next();
@@ -1995,12 +1995,14 @@ public class StringUtils {
     public static String unquote(CharSequence str) {
         if (str == null) {
             return null;
-        } else if (str.length() <= 1) {
-            return str.toString();
-        } else {
-            int end = str.length() - 1;
-            return str.charAt(0) == '\'' && str.charAt(end) == '\'' ? str.subSequence(1, end).toString() : str.toString();
         }
+
+        if (str.length() <= 1) {
+            return str.toString();
+        }
+
+        int end = str.length() - 1;
+        return str.charAt(0) == '\'' && str.charAt(end) == '\'' ? str.subSequence(1, end).toString() : str.toString();
     }
 
     /**
@@ -2012,12 +2014,14 @@ public class StringUtils {
     public static String unquotes(CharSequence str) {
         if (str == null) {
             return null;
-        } else if (str.length() <= 1) {
-            return str.toString();
-        } else {
-            int end = str.length() - 1;
-            return str.charAt(0) == '"' && str.charAt(end) == '"' ? str.subSequence(1, end).toString() : str.toString();
         }
+
+        if (str.length() <= 1) {
+            return str.toString();
+        }
+
+        int end = str.length() - 1;
+        return str.charAt(0) == '"' && str.charAt(end) == '"' ? str.subSequence(1, end).toString() : str.toString();
     }
 
     /**
@@ -2029,12 +2033,14 @@ public class StringUtils {
     public static String unquotation(CharSequence str) {
         if (str == null) {
             return null;
-        } else if (str.length() <= 1) {
-            return str.toString();
-        } else {
-            int end = str.length() - 1;// 最后一个字符串位置
-            return (str.charAt(0) == '\'' && str.charAt(end) == '\'') || (str.charAt(0) == '"' && str.charAt(end) == '"') ? str.subSequence(1, end).toString() : str.toString();
         }
+
+        if (str.length() <= 1) {
+            return str.toString();
+        }
+
+        int end = str.length() - 1;// 最后一个字符串位置
+        return (str.charAt(0) == '\'' && str.charAt(end) == '\'') || (str.charAt(0) == '"' && str.charAt(end) == '"') ? str.subSequence(1, end).toString() : str.toString();
     }
 
     /**
@@ -2109,15 +2115,14 @@ public class StringUtils {
                     return i;
                 }
             }
-            return -1;
         } else {
             for (int i = from; i < str.length(); i++) {
                 if (str.charAt(i) == dest.charAt(0) && StringUtils.startsWith(str, dest, i, ignoreCase, false)) {
                     return i;
                 }
             }
-            return -1;
         }
+        return -1;
     }
 
     /**
@@ -3751,7 +3756,6 @@ public class StringUtils {
         if (array == null) {
             return false;
         }
-
         if (ignoreCase) {
             c = Character.toLowerCase(c);
         }
@@ -4514,7 +4518,7 @@ public class StringUtils {
             }
 
             if (++i < array.length) {
-                buf.append(Settings.LINE_SEPARATOR);
+                buf.append(Settings.getLineSeparator());
             }
         }
         return buf.toString();
@@ -4834,15 +4838,15 @@ public class StringUtils {
     /**
      * 把字符串参数str转为整数，如果转换失败返回默认值 defaultVal
      *
-     * @param str        字符串
-     * @param defaultVal 默认值
+     * @param str    字符串
+     * @param defVal 默认值
      * @return 整数
      */
-    public static int parseInt(String str, int defaultVal) {
+    public static int parseInt(String str, int defVal) {
         try {
             return Integer.parseInt(str);
         } catch (Throwable e) {
-            return defaultVal;
+            return defVal;
         }
     }
 
@@ -4907,6 +4911,20 @@ public class StringUtils {
     }
 
     /**
+     * 将字符串参数 str 转为 Long 实例对象
+     *
+     * @param str 字符串
+     * @return 对象
+     */
+    public static Long parseLong(String str, long defVal) {
+        try {
+            return Long.parseLong(str);
+        } catch (Throwable e) {
+            return defVal;
+        }
+    }
+
+    /**
      * 将字符串参数 str 转为 Boolean 实例对象
      *
      * @param str 字符串
@@ -4957,7 +4975,7 @@ public class StringUtils {
         int number = Integer.parseInt(StringUtils.left("", str.length(), '9'));
         for (int index = str.length() - 1, j = 0; index >= 0; index--, j++) {
             char c = str.charAt(index);
-            int pos = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(c, 0);
+            int pos = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ".indexOf(c);
             if (pos == -1) {
                 throw new IllegalArgumentException(str + ", character '" + c + "' illegal!");
             }

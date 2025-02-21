@@ -12,6 +12,6 @@ import cn.org.expect.util.Settings;
 public class NewlineField extends AbstractField {
 
     public String format(LogEvent event) {
-        return Settings.LINE_SEPARATOR;
+        return Settings.getLineSeparator();
     }
 }

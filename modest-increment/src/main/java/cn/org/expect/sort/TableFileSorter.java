@@ -261,7 +261,7 @@ public class TableFileSorter extends Terminator {
         TextTableFileReader in = file.getReader(this.context.getReaderBuffer());
         try {
             TextTableLine line = in.readLine();
-            String lineSeparator = Settings.LINE_SEPARATOR;
+            String lineSeparator = Settings.getLineSeparator();
             if (line != null && line.getLineSeparator() != null && line.getLineSeparator().length() > 0) {
                 lineSeparator = line.getLineSeparator();
             }

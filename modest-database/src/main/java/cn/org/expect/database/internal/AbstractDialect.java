@@ -103,7 +103,7 @@ public abstract class AbstractDialect implements DatabaseDialect {
 
         StringBuilder buf = new StringBuilder();
         buf.append("create table ");
-        buf.append(table.getFullName()).append(" (").append(Settings.LINE_SEPARATOR);
+        buf.append(table.getFullName()).append(" (").append(Settings.getLineSeparator());
         for (Iterator<DatabaseTableColumn> it = columns.iterator(); it.hasNext(); ) {
             DatabaseTableColumn col = it.next();
             buf.append("    ");
@@ -167,7 +167,7 @@ public abstract class AbstractDialect implements DatabaseDialect {
             if (StringUtils.isNotBlank(remarks)) {
                 buf.append(" -- ").append(remarks);
             }
-            buf.append(Settings.LINE_SEPARATOR);
+            buf.append(Settings.getLineSeparator());
         }
         buf.append(")");
         return buf;

@@ -15,7 +15,6 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <manifold.version>2024.1.35</manifold.version>
     </properties>
 
     <dependencies>
@@ -34,6 +33,25 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <toolchains>
+                        <jdk>
+                            <version>8</version>
+                        </jdk>
+                    </toolchains>
+                </configuration>
+            </plugin>
+
             <!-- 代码编译插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -267,7 +267,7 @@ public class Linuxs {
      */
     public static String[] getLinuxBuiltinAccount() {
         if (System.getProperties().containsKey(PROPERTY_LINUX_BUILTIN_ACCT)) { // 如果设置类参数
-            String str = System.getProperty(PROPERTY_LINUX_BUILTIN_ACCT);
+            String str = Settings.getProperty(PROPERTY_LINUX_BUILTIN_ACCT);
             return StringUtils.removeBlank(StringUtils.split(str, ','));
         } else {
             return new String[]{ // 内置用户数组

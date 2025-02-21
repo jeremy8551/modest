@@ -16,7 +16,7 @@ public class SpringArgument {
     private final SpringApplication application;
 
     /** SpringBoot应用的启动参数 */
-    private String[] args;
+    private final String[] args;
 
     public SpringArgument(SpringApplication application, String[] args) {
         this.application = application;
@@ -32,6 +32,6 @@ public class SpringArgument {
     }
 
     public String toString() {
-        return "SpringApplicationArgument{" + "application=" + application + ", args=" + Arrays.toString(args) + '}';
+        return SpringArgument.class.getSimpleName() + "{application=" + this.application + ", args=" + Arrays.toString(this.args) + '}';
     }
 }

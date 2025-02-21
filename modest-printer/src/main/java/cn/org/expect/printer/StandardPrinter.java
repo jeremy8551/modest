@@ -112,7 +112,7 @@ public class StandardPrinter implements Printer, Closeable {
 
             if (this.writer != null) {
                 try {
-                    this.buffer.append(Settings.LINE_SEPARATOR);
+                    this.buffer.append(Settings.getLineSeparator());
                     IO.write(this.writer, this.buffer);
                     this.buffer.setLength(0);
                     this.writer.flush();
@@ -150,7 +150,7 @@ public class StandardPrinter implements Printer, Closeable {
             String taskId = it.next();
             buf.append(StringUtils.escapeLineSeparator(this.multipleTask.get(taskId)));
             if (it.hasNext()) {
-                buf.append(Settings.LINE_SEPARATOR);
+                buf.append(Settings.getLineSeparator());
             }
         }
         this.println(buf);
@@ -167,12 +167,12 @@ public class StandardPrinter implements Printer, Closeable {
     public void println(CharSequence msg, Throwable e) {
         StringBuilder buf = new StringBuilder(msg.length() + 100);
         buf.append(msg);
-        buf.append(Settings.LINE_SEPARATOR);
+        buf.append(Settings.getLineSeparator());
         buf.append(StringUtils.toString(e));
 
         if (this.writer != null) {
             try {
-                buf.append(Settings.LINE_SEPARATOR);
+                buf.append(Settings.getLineSeparator());
                 IO.write(this.writer, buf);
                 this.writer.flush();
             } catch (IOException e1) {

@@ -267,7 +267,7 @@ public class TextTableFileCounterTest {
      * @throws IOException 读取文件发生错误
      */
     public long countTextFileLines(File file, String charsetName) throws IOException {
-        BufferedReader in = IO.getBufferedReader(file, charsetName, IO.READER_BUFFER_SIZE);
+        BufferedReader in = IO.getBufferedReader(file, charsetName, IO.getCharArrayLength());
         try {
             long rows = 0;
             while (in.readLine() != null) {

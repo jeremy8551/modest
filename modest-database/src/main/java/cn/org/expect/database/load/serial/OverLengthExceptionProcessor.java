@@ -130,7 +130,7 @@ public class OverLengthExceptionProcessor {
 
             LoadFileExecutorContext context = new LoadFileExecutorContext();
             context.setFile(this.file);
-            context.setReadBuffer(IO.FILE_BYTES_BUFFER_SIZE);
+            context.setReadBuffer(IO.getCharArrayLength());
             context.setRange(new LoadFileRange(begin, end, -1));
 
             this.index = end + 1; // 下一次读取位置

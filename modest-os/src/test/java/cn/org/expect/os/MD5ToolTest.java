@@ -109,7 +109,7 @@ public class MD5ToolTest {
                 buf.append(Dates.currentTimeStamp());
                 buf.append("||");
             }
-            os.writeLine(buf.toString(), String.valueOf(Settings.LINE_SEPARATOR));
+            os.writeLine(buf.toString(), String.valueOf(Settings.getLineSeparator()));
         }
         os.close();
         return file;

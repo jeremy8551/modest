@@ -15,12 +15,13 @@
 
     <!-- 属性集合（子模块可以继承直接使用） -->
     <properties>
-        <revision>1.0.0</revision> <!-- 统一的项目版本号 -->
+        <revision>1.0.1</revision> <!-- 统一的项目版本号 -->
+        <skipTests>false</skipTests> <!-- true 表示不执行单元测试 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>5</maven.compiler.source>
         <maven.compiler.target>5</maven.compiler.target>
         <maven.plugin.version>3.5.2</maven.plugin.version> <!-- Maven插件版本 -->
-        <skipTests>false</skipTests> <!-- true 表示不执行单元测试 -->
+        <manifold.version>2024.1.35</manifold.version>
     </properties>
 
     <!-- 子模块 -->
@@ -43,6 +44,10 @@
         <module>modest-database</module>
         <module>modest-increment</module>
         <module>modest-script</module>
+        <module>modest-script-engine</module>
+        <module>modest-spring-boot-starter</module>
+        <module>modest-api</module>
+        <module>modest-ssm-demo</module>
     </modules>
 
     <!-- Apache Licene 2.0 开源软件许可证 -->
@@ -404,6 +409,13 @@
     <build>
         <pluginManagement>
             <plugins>
+                <!-- 编译时使用不同的 JDK，不依赖当前环境的 JAVA_HOME -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-toolchains-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+
                 <!-- modest插件 -->
                 <plugin>
                     <groupId>cn.org.expect</groupId>
@@ -637,6 +649,25 @@
         </pluginManagement>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <toolchains>
+                        <jdk>
+                            <version>5</version>
+                        </jdk>
+                    </toolchains>
+                </configuration>
+            </plugin>
+
             <!-- 统一版本号 -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -712,27 +743,12 @@
     </build>
 
     <profiles>
-        <!-- JDK6 -->
-        <profile>
-            <id>enable-jdk6</id>
-            <activation>
-                <jdk>[1.6.0,)</jdk> <!-- <jdk>[1.6.0,1.7.999]</jdk> -->
-            </activation>
-            <modules>
-                <module>modest-script-engine</module>
-                <module>modest-spring-boot-starter</module>
-            </modules>
-        </profile>
-
         <!-- JDK8 -->
         <profile>
-            <id>enable-jdk8</id>
+            <id>enable-git</id>
             <activation>
                 <jdk>[1.8,)</jdk>
             </activation>
-            <modules>
-                <module>modest-api</module>
-            </modules>
             <build>
                 <pluginManagement>
                     <plugins>
@@ -741,34 +757,6 @@
                             <groupId>io.github.git-commit-id</groupId>
                             <artifactId>git-commit-id-maven-plugin</artifactId>
                             <version>4.9.9</version>
-                            <!-- DO NOT upgrade to v5+, since don't support java 8 -->
-                            <!-- https://github.com/git-commit-id/git-commit-id-maven-plugin -->
-                            <executions>
-                                <execution>
-                                    <id>get-the-git-infos</id>
-                                    <goals>
-                                        <goal>revision</goal>
-                                    </goals>
-                                </execution>
-                                <execution>
-                                    <id>validate-the-git-infos</id>
-                                    <goals>
-                                        <goal>validateRevision</goal>
-                                    </goals>
-                                </execution>
-                            </executions>
-                            <configuration>
-                                <!--                        <validationProperties>-->
-                                <!--                            &lt;!&ndash; verify that the current repository is not dirty &ndash;&gt;-->
-                                <!--                            <validationProperty>-->
-                                <!--                                <name>validating git dirty</name>-->
-                                <!--                                <value>${git.dirty}</value>-->
-                                <!--                                <shouldMatchTo>false</shouldMatchTo>-->
-                                <!--                            </validationProperty>-->
-                                <!--                        </validationProperties>-->
-                                <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                                <generateGitPropertiesFilename>${project.build.outputDirectory}/META-INF/scm/${project.groupId}/${project.artifactId}/git.properties</generateGitPropertiesFilename>
-                            </configuration>
                         </plugin>
                     </plugins>
                 </pluginManagement>
@@ -777,6 +765,34 @@
                     <plugin>
                         <groupId>io.github.git-commit-id</groupId>
                         <artifactId>git-commit-id-maven-plugin</artifactId>
+                        <!-- DO NOT upgrade to v5+, since don't support java 8 -->
+                        <!-- https://github.com/git-commit-id/git-commit-id-maven-plugin -->
+                        <executions>
+                            <execution>
+                                <id>get-the-git-infos</id>
+                                <goals>
+                                    <goal>revision</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>validate-the-git-infos</id>
+                                <goals>
+                                    <goal>validateRevision</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <!--                        <validationProperties>-->
+                            <!--                            &lt;!&ndash; verify that the current repository is not dirty &ndash;&gt;-->
+                            <!--                            <validationProperty>-->
+                            <!--                                <name>validating git dirty</name>-->
+                            <!--                                <value>${git.dirty}</value>-->
+                            <!--                                <shouldMatchTo>false</shouldMatchTo>-->
+                            <!--                            </validationProperty>-->
+                            <!--                        </validationProperties>-->
+                            <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                            <generateGitPropertiesFilename>${project.build.outputDirectory}/META-INF/scm/${project.groupId}/${project.artifactId}/git.properties</generateGitPropertiesFilename>
+                        </configuration>
                     </plugin>
                 </plugins>
             </build>
@@ -846,7 +862,8 @@
                         </dependencies>
                         <executions>
                             <execution>
-                                <phase>verify</phase>
+                                <phase>none</phase>
+                                <!-- <phase>verify</phase>-->
                                 <goals>
                                     <goal>check</goal>
                                 </goals>

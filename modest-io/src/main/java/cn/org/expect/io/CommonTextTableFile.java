@@ -64,7 +64,7 @@ public class CommonTextTableFile implements TextTableFile, EasyContextAware {
         this.column = 0;
         this.separator = ",";
         this.charDelimiter = "";
-        this.lineSeparator = Settings.LINE_SEPARATOR;
+        this.lineSeparator = Settings.getLineSeparator();
         this.existsEscape = false;
         this.escapeChar = 0;
         this.charsetName = CharsetUtils.get();
@@ -186,7 +186,7 @@ public class CommonTextTableFile implements TextTableFile, EasyContextAware {
 
     public int countColumn() throws IOException {
         this.setColumn(0);
-        IO.close(this.getReader(IO.FILE_BYTES_BUFFER_SIZE));
+        IO.close(this.getReader(IO.getCharArrayLength()));
         return this.getColumn();
     }
 

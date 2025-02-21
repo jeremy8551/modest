@@ -34,10 +34,10 @@ public class H2ProcedureTest {
             dao.executeQuietly("drop PROCEDURE TEST_PROC ");
 
             String sql = "";
-            sql += "CREATE ALIAS TEST_PROC AS $$" + Settings.LINE_SEPARATOR;
-            sql += "ResultSet testProc(Connection conn, String sql) throws SQLException {" + Settings.LINE_SEPARATOR;
-            sql += "    return conn.createStatement().executeQuery(sql);" + Settings.LINE_SEPARATOR;
-            sql += "} $$" + Settings.LINE_SEPARATOR;
+            sql += "CREATE ALIAS TEST_PROC AS $$" + Settings.getLineSeparator();
+            sql += "ResultSet testProc(Connection conn, String sql) throws SQLException {" + Settings.getLineSeparator();
+            sql += "    return conn.createStatement().executeQuery(sql);" + Settings.getLineSeparator();
+            sql += "} $$" + Settings.getLineSeparator();
 
             JdbcDao.execute(dao.getConnection(), sql);
 

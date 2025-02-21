@@ -78,7 +78,7 @@ public class TextTableFileCounter {
         Long divide = Numbers.divide(file.length(), (long) 12);
         long partSize = Math.max(divide, 92160);
 
-        int readBuffer = IO.FILE_BYTES_BUFFER_SIZE;
+        int readBuffer = IO.getCharArrayLength();
         if (readBuffer > partSize) {
             readBuffer = (int) partSize;
         }

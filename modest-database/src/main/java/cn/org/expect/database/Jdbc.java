@@ -107,7 +107,7 @@ public class Jdbc {
      * @return 数据库连接池
      */
     public static DataSource getDataSourceLogger(EasyContext context, SimpleDatasource dataSource) {
-        if (dataSource != null && Boolean.parseBoolean(StringUtils.trimBlank(System.getProperty(PROPERTY_DATABASE_LOG))) && !(dataSource instanceof DataSourceLoggerProxy)) {
+        if (dataSource != null && Boolean.parseBoolean(Settings.getProperty(PROPERTY_DATABASE_LOG)) && !(dataSource instanceof DataSourceLoggerProxy)) {
             return new DataSourceLogger(context, dataSource).getProxy();
         } else {
             return dataSource;

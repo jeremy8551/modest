@@ -12,8 +12,11 @@ public class ResourcesUtils {
     /** 外部资源配置文件路径 */
     public final static String PROPERTY_RESOURCE = Settings.getPropertyName("resource");
 
+    /** 外部自定义的资源名（不含扩展名）: /xx/xx/xx/Messages */
+    public final static String PROPERTY_RESOURCE_NAME = Settings.getPropertyName("resource.name");
+
     /** 国际化资源配置 */
-    public final static String PROPERTY_LOCALE = Settings.getPropertyName("locale");
+    public final static String PROPERTY_RESOURCE_LOCALE = Settings.getPropertyName("resource.locale");
 
     /** 国际化资源信息仓库 */
     protected final static ResourceMessageBundleRepository repository = new ResourceMessageBundleRepository(ClassUtils.getClassLoader());

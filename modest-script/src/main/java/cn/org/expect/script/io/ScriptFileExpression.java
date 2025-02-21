@@ -77,7 +77,7 @@ public class ScriptFileExpression {
         try {
             StringBuilder buf = IO.read(in, new StringBuilder(1024));
             String str = FileUtils.readLineSeparator(buf);
-            return str == null || str.length() == 0 ? Settings.LINE_SEPARATOR : str;
+            return str == null || str.length() == 0 ? Settings.getLineSeparator() : str;
         } finally {
             in.close();
         }

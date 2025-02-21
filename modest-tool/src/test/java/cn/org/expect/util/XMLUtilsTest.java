@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import cn.org.expect.ModestException;
+import cn.org.expect.Modest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -15,7 +15,7 @@ public class XMLUtilsTest {
     @Test
     public void test() throws IOException {
         Assert.assertEquals(CharsetName.UTF_8, XMLUtils.getEncoding("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"));
-        String xml = new String(IO.read(ModestException.class.getResourceAsStream("china.xml")));
+        String xml = new String(IO.read(Modest.class.getResourceAsStream("china.xml")));
         String encoding = XMLUtils.getEncoding(xml);
         Assert.assertEquals(CharsetName.UTF_8.toUpperCase(), StringUtils.toCase(encoding, false, null));
     }

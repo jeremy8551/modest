@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class ErrorUtils {
 
     /**
-     * 判断最后一个元素是否是异常
+     * 判断最后一个元素是否为异常
      *
      * @param array 参数
      * @return 异常信息
@@ -48,7 +48,7 @@ public class ErrorUtils {
             SQLException sql = (SQLException) e;
             while (sql != null) {
                 if (!StringUtils.endWithLineSeparator(buf)) {
-                    buf.append(Settings.LINE_SEPARATOR);
+                    buf.append(Settings.getLineSeparator());
                 }
                 buf.append(sql.getClass().getName());
                 buf.append("[");

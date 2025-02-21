@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.Logs;
+import cn.org.expect.util.StringUtils;
 
 /**
  * 扫描 META-INF/modest 目录中的文件
@@ -37,7 +38,7 @@ public class ResourceScanner implements Iterator<InputStream> {
      */
     public ResourceScanner(ClassLoader classLoader, String resourceName) {
         this.classLoader = Ensure.notNull(classLoader);
-        this.resourceName = Ensure.notBlank(resourceName);
+        this.resourceName = Ensure.notBlank(StringUtils.ltrimBlank(resourceName, '/'));
 
         if (Logs.isDebugEnabled()) {
             Logs.debug("Resource name: {}", resourceName);
@@ -81,9 +82,9 @@ public class ResourceScanner implements Iterator<InputStream> {
 
     public InputStream next() {
         if (this.hasNext()) {
-            InputStream inputStream = this.inputStream;
+            InputStream stream = this.inputStream;
             this.inputStream = null;
-            return inputStream;
+            return stream;
         } else {
             throw new NoSuchElementException();
         }

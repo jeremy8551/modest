@@ -188,8 +188,8 @@ public class IncrementScript3Test {
         // 判断剥离增量结果文件与正确文件是否相等
         long n = FileUtils.equalsIgnoreLineSeparator(incfile, CharsetUtils.get(), resultfile, CharsetUtils.get(), 0);
         if (n != 0) {
-            String msg = "第 " + n + " 行不同!" + Settings.LINE_SEPARATOR;
-            msg += FileUtils.readline(incfile, CharsetUtils.get(), n) + Settings.LINE_SEPARATOR; // 读取文件中的指定行内容
+            String msg = "第 " + n + " 行不同!" + Settings.getLineSeparator();
+            msg += FileUtils.readline(incfile, CharsetUtils.get(), n) + Settings.getLineSeparator(); // 读取文件中的指定行内容
             msg += FileUtils.readline(resultfile, CharsetUtils.get(), n); // 读取文件中的指定行内容
             log.error(msg);
             Assert.fail();

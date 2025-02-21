@@ -32,7 +32,7 @@ public class TableFileTest {
         FileUtils.createFile(tmpfile);
         file.setAbsolutePath(tmpfile.getAbsolutePath());
 
-        TextTableFileWriter out = file.getWriter(false, IO.FILE_BYTES_BUFFER_SIZE);
+        TextTableFileWriter out = file.getWriter(false, IO.getCharArrayLength());
         for (int i = 50000; i > 0; i--) {
             StringBuilder buf = new StringBuilder();
             for (int j = 0; j < 20; j++) {

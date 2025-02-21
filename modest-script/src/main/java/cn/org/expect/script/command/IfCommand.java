@@ -238,37 +238,37 @@ public class IfCommand extends AbstractCommand implements LoopCommandKind, WithB
         String str = "";
 
         // if ... then
-        str += tab + "if " + StringUtils.trimBlank(this.ifCondition) + " then" + Settings.LINE_SEPARATOR;
+        str += tab + "if " + StringUtils.trimBlank(this.ifCondition) + " then" + Settings.getLineSeparator();
         for (Object obj : this.ifCmds) {
             if (obj instanceof IfCommand) {
-                str += ((IfCommand) obj).toString(level + 1) + Settings.LINE_SEPARATOR;
+                str += ((IfCommand) obj).toString(level + 1) + Settings.getLineSeparator();
             } else {
-                str += tab + tab + StringUtils.ltrimBlank(obj.toString()) + Settings.LINE_SEPARATOR;
+                str += tab + tab + StringUtils.ltrimBlank(obj.toString()) + Settings.getLineSeparator();
             }
         }
 
         // elseif
         for (int i = 0; i < this.elseIfCondition.size(); i++) {
             Object condition = this.elseIfCondition.get(i);
-            str += tab + "elseif " + StringUtils.trimBlank(condition.toString()) + " then" + Settings.LINE_SEPARATOR;
+            str += tab + "elseif " + StringUtils.trimBlank(condition.toString()) + " then" + Settings.getLineSeparator();
             List<UniversalScriptCommand> cmds = this.elseIfCmds.get(i);
             for (UniversalScriptCommand obj : cmds) {
                 if (obj instanceof IfCommand) {
-                    str += ((IfCommand) obj).toString(level + 1) + Settings.LINE_SEPARATOR;
+                    str += ((IfCommand) obj).toString(level + 1) + Settings.getLineSeparator();
                 } else {
-                    str += tab + tab + StringUtils.ltrimBlank(obj.toString()) + Settings.LINE_SEPARATOR;
+                    str += tab + tab + StringUtils.ltrimBlank(obj.toString()) + Settings.getLineSeparator();
                 }
             }
         }
 
         // else
         if (!this.elseCmds.isEmpty()) {
-            str += tab + "else" + Settings.LINE_SEPARATOR;
+            str += tab + "else" + Settings.getLineSeparator();
             for (Object obj : this.elseCmds) {
                 if (obj instanceof IfCommand) {
-                    str += ((IfCommand) obj).toString(level + 1) + Settings.LINE_SEPARATOR;
+                    str += ((IfCommand) obj).toString(level + 1) + Settings.getLineSeparator();
                 } else {
-                    str += tab + tab + StringUtils.ltrimBlank(obj.toString()) + Settings.LINE_SEPARATOR;
+                    str += tab + tab + StringUtils.ltrimBlank(obj.toString()) + Settings.getLineSeparator();
                 }
             }
         }

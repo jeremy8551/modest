@@ -22,7 +22,7 @@ public class OutputStreamPrinterTest {
         out.write("123\r\n4567\r89\n0测试".getBytes(CharsetUtils.get()));
         out.flush();
 
-        Assert.assertEquals("123" + Settings.LINE_SEPARATOR + "4567" + Settings.LINE_SEPARATOR + "89" + Settings.LINE_SEPARATOR + "0测试" + Settings.LINE_SEPARATOR, writer.toString());
+        Assert.assertEquals("123" + Settings.getLineSeparator() + "4567" + Settings.getLineSeparator() + "89" + Settings.getLineSeparator() + "0测试" + Settings.getLineSeparator(), writer.toString());
 
         writer.reset();
         out.write((byte) '\n');

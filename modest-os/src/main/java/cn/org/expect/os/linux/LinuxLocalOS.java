@@ -94,7 +94,7 @@ public class LinuxLocalOS implements OS, OSDateCommand, OSNetwork {
             if (StringUtils.isNotBlank(kernelStr)) {
                 String[] array = StringUtils.splitByBlank(StringUtils.trimBlank(kernelStr));
                 if (array.length < 3) {
-                    throw new IllegalArgumentException(kernelStr + Settings.LINE_SEPARATOR + Arrays.toString(array));
+                    throw new IllegalArgumentException(kernelStr + Settings.getLineSeparator() + Arrays.toString(array));
                 }
 
                 this.name = array[0];
@@ -108,7 +108,7 @@ public class LinuxLocalOS implements OS, OSDateCommand, OSNetwork {
             String uname = this.cmd.getStdout();
             String[] array = StringUtils.splitByBlank(StringUtils.trimBlank(uname));
             if (array.length < 3) {
-                throw new IllegalArgumentException(uname + Settings.LINE_SEPARATOR + Arrays.toString(array));
+                throw new IllegalArgumentException(uname + Settings.getLineSeparator() + Arrays.toString(array));
             }
             this.name = array[0];
             this.kernel = array[2];
@@ -350,7 +350,7 @@ public class LinuxLocalOS implements OS, OSDateCommand, OSNetwork {
     }
 
     public String getLineSeparator() {
-        return Settings.LINE_SEPARATOR;
+        return Settings.getLineSeparator();
     }
 
     public char getFolderSeparator() {

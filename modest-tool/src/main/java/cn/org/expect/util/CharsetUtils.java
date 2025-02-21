@@ -11,15 +11,15 @@ public class CharsetUtils {
     public final static String PROPERTY_CHARSET = Settings.getPropertyName("charset");
 
     /** 默认字符集 */
-    public static String charset;
+    private static volatile String charset = StringUtils.coalesce(Settings.getProperty(CharsetUtils.PROPERTY_CHARSET), Settings.getFileEncoding());
 
-    static {
-        String charset = System.getProperty(CharsetUtils.PROPERTY_CHARSET);
-        if (charset == null || charset.length() == 0) {
-            CharsetUtils.charset = System.getProperty("file.encoding");
-        } else {
-            CharsetUtils.charset = charset;
-        }
+    /**
+     * 设置默认字符集
+     *
+     * @param charset 字符集
+     */
+    public static void set(String charset) {
+        CharsetUtils.charset = charset;
     }
 
     /**
@@ -28,7 +28,7 @@ public class CharsetUtils {
      * @return 字符集
      */
     public static String get() {
-        return charset;
+        return CharsetUtils.charset;
     }
 
     /**

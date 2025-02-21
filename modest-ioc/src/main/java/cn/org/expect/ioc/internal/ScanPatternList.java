@@ -73,7 +73,7 @@ public class ScanPatternList {
      */
     public void addProperty(String key) {
         if (StringUtils.isNotBlank(key)) {
-            String value = System.getProperty(key);
+            String value = Settings.getProperty(key);
             if (StringUtils.isNotBlank(value)) {
                 String[] array = StringUtils.split(value, DELIMITER);
                 this.addAll(array);

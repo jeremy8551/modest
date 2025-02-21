@@ -237,6 +237,6 @@ public class ExtractMessage extends EasyJobMessage {
             ct.addCell(values[i]);
         }
 
-        return new StringBuilder().append(ct.toString(CharTable.Style.SIMPLE)).append(Settings.LINE_SEPARATOR).toString();
+        return new StringBuilder().append(ct.toString(CharTable.Style.SIMPLE)).append(Settings.getLineSeparator()).toString();
     }
 }

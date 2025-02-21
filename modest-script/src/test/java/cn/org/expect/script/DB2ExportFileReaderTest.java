@@ -32,7 +32,7 @@ public class DB2ExportFileReaderTest {
         File tempfile = FileUtils.createTempFile(".del");
         engine.evaluate("cp classpath:/bhc_finish.del " + tempfile.getAbsolutePath());
         DB2ExportFile file = new DB2ExportFile(tempfile);
-        TextTableFileReader in = file.getReader(IO.READER_BUFFER_SIZE);
+        TextTableFileReader in = file.getReader(IO.getCharArrayLength());
         while (in.readLine() != null) {
         }
         log.info("文件 {} 已读取 {} 行数据!", tempfile, in.getLineNumber());

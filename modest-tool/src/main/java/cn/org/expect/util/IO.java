@@ -29,29 +29,27 @@ import cn.org.expect.collection.Throwables;
 public class IO {
 
     /** 输入流缓存的默认长度，单位字符 */
-    public final static String PROPERTY_READ_BUFFER = Settings.getPropertyName("read.buffer");
+    public final static String PROPERTY_CHAR_ARRAY_LENGTH = Settings.getPropertyName("io.buffer.charArrayLength");
 
-    /** 输入流的缓冲区长度，单位: 字符 */
-    public static int READER_BUFFER_SIZE = 1024 * 10;
-
-    /** 字节输入流的缓冲区长度，单位: 字节 */
-    public static int BYTES_BUFFER_SIZE = 1024 * 10;
-
-    /** 文件输入流的缓冲区长度，单位: 50M的字符 */
-    public static int FILE_BYTES_BUFFER_SIZE = getReaderBufferSize();
+    /** 输入流缓存的默认长度，单位字节 */
+    public final static String PROPERTY_BYTE_ARRAY_LENGTH = Settings.getPropertyName("io.buffer.byteArrayLength");
 
     /**
-     * 返回输入流缓存的默认长度，单位字符
+     * 字节输入流缓冲区长度
      *
-     * @return 默认长度，单位：字符
+     * @return 流缓冲区长度，单位字节
      */
-    private static int getReaderBufferSize() {
-        String length = System.getProperty(PROPERTY_READ_BUFFER);
-        if (length == null || length.length() == 0) {
-            return 1024 * 1024 * 10; // 10M
-        } else {
-            return Integer.parseInt(length);
-        }
+    public static int getByteArrayLength() {
+        return StringUtils.parseInt(Settings.getProperty(PROPERTY_BYTE_ARRAY_LENGTH), 1024 * 10); // 1M
+    }
+
+    /**
+     * 字符输入流缓冲区长度，单位字符
+     *
+     * @return 缓冲区长度，单位字符
+     */
+    public static int getCharArrayLength() {
+        return StringUtils.parseInt(Settings.getProperty(PROPERTY_CHAR_ARRAY_LENGTH), 1024 * 1024 * 10); // 10M
     }
 
     /**
@@ -369,7 +367,7 @@ public class IO {
 
         try {
             long total = 0;
-            byte[] array = new byte[IO.BYTES_BUFFER_SIZE];
+            byte[] array = new byte[IO.getByteArrayLength()];
             for (int len; (len = in.read(array)) != -1; ) {
                 if (terminate != null && terminate.isTerminate()) {
                     break;
@@ -388,17 +386,13 @@ public class IO {
     /**
      * 从输入流中读取所有字符到缓冲区 buf 中
      *
-     * @param in    输入流
-     * @param buf   缓冲区
-     * @param array 字符缓冲区
+     * @param in  输入流
+     * @param buf 缓冲区
      * @return 读取字符的长度
      * @throws IOException 从输入流中读取字符发生错误
      */
-    public static StringBuilder read(Reader in, StringBuilder buf, char... array) throws IOException {
-        if (array == null || array.length == 0) {
-            array = new char[IO.READER_BUFFER_SIZE];
-        }
-
+    public static StringBuilder read(Reader in, StringBuilder buf) throws IOException {
+        char[] array = new char[1024 * 10];
         for (int len; (len = in.read(array)) != -1; ) {
             buf.append(array, 0, len);
         }
@@ -431,7 +425,7 @@ public class IO {
     public static byte[] read(InputStream in) throws IOException {
         try {
             ByteArrayOutputStream out = new ByteArrayOutputStream(in.available());
-            byte[] array = new byte[IO.BYTES_BUFFER_SIZE]; // 缓冲区
+            byte[] array = new byte[IO.getByteArrayLength()]; // 缓冲区
             for (int length; (length = in.read(array)) != -1; ) {
                 out.write(array, 0, length);
             }

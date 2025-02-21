@@ -81,7 +81,7 @@ public class FileUtilsTest {
         Assertions.assertEquals("1:22:3:44:", FileUtils.replaceLineSeparator("1\r22\n3\r\n44\r\n", ":"));
         Assertions.assertEquals("1:22:3:44", FileUtils.replaceLineSeparator("1\r22\n3\r\n44", ":"));
         Assertions.assertEquals("1:22:3:44", FileUtils.replaceLineSeparator("1\r22\n3\r\n44", ":"));
-        Assertions.assertEquals(("1" + Settings.LINE_SEPARATOR + "22" + Settings.LINE_SEPARATOR + "3" + Settings.LINE_SEPARATOR + "44"), FileUtils.replaceLineSeparator("1\r22\n3\r\n44"));
+        Assertions.assertEquals(("1" + Settings.getLineSeparator() + "22" + Settings.getLineSeparator() + "3" + Settings.getLineSeparator() + "44"), FileUtils.replaceLineSeparator("1\r22\n3\r\n44"));
     }
 
     @Test

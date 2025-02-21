@@ -29,7 +29,7 @@ public class LoadFileExecutorContext {
      * 初始化
      */
     public LoadFileExecutorContext() {
-        this.readBuffer = IO.FILE_BYTES_BUFFER_SIZE;
+        this.readBuffer = IO.getCharArrayLength();
     }
 
     /**

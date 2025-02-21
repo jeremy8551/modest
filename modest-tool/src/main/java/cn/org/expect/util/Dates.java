@@ -21,6 +21,18 @@ import cn.org.expect.ModestRuntimeException;
  */
 public class Dates {
 
+    /** 日期中的分隔符，例如：年与月之间的分隔符、月与日之间的分隔符 */
+    public final static String PROPERTY_DATE_DELIMITERS = Settings.getPropertyName("date.delimiters");
+
+    /** 时间表达式的分隔符: 小时和分钟之间的分隔符，分和秒之间的分隔符 */
+    public final static String PROPERTY_TIME_DELIMITERS = Settings.getPropertyName("time.delimiters");
+
+    /** 日期中的分隔符，例如：年与月之间的分隔符、月与日之间的分隔符 */
+    public static char[] DATE_DELIMITER = (Settings.getProperty(Dates.PROPERTY_DATE_DELIMITERS) + "-/|\\_:：.。").toCharArray();
+
+    /** 时间表达式的分隔符：小时和分钟之间的分隔符，分和秒之间的分隔符 */
+    public static List<String> TIME_DELIMITER = ArrayUtils.asList(StringUtils.toStringArray((Settings.getProperty(Dates.PROPERTY_TIME_DELIMITERS) + ":：.。-_").toCharArray()));
+
     /** 频率是天 */
     public final static String FREQ_DAY = "day";
 
@@ -98,12 +110,6 @@ public class Dates {
 
     /** 周末 */
     public final static String Sunday = "Sunday";
-
-    /** 时间表达式的分隔符：小时和分钟之间的分隔符，分和秒之间的分隔符 */
-    public static List<String> TIME_DELIMITER = ArrayUtils.asList(":", "：", ".", "。", "-", "_");
-
-    /** 日期中的分隔符，例如：年与月之间的分隔符、月与日之间的分隔符 */
-    public static char[] DATE_DELIMITER = {'-', '/', '|', '\\', '_', ':', '：', '.', '。'};
 
     /**
      * 使当前线程进入休眠
@@ -956,7 +962,7 @@ public class Dates {
      */
     private static void parseTime(String str, int[] datetime) {
         List<String> list = new ArrayList<String>();
-        StringUtils.split(str, Dates.TIME_DELIMITER, true, list); // 分隔参数要与 isStandTimeFormat 函数保持一致
+        StringUtils.split(str, Dates.TIME_DELIMITER, true, list);
         if (list.size() == 1) {
             datetime[3] = Integer.parseInt(list.get(0)); // 解析小时
         } else if (list.size() == 2) {

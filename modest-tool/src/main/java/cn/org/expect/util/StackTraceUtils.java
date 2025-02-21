@@ -14,7 +14,7 @@ public class StackTraceUtils {
     public final static String PROPERTY_LOG_STACKTRACE = Settings.getPropertyName("stacktrace.print");
 
     /** 是否打印日志跟踪信息 */
-    public static volatile boolean print = Boolean.parseBoolean(System.getProperty(PROPERTY_LOG_STACKTRACE));
+    public static volatile boolean print = Boolean.parseBoolean(Settings.getProperty(PROPERTY_LOG_STACKTRACE));
 
     /**
      * 返回堆栈信息，从 util.cn.org.expect.StackTraceUtils.get:28 开始向上的所有调用步骤  <br>

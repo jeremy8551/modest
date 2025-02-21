@@ -21,7 +21,7 @@ public class IOTest {
     public void test1() throws IOException {
         String str = "rtgfhajsdgjfhsadl;jslkdaghilouyweqoirt测试sdfasdfsadf;lj";
         CharArrayReader in = new CharArrayReader(str.toCharArray());
-        StringBuilder buf = IO.read(in, new StringBuilder(), new char[10]);
+        StringBuilder buf = IO.read(in, new StringBuilder());
         Assert.assertEquals(str, buf.toString());
     }
 

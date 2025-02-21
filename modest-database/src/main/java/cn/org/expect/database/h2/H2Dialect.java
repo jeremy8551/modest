@@ -45,7 +45,7 @@ public class H2Dialect extends AbstractDialect {
     }
 
     public void setSchema(Connection connection, String schema) throws SQLException {
-        connection.setSchema(schema);
+        JdbcDao.execute(connection, "SET SCHEMA " + schema);
     }
 
     public String getCatalog(Connection connection) throws SQLException {
@@ -53,7 +53,7 @@ public class H2Dialect extends AbstractDialect {
     }
 
     /**
-     * h2数据库URL格式：http://www.h2database.com/html/features.html#database_url
+     * h2 数据库URL格式：<a href="http://www.h2database.com/html/features.html#database_url">h2</a>
      *
      * @param url JDBC的URL信息
      * @return 数据库URL信息
@@ -61,10 +61,9 @@ public class H2Dialect extends AbstractDialect {
     public List<DatabaseURL> parseJdbcUrl(String url) {
         StandardDatabaseURL obj = new StandardDatabaseURL(url);
 
-        String str = url;
-        int indexOf = str.indexOf(';');
+        int indexOf = url.indexOf(';');
         if (indexOf != -1) {
-            String properties = str.substring(indexOf);
+            String properties = url.substring(indexOf);
             String[] propertys = StringUtils.split(properties, ';');
             for (String keyValue : propertys) {
                 if (StringUtils.isNotBlank(keyValue)) {
@@ -74,7 +73,7 @@ public class H2Dialect extends AbstractDialect {
             }
         }
 
-        String[] array = StringUtils.split(indexOf == -1 ? str : str.substring(0, indexOf), ":");
+        String[] array = StringUtils.split(indexOf == -1 ? url : url.substring(0, indexOf), ":");
         Ensure.isTrue(array.length >= 4, url);
         Ensure.equals("jdbc", array[0]); // jdbc
         Ensure.equals("h2", array[1]); // jdbc
@@ -91,7 +90,7 @@ public class H2Dialect extends AbstractDialect {
 
         // 服务模式
         else if (array[2].equalsIgnoreCase("tcp")) {
-            String name = FileUtils.getFilename(str);
+            String name = FileUtils.getFilename(url);
             if (name.indexOf(':') == -1) {
                 obj.setDatabaseName(name);
             } else {
@@ -99,8 +98,8 @@ public class H2Dialect extends AbstractDialect {
                 obj.setDatabaseName(names[1]);
             }
 
-            String[] split = StringUtils.split(str, "//");
-            Ensure.isTrue(split.length == 2, str);
+            String[] split = StringUtils.split(url, "//");
+            Ensure.isTrue(split.length == 2, url);
             String part = StringUtils.split(split[1], '/')[0];
             String[] hostPort = StringUtils.split(part, ':');
             Ensure.isTrue(hostPort.length <= 2, url);

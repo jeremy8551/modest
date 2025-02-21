@@ -581,12 +581,12 @@ public class ApacheEmailCommand implements MailCommand {
             IO.close(out);
         }
     }
-}
 
-class DefaultSearchTerm extends SearchTerm {
-    private final static long serialVersionUID = 1L;
+    public static class DefaultSearchTerm extends SearchTerm {
+        private final static long serialVersionUID = 1L;
 
-    public boolean match(Message msg) {
-        return msg.getMessageNumber() <= 10;
+        public boolean match(Message msg) {
+            return msg.getMessageNumber() <= 10;
+        }
     }
 }

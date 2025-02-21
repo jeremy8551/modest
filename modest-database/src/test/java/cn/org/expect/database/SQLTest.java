@@ -137,17 +137,17 @@ public class SQLTest {
     @Test
     public void testSplitSqlByUnion() {
         String sql = "";
-        sql += "    select CONTRACT_NO from ECC_ENSURECONTRACTS_I a where TRUSTLOAN_TYPE='1' and not exists (select 1 from ECC_LOANCONTRACTS_I b where a.CONTRACT_NO = b.LOANCONT_NO )" + Settings.LINE_SEPARATOR;
-        sql += " UNION ALL" + Settings.LINE_SEPARATOR;
-        sql += "    select CONTRACT_NO from ECC_IMPAWNCONTRACT_I  a where TRUSTLOAN_TYPE='1' and not exists (select 1 from ECC_LOANCONTRACTS_I b where a.CONTRACT_NO = b.LOANCONT_NO )" + Settings.LINE_SEPARATOR;
-        sql += " UNION" + Settings.LINE_SEPARATOR;
-        sql += "    select CONTRACT_NO from ECC_PLEDGECONTRACTS_I a where TRUSTLOAN_TYPE='1' and not exists (select 1 from ECC_LOANCONTRACTS_I b where a.CONTRACT_NO = b.LOANCONT_NO )" + Settings.LINE_SEPARATOR;
-        sql += " UNION ALL   " + Settings.LINE_SEPARATOR;
-        sql += "    select CONTRACT_NO from ECC_ENSURECONTRACTS_BP_I a where TRUSTLOAN_TYPE='1' and not exists (select 1 from ECC_LOANCONTRACTS_I b where a.CONTRACT_NO = b.LOANCONT_NO )" + Settings.LINE_SEPARATOR;
-        sql += " UNION ALL" + Settings.LINE_SEPARATOR;
-        sql += "    select CONTRACT_NO from ECC_IMPAWNCONTRACT_BP_I  a where TRUSTLOAN_TYPE='1' and not exists (select 1 from ECC_LOANCONTRACTS_I b where a.CONTRACT_NO = b.LOANCONT_NO )" + Settings.LINE_SEPARATOR;
-        sql += " UNION" + Settings.LINE_SEPARATOR;
-        sql += "    select all CONTRACT_NO from ECC_PLEDGECONTRACTS_BP_I a where TRUSTLOAN_TYPE='1' and not exists (select 1 from ECC_LOANCONTRACTS_I b where a.CONTRACT_NO = b.LOANCONT_NO )" + Settings.LINE_SEPARATOR;
+        sql += "    select CONTRACT_NO from ECC_ENSURECONTRACTS_I a where TRUSTLOAN_TYPE='1' and not exists (select 1 from ECC_LOANCONTRACTS_I b where a.CONTRACT_NO = b.LOANCONT_NO )" + Settings.getLineSeparator();
+        sql += " UNION ALL" + Settings.getLineSeparator();
+        sql += "    select CONTRACT_NO from ECC_IMPAWNCONTRACT_I  a where TRUSTLOAN_TYPE='1' and not exists (select 1 from ECC_LOANCONTRACTS_I b where a.CONTRACT_NO = b.LOANCONT_NO )" + Settings.getLineSeparator();
+        sql += " UNION" + Settings.getLineSeparator();
+        sql += "    select CONTRACT_NO from ECC_PLEDGECONTRACTS_I a where TRUSTLOAN_TYPE='1' and not exists (select 1 from ECC_LOANCONTRACTS_I b where a.CONTRACT_NO = b.LOANCONT_NO )" + Settings.getLineSeparator();
+        sql += " UNION ALL   " + Settings.getLineSeparator();
+        sql += "    select CONTRACT_NO from ECC_ENSURECONTRACTS_BP_I a where TRUSTLOAN_TYPE='1' and not exists (select 1 from ECC_LOANCONTRACTS_I b where a.CONTRACT_NO = b.LOANCONT_NO )" + Settings.getLineSeparator();
+        sql += " UNION ALL" + Settings.getLineSeparator();
+        sql += "    select CONTRACT_NO from ECC_IMPAWNCONTRACT_BP_I  a where TRUSTLOAN_TYPE='1' and not exists (select 1 from ECC_LOANCONTRACTS_I b where a.CONTRACT_NO = b.LOANCONT_NO )" + Settings.getLineSeparator();
+        sql += " UNION" + Settings.getLineSeparator();
+        sql += "    select all CONTRACT_NO from ECC_PLEDGECONTRACTS_BP_I a where TRUSTLOAN_TYPE='1' and not exists (select 1 from ECC_LOANCONTRACTS_I b where a.CONTRACT_NO = b.LOANCONT_NO )" + Settings.getLineSeparator();
 
         List<String> list = new ArrayList<String>();
         List<String> deimiters = new ArrayList<String>();

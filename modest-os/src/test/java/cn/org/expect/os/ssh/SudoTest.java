@@ -8,6 +8,7 @@ import javax.swing.*;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.Dates;
+import cn.org.expect.util.Settings;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.JSch;
@@ -27,11 +28,11 @@ public class SudoTest {
         try {
             JSch jsch = new JSch();
 
-            String host = null;
+            String host;
             if (arg.length > 0) {
                 host = arg[0];
             } else {
-                host = JOptionPane.showInputDialog("Enter username@hostname", System.getProperty("user.name") + "@localhost");
+                host = JOptionPane.showInputDialog("Enter username@hostname", Settings.getUserName() + "@localhost");
             }
 
             String user = host.substring(0, host.indexOf('@'));

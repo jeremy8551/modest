@@ -181,7 +181,7 @@ public class SetCommand extends AbstractGlobalCommand {
         for (String name : list) {
             Object variable = context.getVariable(name);
             buf.append(name).append('=').append(variable);
-            buf.append(Settings.LINE_SEPARATOR);
+            buf.append(Settings.getLineSeparator());
         }
         stdout.println(buf);
     }

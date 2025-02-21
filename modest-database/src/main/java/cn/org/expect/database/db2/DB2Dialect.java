@@ -552,7 +552,7 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
                     if (clob != null) {
                         if (i++ > 0) {
                             ddl.append(';');
-                            ddl.append(Settings.LINE_SEPARATOR);
+                            ddl.append(Settings.getLineSeparator());
                         }
                         ddl.append(StringUtils.trimBlank(Jdbc.getClobAsString(resultSet, "SQL_STMT"), ';'));
                     }
@@ -1404,7 +1404,7 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
          * (DATASNO,EXTERIORSYSTEM,STATUS,CREATE_TIME,MARKFORDELETE,DATATRANSFERNO) VALUES <br>
          * (T1.DATASNO,T1.EXTERIORSYSTEM,T1.STATUS,T1.DATA_TIME,T1.MARKFORDELETE,T1.DATATRANSFERNO)<br>
          */
-        sql += "merge into " + tableName + " as T " + Settings.LINE_SEPARATOR;
+        sql += "merge into " + tableName + " as T " + Settings.getLineSeparator();
         sql += " using table (values(";
         for (Iterator<DatabaseTableColumn> it = columns.iterator(); it.hasNext(); ) {
             it.next();
@@ -1420,7 +1420,7 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
                 sql += ", ";
             }
         }
-        sql += ") " + Settings.LINE_SEPARATOR;
+        sql += ") " + Settings.getLineSeparator();
 
         // 唯一索引字段
         sql += " on (";
@@ -1431,13 +1431,13 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
                 sql += " and ";
             }
         }
-        sql += ")" + Settings.LINE_SEPARATOR;
+        sql += ")" + Settings.getLineSeparator();
 
         // 唯一索引匹配时更新字段值
-        sql += " when matched then update set " + Settings.LINE_SEPARATOR;
+        sql += " when matched then update set " + Settings.getLineSeparator();
         for (Iterator<DatabaseTableColumn> it = columns.iterator(); it.hasNext(); ) {
             String name = it.next().getName();
-            sql += "T." + name + " = T1." + name + Settings.LINE_SEPARATOR;
+            sql += "T." + name + " = T1." + name + Settings.getLineSeparator();
             if (it.hasNext()) {
                 sql += ", ";
             }

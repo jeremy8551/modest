@@ -51,23 +51,23 @@ public class ScriptStdbuf implements UniversalScriptStdout {
     }
 
     public void println(String id, CharSequence msg) {
-        this.buf.append('[').append(id).append(']').append(msg).append(Settings.LINE_SEPARATOR);
+        this.buf.append('[').append(id).append(']').append(msg).append(Settings.getLineSeparator());
     }
 
     public void println() {
-        this.buf.append(Settings.LINE_SEPARATOR);
+        this.buf.append(Settings.getLineSeparator());
     }
 
     public void println(CharSequence msg) {
-        this.buf.append(msg).append(Settings.LINE_SEPARATOR);
+        this.buf.append(msg).append(Settings.getLineSeparator());
     }
 
     public void println(Object object) {
-        this.buf.append(object).append(Settings.LINE_SEPARATOR);
+        this.buf.append(object).append(Settings.getLineSeparator());
     }
 
     public void println(CharSequence msg, Throwable e) {
-        this.buf.append(msg).append(Settings.LINE_SEPARATOR).append(StringUtils.toString(e)).append(Settings.LINE_SEPARATOR);
+        this.buf.append(msg).append(Settings.getLineSeparator()).append(StringUtils.toString(e)).append(Settings.getLineSeparator());
     }
 
     public void close() {

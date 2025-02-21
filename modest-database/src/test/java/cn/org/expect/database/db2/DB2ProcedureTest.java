@@ -42,20 +42,20 @@ public class DB2ProcedureTest {
             dao.executeQuietly("drop PROCEDURE TEST_PROC ");
 
             String sql = "";
-            sql += "CREATE PROCEDURE TEST_PROC            " + Settings.LINE_SEPARATOR;
-            sql += " (OUT FLAG INTEGER                          " + Settings.LINE_SEPARATOR;
-            sql += " )                                            " + Settings.LINE_SEPARATOR;
-            sql += "  LANGUAGE SQL                                " + Settings.LINE_SEPARATOR;
-            sql += "  NOT DETERMINISTIC                           " + Settings.LINE_SEPARATOR;
-            sql += "  CALLED ON NULL INPUT                        " + Settings.LINE_SEPARATOR;
-            sql += "  EXTERNAL ACTION                             " + Settings.LINE_SEPARATOR;
-            sql += "  OLD SAVEPOINT LEVEL                         " + Settings.LINE_SEPARATOR;
-            sql += "  MODIFIES SQL DATA                           " + Settings.LINE_SEPARATOR;
-            sql += "  INHERIT SPECIAL REGISTERS                   " + Settings.LINE_SEPARATOR;
-            sql += "  BEGIN                                       " + Settings.LINE_SEPARATOR;
-            sql += "  SET FLAG = 1;                               " + Settings.LINE_SEPARATOR;
-            sql += "  RETURN 0;                                   " + Settings.LINE_SEPARATOR;
-            sql += "END                                           " + Settings.LINE_SEPARATOR;
+            sql += "CREATE PROCEDURE TEST_PROC            " + Settings.getLineSeparator();
+            sql += " (OUT FLAG INTEGER                          " + Settings.getLineSeparator();
+            sql += " )                                            " + Settings.getLineSeparator();
+            sql += "  LANGUAGE SQL                                " + Settings.getLineSeparator();
+            sql += "  NOT DETERMINISTIC                           " + Settings.getLineSeparator();
+            sql += "  CALLED ON NULL INPUT                        " + Settings.getLineSeparator();
+            sql += "  EXTERNAL ACTION                             " + Settings.getLineSeparator();
+            sql += "  OLD SAVEPOINT LEVEL                         " + Settings.getLineSeparator();
+            sql += "  MODIFIES SQL DATA                           " + Settings.getLineSeparator();
+            sql += "  INHERIT SPECIAL REGISTERS                   " + Settings.getLineSeparator();
+            sql += "  BEGIN                                       " + Settings.getLineSeparator();
+            sql += "  SET FLAG = 1;                               " + Settings.getLineSeparator();
+            sql += "  RETURN 0;                                   " + Settings.getLineSeparator();
+            sql += "END                                           " + Settings.getLineSeparator();
             JdbcDao.execute(dao.getConnection(), sql);
             dao.commit();
         } catch (Exception e) {

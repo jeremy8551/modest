@@ -33,7 +33,7 @@ public class BeanRepeatDefineException extends IocException {
     protected static String toString(List<?> list) {
         StringBuilder buf = new StringBuilder();
         for (Object obj : list) {
-            buf.append(Settings.LINE_SEPARATOR);
+            buf.append(Settings.getLineSeparator());
             buf.append(toString(obj));
         }
         return StringUtils.rtrimBlank(buf);

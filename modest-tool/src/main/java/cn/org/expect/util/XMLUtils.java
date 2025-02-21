@@ -34,7 +34,7 @@ public class XMLUtils {
         try {
             return newDocument(new ByteArrayInputStream(StringUtils.toBytes(xml, charsetName)));
         } catch (Exception e) {
-            throw new ModestRuntimeException(charsetName + Settings.LINE_SEPARATOR + xml, e);
+            throw new ModestRuntimeException(charsetName + Settings.getLineSeparator() + xml, e);
         }
     }
 

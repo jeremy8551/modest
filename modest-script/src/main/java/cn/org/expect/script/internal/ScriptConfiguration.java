@@ -11,6 +11,7 @@ import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.script.UniversalScriptConfiguration;
 import cn.org.expect.script.UniversalScriptEngine;
 import cn.org.expect.util.Ensure;
+import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 
 @EasyBean
@@ -93,7 +94,7 @@ public class ScriptConfiguration implements UniversalScriptConfiguration {
 
     public String getProperty(String name) {
         // 优先从系统属性中读取参数
-        String value = System.getProperty(name);
+        String value = Settings.getProperty(name);
         if (StringUtils.isNotBlank(value)) { // 属性不能是空
             return value;
         }

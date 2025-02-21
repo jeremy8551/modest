@@ -224,7 +224,7 @@ public class BeanBuilder {
                 return (E) constructors.getMatchConstructor().newInstance(args);
             } catch (Throwable e) {
                 String message = ResourcesUtils.getMessage("ioc.stdout.message002", type.getName(), constructors.getMatchConstructor().toGenericString(), this.toString(args));
-                buf.append(Settings.LINE_SEPARATOR).append(message);
+                buf.append(Settings.getLineSeparator()).append(message);
                 buf.append(StringUtils.toString(e));
 
                 if (log.isDebugEnabled()) {
@@ -243,7 +243,7 @@ public class BeanBuilder {
                 return (E) constructors.getBaseConstructor().newInstance();
             } catch (Throwable e) {
                 String message = ResourcesUtils.getMessage("ioc.stdout.message002", type.getName(), constructors.getBaseConstructor().toGenericString(), "");
-                buf.append(Settings.LINE_SEPARATOR).append(message);
+                buf.append(Settings.getLineSeparator()).append(message);
                 buf.append(StringUtils.toString(e));
 
                 if (log.isDebugEnabled()) {
@@ -268,7 +268,7 @@ public class BeanBuilder {
                 return (E) constructor.newInstance(args);
             } catch (Throwable e) {
                 String message = ResourcesUtils.getMessage("ioc.stdout.message002", type.getName(), constructor.toGenericString(), this.toString(args));
-                buf.append(Settings.LINE_SEPARATOR).append(message);
+                buf.append(Settings.getLineSeparator()).append(message);
                 buf.append(StringUtils.toString(e));
 
                 if (log.isDebugEnabled()) {
@@ -304,9 +304,9 @@ public class BeanBuilder {
     protected StringBuilder toString(Object[] args) {
         StringBuilder buf = new StringBuilder();
         if (args.length > 0) {
-            buf.append(Settings.LINE_SEPARATOR);
-            buf.append(StringUtils.join(args, Settings.LINE_SEPARATOR));
-            buf.append(Settings.LINE_SEPARATOR);
+            buf.append(Settings.getLineSeparator());
+            buf.append(StringUtils.join(args, Settings.getLineSeparator()));
+            buf.append(Settings.getLineSeparator());
         }
         return buf;
     }

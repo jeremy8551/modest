@@ -178,8 +178,8 @@ public class IncrementScriptTest {
         // 判断剥离增量结果文件与正确文件是否相等
         long n = FileUtils.equalsIgnoreLineSeparator(incfile, CharsetUtils.get(), resultfile, CharsetUtils.get(), 0);
         if (n != 0) {
-            String msg = "第 " + n + " 行不同!" + Settings.LINE_SEPARATOR;
-            msg += FileUtils.readline(incfile, CharsetUtils.get(), n) + Settings.LINE_SEPARATOR; // 读取文件中的指定行内容
+            String msg = "第 " + n + " 行不同!" + Settings.getLineSeparator();
+            msg += FileUtils.readline(incfile, CharsetUtils.get(), n) + Settings.getLineSeparator(); // 读取文件中的指定行内容
             msg += FileUtils.readline(resultfile, CharsetUtils.get(), n); // 读取文件中的指定行内容
             log.error(msg);
             Assert.fail();
@@ -204,7 +204,7 @@ public class IncrementScriptTest {
             engine.evaluate("set index='2'");
             engine.evaluate("set compare=");
 
-            String command = "container to execute tasks in parallel using thread=3 begin " + Settings.LINE_SEPARATOR;
+            String command = "container to execute tasks in parallel using thread=3 begin " + Settings.getLineSeparator();
             for (int i = 1; i <= 10; i++) {
                 File[] files = this.getTempFiles(100000);
                 File oldfile = files[0];
@@ -230,9 +230,9 @@ public class IncrementScriptTest {
                 command += " write new and upd and del into " + incfile.getAbsolutePath();
                 command += " write log into " + logfile.getAbsolutePath();
                 command += ";";
-                command += Settings.LINE_SEPARATOR;
+                command += Settings.getLineSeparator();
             }
-            command += "end" + Settings.LINE_SEPARATOR;
+            command += "end" + Settings.getLineSeparator();
             log.info(command);
 
             engine.evaluate(command);
@@ -247,8 +247,8 @@ public class IncrementScriptTest {
             // 判断剥离增量结果文件与正确文件是否相等
             long n = FileUtils.equalsIgnoreLineSeparator(incfile, CharsetUtils.get(), resultfile, CharsetUtils.get(), 0);
             if (n != 0) {
-                String msg = "第 " + n + " 行不同!" + Settings.LINE_SEPARATOR;
-                msg += FileUtils.readline(incfile, CharsetUtils.get(), n) + Settings.LINE_SEPARATOR; // 读取文件中的指定行内容
+                String msg = "第 " + n + " 行不同!" + Settings.getLineSeparator();
+                msg += FileUtils.readline(incfile, CharsetUtils.get(), n) + Settings.getLineSeparator(); // 读取文件中的指定行内容
                 msg += FileUtils.readline(resultfile, CharsetUtils.get(), n); // 读取文件中的指定行内容
                 log.error(msg);
                 Assert.fail();

@@ -187,20 +187,20 @@ public class LoadMerge {
      */
     private String toUpdateSQL() {
         String tableName = this.table.getFullName();
-        String sql = "update " + tableName + " a set (" + Settings.LINE_SEPARATOR;
+        String sql = "update " + tableName + " a set (" + Settings.getLineSeparator();
         for (Iterator<DatabaseTableColumn> it = columns.iterator(); it.hasNext(); ) {
             DatabaseTableColumn col = it.next();
-            sql += "    " + col.getName() + (it.hasNext() ? "," : "") + Settings.LINE_SEPARATOR;
+            sql += "    " + col.getName() + (it.hasNext() ? "," : "") + Settings.getLineSeparator();
         }
 
-        sql += ") = ( select " + Settings.LINE_SEPARATOR;
+        sql += ") = ( select " + Settings.getLineSeparator();
         for (Iterator<DatabaseTableColumn> it = columns.iterator(); it.hasNext(); ) {
             DatabaseTableColumn col = it.next();
-            sql += "    " + col.getName() + (it.hasNext() ? "," : "") + Settings.LINE_SEPARATOR;
+            sql += "    " + col.getName() + (it.hasNext() ? "," : "") + Settings.getLineSeparator();
         }
 
         String newtableName = this.tempTable.getFullName();
-        sql += " from " + newtableName + " b where " + Settings.LINE_SEPARATOR;
+        sql += " from " + newtableName + " b where " + Settings.getLineSeparator();
         boolean value = false;
         List<String> indexColumn = this.indexColumn;
         for (Iterator<String> it = indexColumn.iterator(); it.hasNext(); ) {
@@ -208,11 +208,11 @@ public class LoadMerge {
             if (value) {
                 sql += " and ";
             }
-            sql += "a." + name + " = b." + name + Settings.LINE_SEPARATOR;
+            sql += "a." + name + " = b." + name + Settings.getLineSeparator();
             value = true;
         }
-        sql += ") where exists (" + Settings.LINE_SEPARATOR;
-        sql += "select 1 from " + newtableName + " b where " + Settings.LINE_SEPARATOR;
+        sql += ") where exists (" + Settings.getLineSeparator();
+        sql += "select 1 from " + newtableName + " b where " + Settings.getLineSeparator();
 
         value = false;
         for (Iterator<String> it = indexColumn.iterator(); it.hasNext(); ) {
@@ -220,7 +220,7 @@ public class LoadMerge {
             if (value) {
                 sql += " and ";
             }
-            sql += "a." + name + " = b." + name + Settings.LINE_SEPARATOR;
+            sql += "a." + name + " = b." + name + Settings.getLineSeparator();
             value = true;
         }
         sql += ")";
@@ -234,22 +234,22 @@ public class LoadMerge {
      */
     private String toInsertSQL() {
         String tableName = this.table.getFullName();
-        String sql = "insert into " + tableName + " (" + Settings.LINE_SEPARATOR;
+        String sql = "insert into " + tableName + " (" + Settings.getLineSeparator();
         for (Iterator<DatabaseTableColumn> it = this.columns.iterator(); it.hasNext(); ) {
             DatabaseTableColumn col = it.next();
-            sql += "    " + col.getName() + (it.hasNext() ? "," : "") + Settings.LINE_SEPARATOR;
+            sql += "    " + col.getName() + (it.hasNext() ? "," : "") + Settings.getLineSeparator();
         }
 
-        sql += ") select " + Settings.LINE_SEPARATOR;
+        sql += ") select " + Settings.getLineSeparator();
         for (Iterator<DatabaseTableColumn> it = this.columns.iterator(); it.hasNext(); ) {
             DatabaseTableColumn col = it.next();
-            sql += "    " + col.getName() + (it.hasNext() ? "," : "") + Settings.LINE_SEPARATOR;
+            sql += "    " + col.getName() + (it.hasNext() ? "," : "") + Settings.getLineSeparator();
         }
 
         String newtableName = this.tempTable.getFullName();
-        sql += " from " + newtableName + " a " + Settings.LINE_SEPARATOR;
-        sql += " where not exists (" + Settings.LINE_SEPARATOR;
-        sql += "select 1 from " + tableName + " b where " + Settings.LINE_SEPARATOR;
+        sql += " from " + newtableName + " a " + Settings.getLineSeparator();
+        sql += " where not exists (" + Settings.getLineSeparator();
+        sql += "select 1 from " + tableName + " b where " + Settings.getLineSeparator();
 
         boolean value = false;
         List<String> indexColumn = this.indexColumn;
@@ -258,7 +258,7 @@ public class LoadMerge {
             if (value) {
                 sql += " and ";
             }
-            sql += "a." + name + " = b." + name + Settings.LINE_SEPARATOR;
+            sql += "a." + name + " = b." + name + Settings.getLineSeparator();
             value = true;
         }
         sql += ")";

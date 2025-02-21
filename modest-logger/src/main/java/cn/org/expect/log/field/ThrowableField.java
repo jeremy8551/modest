@@ -20,7 +20,7 @@ public class ThrowableField extends AbstractField {
         } else {
             String exception = ErrorUtils.toString(e);
             if (!StringUtils.startWithLineSeparator(exception)) {
-                exception = Settings.LINE_SEPARATOR + exception;
+                exception = Settings.getLineSeparator() + exception;
             }
             return this.format(exception);
         }

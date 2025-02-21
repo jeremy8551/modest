@@ -77,7 +77,7 @@ public class CharTable implements Iterable<String> {
         this.titles = new ArrayList<String>();
         this.values = new ArrayList<String>();
         this.aligns = new ArrayList<String>();
-        this.lineSeparator = Settings.LINE_SEPARATOR;
+        this.lineSeparator = Settings.getLineSeparator();
         this.charsetName = CharsetUtils.get();
         this.clear();
     }

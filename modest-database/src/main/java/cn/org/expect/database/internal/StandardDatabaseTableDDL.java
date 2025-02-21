@@ -42,18 +42,18 @@ public class StandardDatabaseTableDDL implements DatabaseTableDDL {
 
     public String toString() {
         StringBuilder buf = new StringBuilder();
-        buf.append(this.table).append(';').append(Settings.LINE_SEPARATOR);
+        buf.append(this.table).append(';').append(Settings.getLineSeparator());
 
         for (String ddl : this.primarykey) {
-            buf.append(ddl).append(';').append(Settings.LINE_SEPARATOR);
+            buf.append(ddl).append(';').append(Settings.getLineSeparator());
         }
 
         for (String ddl : this.index) {
-            buf.append(ddl).append(';').append(Settings.LINE_SEPARATOR);
+            buf.append(ddl).append(';').append(Settings.getLineSeparator());
         }
 
         for (String ddl : this.comment) {
-            buf.append(ddl).append(';').append(Settings.LINE_SEPARATOR);
+            buf.append(ddl).append(';').append(Settings.getLineSeparator());
         }
 
         return buf.toString();

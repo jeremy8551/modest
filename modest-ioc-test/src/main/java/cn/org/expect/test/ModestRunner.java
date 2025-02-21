@@ -17,7 +17,6 @@ import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.NetUtils;
-import cn.org.expect.util.ObjectUtils;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
@@ -194,7 +193,7 @@ public class ModestRunner extends BlockJUnit4ClassRunner {
             }
 
             // 加载分环境配置文件
-            fileName = yamlFileName + "-" + ObjectUtils.coalesce(System.getProperty(PROPERTY_ACTIVE_PROFILE), "home") + ".properties";
+            fileName = yamlFileName + "-" + StringUtils.coalesce(Settings.getProperty(PROPERTY_ACTIVE_PROFILE), "home") + ".properties";
             in = classLoader.getResourceAsStream(fileName);
             if (in != null) {
                 properties.load(in);

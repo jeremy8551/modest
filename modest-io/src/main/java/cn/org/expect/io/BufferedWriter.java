@@ -80,7 +80,7 @@ public class BufferedWriter implements Closeable, Flushable, LineSeparator, Line
         this.cacheRows = cache <= 0 ? 20 : cache;
         this.count = 0;
         this.charsetName = charsetName;
-        this.lineSeparator = Settings.LINE_SEPARATOR;
+        this.lineSeparator = Settings.getLineSeparator();
     }
 
     /**
@@ -95,7 +95,7 @@ public class BufferedWriter implements Closeable, Flushable, LineSeparator, Line
         this.out = Ensure.notNull(out);
         this.cacheRows = Ensure.fromOne(cache);
         this.count = 0;
-        this.lineSeparator = Settings.LINE_SEPARATOR;
+        this.lineSeparator = Settings.getLineSeparator();
     }
 
     public String getLineSeparator() {

@@ -12,6 +12,9 @@ import cn.org.expect.util.SPI;
  */
 public class ResourceMessageBundleRepository implements ResourceMessageBundle {
 
+    /** 类加载器 */
+    private volatile ClassLoader classLoader;
+
     /** 国际化资源信息集合 */
     private final List<ResourceMessageBundle> list;
 
@@ -20,11 +23,20 @@ public class ResourceMessageBundleRepository implements ResourceMessageBundle {
         this.load(classLoader);
     }
 
+    public void load() {
+        this.load(this.classLoader);
+    }
+
     public synchronized void load(ClassLoader classLoader) {
-        List<ResourceMessageBundle> list = SPI.load(classLoader, ResourceMessageBundle.class); // SPI 机制加载
+        if (classLoader == null) {
+            throw new NullPointerException();
+        }
+
+        this.classLoader = classLoader;
+        List<ResourceMessageBundle> list = SPI.load(this.classLoader, ResourceMessageBundle.class); // SPI 机制加载
         this.list.clear();
         for (ResourceMessageBundle bundle : list) {
-            bundle.load(classLoader);
+            bundle.load(this.classLoader);
             this.list.add(bundle);
         }
     }

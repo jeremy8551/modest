@@ -42,7 +42,7 @@ public class ScriptWcCommandTest {
         txt.setAbsolutePath(tmpfile.getAbsolutePath());
 
         // 创建文件
-        TextTableFileWriter out = txt.getWriter(false, IO.FILE_BYTES_BUFFER_SIZE);
+        TextTableFileWriter out = txt.getWriter(false, IO.getCharArrayLength());
         int rows = 500000 + new Random().nextInt(10000);
         for (int i = 1; i <= rows; i++) {
             StringBuilder buf = new StringBuilder();

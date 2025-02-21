@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Log4j 的日志输出级别共有8个，按照优先级从低到高为：All < Trace < Debug < Info < Warn < Error < Fatal < OFF
+    <configuration> 中的 status 属性用于设置 Log4j 内部状态信息的日志级别
+    <configuration> 中的 monitorInterval 属性用来设置监控 Log4j 配置文件是否发生变化的间隔秒数（最小是5秒钟）
+-->
+<configuration monitorInterval="5" status="info">
+    <!--
+        自定义属性，属性可以被 appenders 与 loggers 中的配置项引用
+
+        在log4j2配置文件中可以查找的属性详见：https://logging.apache.org/log4j/2.x/manual/lookups.html#SpringLookup
+
+        ${logPath}         表示引用属性 <Property name="logPath">logs</Property>
+        ${sys:user.dir}    表示引用系统属性，${sys:user.home} 表示操作系统用户的根目录
+        ${env:VAR_NAME}    表示引用环境变量，${env:PATH} 表示引用系统的PATH环境变量
+        ${date:yyyy-MM}    表示引用日期和时间相关的变量，{date:yyyy-MM} 表示 “2024-09” 的日期字符串
+        ${spring:beanName} 表示引用 SpringBoot 的 application.yaml 或 application.properties 中的属性值，前提是使用 spring-boot-starter-log4j2 场景启动器且使用 log4j2-spring.xml 命名配置文件
+        ..                 表示项目根目录的父目录
+    -->
+    <Properties>
+        <!--
+            日志输出格式详见：https://logging.apache.org/log4j/2.x/manual/layouts.html#PatternLayout
+
+             %p  输出日志信息优先级，即DEBUG，INFO，WARN，ERROR，FATAL,
+             %d  输出日志时间点的日期或时间，默认格式为ISO8601，也可以在其后指定格式，比如：%d{yyy MMM dd HH:mm:ss,SSS}，输出类似：2002年10月18日 22：10：28，921
+             %r  输出自应用启动到输出该log信息耗费的毫秒数
+             %c  输出类的全名
+             %t  输出产生该日志事件的线程名
+             %l  输出日志事件的发生位置，相当于%C.%M(%F:%L)的组合,包括类目名、发生的线程，以及在代码中的行数。举例：Testlog4.main (TestLog4.java:10)
+             %x  输出和当前线程相关联的 MDC
+             %%  输出一个"%"字符
+             %F  输出日志消息产生时所在的文件名称
+             %L  输出代码中的行号
+             %m  输出代码中指定的消息,产生的日志具体信息
+             %n  输出一个回车换行符
+
+             %logger{36} 表示 Logger 名字最长36个字符
+             %thread     表示线程名
+             %-5level：级别从左显示5个字符宽度
+
+             可以在%与模式字符之间加上修饰符来控制其最小宽度、最大宽度、和文本的对齐方式。如：
+             1) %20c    指定输出全类名最小的宽度是20，如果全类名小于20的话，默认的情况下右对齐。
+             2) %-20c   指定输出全类名最小的宽度是20，如果全类名小于20的话，"-"号指定左对齐。
+             3) %.30c   指定输出全类名最小的宽度是30，如果全类名大于30的话，就会将左边多出的字符截掉，但小于30的话也不会有空格
+             4) %20.30c 如果全类名小于20就补空格，并且右对齐，如果其名称长于30字符，就从左边较远输出的字符截掉
+        -->
+        <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS}|%highlight{%-5level}|%t|$${spring:spring.application.name}|%c{1.}|%msg%n"/>
+
+        <!-- 应用标识 -->
+        <property name="APP_NAME" value="${spring:spring.application.name}"/>
+
+        <!-- 日志所在目录，可以是绝对路径或相对路径 -->
+        <property name="FILE_PATH" value="${sys:user.home}/logs/${APP_NAME}"/>
+    </Properties>
+
+    <filter/>
+
+    <!-- appenders 中用来配置日志输出的目的地、内容、格式等 -->
+    <appenders>
+        <!--
+            <console> 负责将日志信息输出到应用程序的控制台
+            target="SYSTEM_OUT" 属性指定了日志信息的输出目标在大多数情况下
+            SYSTEM_OUT 表示将日志输出到标准输出（stdout）
+            SYSTEM_ERR 表示将日志输出到错误输出（stderr）
+        -->
+        <console name="Console" target="SYSTEM_OUT">
+            <!-- 输出日志的格式 -->
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+
+            <!--
+                阈值过滤器（可以有多个）根据日志级别来决定是否应该继续处理该日志
+
+                level 属性表示 appender 只输出 level 属性指定级别（及以上）的日志
+
+                onMatch 表示当日志消息的级别与 level 属性指定的级别相匹配时执行的动作
+                onMismatch 表示当日志消息的级别与 level 属性指定的级别不匹配时执行的动作
+
+                动作枚举值：
+                ACCEPT 表示当前的日志会被输出，（日志信息）不再需要再经过其他阈值过滤器的筛选
+                NEUTRAL 表示当前过滤器不做判定，需要其他过滤器筛选，没有后续过滤器的话该日志被过滤掉
+                DENY 表示当前的日志会被过滤掉
+
+                onMatch=ACCEPT 表示如果日志消息的级别与 level 属性指定的级别相同，那么日志将按照配置中的后续步骤（如写入文件、发送到远程服务器等）进行处理
+                onMismatch=DENY 表示如果日志消息的级别与 level 属性指定的级别不同，那么这条日志消息将被拒绝（这条日志将不会按照配置中的后续步骤进行处理）
+            -->
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+        </console>
+
+        <!--        &lt;!&ndash;文件会打印出所有信息，这个log每次运行程序会自动清空，由append属性决定，适合临时测试用&ndash;&gt;-->
+        <!--        <File name="Filelog" fileName="${FILE_PATH}/test.log" append="false">-->
+        <!--            <PatternLayout pattern="${LOG_PATTERN}"/>-->
+        <!--        </File>-->
+
+        <!--
+            RollingFile 用于定义一个滚动文件追加器（Appender），可以将日志写入到一个文件中，在满足一定条件时（如文件大小达到阈值、时间间隔等）滚动到另一个文件
+            fileName 属性值表示被写入日志文件的名称和路径
+            filePattern 属性值表示滚动后日志文件的命名规则，可以是压缩文件
+        -->
+        <RollingFile name="RollingLogFile" fileName="${FILE_PATH}/application.log" filePattern="${FILE_PATH}/application-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+
+            <!-- 滚动日志的触发策略，当满足设定条件后，自动新建一个日志文件继续记录日志 -->
+            <Policies>
+                <!--
+                    基于时间的滚动策略
+                    interval 属性用于控制归档频率，默认值为1，属性值的单位取自 RollingFile 中 filePattern 属性值的最小单位，如：filePattern=%d{yyyyMMdd} 且 interval=1 则表示 1 天滚动日志一次
+
+                    modulate 属性默认值为 false
+                    modulate=true 表示以凌晨0点为开始时间计算下一次滚动日志的时间，例如：interval=4（小时）之后滚动日志时间为：4:00，8:00，12:00，16:00，20:00，24:00
+                    modulate=false 表示以服务启动时间为起点计算下一次滚动日志的时间，例如：interval=4（小时）当前时间是 8:00，下一次滚动日志时间为：8+4 = 12:00
+
+                    maxRandomDelay 属性值表示随机延迟过渡的最大秒数，默认值为0，表示没有延迟。如果同一时间有多个滚动日志操作，可以通过设置这个属性来分散同时滚动日志的压力
+                -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+
+                <!-- 基于文件大小的触发策略，size 属性定义了触发滚动前文件可以达到的最大大小，size=100MB 表示日志文件达到 100M 后滚动日志 -->
+                <SizeBasedTriggeringPolicy size="100MB"/>
+
+                <!-- <CompositeTriggeringPolicy/> 是复合滚动策略：允许将多个触发策略组合在一起，在满足任何一个策略的条件时触发滚动 -->
+            </Policies>
+
+            <!--
+                DefaultRolloverStrategy，当触发日志滚动策略（如SizeBasedTriggeringPolicy或TimeBasedTriggeringPolicy），使用 DefaultRolloverStrategy 来执行日志滚动的实际操作
+
+                max=15 （默认值是 7）表示最多保留 15 个滚动后的日志文件，一旦超出了这个数量，最旧的日志文件将会被删除或归档
+
+                fileIndex 属性是一个枚举值，在 RollingFile 中的 filePattern 属性值中可以使用 %i 作为序号，使用 fileIndex 属性值来设置这个序号的生成规则
+                fileIndex=max 表示新生成的日志文件的序号总是最大的
+                fileIndex=min 表示新生成的日志文件的序号总是最小的
+                fileIndex=nomax 表示新生成的日志文件序号从小到大顺序生成，没有限制
+
+                例如：
+                <DefaultRolloverStrategy fileIndex="max" max="3" min="1"> 表示只保留3个日志文件，当到归档第4个文件时
+                foo-1.log 被删除
+                foo-2.log 被重命名为 foo-1.log，
+                foo-3.log 被重命名为 foo-2.log，
+                foo.log   被重命名为 foo-3.log。
+                创建新的 foo.log 文件并继续写入日志
+
+                <DefaultRolloverStrategy fileIndex="min" max="3" min="1"> 表示只保留3个日志文件，当到归档第4个文件时
+                foo-3.log 被删除，
+                foo-2.log 重命名为foo-3.log，
+                foo-1.log 重命名为foo-2.log，
+                foo.log   重命名为foo-1.log。
+                创建新的 foo.log 文件并继续写入日志
+
+                compressionLevel 属性值表示日志文件的压缩级别，0-9，0表示不压缩，1=最佳速度，到9=最佳压缩。仅对ZIP文件实现
+                tempCompressedFilePattern 属性值表示滚动日志文件在压缩过程中的文件名模式
+            -->
+            <DefaultRolloverStrategy fileIndex="max" max="15" min="1">
+                <!--
+                    basePath 属性值必填，表示从哪个目录开始扫描要回滚的日志
+                    maxDepth=0 表示只扫描 basePath 属性值中的 .log.gz 格式文件是否符合删除条件
+                    maxDepth=1 表示不仅会扫描 basePath 属性值中的 .log.gz 格式文件是否符合删除条件，还会扫描该目录下1层的所有子目录中的相同格式文件
+                    maxDepth=Integer.MAX_VALUE 表示扫描 basePath 属性值（以及所有子目录）中的 .log.gz 格式文件是否符合删除条件
+                -->
+                <Delete basePath="${FILE_PATH}" maxDepth="2">
+                    <!--
+                        用来定义删除日志文件的条件：
+                        IfFileName 表示如果日志文件名与此参数匹配，则返回true
+                        IfLastModified 表示如果日志文件的最后修改时间早于或等于此参数，则返回true
+                        IfAccumulatedFileCount 表示如果日志文件数超过指定个数，则返回true，参数值为整型
+                        IfAccumulatedFileSize 表示如果所有日志文件总大小达到此参数，则返回true，此参数单位可以是 KB、MB、GB
+
+                        IfAll 如果此标签下的所有条件都配置成功（逻辑与），则结果为true
+                        IfAny 如果此标签下的任何一个条件匹配成功（逻辑或），则结果为true
+                        IfNot 如果此标签下的所有条件都不匹配（逻辑非），则结果为true
+
+                        例如：
+                        <IfFileName glob="*.log.gz">
+                            <IfLastModified age="7d">
+                                <IfAny> 如果一下任何一个条件成立，则删除
+                                    <IfAccumulatedFileSize exceeds="100M"/>
+                                    <IfAccumulatedFileCount exceeds="100"/>
+                                </IfAny>
+                            </IfLastModified>
+                        </IfFileName>
+                    -->
+                    <IfFileName glob="application-*.log.gz"/>
+                    <IfLastModified age="360H"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+
+        <!--
+            启用异步日志
+            阻塞队列最大容量为 20000 个日志事件
+            blocking=true 表示如果阻塞队列区满了，新产生的日志事件会被阻塞，直到阻塞队列中有足够的空间
+            blocking=false 表示如果阻塞队列满了，新产生的日志事件会被丢弃或采取其他非阻塞策略（比如基于优先级的丢弃、回退等）
+        -->
+        <Async name="Async" bufferSize="20000" blocking="true">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingLogFile"/>
+        </Async>
+    </appenders>
+
+    <!--
+        在 loggers 中定义了 logger 并引入 appender，appender 才会生效
+        可以通过 logger 为不同的 Java 包中的 class 指定不同的日志输出级别
+    -->
+    <loggers>
+        <!--
+            name=org.mybatis，表示 org.mybatis 包中输出的日志都是用当前这个 <logger> 输出
+            additivity=true 表示 org.mybatis 包中输出的日志不仅会使用 Async 输出，也会使用 Root 指定的 Appender 输出
+            additivity=false 表示 org.mybatis 包中输出的日志只使用 Async 输出
+        -->
+        <logger name="org.mybatis" level="info" additivity="false">
+            <AppenderRef ref="Async"/>
+        </logger>
+
+        <!-- 根日志输出配置，默认所有类都使用这个配置来输出日志 -->
+        <root level="info">
+            <AppenderRef ref="Async"/>
+        </root>
+    </loggers>
+</configuration>

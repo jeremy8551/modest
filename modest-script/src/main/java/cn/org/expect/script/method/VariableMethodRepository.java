@@ -164,7 +164,7 @@ public class VariableMethodRepository {
             StringBuilder buf = new StringBuilder();
             for (VariableMethodEntry entry : methods) { // 同名、不同参数的方法
                 buf.append(entry.getMethodInfo());
-                buf.append(Settings.LINE_SEPARATOR);
+                buf.append(Settings.getLineSeparator());
             }
             table.addCell(StringUtils.rtrimBlank(buf));
         }
@@ -180,7 +180,7 @@ public class VariableMethodRepository {
         StringBuilder buf = new StringBuilder();
         for (VariableMethodEntry entry : methods) { // 同名、不同参数的方法
             buf.append(entry.toStandardString());
-            buf.append(Settings.LINE_SEPARATOR);
+            buf.append(Settings.getLineSeparator());
         }
         return StringUtils.rtrimBlank(buf);
     }

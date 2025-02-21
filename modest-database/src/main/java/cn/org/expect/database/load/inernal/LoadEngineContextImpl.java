@@ -49,7 +49,7 @@ public class LoadEngineContextImpl implements LoadEngineContext {
         this.files = new ArrayList<String>();
         this.dataColumn = new ArrayList<String>();
         this.fileColumn = new ArrayList<String>();
-        this.readBuffer = IO.FILE_BYTES_BUFFER_SIZE;
+        this.readBuffer = IO.getCharArrayLength();
     }
 
     public String getTableCatalog() {

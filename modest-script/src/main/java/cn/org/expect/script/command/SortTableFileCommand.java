@@ -62,7 +62,7 @@ public class SortTableFileCommand extends AbstractTraceCommand {
         if (this.map.contains("readbuf")) {
             cxt.setReaderBuffer(this.map.getIntAttribute("readbuf"));
         } else {
-            cxt.setReaderBuffer(IO.FILE_BYTES_BUFFER_SIZE);
+            cxt.setReaderBuffer(IO.getCharArrayLength());
         }
 
         if (this.map.contains("thread")) {

@@ -47,7 +47,7 @@ public class SortTableFileCommandTest {
 
     protected void checkFile(TextTableFile file) throws NumberFormatException, IOException {
         int i = 0;
-        TextTableFileReader in = file.getReader(IO.FILE_BYTES_BUFFER_SIZE);
+        TextTableFileReader in = file.getReader(IO.getCharArrayLength());
         TextTableLine line;
         while ((line = in.readLine()) != null) {
             if (++i != Integer.parseInt(StringUtils.trimBlank(line.getColumn(1)))) {

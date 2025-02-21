@@ -94,7 +94,7 @@ public class TailCommand extends AbstractFileCommand implements UniversalScriptI
         if (session.isEchoEnable() || forceStdout) {
             StringBuilder buf = new StringBuilder();
             for (String line : queue) {
-                buf.append(line).append(Settings.LINE_SEPARATOR);
+                buf.append(line).append(Settings.getLineSeparator());
             }
             stdout.println(StringUtils.removeEOL(buf));
         }

@@ -28,7 +28,7 @@
 <dependency>
   <groupId>cn.org.expect</groupId>
   <artifactId>modest-script</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
@@ -38,7 +38,7 @@
 <dependency>
   <groupId>cn.org.expect</groupId>
   <artifactId>modest-script-engine</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
@@ -89,7 +89,7 @@ public class Main {
 <dependency>
     <groupId>cn.org.expect</groupId>
     <artifactId>modest-spring-boot-starter</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 </dependency>
 ```
 
@@ -5101,17 +5101,31 @@ cn.org.expect.ioc.DefaultEasyContext ioc = new cn.org.expect.ioc.DefaultEasyCont
 
 ## 国际化信息
 
-国际化资源操作类是 `cn.org.expect.util.ResourcesUtils`，可使用以下两种方式自定义国际化资源文件
+国际化资源操作类是 `cn.org.expect.util.ResourcesUtils`，可使用以下三种方式自定义国际化资源文件。
 
-### 外部属性
+### 外部资源文件
 
 ```java
 System.setProperty("cn.org.expect.resource", "/home/user/../resouce.properties");
 ```
 
-### 约定路径
+### 约定资源名
 
-按约定路径存储资源文件，脚本引擎默认加载所有 **jar** 文件中的 `cn/org/expect/Messages.properties`
+按约定路径存储资源文件，脚本引擎默认加载 `cn/org/expect/Messages.properties` 文件。
+
+### 自定义资源名
+
+自定义一个国际化资源文件 `Messages.properties` 
+
+```java
+System.setProperty("cn.org.expect.resource.name", "com/test/Messages");
+```
+
+### 国家地区
+
+```java
+System.setProperty("cn.org.expect.resource.locale", "zh_CN");
+```
 
 
 
@@ -5137,11 +5151,11 @@ System.setProperty("cn.org.expect.resource", "/home/user/../resouce.properties")
 
 ## 日志输出
 
-脚本引擎容器启动时，会检查类路径下是否有**Slf4j**日志组件。
+脚本引擎容器启动时，会检查类路径下是否有 **Slf4j** 日志组件。
 
-如果在类路径中检测到**Slf4j**相关jar包，则直接使用**Slf4j**作为日志输出接口。
+如果在类路径中检测到 **Slf4j** 相关jar包，则直接使用 **Slf4j** 作为日志输出接口。
 
-如果在类路径中未检测到**Slf4j**相关jar包，则默认使用控制台 `System.out` 输出日志。
+如果在类路径中未检测到 **Slf4j** 相关jar包，则默认使用控制台 `System.out` 输出日志。
 
 当使用控制台输出日志时，可配置如下参数设置日志的输出级别与输出格式：
 
@@ -5366,13 +5380,19 @@ public class JdbcTest2 {
 
 ## 其他配置
 
-输入流缓存的长度，单位字符
+输入流缓冲区字符数组的长度：
 
 ```java
-System.setProperty("cn.org.expect.read.buffer", "10000");
+System.setProperty("cn.org.expect.io.buffer.byteArrayLength", "10000");
 ```
 
-设置**Linux**操作系统内置账户名（用于过滤操作系统内置账户信息）：
+输入流缓冲区字节数组的长度：
+
+```java
+System.setProperty("cn.org.expect.io.buffer.charArrayLength", "10000");
+```
+
+设置 **Linux** 操作系统内置账户名（用于过滤操作系统内置账户信息）：
 
 ```java
 System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");

@@ -33,6 +33,9 @@ public class FileUtils {
     /** 临时文件存储目录 */
     public final static String PROPERTY_TEMP_DIR = Settings.getPropertyName("tempDir");
 
+    /** 文件小于属性值，读取全部内容进行格式转换 */
+    public final static String PROPERTY_DOC2UNIX_FILE_SIZE = Settings.getPropertyName("doc2unix.size");
+
     /** 文件系统文件路径的分隔符集合 */
     public final static List<String> PATH_SEPARATORS = java.util.Collections.unmodifiableList(ArrayUtils.asList("/", "\\"));
 
@@ -41,9 +44,6 @@ public class FileUtils {
 
     /** unix文件系统的换行符 */
     public final static String LINE_SEPARATOR_UNIX = "\n";
-
-    /** 如果文件小于10M，则读取全部内容进行格式转换 */
-    public static long DOC2UNIX_FILE_SIZE = 1048576;
 
     /** 临时文件目录 */
     private static volatile File tempDir;
@@ -514,7 +514,7 @@ public class FileUtils {
     }
 
     /**
-     * 将 windows DOS 格式的文本文件转为 unix 文本格式
+     * 将 Windows DOS 格式的文本文件转为 Unix 文本格式
      *
      * @param file        文件
      * @param charsetName 文件的字符集
@@ -528,10 +528,11 @@ public class FileUtils {
         }
 
         // 如果文件小于10M，则读取全部内容
-        if (file.exists() && file.length() <= DOC2UNIX_FILE_SIZE) {
+        long size = StringUtils.parseLong(Settings.getProperty(FileUtils.PROPERTY_DOC2UNIX_FILE_SIZE), 1024 * 1024 * 10);
+        if (file.length() <= size) {
             String content = FileUtils.readline(file, charsetName, 0);
-            String newcontent = FileUtils.replaceLineSeparator(content, FileUtils.LINE_SEPARATOR_UNIX);
-            return FileUtils.write(file, charsetName, false, newcontent);
+            String newContent = FileUtils.replaceLineSeparator(content, FileUtils.LINE_SEPARATOR_UNIX);
+            return FileUtils.write(file, charsetName, false, newContent);
         }
 
         // 创建一个不重名的临时文件
@@ -746,7 +747,7 @@ public class FileUtils {
         if (tempDir == null) {
             synchronized (lock) {
                 if (tempDir == null) {
-                    String value = System.getProperty(FileUtils.PROPERTY_TEMP_DIR);
+                    String value = Settings.getProperty(FileUtils.PROPERTY_TEMP_DIR);
                     if (value != null && value.length() > 0) {
                         tempDir = new File(value);
                     } else {
@@ -991,7 +992,7 @@ public class FileUtils {
      * @return 字符串
      */
     public static String replaceLineSeparator(CharSequence cs) {
-        return FileUtils.replaceLineSeparator(cs, Settings.LINE_SEPARATOR);
+        return FileUtils.replaceLineSeparator(cs, Settings.getLineSeparator());
     }
 
     /**
@@ -1145,7 +1146,7 @@ public class FileUtils {
 
         FileInputStream in = new FileInputStream(file);
         try {
-            byte[] buf = new byte[IO.BYTES_BUFFER_SIZE];
+            byte[] buf = new byte[IO.getByteArrayLength()];
             for (int len; (len = in.read(buf)) != -1; ) {
                 for (int j = 0; j < len; j++) {
                     byte b = buf[j];
@@ -1212,7 +1213,7 @@ public class FileUtils {
      * @throws IOException 读取文件发生错误
      */
     public static long count(File file, String charsetName) throws IOException {
-        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), charsetName), IO.FILE_BYTES_BUFFER_SIZE);
+        BufferedReader in = new BufferedReader(new InputStreamReader(new FileInputStream(file), charsetName), IO.getCharArrayLength());
         try {
             long count = 0;
             while (in.readLine() != null) {
@@ -1571,7 +1572,7 @@ public class FileUtils {
 
         Writer out = new OutputStreamWriter(new FileOutputStream(file, append), charsetName);
         try {
-            byte[] buf = new byte[IO.BYTES_BUFFER_SIZE];
+            byte[] buf = new byte[IO.getByteArrayLength()];
             for (int len; (len = in.read(buf)) != -1; ) {
                 out.write(new String(buf, 0, len, charsetName));
                 out.flush();
@@ -1647,7 +1648,7 @@ public class FileUtils {
             return false;
         }
         if (size <= 0) {
-            size = IO.BYTES_BUFFER_SIZE;
+            size = IO.getByteArrayLength();
         }
 
         FileInputStream in1 = new FileInputStream(file1);
@@ -1700,7 +1701,7 @@ public class FileUtils {
             return 0;
         }
         if (size <= 0) {
-            size = IO.BYTES_BUFFER_SIZE;
+            size = IO.getByteArrayLength();
         }
 
         BufferedReader in1 = new BufferedReader(new InputStreamReader(new FileInputStream(file1), CharsetUtils.get(charsetName1)), size);
@@ -2192,7 +2193,7 @@ public class FileUtils {
             try {
                 FileOutputStream out = new FileOutputStream(dest, false);
                 try {
-                    byte[] buf = new byte[IO.BYTES_BUFFER_SIZE];
+                    byte[] buf = new byte[IO.getByteArrayLength()];
                     for (int len; (len = in.read(buf)) != -1; ) {
                         out.write(buf, 0, len);
                         out.flush();

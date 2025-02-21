@@ -10,7 +10,6 @@ import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.test.ModestRunner;
 import cn.org.expect.test.annotation.EasyLog;
-import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;

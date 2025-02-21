@@ -71,7 +71,7 @@ public class PatternLayout implements Layout {
                 this.addRow(event, buf);
 
                 if (!this.pattern.hasNewLine()) {
-                    buf.append(Settings.LINE_SEPARATOR);
+                    buf.append(Settings.getLineSeparator());
                 }
             }
 

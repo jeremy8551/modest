@@ -74,7 +74,7 @@ public class NohupCommand extends AbstractCommand {
         } else {
             session.addVariable(UniversalScriptVariable.VARNAME_PID, process.getPid()); // 保存进程编号
             if (print) {
-                stdout.print("appending output to " + logfile.getAbsolutePath() + Settings.LINE_SEPARATOR + process.getPid());
+                stdout.print("appending output to " + logfile.getAbsolutePath() + Settings.getLineSeparator() + process.getPid());
             }
 
             session.putValue(process.getPid());

@@ -198,7 +198,7 @@ public class LogTest {
 
         LogFactory.getLog(context, LogTest.class).error(null);
         String content = FileUtils.readline(logfile, CharsetName.UTF_8, 0);
-        Assert.assertEquals("-------|null" + Settings.LINE_SEPARATOR, content);
+        Assert.assertEquals("-------|null" + Settings.getLineSeparator(), content);
     }
 
     @Test
