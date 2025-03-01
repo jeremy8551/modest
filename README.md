@@ -28,7 +28,7 @@
 <dependency>
   <groupId>cn.org.expect</groupId>
   <artifactId>modest-script</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 
@@ -38,7 +38,7 @@
 <dependency>
   <groupId>cn.org.expect</groupId>
   <artifactId>modest-script-engine</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2</version>
 </dependency>
 ```
 
@@ -89,7 +89,7 @@ public class Main {
 <dependency>
     <groupId>cn.org.expect</groupId>
     <artifactId>modest-spring-boot-starter</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
 </dependency>
 ```
 

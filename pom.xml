@@ -15,7 +15,7 @@
 
     <!-- 属性集合（子模块可以继承直接使用） -->
     <properties>
-        <revision>1.0.1</revision> <!-- 统一的项目版本号 -->
+        <revision>1.0.2</revision> <!-- 统一的项目版本号 -->
         <skipTests>false</skipTests> <!-- true 表示不执行单元测试 -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>5</maven.compiler.source>
