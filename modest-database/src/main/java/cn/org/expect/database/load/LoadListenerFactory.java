@@ -30,7 +30,6 @@ public class LoadListenerFactory {
                 public void processLineSeparator(TextTableFile file, TextTableLine line, long lineNumber) throws IOException {
                     // 不做任何操作，保留回车与换行符
                 }
-
             };
         }
 

@@ -6,7 +6,9 @@ package cn.org.expect.mail;
 public class MailAttachmentImpl implements MailAttachment {
 
     private Mail mail;
+
     private String description;
+
     private String name;
 //	private String path;
 //	private URL url;

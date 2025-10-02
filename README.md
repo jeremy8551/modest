@@ -28,7 +28,7 @@
 <dependency>
   <groupId>cn.org.expect</groupId>
   <artifactId>modest-script</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
 </dependency>
 ```
 
@@ -38,7 +38,7 @@
 <dependency>
   <groupId>cn.org.expect</groupId>
   <artifactId>modest-script-engine</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
 </dependency>
 ```
 
@@ -89,7 +89,7 @@ public class Main {
 <dependency>
     <groupId>cn.org.expect</groupId>
     <artifactId>modest-spring-boot-starter</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
 </dependency>
 ```
 
@@ -456,6 +456,16 @@ ftp ${ftpuser}@${ftphost}:21?password=${ftppass}
   exists -l ${temp}/test.sql
 bye
 ```
+
+
+
+# 编译方法
+
+将工程根目录下的 `toolchains.xml` 文件复制到本地 Maven 仓库的根目录下（通常是 `~/.m2` 目录）。
+
+然后编辑 `toolchains.xml` 文件，将其中的 `jdkHome` 路径修改为实际安装的 JDK 目录。
+
+执行 `mvn install`
 
 
 
@@ -3817,6 +3827,27 @@ getText()
 ```java
 cn.org.expect.script.method.XmlFunction.getText(org.w3c.dom.Node)
 ```
+### getTime()
+返回日期从1970年开始的毫秒
+
+**变量**
+
+`Object` 对象（字符串、日期、时间、long、日历）
+
+
+**方法**
+```java
+getTime()
+```
+
+**返回值**
+
+毫秒
+
+**代码**
+```java
+cn.org.expect.script.method.DateExtension.getTime(java.lang.Object)
+```
 ### getYear()
 返回年份
 
@@ -5011,7 +5042,7 @@ cn.org.expect.ioc.DefaultEasyContext ioc = new cn.org.expect.ioc.DefaultEasyCont
 
 类扫描器的实现类是 `cn.org.expect.ioc.EasyClassScanner`，扫描规则详见 `EasyClassScan` 接口的实现类。
 
-类扫描器默认只扫描被注解 `EasyBean`、`EasyCommandCompiler`、`EasyVariableMethod` 标记的类，如果想增加扫描规则，则可以在**SPI**配置文件 `resources/META-INF/services/cn.org.expect.ioc.EasyClassScan` 中增加 `EasyClassScan` 接口的实现类。
+类扫描器默认只扫描被注解 `@EasyBean`、`@EasyCommandCompiler`、`@EasyVariableMethod` 标记的类，如果想增加扫描规则，则可以在**SPI**配置文件 `resources/META-INF/services/cn.org.expect.ioc.EasyClassScan` 中增加 `EasyClassScan` 接口的实现类。
 
 
 
@@ -5073,58 +5104,82 @@ cn.org.expect.ioc.DefaultEasyContext ioc = new cn.org.expect.ioc.DefaultEasyCont
 
 脚本引擎编译器接口是 `cn.org.expect.script.UniversalScriptCompiler`，可以将脚本语句编译为可以执行的脚本命令。
 
-编译器由语法分析器 `cn.org.expect.script.UniversalScriptParser`、语句输入流 `cn.org.expect.script.UniversalScriptReader`、语句分析器 `cn.org.expect.script.UniversalScriptAnalysis` 、命令编译器 `cn.org.expect.script.UniversalCommandCompiler` 组成。
+### 编译器组成
 
-编译过程：
+语法分析器 `cn.org.expect.script.UniversalScriptParser`
 
-- 在类扫描阶段，如果类配置了 `cn.org.expect.script.annotation.EasyCommandCompiler` 注解，并且该类也实现了接口 `cn.org.expect.script.UniversalCommandCompiler`，则将这个（命令编译器）类实例化；
-- 将上一步生成的命令编译器的实例对象，交给脚本引擎编译器管理和使用；
-- 脚本引擎编译器对某一个脚本语句进行编译时，会逐个执行命令编译器实例上的 `match(UniversalScriptAnalysis, String, String)` 方法，来判断脚本语句应该使用哪个命令编译器来执行编译操作；
-- 找出脚本语句对应的命令编译器后，会执行该命令编译器上的 `read(UniversalScriptReader, UniversalScriptAnalysis)` 方法来读取一个完整的语句；
-- 再执行命令编译器上的 `compile(UniversalScriptSession, UniversalScriptContext, UniversalScriptParser, UniversalScriptAnalysis, String)` 方法，对上一步得到的脚本语句进行编译，得到一个脚本命令实例；
+语句输入流 `cn.org.expect.script.UniversalScriptReader`
+
+语句分析器 `cn.org.expect.script.UniversalScriptAnalysis` 
+
+命令编译器 `cn.org.expect.script.UniversalCommandCompiler` 
+
+### 编译过程
+
+在类扫描阶段，如果类配置了 `cn.org.expect.script.annotation.EasyCommandCompiler` 注解，并且该类也实现了接口 `cn.org.expect.script.UniversalCommandCompiler`，则将这个（命令编译器）类实例化。
+
+将上一步生成的命令编译器的实例对象，交给脚本引擎编译器管理和使用。
+
+脚本引擎编译器对某一个脚本语句进行编译时，会逐个执行命令编译器实例上的 `match(UniversalScriptAnalysis, String, String)` 方法，来判断脚本语句应该使用哪个命令编译器来执行编译操作。
+
+找出脚本语句对应的命令编译器后，会执行该命令编译器上的 `read(UniversalScriptReader, UniversalScriptAnalysis)` 方法来读取一个完整的语句。
+
+再执行命令编译器上的 `compile(UniversalScriptSession, UniversalScriptContext, UniversalScriptParser, UniversalScriptAnalysis, String)` 方法，对上一步得到的脚本语句进行编译，得到一个脚本命令实例。
 
 
 
 ## 运行命令
 
-- 经过脚本引擎编译器编译后，会得到一个脚本命令对象（即 `cn.org.expect.script.UniversalScriptCommand` 接口的实例对象）；
+经过脚本引擎编译器编译后，会得到一个脚本命令对象，即 `cn.org.expect.script.UniversalScriptCommand` 接口的实例对象。
 
-- 运行实例上的 `execute(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean)` 方法（即执行该命令的业务逻辑），会得到一个返回值与状态码；
+运行实例上的 `execute(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean)` 方法（即执行该命令的业务逻辑），会得到一个返回值与状态码。
 
-- 根据上一步得到的状态码，判断该命令运行的是否成功；
-  
-  如果状态码是零，表示命令运行成功，读取下一个命令并运行；
-  
-  如果状态码是非零，表示命令运行错误，立即抛出异常（可用 `set -E` 命令来设置不抛出异常）；
+根据上一步得到的状态码，判断该命令运行的是否成功。
+
+如果状态码是零，表示命令运行成功，读取下一个命令并运行。
+
+如果状态码是非零，表示命令运行错误，立即抛出异常（可用 `set -E` 命令来设置不抛出异常）。
 
 
 
 ## 国际化信息
 
-国际化资源操作类是 `cn.org.expect.util.ResourcesUtils`，可使用以下三种方式自定义国际化资源文件。
+脚本引擎加载国际化资源文件的顺序如下：
+
+### 约定资源文件
+
+脚本引擎默认先加载中文国际化资源文件：`cn/org/expect/Messages.properties`
+
+你可以通过 JVM 参数设置加载英文资源文件：`cn/org/expect/Messages_en_US.properties`
+
+```java
+java -Dcn.org.expect.resource.locale=en_US cn.org.expect.Modest
+```
+
+### 自定义资源文件
+
+如果已在工程中使用了自定义资源文件 `com.test.Message_en_US.properties`，则可通过 JVM 参数配置自定义的资源名：
+
+```shell
+java -Dcn.org.expect.resource.locale=en_US -Dcn.org.expect.resource.name=com/test/Messages cn.org.expect.Modest
+```
 
 ### 外部资源文件
 
-```java
-System.setProperty("cn.org.expect.resource", "/home/user/../resouce.properties");
+可以通过 JVM 参数设置外部的国际化资源文件路径：
+
+```shell
+java -Dcn.org.expect.resource=/home/user/project/resources/Messages.properties cn.org.expect.Modest
 ```
 
-### 约定资源名
+### 工具类
 
-按约定路径存储资源文件，脚本引擎默认加载 `cn/org/expect/Messages.properties` 文件。
+国际化资源工具类是 `cn.org.expect.util.ResourcesUtils`，通过该类可以方便地获取国际化资源文件中的配置项。
 
-### 自定义资源名
-
-自定义一个国际化资源文件 `Messages.properties` 
+例如：
 
 ```java
-System.setProperty("cn.org.expect.resource.name", "com/test/Messages");
-```
-
-### 国家地区
-
-```java
-System.setProperty("cn.org.expect.resource.locale", "zh_CN");
+ResourcesUtils.getMessage("date.stdout.message003")
 ```
 
 
@@ -5178,7 +5233,7 @@ System.setProperty("cn.org.expect.db.log", "true");
 
 
 
-## 字符集设置
+## 字符集
 
 脚本引擎内部默认使用的字符集编码是 `file.encoding` 属性值，也可通过如下参数修改默认的字符集：
 
@@ -5197,7 +5252,7 @@ set charset=GBK
 
 ## 临时文件
 
-脚本引擎产生的临时文件，默认存储在 `/var/folders/7r/gkd1wqdx7sdf1xpgkpq6qjjc0000gn/T/cn/org/expect` 路径下
+脚本引擎产生的临时文件，默认存储在 `${java.io.tmpdir}/cn/org/expect` 路径下
 
 可通过参数修改临时文件存储的默认目录：
 
@@ -5375,6 +5430,51 @@ public class JdbcTest2 {
 ## 类型转换器
 
 类型转换器  `cn.org.expect.script.UniversalScriptFormatter`，用于将 JDBC 查询结果集返回值转为脚本引擎内部使用的类型。
+
+
+
+## 国家法定假日
+
+判断日期是否为中国法定假日
+
+```java
+Dates.isRestDay("zh_CN", Dates.parse("2019-08-30"));
+```
+
+判断日期是否为中国法定工作日
+
+```java
+Dates.isWorkDay("zh_CN", Dates.parse("2019-08-31"));
+```
+
+您可以通过自定义 XML 配置文件来扩展国家法定假日。例如：
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<holidays>
+    <locale name="zh_CN" description="2100中国法定假日">
+        <date value="2100-01-01" name="元旦" reset="true"/>
+    </locale>
+</holidays>
+```
+
+自定义的国家法定假日 XML 配置文件可以放置在以下三个位置：
+
+- 将 XML 文件存储到 Java 工程 `cn/org/expect` 包中，文件名必须为：`holidays.xml`
+
+- 将 XML 文件存储到 `/Users/user/.modest`，文件名必须遵循命名规则：`holiday*.xml`
+
+- 通过 JVM 参数指定 XML 文件所在目录，文件名必须遵循命名规则：`holiday*.xml`
+
+  ```shell
+  java -Dcn.org.expect.holiday=/home/user/locale/ cn.org.expect.Modest
+  ```
+
+完成 XML 配置后，重启服务或通过以下代码加载新的国家法定假日配置文件：
+
+```java
+Dates.HOLIDAYS.reload();
+```
 
 
 
@@ -5782,13 +5882,6 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 
-### CodepageFactory
-| 组件类名                           | 说明 |
-| ---------------------------------- | ---- |
-| `cn.org.expect.io.CodepageFactory` |      |
-
-
-
 ### CollectionExtension
 | 组件类名                                          | 说明 |
 | ------------------------------------------------- | ---- |
@@ -6058,12 +6151,10 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 ### EasyBeanFactory
 | 组件类名                                                 | 说明 |
 | -------------------------------------------------------- | ---- |
-| `cn.org.expect.io.CodepageFactory`                       |      |
 | `cn.org.expect.zip.CompressFactory`                      |      |
 | `cn.org.expect.database.internal.DatabaseDialectFactory` |      |
 | `cn.org.expect.database.export.ExtractWriterFactory`     |      |
 | `cn.org.expect.increment.IncrementReplaceFactory`        |      |
-| `cn.org.expect.day.NationalHolidayFactory`               |      |
 | `cn.org.expect.os.OSFactory`                             |      |
 | `cn.org.expect.database.export.inernal.ReaderFactory`    |      |
 | `cn.org.expect.io.TableLineRulerFactory`                 |      |
@@ -6083,14 +6174,6 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 | 组件类名                               | 说明 |
 | -------------------------------------- | ---- |
 | `cn.org.expect.ioc.DefaultEasyContext` |      |
-
-
-
-### EasyBeanListener
-| 组件类名                                   | 说明 |
-| ------------------------------------------ | ---- |
-| `cn.org.expect.io.CodepageFactory`         |      |
-| `cn.org.expect.day.NationalHolidayFactory` |      |
 
 
 
@@ -6572,20 +6655,6 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 | 组件类名                                    | 说明 |
 | ------------------------------------------- | ---- |
 | `cn.org.expect.database.mysql.MysqlDialect` |      |
-
-
-
-### NationalChinaHoliday
-| 组件类名                                 | 说明                             |
-| ---------------------------------------- | -------------------------------- |
-| `cn.org.expect.day.NationalChinaHoliday` | 从2013年开始至今的中国法定节假日 |
-
-
-
-### NationalHolidayFactory
-| 组件类名                                   | 说明 |
-| ------------------------------------------ | ---- |
-| `cn.org.expect.day.NationalHolidayFactory` |      |
 
 
 
@@ -7288,14 +7357,6 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 
-### Codepage
-**容器使用组件工厂 `cn.org.expect.io.CodepageFactory` 创建实例对象**
-| 组件类名                           | 说明 |
-| ---------------------------------- | ---- |
-| `cn.org.expect.io.CodepageFactory` |      |
-
-
-
 ### Compress
 **容器使用组件工厂 `cn.org.expect.zip.CompressFactory` 创建实例对象**
 | 组件类名                         | 说明 |
@@ -7315,14 +7376,6 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 | `cn.org.expect.database.export.inernal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
 | `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
 | `cn.org.expect.database.export.inernal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
-
-
-
-### NationalHoliday
-**容器使用组件工厂 `cn.org.expect.day.NationalHolidayFactory` 创建实例对象**
-| 组件类名                                 | 说明                             |
-| ---------------------------------------- | -------------------------------- |
-| `cn.org.expect.day.NationalChinaHoliday` | 从2013年开始至今的中国法定节假日 |
 
 
 

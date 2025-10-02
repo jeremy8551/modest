@@ -8,6 +8,7 @@ import cn.org.expect.ioc.EasyBeanRepository;
 import cn.org.expect.ioc.EasyClassScan;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.EasyContextAware;
+import com.google.auto.service.AutoService;
 
 /**
  * 类扫描规则 <br>
@@ -16,6 +17,7 @@ import cn.org.expect.ioc.EasyContextAware;
  * @author jeremy8551@gmail.com
  * @createtime 2021-02-08
  */
+@AutoService(EasyClassScan.class)
 public class BeanClassScan implements EasyClassScan, EasyContextAware {
 
     protected List<EasyBeanAnnotation> list;

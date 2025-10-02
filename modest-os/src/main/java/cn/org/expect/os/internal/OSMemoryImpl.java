@@ -11,7 +11,9 @@ import cn.org.expect.os.OSMemory;
 public class OSMemoryImpl implements OSMemory {
 
     private BigDecimal total;
+
     private BigDecimal free;
+
     private BigDecimal active;
 
     public OSMemoryImpl() {

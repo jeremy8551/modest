@@ -1,9 +1,16 @@
 package cn.org.expect.os.ssh;
 
-import java.awt.*;
+import java.awt.Container;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.io.InputStream;
 import java.io.OutputStream;
-import javax.swing.*;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPasswordField;
+import javax.swing.JTextField;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -110,6 +117,7 @@ public class SudoTest {
         }
 
         String passwd;
+
         JTextField passwordField = (JTextField) new JPasswordField(20);
 
         public String getPassphrase() {
@@ -136,6 +144,7 @@ public class SudoTest {
         }
 
         final GridBagConstraints gbc = new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0);
+
         private Container panel;
 
         public String[] promptKeyboardInteractive(String destination, String name, String instruction, String[] prompt, boolean[] echo) {

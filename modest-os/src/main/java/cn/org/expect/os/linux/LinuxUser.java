@@ -11,12 +11,19 @@ import cn.org.expect.util.StringUtils;
  */
 public class LinuxUser implements OSUser {
     private String name;
+
     private String password;
+
     private String id;
+
     private String group;
+
     private String memo;
+
     private String home;
+
     private String shell;
+
     private List<String> profiles = new ArrayList<String>();
 
     public LinuxUser() {

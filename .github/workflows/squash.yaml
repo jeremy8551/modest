@@ -1,0 +1,106 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+name: Squash Merge
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    strategy:
+      fail-fast: true
+
+    runs-on: ubuntu-latest
+
+    # 环境变量
+    env:
+      TZ: Asia/Shanghai   # 设置时区为中国标准时间
+
+    steps:
+      # 拉取代码
+      - name: Git clone
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 拉取所以提交记录
+          token: ${{ secrets.ACTION_REPO_TOKEN }} # GitHub 生成的拥有 repo 权限的 token，https://github.com/settings/tokens
+
+      - name: Squash Merge
+        run: |
+          # 保存当前分支名
+          current_branch=$(git rev-parse --abbrev-ref HEAD)
+          if [[ "$current_branch" == "feature_"* ]]; then
+            echo "当前分支名: ${current_branch} "
+          else
+            echo "❌ 当前分支 $current_branch 不以 feature_ 为前缀"
+            exit 1
+          fi
+          
+          # 查找最新提交记录中的版本号
+          version_prefix=$(git log -1 --pretty=format:"%B" | grep -oE '^v[0-9]+\.[0-9]+\.[0-9]+([[:space:]]|$)')
+          if [ -z "$version_prefix" ]; then
+            echo "❌ 没有找到 v1.x.x 的版本号"
+            exit 1
+          else
+            echo "查找最新提交记录中的版本号: $version_prefix"
+          fi
+          
+          # 找到最早以 version_prefix 开头的提交记录的哈希
+          first_commit=
+          mergedMessage="$version_prefix"
+          for commit in $(git rev-list --all); do
+            echo "提交: $commit"
+          
+            # 读取提交信息
+            commitMessage=$(git log -1 --pretty=format:"%s" $commit)
+            if [[ "$commitMessage" == "$version_prefix"* ]]; then
+              echo "匹配提交: $commit "
+          
+              commitMessage=$(git log -1 --pretty=format:"%B" $commit)
+              echo "清理前的日志: $commitMessage "
+          
+              # 删除开头的 version_prefix，并去掉前后空格和换行
+              cleanMessage=$(echo "${commitMessage#$version_prefix}" | xargs)
+              echo "清理后的消息: $cleanMessage"
+          
+              mergedMessage="$mergedMessage"$'\n'"$cleanMessage"
+              first_commit=$commit
+            else
+              break
+            fi
+          done
+
+          if [ -z "$first_commit" ]; then
+            echo "❌ 没有找到以 $version_prefix 开头的提交"
+            exit 2
+          else
+            echo "第一个匹配提交: $first_commit"
+          fi
+
+          # 创建临时分支，切到指定提交的父提交
+          if git rev-parse ${first_commit}^ >/dev/null 2>&1; then
+            git checkout -b squash-temp ${first_commit}^
+          else
+            # 新建一个空分支
+            git checkout --orphan squash-temp
+          fi
+          
+          # 把已在 <current_branch> 分支上提交，但在当前分支不存在的所有修改，打平（squash）成一个大改动
+          git merge --squash $current_branch
+          
+          git config --global user.name "Jeremy"
+          git config --global user.email "jeremy8551@gmail.com"
+          
+          # 提交合并后的内容
+          git commit -m "$mergedMessage"
+          
+          # 回到原分支，并用 squash 后的分支覆盖
+          git checkout $current_branch
+          git reset --hard squash-temp
+          
+          # 删除临时分支
+          git branch -D squash-temp
+          
+          # 强制推送
+          git push origin HEAD --force-with-lease

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<holidays>
+    <locale name="zh_CN" description="2025年5月">
+        <date value="2025-05-08" name="红十字日" reset="true"/>
+    </locale>
+</holidays>

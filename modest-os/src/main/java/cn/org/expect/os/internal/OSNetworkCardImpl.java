@@ -8,17 +8,29 @@ import cn.org.expect.os.OSNetworkCard;
 public class OSNetworkCardImpl implements OSNetworkCard {
 
     private int type;
+
     private boolean enabled;
+
     private String name;
+
     private String ipAddress;
+
     private String ip6Address;
+
     private String ip6Gateway;
+
     private String mask;
+
     private String gateway;
+
     private String macAddress;
+
     private String dns1;
+
     private String dns2;
+
     private boolean isDhcp;
+
     private boolean isStatic;
 
     public OSNetworkCardImpl() {

@@ -11,10 +11,15 @@ import cn.org.expect.os.OSDisk;
 public class OSDiskImpl implements OSDisk {
 
     private String id;
+
     private String amount;
+
     private String type;
+
     private BigDecimal total;
+
     private BigDecimal free;
+
     private BigDecimal used;
 
     public OSDiskImpl() {

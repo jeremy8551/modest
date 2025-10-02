@@ -7,8 +7,11 @@ import cn.org.expect.util.Settings;
 public class StandardDatabaseTableDDL implements DatabaseTableDDL {
 
     private String table;
+
     private StandardDatabaseDDL comment;
+
     private StandardDatabaseDDL index;
+
     private StandardDatabaseDDL primarykey;
 
     /**

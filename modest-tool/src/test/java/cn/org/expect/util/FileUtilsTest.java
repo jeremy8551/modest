@@ -407,6 +407,11 @@ public class FileUtilsTest {
     }
 
     @Test
+    public void testJoinPath() {
+        Assertions.assertEquals(FileUtils.joinPath(File.separator + "home" + File.separator + "User", FileUtilsTest.class), "home" + File.separator + "User" + File.separator + "cn" + File.separator + "org" + File.separator + "expect" + File.separator + "util" + File.separator);
+    }
+
+    @Test
     public void testRemoveEndFileSeparator() {
         Assertions.assertEquals("\\home\\test\\shell\\mulu", FileUtils.rtrimFolderSeparator("\\home\\test\\shell\\mulu\\"));
         Assertions.assertEquals("\\home\\test\\shell\\mulu", FileUtils.rtrimFolderSeparator("\\home\\test\\shell\\mulu\\/"));
@@ -816,6 +821,36 @@ public class FileUtilsTest {
         // 重复创建同一个文件来测试
         File newfile = FileUtils.createTempFile("testfile.txt");
         Assertions.assertNotEquals(tempfile, newfile);
+    }
+
+    @Test
+    public void testCodepages() throws IOException {
+        // 加载用户根目录下的 holidays.xml 配置文件进行测试
+        File home = Codepage.CODEPAGE_CONFIG_DIR;
+        FileUtils.delete(home);
+        FileUtils.createDirectory(home);
+        FileUtils.write(new File(home, "codepages.xml"), CharsetName.UTF_8, false, ClassUtils.getClassLoader().getResourceAsStream("homeFile/codepages.xml"));
+
+        // 加载用户自定义目录下的国家法定假日配置文件
+        File userDefine = new File(FileUtils.joinPath(Settings.getProjectHome().getAbsolutePath(), "userDefine"));
+        FileUtils.delete(userDefine);
+        FileUtils.createDirectory(userDefine);
+        FileUtils.write(new File(userDefine, "codepages1.xml"), CharsetName.UTF_8, false, ClassUtils.getClassLoader().getResourceAsStream("user/codepages1.xml"));
+        FileUtils.write(new File(userDefine, "codepages2.xml"), CharsetName.UTF_8, false, ClassUtils.getClassLoader().getResourceAsStream("user/codepages2.xml"));
+        System.setProperty(NationalHolidays.PROPERTY_HOLIDAY, userDefine.getAbsolutePath());
+
+        // 重新加载
+        FileUtils.CODEPAGE.reload();
+
+        Assertions.assertEquals("UTF-8", FileUtils.getCodepage("1208"));
+        Assertions.assertEquals("UTF-8", FileUtils.getCodepage(1208));
+        Assertions.assertEquals("GBK", FileUtils.getCodepage(1386));
+        Assertions.assertEquals("1208", FileUtils.getCodepage("UTF-8"));
+        Assertions.assertEquals("1386", FileUtils.getCodepage("GBK"));
+        Assertions.assertEquals("377", FileUtils.getCodepage("IBM0377"));
+        Assertions.assertEquals("378", FileUtils.getCodepage("IBM0378"));
+        Assertions.assertEquals("379", FileUtils.getCodepage("IBM0379"));
+        Assertions.assertEquals("380", FileUtils.getCodepage("IBM0380"));
     }
 
     private static class FileProxy extends File {

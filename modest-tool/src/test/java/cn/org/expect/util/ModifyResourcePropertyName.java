@@ -16,6 +16,7 @@ import java.util.Properties;
 public class ModifyResourcePropertyName {
 
     private final static Map<String, Integer> map1 = new HashMap<String, Integer>();
+
     private final static Map<File, Properties> map2 = new HashMap<File, Properties>();
 
     public static void main(String[] args) throws IOException {
@@ -196,6 +197,7 @@ public class ModifyResourcePropertyName {
 
     private static class JavaSource {
         private File file;
+
         private String fileContent;
 
         public JavaSource(File file, String fileContent) {
@@ -206,8 +208,11 @@ public class ModifyResourcePropertyName {
 
     private static class Task {
         private String oldKey;
+
         private String newKey;
+
         private String uuid;
+
         private List<JavaSource> list;
 
         public Task(String oldKey, List<JavaSource> list) {

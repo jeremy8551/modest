@@ -12,20 +12,35 @@ import cn.org.expect.util.Dates;
 @EasyBean
 public class MailImpl implements Mail {
     private MailFolder folder;
+
     private String id;
+
     private int folderIndex;
+
     private String title;
+
     private String senderAddress;
+
     private String senderName;
+
     private Date sendTime;
+
     private Date receivedTime;
+
     private List<String> receiverAddress;
+
     private List<String> receiverNames;
+
     private List<Date> receiverReadTime;
+
     private String text;
+
     private String html;
+
     private boolean isNew;
+
     private boolean hasRead;
+
     private List<MailAttachment> attachments;
 
     public String getId() {

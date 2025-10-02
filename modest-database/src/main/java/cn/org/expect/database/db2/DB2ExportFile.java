@@ -79,7 +79,6 @@ public class DB2ExportFile extends CommonTextTableFile implements TextTableFile 
             public String replace(TextTableLine line, int position, String value) {
                 return DB2ExportFile.replaceDB2FieldValue(line.getContent(), position, value);
             }
-
         };
     }
 

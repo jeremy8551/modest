@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-ioc-test</artifactId>
+    <name>${project.artifactId}</name>
     <description>IOC容器测试工具</description>
 
     <dependencies>

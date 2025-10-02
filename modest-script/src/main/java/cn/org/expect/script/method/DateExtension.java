@@ -50,6 +50,15 @@ public class DateExtension {
     }
 
     /**
+     * 返回日期从1970年开始的毫秒
+     * @param value 对象（字符串、日期、时间、long、日历）
+     * @return 毫秒
+     */
+    public static long getTime(Object value) {
+        return Dates.parse(value).getTime();
+    }
+
+    /**
      * 返回小时
      *
      * @param value 对象（字符串、日期、时间、long、日历）

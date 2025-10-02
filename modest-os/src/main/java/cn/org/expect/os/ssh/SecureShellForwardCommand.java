@@ -36,15 +36,20 @@ public class SecureShellForwardCommand implements OSConnectCommand {
 
     /** 代理服务器配置 */
     protected String proxySSHHost;
+
     protected int proxySSHPort;
+
     protected String proxySSHUsername;
+
     protected String proxySSHPassword;
 
     /** 分配的本地端口 */
     protected int localport;
 
     protected String charsetName;
+
     protected OutputStream stdout;
+
     protected OutputStream stderr;
 
     /**

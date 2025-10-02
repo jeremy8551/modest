@@ -46,8 +46,10 @@ public class UnusedImages {
                 File[] files = imgDir.listFiles();
                 if (files != null) {
                     for (File imgfile : files) {
-                        String filepath = imgfile.getName();
-                        if (!content.contains(filepath)) {
+                        String name = imgfile.getName();
+                        String hexName = StringUtils.encodeJvmUtf8HexString(name);
+                        String hexName1 = StringUtils.replaceAll(hexName, " ", "%20");
+                        if (!content.contains(name) && StringUtils.indexOf(content, hexName, 0, true) == -1 && StringUtils.indexOf(content, hexName1, 0, true) == -1) {
                             log.info("删除 " + file.getAbsolutePath() + " 中没有用到图片 " + imgfile.getAbsolutePath() + " " + (FileUtils.deleteFile(imgfile) ? "[success]" : "[fail]"));
                             continue;
                         }

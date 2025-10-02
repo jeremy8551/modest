@@ -1,0 +1,148 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+name: Automatic Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      skipTest:
+        description: 'SkipTest'
+        required: true
+        default: 'false'
+        type: choice
+        options:
+          - 'false'
+          - 'true'
+  push:
+    branches:
+      - "*"
+
+jobs:
+  build:
+
+    strategy:
+      fail-fast: false
+
+    runs-on: ubuntu-latest
+
+    # 环境变量
+    env:
+      TZ: Asia/Shanghai   # 设置时区为中国标准时间
+
+    steps:
+      # 拉取代码
+      - name: Git clone
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+
+      # 安装 JDK8
+      - name: Set up JDK 8
+        id: jdk8
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+          cache: 'maven'
+
+      # 安装 JDK17
+      - name: Set up JDK 17
+        id: jdk17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+
+      # 生成 toolchains.xml 并写入 ~/.m2
+      - name: Configure Maven Toolchains
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/toolchains.xml <<EOF
+          <toolchains>
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>5</version>
+              </provides>
+              <configuration>
+                <jdkHome>${{ steps.jdk8.outputs.path }}</jdkHome>
+              </configuration>
+            </toolchain>
+          
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>6</version>
+              </provides>
+              <configuration>
+                <jdkHome>${{ steps.jdk8.outputs.path }}</jdkHome>
+              </configuration>
+            </toolchain>
+          
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+              <version>8</version>
+              </provides>
+              <configuration>
+                <jdkHome>${{ steps.jdk8.outputs.path }}</jdkHome>
+              </configuration>
+            </toolchain>
+          
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>17</version>
+              </provides>
+              <configuration>
+                <jdkHome>${{ steps.jdk17.outputs.path }}</jdkHome>
+              </configuration>
+            </toolchain>
+          </toolchains>
+          EOF
+
+      - name: Verify Toolchains.xml
+        run: cat ~/.m2/toolchains.xml
+
+      - name: Build with Maven
+        run: |
+          echo "mvn clean install -Dmaven.test.skip=${{ github.event.inputs.skipTest }}"
+          mvn clean install -Dmaven.test.skip=${{ github.event.inputs.skipTest }}
+
+      # 成功时发邮件
+      - name: Send mail (success)
+        if: success()   # 只有成功时才会执行
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_PASSWORD }}
+          subject: "✅ Modest 项目构建完成"
+          to: "jeremy8551@qq.com"
+          from: "GitHub Actions <${{ secrets.GMAIL_USERNAME }}@gmail.com>"
+          body: |
+            Modest 项目构建完成 ✅
+            mvn clean install -Dmaven.test.skip=${{ github.event.inputs.skipTest }}
+            请登录 GitHub Actions 查看详细日志: 
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      # 失败时发邮件
+      - name: Send mail (failure)
+        if: failure()   # 只有失败时才会执行
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_PASSWORD }}
+          subject: "❌ Modest 项目构建失败"
+          to: "jeremy8551@qq.com"
+          from: "GitHub Actions <${{ secrets.GMAIL_USERNAME }}@gmail.com>"
+          body: |
+            Modest 项目构建失败 ❌
+            mvn clean install -Dmaven.test.skip=${{ github.event.inputs.skipTest }}
+            请登录 GitHub Actions 查看详细日志: 
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}

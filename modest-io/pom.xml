@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-io</artifactId>
+    <name>${project.artifactId}</name>
     <description>IO流工具</description>
 
     <dependencies>

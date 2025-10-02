@@ -24,10 +24,15 @@ import cn.org.expect.util.Terminator;
 public class ContainerCommandReader extends Terminator implements EasyJobReader {
 
     private final UniversalScriptContext context;
+
     private final UniversalScriptSession session;
+
     private final UniversalScriptStdout stdout;
+
     private final UniversalScriptStderr stderr;
+
     private EasyJob job;
+
     private final List<UniversalScriptCommand> list;
 
     /**

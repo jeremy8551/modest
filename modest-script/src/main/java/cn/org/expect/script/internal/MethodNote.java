@@ -68,6 +68,7 @@ public class MethodNote {
 
     public static class Property {
         private final String name;
+
         private final String value;
 
         public Property(String name, String value) {

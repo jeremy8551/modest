@@ -9,11 +9,13 @@ import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
+import com.google.auto.service.AutoService;
 
+@AutoService(ResourceMessageBundle.class)
 public class ResourceMessageInternalBundle implements ResourceMessageBundle {
 
     /** 资源文件名 */
-    public final static String RESOURCE_NAME = (Settings.getPackageName() + ".Messages").replace('.', '/');
+    public final static String RESOURCE_NAME = Settings.getPropertyName("Messages").replace('.', '/');
 
     /** 属性集合 */
     protected final Properties properties = new Properties();

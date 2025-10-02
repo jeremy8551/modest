@@ -90,6 +90,7 @@ public class SPI<E> {
 
     private static class InstanceIterator<E> implements Iterator<E> {
         private final Iterator<Map.Entry<String, E>> knownProviders;
+
         private final LazyIterator<E> iterator;
 
         public InstanceIterator(Iterator<Map.Entry<String, E>> knownProviders, LazyIterator<E> iterator) {
@@ -123,10 +124,15 @@ public class SPI<E> {
      */
     private static class LazyIterator<E> implements Iterator<E> {
         private final Class<E> service;
+
         private final ClassLoader classLoader;
+
         private Enumeration<URL> configs = null;
+
         private Iterator<String> pending = null;
+
         private String nextName = null;
+
         private final LinkedHashMap<String, E> providers;
 
         private LazyIterator(Class<E> service, ClassLoader classLoader, LinkedHashMap<String, E> providers) {
@@ -173,7 +179,8 @@ public class SPI<E> {
             try {
                 is = url.openStream();
                 in = new BufferedReader(new InputStreamReader(is, CharsetName.UTF_8));
-                for (int lineno = 1; (lineno = this.parseLine(in, lineno, names)) >= 0; ) ;
+                for (int lineno = 1; (lineno = this.parseLine(in, lineno, names)) >= 0; ) {
+                }
                 return names.iterator();
             } catch (IOException x) {
                 throw new RuntimeException(service.getName() + ": Error reading configuration file", x);

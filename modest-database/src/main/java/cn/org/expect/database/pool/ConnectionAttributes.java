@@ -22,23 +22,39 @@ public class ConnectionAttributes implements Cloneable {
     private final static Log log = LogFactory.getLog(ConnectionAttributes.class);
 
     private Map<String, Class<?>> types;
+
     private Properties clientInfo;
+
     private boolean autoCommit;
+
     private String catalog;
+
     private int holdability;
+
     private int networkTimeout;
+
     private boolean readOnly;
+
     private String schema;
+
     private int transactionIsolation;
 
     private boolean hasAutoCommit;
+
     private boolean hasCatalog;
+
     private boolean hasHoldability;
+
     private boolean hasNetworkTimeout;
+
     private boolean hasReadOnly;
+
     private boolean hasSchema;
+
     private boolean hasTransactionIsolation;
+
     private boolean hasClientInfo;
+
     private boolean hasTypeMap;
 
     private EasyContext context;

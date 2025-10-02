@@ -5,10 +5,15 @@ import cn.org.expect.util.CharTable;
 public class StandardResultSet implements ResultSet {
 
     private long total;
+
     private long commit;
+
     private long delete;
+
     private long reject;
+
     private long skip;
+
     private long error;
 
     public StandardResultSet() {

@@ -19,7 +19,9 @@ import cn.org.expect.ioc.impl.DefaultBeanEntryCollection;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.StringUtils;
+import com.google.auto.service.AutoService;
 
+@AutoService(EasyBeanEntryCollection.class)
 public class DatabaseDialectCollection implements EasyBeanEntryCollection, EasyContextAware {
     private final static Log log = LogFactory.getLog(DatabaseDialectCollection.class);
 
@@ -200,6 +202,7 @@ public class DatabaseDialectCollection implements EasyBeanEntryCollection, EasyC
 
     public static class DialectEntry extends DefaultBeanEntry {
         private final String major;
+
         private final String minor;
 
         public DialectEntry(EasyBeanEntry entry, String major, String minor) {

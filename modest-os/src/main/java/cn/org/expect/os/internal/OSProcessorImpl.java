@@ -10,11 +10,17 @@ import cn.org.expect.os.OSCpu;
 public class OSProcessorImpl implements OSCpu {
 
     private String id;
+
     private String modeName;
+
     private int cores;
+
     private String coreId;
+
     private int siblings;
+
     private String physicalId;
+
     private BigDecimal cacheSize;
 
     public OSProcessorImpl() {

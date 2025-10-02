@@ -8,6 +8,7 @@ import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.Attribute;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.Ensure;
+import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 
 /**
@@ -46,7 +47,7 @@ public class TextTableFileFactory implements EasyBeanFactory<TextTableFile> {
         } else if (attribute.contains("charset")) {
             file.setCharsetName(attribute.getAttribute("charset"));
         } else if (attribute.contains("codepage")) {
-            file.setCharsetName(context.getBean(Codepage.class).get(attribute.getAttribute("codepage")));
+            file.setCharsetName(FileUtils.getCodepage(StringUtils.trimBlank(attribute.getAttribute("codepage"))));
         }
 
         if (attribute.contains("chardel")) {

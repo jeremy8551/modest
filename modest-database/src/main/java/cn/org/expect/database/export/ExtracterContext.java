@@ -17,25 +17,45 @@ import cn.org.expect.printer.Progress;
 public class ExtracterContext {
 
     private String name;
+
     private ExportEngine extracter;
+
     private List<ExtractUserListener> listener;
+
     private JdbcConverterMapper converters;
+
     private TextTable format;
+
     private DataSource dataSource;
+
     private File messagefile;
+
     private Progress progress;
+
     private String target;
+
     private String source;
+
     private String charFilter;
+
     private String escapes;
+
     private String dateformat;
+
     private String timeformat;
+
     private String timestampformat;
+
     private int cacheLines;
+
     private long maximum;
+
     private boolean append;
+
     private boolean title;
+
     private Object httpServletRequest;
+
     private Object httpServletResponse;
 
     /**

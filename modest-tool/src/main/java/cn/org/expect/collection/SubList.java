@@ -11,8 +11,11 @@ public class SubList<E> extends RandomAccessList<E> {
     private final static long serialVersionUID = 1L;
 
     private final RandomAccessList<E> list;
+
     private final int offset;
+
     private int size;
+
     private int expectedModCount;
 
     public SubList(RandomAccessList<E> list, int from, int index) {
@@ -84,11 +87,13 @@ public class SubList<E> extends RandomAccessList<E> {
     }
 
     public boolean addAll(int index, Collection<? extends E> c) {
-        if (index < 0 || index > size)
+        if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
         int cSize = c.size();
-        if (cSize == 0)
+        if (cSize == 0) {
             return false;
+        }
 
         checkFor();
         list.addAll(offset + index, c);
@@ -104,8 +109,9 @@ public class SubList<E> extends RandomAccessList<E> {
 
     public ListIterator<E> listIterator(final int index) {
         checkFor();
-        if (index < 0 || index > size)
+        if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
+        }
 
         return new ListIterator<E>() {
             private ListIterator<E> i = list.listIterator(index + offset);
@@ -115,10 +121,11 @@ public class SubList<E> extends RandomAccessList<E> {
             }
 
             public E next() {
-                if (hasNext())
+                if (hasNext()) {
                     return i.next();
-                else
+                } else {
                     throw new NoSuchElementException();
+                }
             }
 
             public boolean hasPrevious() {
@@ -126,10 +133,11 @@ public class SubList<E> extends RandomAccessList<E> {
             }
 
             public E previous() {
-                if (hasPrevious())
+                if (hasPrevious()) {
                     return i.previous();
-                else
+                } else {
                     throw new NoSuchElementException();
+                }
             }
 
             public int nextIndex() {

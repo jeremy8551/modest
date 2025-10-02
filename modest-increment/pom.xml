@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-increment</artifactId>
+    <name>${project.artifactId}</name>
     <description>数据文件增量剥离工具</description>
 
     <dependencies>
@@ -17,7 +18,7 @@
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-database</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-ioc-test</artifactId>

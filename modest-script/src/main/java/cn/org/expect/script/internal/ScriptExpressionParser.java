@@ -31,9 +31,13 @@ import cn.org.expect.util.StringUtils;
 public class ScriptExpressionParser extends Parser {
 
     private final UniversalScriptSession session;
+
     private final UniversalScriptContext context;
+
     private final UniversalScriptStdout stdout;
+
     private final UniversalScriptStderr stderr;
+
     private final UniversalScriptAnalysis analysis;
 
     /**

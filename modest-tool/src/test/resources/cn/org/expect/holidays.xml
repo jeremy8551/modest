@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<holidays>
+    <locale name="en_US" description="2025年圣诞节与元旦">
+        <date value="2025-12-24" name="圣诞节" reset="true"/>
+        <date value="2025-12-25" name="圣诞节" reset="true"/>
+        <date value="2025-12-26" name="圣诞节" reset="true"/>
+        <date value="2025-12-31" name="元旦" reset="true"/>
+    </locale>
+</holidays>

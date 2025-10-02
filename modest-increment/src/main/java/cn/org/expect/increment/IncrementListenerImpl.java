@@ -19,13 +19,21 @@ import cn.org.expect.util.StringUtils;
 public class IncrementListenerImpl implements IncrementListener {
 
     private Printer out;
+
     private int[] newComparePosition;
+
     private int[] oldComparePosition;
+
     private int[] newIndexPosition;
+
     private int[] oldIndexPosition;
+
     private TextTableFile oldfile;
+
     private TextTableFile newfile;
+
     private String oldFilepath;
+
     private String newFilepath;
 
     public IncrementListenerImpl(Printer out, IncrementPosition position, TextTableFile newfile, TextTableFile oldfile) {

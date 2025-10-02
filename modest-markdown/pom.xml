@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-markdown</artifactId>
+    <name>${project.artifactId}</name>
     <description>markdown工具（批量修改文档与图片名、删除未使用图片）</description>
 
     <dependencies>

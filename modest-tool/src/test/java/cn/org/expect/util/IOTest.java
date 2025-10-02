@@ -122,7 +122,6 @@ public class IOTest {
             public void close() throws IOException {
                 Assert.assertTrue(true);
             }
-
         });
     }
 

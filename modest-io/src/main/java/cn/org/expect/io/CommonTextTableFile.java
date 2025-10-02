@@ -235,7 +235,7 @@ public class CommonTextTableFile implements TextTableFile, EasyContextAware {
             && this.file == null ? //
             ((TextTableFile) obj).getFile() == null //
             : //
-            this.file.equals(((TextTableFile) obj).getFile()) // 文件相同
+                this.file.equals(((TextTableFile) obj).getFile()) // 文件相同
             ;
     }
 

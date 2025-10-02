@@ -99,8 +99,11 @@ public class ApacheEmailCommand implements MailCommand {
     }
 
     private String host;
+
     private String username;
+
     private String password;
+
     private String charsetName;
 
     public String getCharsetName() {

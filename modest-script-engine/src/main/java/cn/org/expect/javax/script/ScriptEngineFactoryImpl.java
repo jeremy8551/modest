@@ -6,7 +6,9 @@ import javax.script.ScriptEngineFactory;
 
 import cn.org.expect.script.UniversalScriptEngineFactory;
 import cn.org.expect.util.Ensure;
+import com.google.auto.service.AutoService;
 
+@AutoService(ScriptEngineFactory.class)
 public class ScriptEngineFactoryImpl implements ScriptEngineFactory {
 
     protected UniversalScriptEngineFactory factory;

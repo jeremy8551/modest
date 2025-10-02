@@ -12,6 +12,7 @@ import cn.org.expect.util.ObjectUtils;
 public class StandardRowSetInternal implements RowSetInternal {
 
     private Statement statement;
+
     private ResultSet resultSet;
 
     public StandardRowSetInternal(Statement statement, ResultSet resultSet) {

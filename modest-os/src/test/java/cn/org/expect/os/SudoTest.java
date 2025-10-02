@@ -71,7 +71,9 @@ public class SudoTest {
         while (true) {
             while (in.available() > 0) {
                 int i = in.read(tmp, 0, 1024);
-                if (i < 0) break;
+                if (i < 0) {
+                    break;
+                }
                 log.info(new String(tmp, 0, i));
             }
 

@@ -53,7 +53,6 @@ public class MailPop3ClientTest {
                 pop3.logout();
                 pop3.disconnect();
             }
-
         } catch (Exception e) {
             log.error(e.getLocalizedMessage(), e);
             Assert.fail();

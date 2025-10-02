@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-printer</artifactId>
+    <name>${project.artifactId}</name>
     <description>输出工具</description>
 
     <dependencies>

@@ -758,7 +758,9 @@ public class SecureShellCommand extends Terminator implements OSSecureShellComma
      */
     static class DefaultUserInfo implements UserInfo {
         private final Log log;
+
         private String username;
+
         private String password;
 
         public DefaultUserInfo(Log log) {

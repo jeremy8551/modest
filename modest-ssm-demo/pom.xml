@@ -9,8 +9,9 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>modest-ssm-demo</artifactId>
     <packaging>jar</packaging>
+    <artifactId>modest-ssm-demo</artifactId>
+    <name>${project.artifactId}</name>
     <description>Spring3+SpringMVC+Mybatis集成演示</description>
 
     <properties>

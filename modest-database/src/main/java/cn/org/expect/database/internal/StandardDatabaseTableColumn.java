@@ -21,25 +21,45 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
     private final static Log log = LogFactory.getLog(StandardDatabaseTableColumn.class);
 
     private String name;
+
     private int sqlType;
+
     private String typeName;
+
     private int length;
+
     private String remarks;
+
     private String defaultValue;
+
     private int maxLength;
+
     private int position;
+
     private String isNullAble;
+
     private int digits;
+
     private int numPrecRadix;
+
     private String tableName;
+
     private String tableSchema;
+
     private String tableCatalog;
+
     private String tableFullName;
+
     private String autoIncrement;
+
     private DatabaseType type;
+
     private String fullTypeName;
+
     private boolean isChar;
+
     private boolean isFloat;
+
     private boolean isNchar;
 
     /**

@@ -31,11 +31,17 @@ public class CreateBeanTest {
     public static class Word {
 
         private int no;
+
         private String name;
+
         private Long test;
+
         private EasyContext context;
+
         private Integer i1;
+
         private boolean aBoolean;
+
         private int[] array;
 
         public Word(int no, String name, Long test, EasyContext context, Integer i1, boolean aBoolean, int[] array) {

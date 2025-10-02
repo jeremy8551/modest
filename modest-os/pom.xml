@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-os</artifactId>
+    <name>${project.artifactId}</name>
     <description>操作系统与命令工具</description>
 
     <dependencies>

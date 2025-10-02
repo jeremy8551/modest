@@ -14,22 +14,39 @@ import cn.org.expect.util.Dates;
 public class OSFileImpl implements OSFile {
 
     private String name;
+
     private String parent;
+
     private String absolutePath;
+
     private long size;
+
     private Date createTime;
+
     private Date modifyTime;
+
     private boolean isDir;
+
     private boolean isLink;
+
     private boolean isFile;
+
     private boolean isBlk;
+
     private boolean isPipe;
+
     private boolean isSock;
+
     private boolean isChr;
+
     private String link;
+
     private String longname;
+
     private boolean canRead;
+
     private boolean canWrite;
+
     private boolean canExecute;
 
     public OSFileImpl() {

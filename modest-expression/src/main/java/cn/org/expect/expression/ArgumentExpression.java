@@ -33,6 +33,7 @@ import cn.org.expect.util.StringUtils;
  */
 public class ArgumentExpression implements Serializable, Cloneable {
     private final static Log log = LogFactory.getLog(ArgumentExpression.class);
+
     private final static long serialVersionUID = 1L;
 
     /** 选项名与选项值的映射 */

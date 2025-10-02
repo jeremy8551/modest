@@ -27,9 +27,13 @@ import cn.org.expect.util.StringUtils;
 public class SortTableFileCommand extends AbstractTraceCommand {
 
     private TableFileSorter tfs;
+
     private String filepath;
+
     private String filetype;
+
     private OrderByExpression[] orders;
+
     private CommandAttribute map;
 
     public SortTableFileCommand(UniversalCommandCompiler compiler, String script, String filepath, String filetype, OrderByExpression[] orders, CommandAttribute map) {

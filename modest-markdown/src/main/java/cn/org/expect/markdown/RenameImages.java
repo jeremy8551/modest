@@ -49,7 +49,7 @@ public class RenameImages {
                 File[] files = FileUtils.array(imgDir.listFiles());
                 int number = this.getFileNumber(files) + 1;
                 if (number > 0) {
-                    log.info("目录 " + imgDir.getName() + " 起始图片序号是: " + number);
+                    log.info("目录 " + imgDir.getAbsolutePath() + " 起始图片序号是: " + number);
                 }
 
                 for (File imgfile : files) {

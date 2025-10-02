@@ -9,22 +9,39 @@ import cn.org.expect.database.Jdbc;
 public class StandardDatabaseType implements DatabaseType {
 
     private String name;
+
     private Integer sqlType;
+
     private Integer sqlDataType;
+
     private Integer precision;
+
     private String literalPrefix;
+
     private String literalSuffix;
+
     private String createParams;
+
     private Integer nullAble;
+
     private Integer caseSesitive;
+
     private Integer maximumScale;
+
     private Integer minimumScale;
+
     private Integer numberPrecRadix;
+
     private Integer fixedPrecScale;
+
     private Integer searchable;
+
     private Integer autoIncrement;
+
     private Integer unsignedAttribute;
+
     private Integer sqlDateTimeSub;
+
     private String localTypeName;
 
     /**

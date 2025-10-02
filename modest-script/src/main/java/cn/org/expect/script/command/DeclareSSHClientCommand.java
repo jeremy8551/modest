@@ -25,9 +25,13 @@ public class DeclareSSHClientCommand extends AbstractCommand {
 
     /** 客户端名 */
     private String name;
+
     private String host;
+
     private String port;
+
     private String username;
+
     private String password;
 
     public DeclareSSHClientCommand(UniversalCommandCompiler compiler, String command, String name, String host, String port, String username, String password) {

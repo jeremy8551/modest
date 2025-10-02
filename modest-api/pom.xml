@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-api</artifactId>
+    <name>${project.artifactId}</name>
     <description>JDK-API扩展</description>
 
     <properties>

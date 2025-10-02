@@ -111,6 +111,9 @@ public class Dates {
     /** 周末 */
     public final static String Sunday = "Sunday";
 
+    /** 国家法定假日 */
+    public final static NationalHolidays HOLIDAYS = new NationalHolidays();
+
     /**
      * 使当前线程进入休眠
      *
@@ -2437,6 +2440,107 @@ public class Dates {
 
         int t = Dates.getDayOfWeek(date);
         return t == 6 || t == 7;
+    }
+
+    /**
+     * 是否为中国法定假日(周末和法定假日, 不包含法定补休日)
+     *
+     * @param date 日期
+     * @return 返回true表示日期是休息日 false表示日期是工作日
+     */
+    public static boolean isRestDay(Date date) {
+        return Dates.isRestDay("zh_CN", date);
+    }
+
+    /**
+     * 是否为中国法定工作日(不包含周末和法定假日, 包含法定补休日)
+     *
+     * @param date 日期
+     * @return 返回true表示日期是休息日 false表示日期是工作日
+     */
+    public static boolean isWorkDay(Date date) {
+        return Dates.isWorkDay("zh_CN", date);
+    }
+
+    /**
+     * 是否为休息日(周末和法定假日, 不包含法定补休日)
+     *
+     * @param locale 语言与国家地区信息，如: zh_CN, en_US
+     * @param date   日期
+     * @return 返回true表示日期是休息日 false表示日期是工作日
+     */
+    public static boolean isRestDay(Locale locale, Date date) {
+        String key = toNation(locale);
+        return Dates.isRestDay(key, date);
+    }
+
+    /**
+     * 是否为工作日(不包含周末和法定假日, 包含法定补休日)
+     *
+     * @param locale 语言与国家地区信息，如: zh_CN, en_US
+     * @param date   日期
+     * @return 返回true表示日期是休息日 false表示日期是工作日
+     */
+    public static boolean isWorkDay(Locale locale, Date date) {
+        String key = toNation(locale);
+        return Dates.isWorkDay(key, date);
+    }
+
+    /**
+     * 将字符串解析为地区信息
+     *
+     * @param locale 国家语言信息
+     * @return 字符串，如: zh, zh_CN, ch_CN_POSIX
+     */
+    protected static String toNation(Locale locale) {
+        StringBuilder buf = new StringBuilder(15);
+        buf.append(locale.getLanguage());
+        if (StringUtils.isNotBlank(locale.getCountry())) {
+            buf.append('_').append(locale.getCountry());
+        }
+        return buf.toString();
+    }
+
+    /**
+     * 是否为休息日(周末和法定假日, 不包含法定补休日)
+     *
+     * @param locale 语言与国家地区信息，如: zh_CN, en_US
+     * @param date   日期
+     * @return 返回true表示日期是休息日 false表示日期是工作日
+     */
+    public static boolean isRestDay(String locale, Date date) {
+        if (date == null) {
+            return false;
+        }
+
+        if (HOLIDAYS.isWorkDay(locale, date)) {
+            return false;
+        } else if (HOLIDAYS.isRestDay(locale, date)) {
+            return true;
+        } else {
+            return Dates.isWeekend(date);
+        }
+    }
+
+    /**
+     * 是否为工作日(不包含周末和法定假日, 包含法定补休日)
+     *
+     * @param locale 语言与国家地区信息，如: zh_CN, en_US
+     * @param date   日期
+     * @return 返回true表示日期是工作日 false表示日期是休息日
+     */
+    public static boolean isWorkDay(String locale, Date date) {
+        if (date == null) {
+            return false;
+        }
+
+        if (HOLIDAYS.isWorkDay(locale, date)) {
+            return true;
+        } else if (HOLIDAYS.isRestDay(locale, date)) {
+            return false;
+        } else {
+            return !Dates.isWeekend(date);
+        }
     }
 
     /**

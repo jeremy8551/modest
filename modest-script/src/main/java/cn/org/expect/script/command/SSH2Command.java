@@ -24,10 +24,15 @@ public class SSH2Command extends AbstractTraceCommand implements JumpCommandSupp
 
     /** 登录信息 */
     private String oscommand;
+
     private String host;
+
     private String port;
+
     private String username;
+
     private String password;
+
     private OSSecureShellCommand client;
 
     public SSH2Command(UniversalCommandCompiler compiler, String command, String host, String port, String username, String password, String oscommand) {

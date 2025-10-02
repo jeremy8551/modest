@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-crypto</artifactId>
+    <name>${project.artifactId}</name>
     <description>加密工具</description>
 
     <dependencies>

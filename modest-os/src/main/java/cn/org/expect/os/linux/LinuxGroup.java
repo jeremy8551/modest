@@ -12,8 +12,11 @@ import cn.org.expect.util.StringUtils;
 public class LinuxGroup implements OSUserGroup {
 
     private String name;
+
     private String password;
+
     private String gid;
+
     private List<String> users;
 
     public LinuxGroup() {

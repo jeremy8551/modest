@@ -18,7 +18,7 @@ public class ScriptContextImpl implements ScriptContext {
     }
 
     public void setBindings(Bindings bindings, int scope) {
-        this.context.addVariable(new UniversalScriptVariableBindings(bindings), scope);
+        this.context.addVariable(new ScriptVariableBindings(bindings), scope);
     }
 
     public Bindings getBindings(int scope) {

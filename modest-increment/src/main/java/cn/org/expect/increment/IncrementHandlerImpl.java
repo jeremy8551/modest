@@ -16,17 +16,27 @@ import cn.org.expect.io.TextTableLine;
 public class IncrementHandlerImpl implements IncrementHandler {
 
     private ArrayList<IncrementListener> listeners;
+
     private TextTableFileWriter newout;
+
     private TextTableFileWriter updout;
+
     private TextTableFileWriter delout;
+
     private boolean outNewRecords;
+
     private boolean outUpdRecords;
+
     private boolean outDelRecords;
+
     private TextTableFile newfile;
+
     private TextTableFile oldfile;
 
     private boolean newfileEqualsNewout;
+
     private boolean newfileEqualUpdout;
+
     private boolean oldfileEqualDelout;
 
     public IncrementHandlerImpl(TextTableFile newfile, TextTableFile oldfile, List<IncrementListener> listeners, IncrementListenerImpl logger, IncrementReplaceListener replaces, TextTableFileWriter newout, TextTableFileWriter updout, TextTableFileWriter delout) {

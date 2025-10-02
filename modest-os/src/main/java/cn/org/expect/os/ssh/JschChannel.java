@@ -15,7 +15,9 @@ import com.jcraft.jsch.SftpException;
  */
 public class JschChannel {
     protected Channel sftp;
+
     protected boolean isTmp;
+
     private String charset;
 
     public JschChannel(Channel sftp, boolean isTmp) {

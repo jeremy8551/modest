@@ -13,7 +13,9 @@ import cn.org.expect.io.TextTableLine;
 public class IncrementReplaceListener implements IncrementListener {
 
     private List<IncrementReplace> creates;
+
     private List<IncrementReplace> updates;
+
     private List<IncrementReplace> deletes;
 
     public IncrementReplaceListener() {

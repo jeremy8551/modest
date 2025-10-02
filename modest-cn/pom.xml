@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-cn</artifactId>
+    <name>${project.artifactId}</name>
     <description>中文工具</description>
 
     <dependencies>

@@ -13,15 +13,25 @@ public class StandardDatabaseIndex implements DatabaseIndex {
     private final static Log log = LogFactory.getLog(StandardDatabaseIndex.class);
 
     private String fullName;
+
     private String indexSchema;
+
     private String indexName;
+
     private String tableName;
+
     private String tableSchema;
+
     private String tableCatalog;
+
     private String tableFullName;
+
     private boolean unique;
+
     private List<Integer> indexPosition;
+
     private List<String> indexColumnName;
+
     private List<Integer> indexColumnSort;
 
     /**

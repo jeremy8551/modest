@@ -76,6 +76,7 @@ import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.CollectionUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
+import cn.org.expect.util.NationalHolidays;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.Settings;
 import cn.org.expect.util.StackTraceUtils;
@@ -129,7 +130,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
             , EasyContext.class.getSimpleName() // 32
             , DB2Dialect.class.getSimpleName() // 33
             , Arrays.toString(context.getContainer().getScanPackages()) // 34
-            , FileUtils.getTempDir(false).getAbsolutePath() // 35
+            , StringUtils.removePrefix(FileUtils.getTempDir(false).getAbsolutePath(), Settings.getTempDir()) // 35
             , BeanRepository.class.getName() // 36
             , EasyBeanFactory.class.getName() // 37
             , EasyBeanEntry.class.getName() // 38
@@ -179,9 +180,9 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
             , ResourcesUtils.PROPERTY_RESOURCE_NAME // 82
             , ResourcesUtils.PROPERTY_RESOURCE_LOCALE // 83
             , ResourceMessageInternalBundle.RESOURCE_NAME // 84
-            , "" // 85
-            , "" // 86
-            , "" // 87
+            , NationalHolidays.PROPERTY_HOLIDAY // 85
+            , FileUtils.getParent(NationalHolidays.RESOURCE_NAME) // 86
+            , NationalHolidays.HOLIDAY_CONFIG_DIR // 87
             , "" // 88
             , ResourcesUtils.class.getPackage().getName() // 89
             , UniversalScriptEngineFactory.class.getName() // 90
@@ -269,8 +270,7 @@ public class HelpCommand extends AbstractTraceCommand implements NohupCommandSup
                 }
             }
 
-            Object[] args = {
-                DebugCommand.class.getName(), // 0
+            Object[] args = {DebugCommand.class.getName(), // 0
                 analysis.getToken(), // 1
                 UniversalScriptVariable.VARNAME_UPDATEROWS, // 2
                 ScriptAnalysis.ESCAPE_STRING, // 3

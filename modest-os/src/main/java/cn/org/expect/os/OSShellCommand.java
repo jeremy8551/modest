@@ -12,8 +12,12 @@ public interface OSShellCommand extends OSConnectCommand, OSCommand, CharsetName
 
     /** Shell配置 */
     String PROFILES = "profiles";
+
     String SSH_HOST = "ssh.host";
+
     String SSH_PORT = "ssh.port";
+
     String SSH_USERNAME = "ssh.username";
+
     String SSH_PASSWORD = "ssh.password";
 }

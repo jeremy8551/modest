@@ -48,8 +48,32 @@ public class FileUtils {
     /** 临时文件目录 */
     private static volatile File tempDir;
 
+    /** 代码页信息 */
+    public final static Codepage CODEPAGE = new Codepage();
+
     /** 锁 */
     private final static Object lock = new Object();
+
+    /**
+     * 查询代码页对应的字符集名 <br>
+     * 根据字符集名查找对应的代码页 <br>
+     *
+     * @param key 代码页或字符集名
+     * @return 字符串
+     */
+    public static String getCodepage(String key) {
+        return CODEPAGE.get(key);
+    }
+
+    /**
+     * 查询代码页对应的字符集名
+     *
+     * @param codepage 代码页编号
+     * @return 字符串
+     */
+    public static String getCodepage(int codepage) {
+        return CODEPAGE.get(codepage);
+    }
 
     /**
      * 断言删除文件或目录
@@ -849,6 +873,30 @@ public class FileUtils {
     }
 
     /**
+     * 在路径后面拼接一个类的包名
+     *
+     * @param filepath 文件绝对路径
+     * @param cls      类信息
+     * @return 文件路径
+     */
+    public static String joinPath(String filepath, Class<?> cls) {
+        if (filepath == null) {
+            return null;
+        }
+        if (cls == null) {
+            return filepath;
+        }
+
+        List<String> list = new ArrayList<String>(5);
+        StringUtils.split(cls.getPackage().getName(), '.', list);
+
+        for (String str : list) {
+            filepath = FileUtils.joinPath(filepath, str);
+        }
+        return filepath;
+    }
+
+    /**
      * 在路径参数 filepath 后面拼接一个字符串参数 fileOrDir （文件名或目录文件）
      *
      * @param filepath  文件绝对路径
@@ -1407,7 +1455,9 @@ public class FileUtils {
 
             switch (c) {
                 case ' ':
-                    if (i == 0 || escapeSpace) buf.append('\\');
+                    if (i == 0 || escapeSpace) {
+                        buf.append('\\');
+                    }
                     buf.append(' ');
                     break;
                 case '\t':
@@ -2280,7 +2330,9 @@ public class FileUtils {
         /**
          * 搜索文件
          *
-         * @param dir 目录
+         * @param dir  目录
+         * @param name 文件名（含扩展名）或正则表达式
+         * @param list 存储搜索结果的集合
          */
         public static void find(File dir, String name, List<File> list) {
             if (dir.getName().equals(name) || dir.getName().matches(name)) {

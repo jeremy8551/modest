@@ -4,7 +4,9 @@ import cn.org.expect.ioc.EasyBeanAnnotation;
 import cn.org.expect.ioc.EasyBeanEntry;
 import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.impl.DefaultBeanEntry;
+import com.google.auto.service.AutoService;
 
+@AutoService(EasyBeanAnnotation.class)
 public class BeanAnnotation implements EasyBeanAnnotation {
 
     public boolean isPresent(Class<?> type) {

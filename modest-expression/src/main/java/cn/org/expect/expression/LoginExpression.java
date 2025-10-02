@@ -17,8 +17,11 @@ public class LoginExpression extends CommandExpression {
 
     /** 登录属性 */
     private String host;
+
     private String port;
+
     private String username;
+
     private String password;
 
     /** 属性集合 */

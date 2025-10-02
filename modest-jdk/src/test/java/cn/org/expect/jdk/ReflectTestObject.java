@@ -3,8 +3,11 @@ package cn.org.expect.jdk;
 public class ReflectTestObject {
 
     protected final static String N3 = "n3";
+
     private final static String N = "n";
+
     private static String N1 = "n1";
+
     private String N2 = "n2";
 
     public String getN1() {

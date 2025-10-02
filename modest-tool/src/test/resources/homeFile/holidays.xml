@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<holidays>
+    <locale name="zh_CN" description="2025年8月">
+        <date value="2025-08-01" name="建军节" reset="true"/>
+        <date value="2025-08-15" name="日本投降日" reset="true"/>
+    </locale>
+</holidays>

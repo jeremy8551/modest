@@ -11,15 +11,25 @@ import cn.org.expect.collection.UnmodifiableProperties;
 public class DB2Database {
 
     private String name;
+
     private String aliasName;
+
     private String home;
+
     private String memo;
+
     private int port;
+
     private boolean isRemote;
+
     private boolean isIndirect;
+
     private String remoteHost;
+
     private String nodeName;
+
     private String remotePort;
+
     private Properties properties;
 
     public DB2Database() {

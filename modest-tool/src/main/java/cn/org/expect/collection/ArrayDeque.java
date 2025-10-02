@@ -462,8 +462,9 @@ public class ArrayDeque<E> extends AbstractCollection<E> implements Cloneable, S
         final int back = (t - i) & mask;
 
         // Invariant: head <= i < tail mod circularity
-        if (front >= ((t - h) & mask))
+        if (front >= ((t - h) & mask)) {
             throw new ConcurrentModificationException();
+        }
 
         // Optimize for least element motion
         if (front < back) {
@@ -547,8 +548,9 @@ public class ArrayDeque<E> extends AbstractCollection<E> implements Cloneable, S
         }
 
         public void remove() {
-            if (lastRet < 0)
+            if (lastRet < 0) {
                 throw new IllegalStateException();
+            }
             if (delete(lastRet)) { // if left-shifted, undo increment in next()
                 cursor = (cursor - 1) & (elements.length - 1);
                 fence = tail;

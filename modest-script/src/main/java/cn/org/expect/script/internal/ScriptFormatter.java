@@ -33,6 +33,7 @@ import cn.org.expect.util.StringUtils;
 @EasyBean("default")
 public class ScriptFormatter extends UniversalScriptFormatter {
     private final static long serialVersionUID = 1L;
+
     private final static Log log = LogFactory.getLog(ScriptFormatter.class);
 
     public ScriptFormatter() {

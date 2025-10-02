@@ -32,6 +32,7 @@ package cn.org.expect.database.db2.format;
  */
 public class DB2DoubleFormat {
     public final static double[] sizeTable = new double[64];
+
     public final static double[] pointSize = new double[30];
 
     static {
@@ -60,9 +61,11 @@ public class DB2DoubleFormat {
      * @return 位置
      */
     static int stringSize(double x) {
-        for (int i = 0; ; i++)
-            if (x <= sizeTable[i])
+        for (int i = 0; ; i++) {
+            if (x <= sizeTable[i]) {
                 return i + 1;
+            }
+        }
     }
 
     /**

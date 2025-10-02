@@ -9,8 +9,9 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>modest-maven-plugin</artifactId>
     <packaging>maven-plugin</packaging>
+    <artifactId>modest-maven-plugin</artifactId>
+    <name>${project.artifactId}</name>
     <description>Maven插件</description>
 
     <dependencies>

@@ -19,14 +19,19 @@ import cn.org.expect.util.StringUtils;
 public class StandardDatabaseConfiguration implements DatabaseConfiguration, EasyContextAware {
 
     private String host;
+
     private String driverClassName;
+
     private String url;
 
     private CaseSensitivMap<OSAccount> users;
+
     private OSAccount user;
 
     private CaseSensitivMap<StandardOSAccount> sshUsers;
+
     private OSAccount sshUser;
+
     private int sshPort;
 
     protected EasyContext context;

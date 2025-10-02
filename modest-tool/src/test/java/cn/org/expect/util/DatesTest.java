@@ -1,5 +1,7 @@
 package cn.org.expect.util;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -960,5 +962,61 @@ public class DatesTest {
         Assert.assertEquals("19981225", Dates.format08("1998-12-25"));
         Assert.assertEquals(Dates.format08(Dates.calcDay(new Date(), -1)), Dates.format08(-1));
         Assert.assertEquals(Dates.format10(Dates.calcDay(new Date(), -1)), Dates.format10(-1));
+    }
+
+    @Test
+    public void testRestDay() throws IOException {
+        // 加载用户根目录下的 holidays.xml 配置文件进行测试
+        File home = NationalHolidays.HOLIDAY_CONFIG_DIR;
+        FileUtils.delete(home);
+        FileUtils.createDirectory(home);
+        FileUtils.write(new File(home, "holidays.xml"), CharsetName.UTF_8, false, ClassUtils.getClassLoader().getResourceAsStream("homeFile/holidays.xml"));
+
+        // 加载用户自定义目录下的国家法定假日配置文件
+        File userDefine = new File(FileUtils.joinPath(Settings.getProjectHome().getAbsolutePath(), "userDefine"));
+        FileUtils.delete(userDefine);
+        FileUtils.createDirectory(userDefine);
+        FileUtils.write(new File(userDefine, "holidays1.xml"), CharsetName.UTF_8, false, ClassUtils.getClassLoader().getResourceAsStream("user/holidays1.xml"));
+        FileUtils.write(new File(userDefine, "holidays2.xml"), CharsetName.UTF_8, false, ClassUtils.getClassLoader().getResourceAsStream("user/holidays2.xml"));
+        System.setProperty(NationalHolidays.PROPERTY_HOLIDAY, userDefine.getAbsolutePath());
+
+        // 重新加载
+        Dates.HOLIDAYS.reload();
+
+        Assert.assertFalse(Dates.isRestDay("zh_CN", null));
+        Assert.assertFalse(Dates.isRestDay("zh_CN", Dates.parse("2019-08-30")));
+        Assert.assertTrue(Dates.isRestDay("zh_CN", Dates.parse("20191001")));
+
+        Assert.assertTrue(Dates.isWorkDay("zh_CN", Dates.parse("2019-08-30")));
+        Assert.assertFalse(Dates.isWorkDay("zh_CN", Dates.parse("2019-08-31")));
+
+        Assert.assertFalse(Dates.isRestDay("zh_CN", Dates.parse("2019-08-30")));
+        Assert.assertTrue(Dates.isRestDay("zh_CN", Dates.parse("20191001")));
+
+        Assert.assertTrue(Dates.isWorkDay("zh_CN", Dates.parse("2019-08-30")));
+        Assert.assertFalse(Dates.isWorkDay("zh_CN", Dates.parse("2019-08-31")));
+
+        Assert.assertTrue(Dates.isRestDay("zh_CN", Dates.parse("2019-10-01")));
+        Assert.assertFalse(Dates.isWorkDay("zh_CN", Dates.parse("2019-08-31")));
+
+        Assert.assertTrue(Dates.isWorkDay("zh_CN", Dates.parse("2017-02-04")));
+        Assert.assertFalse(Dates.isWorkDay("zh_CN", Dates.parse("2017-02-05")));
+
+        Assert.assertFalse(Dates.HOLIDAYS.get("zh_CN").getWork().isEmpty());
+        Assert.assertFalse(Dates.HOLIDAYS.get("zh_CN").getRest().isEmpty());
+
+        Assert.assertFalse(Dates.isRestDay("zh_CN", Dates.parse("2025-12-24")));
+        Assert.assertFalse(Dates.isRestDay("zh_CN", Dates.parse("2025-12-25")));
+
+        Assert.assertTrue(Dates.isRestDay("en_US", Dates.parse("2025-12-24")));
+        Assert.assertTrue(Dates.isRestDay("en_US", Dates.parse("2025-12-25")));
+
+        // 加载用户根目录下的 holidays.xml 配置文件进行测试
+        Assert.assertTrue(Dates.isRestDay("zh_CN", Dates.parse("2025-08-01")));
+        Assert.assertTrue(Dates.isRestDay("zh_CN", Dates.parse("2025-08-15")));
+
+        // 加载用户自定义目录下的国家法定假日配置文件
+        Assert.assertTrue(Dates.isRestDay("zh_CN", Dates.parse("2025-04-18")));
+        Assert.assertTrue(Dates.isRestDay("zh_CN", Dates.parse("2025-05-08")));
     }
 }

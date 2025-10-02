@@ -10,9 +10,15 @@
     </parent>
 
     <artifactId>modest-logger</artifactId>
+    <name>${project.artifactId}</name>
     <description>日志模块</description>
 
     <dependencies>
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-tool</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
@@ -21,9 +27,12 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- 自动生成ServiceLoader文件 -->
         <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-tool</artifactId>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 

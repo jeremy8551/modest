@@ -101,12 +101,19 @@ public class DB2Instance {
     }
 
     private OS os;
+
     private String name;
+
     private int port;
+
     private String db2dir;
+
     private OSUser user;
+
     private String db2profile;
+
     private Properties config;
+
     private Map<String, DB2Database> databases;
 
     /**

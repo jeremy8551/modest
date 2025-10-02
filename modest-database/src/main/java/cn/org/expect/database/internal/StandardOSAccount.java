@@ -5,7 +5,9 @@ import cn.org.expect.os.OSAccount;
 public class StandardOSAccount implements OSAccount {
 
     private String username;
+
     private String password;
+
     private boolean admin;
 
     public StandardOSAccount() {

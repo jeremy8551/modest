@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-ioc</artifactId>
+    <name>${project.artifactId}</name>
     <description>IOC容器</description>
 
     <dependencies>
@@ -28,6 +29,12 @@
             <groupId>javax.annotation</groupId>
             <artifactId>jsr250-api</artifactId>
             <version>1.0</version>
+        </dependency>
+
+        <!-- 自动生成ServiceLoader文件 -->
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>

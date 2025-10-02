@@ -40,8 +40,11 @@ import cn.org.expect.util.StringUtils;
 public class FtpCommand extends AbstractFileCommand implements UniversalScriptInputStream {
 
     protected String host;
+
     protected String port;
+
     protected String username;
+
     protected String password;
 
     public FtpCommand(UniversalCommandCompiler compiler, String command, String host, String port, String username, String password) {

@@ -10,8 +10,11 @@ package cn.org.expect.os;
 public interface OSConnectCommand {
 
     String HOST = "host";
+
     String PORT = "port";
+
     String USERNAME = "username";
+
     String PASSWORD = "password";
 
     /**

@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-script</artifactId>
+    <name>${project.artifactId}</name>
     <description>脚本引擎</description>
 
     <dependencies>
@@ -58,6 +59,14 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- 自动生成ServiceLoader文件 -->
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 

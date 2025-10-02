@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-compress</artifactId>
+    <name>${project.artifactId}</name>
     <description>文件解压缩工具</description>
 
     <dependencies>

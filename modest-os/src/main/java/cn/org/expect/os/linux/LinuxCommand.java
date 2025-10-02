@@ -34,10 +34,15 @@ public class LinuxCommand extends Terminator implements OSCommand {
     private final static Log log = LogFactory.getLog(LinuxCommand.class);
 
     protected ByteBuffer stdout;
+
     protected ByteBuffer stderr;
+
     private final Properties config;
+
     protected OutputStream stdoutOS;
+
     protected OutputStream stderrOS;
+
     protected String charsetName;
 
     /**

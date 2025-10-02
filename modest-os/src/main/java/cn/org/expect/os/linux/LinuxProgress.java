@@ -12,11 +12,17 @@ import cn.org.expect.util.Ensure;
 public class LinuxProgress implements OSProcess {
 
     protected String pid;
+
     protected String ppid;
+
     protected long memory;
+
     protected String name;
+
     protected String cmd;
+
     protected String cpu;
+
     protected OS os;
 
     public LinuxProgress(OS os) {

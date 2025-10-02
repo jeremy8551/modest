@@ -32,6 +32,7 @@ package cn.org.expect.database.db2.format;
  */
 public class DB2FloatFormat {
     public final static float[] sizeTable = new float[32];
+
     public final static float[] pointSize = new float[30];
 
     static {
@@ -60,9 +61,11 @@ public class DB2FloatFormat {
      * @return 位置
      */
     static int stringSize(float x) {
-        for (int i = 0; ; i++)
-            if (x <= sizeTable[i])
+        for (int i = 0; ; i++) {
+            if (x <= sizeTable[i]) {
                 return i + 1;
+            }
+        }
     }
 
     /**

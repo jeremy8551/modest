@@ -12,8 +12,11 @@ public class TestThread extends Thread {
     private final static Log log = LogFactory.getLog(TestThread.class);
 
     private DatabaseDialect dialect;
+
     private Connection conn;
+
     private boolean error;
+
     private Properties attrs;
 
     public TestThread(DatabaseDialect dialect, Connection conn) {

@@ -219,13 +219,14 @@ public class ChinaUtils {
      */
     public static boolean isChineseLetter(char c, CharsetEncoder encoder) {
         Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
-        boolean block = (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS //
-            || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A //
-            || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B //
-            || JavaDialectFactory.get().isChineseLetter(ub) //
-            || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS //
-            || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT //
-            || (c >= 0xe815 && c <= 0xe864) //
+        boolean block = (
+            ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS //
+                || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A //
+                || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B //
+                || JavaDialectFactory.get().isChineseLetter(ub) //
+                || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS //
+                || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT //
+                || (c >= 0xe815 && c <= 0xe864) //
         );
 
         if (block) {

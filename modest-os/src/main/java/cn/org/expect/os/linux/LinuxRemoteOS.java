@@ -56,18 +56,29 @@ import cn.org.expect.util.StringUtils;
 public class LinuxRemoteOS implements OS, OSFileCommand, OSDateCommand, OSNetwork, EasyContextAware {
 
     protected OSSecureShellCommand cmd;
+
     protected OSFtpCommand sftp;
+
     protected String host;
+
     protected int port;
+
     protected String username;
+
     protected String password;
+
     protected String name;
+
     protected String release;
+
     protected String kernel;
+
     protected LinuxUser currentUser;
 
     protected List<LinuxUser> users = new ArrayList<LinuxUser>();
+
     protected List<OSUserGroup> groups = new ArrayList<OSUserGroup>();
+
     protected List<LinuxEtcService> services = new ArrayList<LinuxEtcService>();
 
     protected EasyContext context;

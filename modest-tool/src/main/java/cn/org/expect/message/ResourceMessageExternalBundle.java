@@ -7,7 +7,9 @@ import cn.org.expect.util.Logs;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
+import com.google.auto.service.AutoService;
 
+@AutoService(ResourceMessageBundle.class)
 public class ResourceMessageExternalBundle extends ResourceMessageInternalBundle {
 
     public void load(ClassLoader classLoader) {

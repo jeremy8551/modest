@@ -8,6 +8,7 @@ import cn.org.expect.script.UniversalScriptSession;
 public class ScriptVariableMap extends HashMap<String, Object> {
 
     private final UniversalScriptSession session;
+
     private final UniversalScriptContext context;
 
     public ScriptVariableMap(UniversalScriptSession session, UniversalScriptContext context) {

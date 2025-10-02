@@ -8,9 +8,13 @@ import cn.org.expect.util.StringUtils;
  */
 public class TempFileRecord implements TextTableLine {
     protected String line;
+
     protected String lineSeparator;
+
     protected String[] fields;
+
     protected int column;
+
     protected long lineNumber;
 
     public TempFileRecord(TextTableLine line) {

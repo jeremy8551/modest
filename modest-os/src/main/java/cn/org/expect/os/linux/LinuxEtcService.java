@@ -13,8 +13,11 @@ import cn.org.expect.util.StringUtils;
  */
 public class LinuxEtcService implements OSService {
     private String name;
+
     private int port;
+
     private String protocal;
+
     private List<String> aliases;
 
     public LinuxEtcService() {

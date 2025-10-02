@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<holidays>
+    <locale name="zh_CN" description="2025年4月">
+        <date value="2025-04-18" name="受难日" reset="true"/>
+    </locale>
+</holidays>

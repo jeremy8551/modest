@@ -24,6 +24,7 @@ import cn.org.expect.util.CollectionUtils;
  */
 public class UnmodifiableProperties extends Properties implements Cloneable {
     private final static long serialVersionUID = 1L;
+
     private Properties obj;
 
     public UnmodifiableProperties(Properties defaults) {

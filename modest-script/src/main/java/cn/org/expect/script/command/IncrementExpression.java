@@ -40,16 +40,27 @@ import cn.org.expect.util.StringUtils;
 public class IncrementExpression implements Attribute<String> {
 
     private UniversalScriptSession session;
+
     private UniversalScriptContext context;
+
     private UniversalScriptAnalysis analysis;
+
     private Map<String, String> attributes;
+
     private Set<String> kinds;
+
     private String filepath;
+
     private String filetype;
+
     private int[] indexPosition;
+
     private int[] comparePosition;
+
     private List<IncrementReplace> newchg, updchg, delchg;
+
     private boolean isLogExpr;
+
     private DatabaseTable table;
 
     /**

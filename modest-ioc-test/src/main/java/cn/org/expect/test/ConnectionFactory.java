@@ -15,7 +15,9 @@ import cn.org.expect.util.StringUtils;
 public class ConnectionFactory implements EasyBeanFactory<Connection> {
 
     public static String JDBC_URL = "jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1";
+
     public static String JDBC_USER = "user";
+
     public static String JDBC_PASSWORD = "user";
 
     public Connection build(EasyContext context, Object... args) throws Exception {

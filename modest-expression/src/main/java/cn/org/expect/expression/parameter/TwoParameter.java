@@ -9,6 +9,7 @@ package cn.org.expect.expression.parameter;
 public class TwoParameter extends ExpressionParameter {
 
     private Parameter trueRun;
+
     private Parameter falseRun;
 
     public TwoParameter() {

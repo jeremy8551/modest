@@ -22,17 +22,27 @@ import cn.org.expect.util.Settings;
 public class EmailSendCommand extends AbstractTraceCommand {
 
     private String host; // 邮件服务器地址
+
     private String username; // 邮件服务器登陆用户
+
     private String password; // 密码
+
     private String charset; // 邮件服务器字符集编码
+
     private int port; // 邮件服务器端口
 
     private String protocal; // 发送邮件协议名
+
     private boolean ssl; // true表示使用ssl协议发送
+
     private String sender; // 发送地址
+
     private List<String> receivers; // 接收地址
+
     private String title; // 标题
+
     private String content; // 正文
+
     private MailFile[] attchments; // 附件
 
     public EmailSendCommand(UniversalCommandCompiler compiler, String script, String host, String username, String password, String charset, int port, String protocal, boolean ssl, String sender, List<String> receivers, String title, String content, MailFile[] attchments) {

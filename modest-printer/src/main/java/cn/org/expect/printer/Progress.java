@@ -80,6 +80,7 @@ public class Progress {
     public Progress(ProgressPrinter out, String message, long total) {
         this(out, message, total, new Format() {
             private final static long serialVersionUID = 1L;
+
             private final DecimalFormat decimalFormat = new DecimalFormat("#,###.##"); // 设置千位分隔符
 
             public StringBuffer format(Object obj, StringBuffer buffer, FieldPosition position) {

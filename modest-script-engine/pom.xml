@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-script-engine</artifactId>
+    <name>${project.artifactId}</name>
     <description>实现 JSR-223 脚本引擎标准接口</description>
 
     <properties>
@@ -27,6 +28,14 @@
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-ioc-test</artifactId>
             <scope>test</scope>
+        </dependency>
+
+        <!-- 自动生成ServiceLoader文件 -->
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 

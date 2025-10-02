@@ -368,6 +368,17 @@ public class ClassUtils {
     }
 
     /**
+     * 返回资源全名, 如：cn/org/expect/modest.xml
+     *
+     * @param type         资源文件所在Java包中的类, 如: cn.org.expect.Modest
+     * @param resourceName 资源名, 如: modest.xml
+     * @return 资源全名
+     */
+    public static String getResourceName(Class<?> type, String resourceName) {
+        return type.getPackage().getName().replace('.', '/') + "/" + resourceName;
+    }
+
+    /**
      * 返回 class 信息的包名 <br>
      * getPackageName("cn.org.expect", 1) 返回字符串 cn <br>
      * getPackageName("cn.org.expect", 2) 返回字符串 cn.org <br>

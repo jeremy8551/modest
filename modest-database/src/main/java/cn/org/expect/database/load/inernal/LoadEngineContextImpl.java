@@ -20,25 +20,45 @@ import cn.org.expect.util.IO;
 public class LoadEngineContextImpl implements LoadEngineContext {
 
     private String name;
+
     private DataSource dataSource;
+
     private String datatype;
+
     private LoadMode mode;
+
     private String tableCatalog;
+
     private String tableName;
+
     private String tableSchema;
+
     private String errorTableName;
+
     private String errorTableSchema;
+
     private boolean statistics;
+
     private IndexMode indexMode;
+
     private Progress progress;
+
     private final List<String> files;
+
     private final List<String> dataColumn;
+
     private final List<String> fileColumn;
+
     private JdbcConverterMapper converters;
+
     private List<String> indexColumn;
+
     private boolean noRepeat;
+
     private long saveCount;
+
     private int readBuffer;
+
     private Attribute<String> attrs;
 
     /**

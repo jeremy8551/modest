@@ -10,6 +10,7 @@
     </parent>
 
     <artifactId>modest-jdk</artifactId>
+    <name>${project.artifactId}</name>
     <description>适配不同版本的JDK（从1.5版本开始）</description>
 
     <dependencies>

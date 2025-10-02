@@ -109,7 +109,6 @@ public class ScriptAnalysisTest {
                     public Integer getExitcode() {
                         return -1;
                     }
-
                 };
             }
 
@@ -132,7 +131,6 @@ public class ScriptAnalysisTest {
                     public Integer getExitcode() {
                         return -1;
                     }
-
                 };
             }
 
@@ -154,7 +152,6 @@ public class ScriptAnalysisTest {
                     public Integer getExitcode() {
                         return -1;
                     }
-
                 };
             }
 
@@ -176,7 +173,6 @@ public class ScriptAnalysisTest {
                     public Integer getExitcode() {
                         return -1;
                     }
-
                 };
             }
 

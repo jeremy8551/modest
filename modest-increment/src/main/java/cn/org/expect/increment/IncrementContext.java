@@ -20,23 +20,41 @@ import cn.org.expect.util.Ensure;
 public class IncrementContext {
 
     private String name;
+
     private TextTableFile newFile;
+
     private TextTableFile oldFile;
+
     private boolean sortNewFile;
+
     private boolean sortOldFile;
+
     private List<IncrementListener> listeners;
+
     private IncrementArith arith;
+
     private TextTableFileWriter newOuter;
+
     private TextTableFileWriter updOuter;
+
     private TextTableFileWriter delOuter;
+
     private IncrementPosition position;
+
     private Comparator<String> comparator;
+
     private IncrementListenerImpl logger;
+
     private IncrementReplaceListener replaceList;
+
     private Progress newfileProgress;
+
     private Progress oldfileProgress;
+
     private TableFileSortContext oldfileSortContext;
+
     private TableFileSortContext newfileSortContext;
+
     private ThreadSource threadSource;
 
     /**

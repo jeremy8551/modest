@@ -140,7 +140,6 @@ public class LoadFileRange {
                     return -1;
                 }
             }
-
         });
 
         LoadFileRange range = CollectionUtils.last(list);

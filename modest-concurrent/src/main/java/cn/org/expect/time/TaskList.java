@@ -20,6 +20,7 @@ public class TaskList {
     private final static Log log = LogFactory.getLog(TaskList.class);
 
     private Vector<String> list;
+
     private Hashtable<String, TimerTask> map;
 
     /**

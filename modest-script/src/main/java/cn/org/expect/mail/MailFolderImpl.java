@@ -8,11 +8,17 @@ import java.util.List;
 public class MailFolderImpl implements MailFolder {
 
     private String name;
+
     private int unreadMailCount;
+
     private int newMailCount;
+
     private List<Mail> list;
+
     private String protocol;
+
     private int protocolPort;
+
     private boolean ssl;
 
     public String getName() {

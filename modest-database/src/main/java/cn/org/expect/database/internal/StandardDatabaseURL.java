@@ -13,16 +13,27 @@ import cn.org.expect.util.StringUtils;
 public class StandardDatabaseURL implements DatabaseURL {
 
     private String url;
+
     private String databaseType;
+
     private String databaseName;
+
     private String username;
+
     private String password;
+
     private String schema;
+
     private String hostname;
+
     private String port;
+
     private String serverName;
+
     private String sid;
+
     private String driverType;
+
     private Map<String, String> attributes;
 
     /**

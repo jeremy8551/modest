@@ -54,6 +54,15 @@ public class Settings {
     }
 
     /**
+     * 返回项目目录
+     *
+     * @return 目录，例如: /home/user/.modest
+     */
+    public static File getProjectHome() {
+        return new File(Settings.getUserHome(), "." + Settings.getProjectName());
+    }
+
+    /**
      * 返回项目包名
      *
      * @return 包名
@@ -167,7 +176,7 @@ public class Settings {
      * 时区
      * <p>
      * return System.getProperty("user.timezone");
-     * / Asia/Shanghai
+     * /Asia/Shanghai
      *
      * @return 属性值
      */

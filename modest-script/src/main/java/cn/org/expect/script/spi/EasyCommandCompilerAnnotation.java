@@ -8,7 +8,9 @@ import cn.org.expect.ioc.impl.DefaultBeanEntry;
 import cn.org.expect.script.UniversalCommandCompiler;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.util.ClassUtils;
+import com.google.auto.service.AutoService;
 
+@AutoService(EasyBeanAnnotation.class)
 public class EasyCommandCompilerAnnotation implements EasyBeanAnnotation {
 
     public boolean isPresent(Class<?> type) {

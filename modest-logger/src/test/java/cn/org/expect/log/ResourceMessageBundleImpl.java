@@ -5,7 +5,9 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.org.expect.message.ResourceMessageBundle;
+import com.google.auto.service.AutoService;
 
+@AutoService(ResourceMessageBundle.class)
 public class ResourceMessageBundleImpl implements ResourceMessageBundle {
 
     private final Map<String, String> map;

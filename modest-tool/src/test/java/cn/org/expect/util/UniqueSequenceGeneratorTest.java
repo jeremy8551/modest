@@ -48,7 +48,9 @@ public class UniqueSequenceGeneratorTest {
     static class WaitTasks implements Dates.Condition {
 
         RunnableImpl task1;
+
         RunnableImpl task2;
+
         RunnableImpl task3;
 
         public WaitTasks(RunnableImpl task1, RunnableImpl task2, RunnableImpl task3) {

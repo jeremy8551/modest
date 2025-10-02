@@ -65,7 +65,7 @@ public class ResourceScanner implements Iterator<InputStream> {
                 URL url = this.enumeration.nextElement();
 
                 if (Logs.isDebugEnabled()) {
-                    Logs.debug("Resource name: {}, load: {}", this.resourceName, url);
+                    Logs.debug("Resource name: {}, URL: {}", this.resourceName, url);
                 }
 
                 this.inputStream = url.openStream();

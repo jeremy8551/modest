@@ -47,6 +47,7 @@ public class IncrementReplaceFactory implements EasyBeanFactory<IncrementReplace
     protected static class DateReplace implements IncrementReplace {
 
         private int position;
+
         private String pattern;
 
         public DateReplace(DatabaseTableColumnList list, String nameOrPosition, String value) {
@@ -103,6 +104,7 @@ public class IncrementReplaceFactory implements EasyBeanFactory<IncrementReplace
     protected static class StandardReplace implements IncrementReplace {
 
         private int position;
+
         private String value;
 
         public StandardReplace(DatabaseTableColumnList list, String nameOrPosition, String value) {

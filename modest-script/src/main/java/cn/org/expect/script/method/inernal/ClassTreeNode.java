@@ -12,7 +12,7 @@ import cn.org.expect.util.UniqueSequenceGenerator;
 public class ClassTreeNode {
     private final static Log log = LogFactory.getLog(ClassTreeNode.class);
 
-    final static UniqueSequenceGenerator generator = new UniqueSequenceGenerator("{}", 1);
+    private final static UniqueSequenceGenerator generator = new UniqueSequenceGenerator("{}", 1);
 
     private final String id;
 

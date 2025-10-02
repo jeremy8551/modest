@@ -19,7 +19,9 @@ public class RandomAccessList<E> implements List<E>, RandomAccess, Cloneable, ja
     private final static long serialVersionUID = 1L;
 
     protected int modCount = 0;
+
     protected E[] elementData;
+
     protected int size;
 
     /**
@@ -190,17 +192,19 @@ public class RandomAccessList<E> implements List<E>, RandomAccess, Cloneable, ja
 
     public boolean remove(Object obj) {
         if (obj == null) {
-            for (int index = 0; index < this.size; index++)
+            for (int index = 0; index < this.size; index++) {
                 if (this.elementData[index] == null) {
                     this.fastRemove(index);
                     return true;
                 }
+            }
         } else {
-            for (int index = 0; index < this.size; index++)
+            for (int index = 0; index < this.size; index++) {
                 if (obj.equals(this.elementData[index])) {
                     this.fastRemove(index);
                     return true;
                 }
+            }
         }
         return false;
     }
@@ -351,7 +355,9 @@ public class RandomAccessList<E> implements List<E>, RandomAccess, Cloneable, ja
     protected class DefaultItr implements Iterator<E> {
 
         int cursor;
+
         int lastRet;
+
         int expectedModCount;
 
         public DefaultItr(int size) {

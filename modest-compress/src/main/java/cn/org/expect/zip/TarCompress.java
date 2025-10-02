@@ -31,7 +31,9 @@ public class TarCompress extends Terminator implements Compress {
     private final static Log log = LogFactory.getLog(TarCompress.class);
 
     private File tarFile;
+
     private TarArchiveOutputStream outputStream;
+
     private TarArchiveInputStream inputStream;
 
     /** 缓冲区 */

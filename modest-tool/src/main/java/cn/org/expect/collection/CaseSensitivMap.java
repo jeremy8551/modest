@@ -106,6 +106,7 @@ public class CaseSensitivMap<E> implements Map<String, E> {
 
     private class SE implements Entry<String, E> {
         private String key;
+
         private E obj;
 
         public SE(String key, E obj) {

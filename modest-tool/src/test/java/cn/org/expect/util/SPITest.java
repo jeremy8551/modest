@@ -14,15 +14,15 @@ import org.junit.Test;
 public class SPITest {
 
     @Test
-    public void test1() {
+    public void test() {
         try {
             BufferLogger log = new BufferLogger();
             Logs.setLogger(log);
 
             List<Attribute> list = SPI.load(ClassUtils.getClassLoader(), Attribute.class);
             Assert.assertEquals(AttributeImpl.class, list.get(0).getClass());
-            Assert.assertEquals(Attribute2Impl.class, list.get(1).getClass());
-            Assert.assertEquals(Attribute1Impl.class, list.get(2).getClass());
+            Assert.assertEquals(Attribute1Impl.class, list.get(1).getClass());
+            Assert.assertEquals(Attribute2Impl.class, list.get(2).getClass());
             Assert.assertNotEquals(-1, log.toString().indexOf(Attribute3Impl.class.getName()));
         } finally {
             Logs.setLogger(JUL.out);
