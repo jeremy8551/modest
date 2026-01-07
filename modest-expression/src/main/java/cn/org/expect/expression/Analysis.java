@@ -10,6 +10,15 @@ import java.util.List;
 public interface Analysis {
 
     /**
+     * 移除字符串中的注释，注释以 # 符号开头
+     *
+     * @param str  字符串
+     * @param list 用于存储字符串中的注释
+     * @return 移除注释后的字符串
+     */
+    String removeComment(String str, List<String> list);
+
+    /**
      * 返回语句中段落的分隔符, 默认是半角逗号
      *
      * @return 字符
@@ -200,6 +209,15 @@ public interface Analysis {
      * @return -1表示双引号没有出现
      */
     int indexOfDoubleQuotation(CharSequence str, int from);
+
+    /**
+     * 在字符串参数 str 中搜索多行字符串的结束位置（忽略转义字符右侧的字符）
+     *
+     * @param str  字符串
+     * @param from 多行字符串的起始位置
+     * @return -1表示多行字符串的结束位置没有出现
+     */
+    int indexOfStrBlock(CharSequence str, int from);
 
     /**
      * 搜索十六进制数值结尾位置

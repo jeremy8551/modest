@@ -6,7 +6,6 @@ import java.util.Iterator;
 
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
-import org.apache.maven.execution.MavenSession;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
@@ -29,10 +28,10 @@ public class UninstallMojo extends AbstractMojo {
     private MavenProject project;
 
     /**
-     * Maven会话信息
+     * 本地仓库的绝对路径
      */
-    @Parameter(defaultValue = "${session}", readonly = true, required = true)
-    private MavenSession session;
+    @Parameter(defaultValue = "${settings.localRepository}")
+    private File localRepository;
 
     /**
      * 卸载本地仓库中哪个版本的 jar
@@ -41,13 +40,15 @@ public class UninstallMojo extends AbstractMojo {
     private String uninstall;
 
     public void execute() {
+        if (!FileUtils.isDirectory(this.localRepository)) {
+            return;
+        }
+
         String groupId = this.project.getGroupId();
         String artifactId = this.project.getArtifactId();
         String version = this.project.getVersion();
-        File localRepository = new File(this.session.getLocalRepository().getBasedir());
 
-        FileUtils.assertExists(localRepository);
-        File rep1 = new File(localRepository, groupId.replace('.', File.separatorChar));
+        File rep1 = new File(this.localRepository, groupId.replace('.', File.separatorChar));
         if (rep1.exists()) {
             FileUtils.assertDirectory(rep1);
         } else {
@@ -65,7 +66,7 @@ public class UninstallMojo extends AbstractMojo {
 
         // 删除全部版本
         if (StringUtils.inArrayIgnoreCase(this.uninstall, "all", "*")) {
-            getLog().info("Remove the component " + groupId + ":" + artifactId + " from localRepository " + localRepository.getAbsolutePath());
+            getLog().info("Remove the component " + groupId + ":" + artifactId + " from localRepository " + this.localRepository.getAbsolutePath());
             for (Iterator<File> it = Arrays.asList(FileUtils.array(rep2.listFiles())).iterator(); it.hasNext(); ) {
                 File file = it.next();
                 if (file.isDirectory()) {
@@ -73,9 +74,16 @@ public class UninstallMojo extends AbstractMojo {
                 }
             }
             this.clean(rep2);
-        } else { // 卸载某个版本
-            getLog().info("Remove the component " + groupId + ":" + artifactId + ":" + version + " from localRepository " + localRepository.getAbsolutePath());
+        } else {
+            // 卸载某个版本
+            getLog().info("Remove the component " + groupId + ":" + artifactId + ":" + version + " from localRepository " + this.localRepository.getAbsolutePath());
             this.uninstall(rep2, version);
+
+            // 卸载快照
+            String snapshot = version + "-SNAPSHOT";
+            if (FileUtils.isDirectory(new File(rep2, snapshot))) {
+                this.uninstall(rep2, snapshot);
+            }
         }
     }
 

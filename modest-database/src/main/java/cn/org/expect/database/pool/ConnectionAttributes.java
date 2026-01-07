@@ -7,7 +7,7 @@ import java.util.Properties;
 
 import cn.org.expect.database.DatabaseDialect;
 import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.jdk.JavaDialectFactory;
+import cn.org.expect.util.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.Ensure;

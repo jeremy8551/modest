@@ -11,7 +11,7 @@
 
     <artifactId>modest-increment</artifactId>
     <name>${project.artifactId}</name>
-    <description>数据文件增量剥离工具</description>
+    <description>Data file incremental stripping toolkit</description>
 
     <dependencies>
         <dependency>
@@ -25,4 +25,13 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

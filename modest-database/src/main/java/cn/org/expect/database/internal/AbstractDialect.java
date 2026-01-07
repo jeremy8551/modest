@@ -25,6 +25,7 @@ import cn.org.expect.database.DatabaseTable;
 import cn.org.expect.database.DatabaseTableColumn;
 import cn.org.expect.database.DatabaseTableDDL;
 import cn.org.expect.database.DatabaseType;
+import cn.org.expect.database.DatabaseTypeFactory;
 import cn.org.expect.database.DatabaseTypeSet;
 import cn.org.expect.database.Jdbc;
 import cn.org.expect.database.SQL;
@@ -59,19 +60,19 @@ public abstract class AbstractDialect implements DatabaseDialect {
         return "";
     }
 
-    public String toDropPrimaryDDL(DatabaseIndex index) {
+    public String generateDropPrimaryDDL(DatabaseIndex index) {
         return "alter table " + index.getTableFullName() + " drop primary key ";
     }
 
-    public String toDropTable(DatabaseTable table) {
+    public String generateDropTable(DatabaseTable table) {
         return "drop table " + table.getFullName();
     }
 
-    public String toDropIndexDDL(DatabaseIndex index) {
+    public String generateDropIndexDDL(DatabaseIndex index) {
         return "drop index " + index.getFullName() + " on " + index.getTableFullName();
     }
 
-    public DatabaseTableDDL toDDL(Connection connection, DatabaseTable table) throws SQLException {
+    public DatabaseTableDDL generateDDL(Connection connection, DatabaseTable table) throws SQLException {
         StringBuilder str = this.toDDL(table);
 
         // 建表语句
@@ -81,13 +82,13 @@ public abstract class AbstractDialect implements DatabaseDialect {
         // 索引
         DatabaseIndexList indexs = table.getIndexs();
         for (DatabaseIndex index : indexs) {
-            ddl.getIndex().addAll(this.toDDL(connection, index, false));
+            ddl.getIndex().addAll(this.generateDDL(connection, index, false));
         }
 
         // 主键
         DatabaseIndexList pks = table.getPrimaryIndexs();
         for (DatabaseIndex index : pks) {
-            ddl.getPrimaryKey().addAll(this.toDDL(connection, index, true));
+            ddl.getPrimaryKey().addAll(this.generateDDL(connection, index, true));
         }
         return ddl;
     }
@@ -173,7 +174,7 @@ public abstract class AbstractDialect implements DatabaseDialect {
         return buf;
     }
 
-    public DatabaseDDL toDDL(Connection connection, DatabaseIndex index, boolean primary) throws SQLException {
+    public DatabaseDDL generateDDL(Connection connection, DatabaseIndex index, boolean primary) throws SQLException {
         StandardDatabaseDDL ddl = new StandardDatabaseDDL();
         if (primary) {
             StringBuilder buf = new StringBuilder();
@@ -250,6 +251,11 @@ public abstract class AbstractDialect implements DatabaseDialect {
      * @throws SQLException 数据库错误
      */
     public List<DatabaseIndex> getIndexs(Connection connection, String catalog, String schema, String tableName, String name) throws SQLException {
+        catalog = this.parseIdentifier(catalog);
+        schema = this.parseIdentifier(schema);
+        tableName = this.parseIdentifier(tableName);
+        name = this.parseIdentifier(name);
+
         Map<String, StandardDatabaseIndex> map = new HashMap<String, StandardDatabaseIndex>();
         ResultSet resultSet = null;
         try {
@@ -285,7 +291,7 @@ public abstract class AbstractDialect implements DatabaseDialect {
                     index.setTableCatalog(StringUtils.trimBlank(resultSet.getString("TABLE_CAT")));
                     index.setTableName(StringUtils.trim(resultSet.getString("TABLE_NAME")));
                     index.setTableSchema(StringUtils.trim(resultSet.getString("TABLE_SCHEM")));
-                    index.setTableFullName(this.toTableName(index.getTableCatalog(), index.getTableSchema(), index.getTableName()));
+                    index.setTableFullName(this.generateTableName(index.getTableCatalog(), index.getTableSchema(), index.getTableName()));
                     index.setSchema(index.getTableSchema()); // 默认使用表模式作为索引模式，可在数据库方言类中修改这个值
                     index.setFullName(index.getName()); // 默认使用索引名所在全名，可在数据库方言累中修改这个值
                     index.setUnique(!resultSet.getBoolean("NON_UNIQUE"));
@@ -299,7 +305,7 @@ public abstract class AbstractDialect implements DatabaseDialect {
 
             return list;
         } catch (SQLException e) {
-            throw new DatabaseException("database.stdout.message004", this.toTableName(catalog, schema, tableName), e);
+            throw new DatabaseException("database.stdout.message004", this.generateTableName(catalog, schema, tableName), e);
         } finally {
             IO.closeQuietly(resultSet);
             map.clear();
@@ -307,6 +313,10 @@ public abstract class AbstractDialect implements DatabaseDialect {
     }
 
     public List<DatabaseIndex> getIndexs(Connection connection, String catalog, String schema, String tableName) throws SQLException {
+        catalog = this.parseIdentifier(catalog);
+        schema = this.parseIdentifier(schema);
+        tableName = this.parseIdentifier(tableName);
+
         Map<String, StandardDatabaseIndex> map = new HashMap<String, StandardDatabaseIndex>();
         ResultSet resultSet = null;
         try {
@@ -356,7 +366,7 @@ public abstract class AbstractDialect implements DatabaseDialect {
                     index.setTableCatalog(StringUtils.trimBlank(resultSet.getString("TABLE_CAT")));
                     index.setTableName(StringUtils.trimBlank(resultSet.getString("TABLE_NAME")));
                     index.setTableSchema(StringUtils.trimBlank(resultSet.getString("TABLE_SCHEM")));
-                    index.setTableFullName(this.toTableName(index.getTableCatalog(), index.getTableSchema(), index.getTableName()));
+                    index.setTableFullName(this.generateTableName(index.getTableCatalog(), index.getTableSchema(), index.getTableName()));
                     index.setSchema(index.getTableSchema()); // 默认使用表模式作为索引模式，可在数据库方言类中修改这个值
                     index.setFullName(index.getName()); // 默认使用索引名所在全名，可在数据库方言累中修改这个值
                     index.setUnique(!resultSet.getBoolean("NON_UNIQUE"));
@@ -369,7 +379,7 @@ public abstract class AbstractDialect implements DatabaseDialect {
             }
             return list;
         } catch (SQLException e) {
-            throw new DatabaseException("database.stdout.message004", this.toIndexName(catalog, schema, tableName), e);
+            throw new DatabaseException("database.stdout.message004", this.generateIndexName(catalog, schema, tableName), e);
         } finally {
             IO.closeQuietly(resultSet);
             map.clear();
@@ -386,6 +396,10 @@ public abstract class AbstractDialect implements DatabaseDialect {
      * @return 索引集合
      */
     public List<DatabaseIndex> getPrimaryIndex(Connection connection, String catalog, String schema, String tableName) {
+        catalog = this.parseIdentifier(catalog);
+        schema = this.parseIdentifier(schema);
+        tableName = this.parseIdentifier(tableName);
+
         Map<String, StandardDatabaseIndex> map = new HashMap<String, StandardDatabaseIndex>();
         ResultSet resultSet = null;
         try {
@@ -408,7 +422,7 @@ public abstract class AbstractDialect implements DatabaseDialect {
                     index.setTableCatalog(StringUtils.trim(resultSet.getString("TABLE_CAT")));
                     index.setTableSchema(StringUtils.trim(resultSet.getString("TABLE_SCHEM")));
                     index.setTableName(StringUtils.trim(resultSet.getString("TABLE_NAME")));
-                    index.setTableFullName(this.toTableName(index.getTableCatalog(), index.getTableSchema(), index.getTableName()));
+                    index.setTableFullName(this.generateTableName(index.getTableCatalog(), index.getTableSchema(), index.getTableName()));
                     index.setSchema(index.getTableSchema()); // 默认使用表模式作为索引模式，可在数据库方言类中修改这个值
                     index.setFullName(index.getName()); // 默认使用索引名所在全名，可在数据库方言累中修改这个值
                     index.setUnique(true);
@@ -421,15 +435,42 @@ public abstract class AbstractDialect implements DatabaseDialect {
             }
             return list;
         } catch (SQLException e) {
-            throw new DatabaseException("database.stdout.message004", this.toTableName(catalog, schema, tableName), e);
+            throw new DatabaseException("database.stdout.message004", this.generateTableName(catalog, schema, tableName), e);
         } finally {
             IO.closeQuietly(resultSet);
             map.clear();
         }
     }
 
+    protected DatabaseTypeFactory getDatabaseTypeFactory() throws SQLException {
+        return new StandardDatabaseTypeFactory();
+    }
+
+    public DatabaseTypeSet getFieldInformation(Connection conn) {
+        StandardDatabaseTypes map = new StandardDatabaseTypes();
+        DatabaseMetaData metaData;
+        ResultSet resultSet = null;
+        try {
+            metaData = conn.getMetaData();
+            resultSet = metaData.getTypeInfo();
+            while (resultSet.next()) {
+                DatabaseType type = this.getDatabaseTypeFactory().newInstance(resultSet);
+                map.put(type.getName(), type);
+            }
+            return map;
+        } catch (SQLException e) {
+            throw new DatabaseException("database.stdout.message004", e.getLocalizedMessage(), e);
+        } finally {
+            IO.closeQuietly(resultSet);
+        }
+    }
+
     public List<DatabaseTable> getTable(Connection connection, String catalog, String schema, String tableName) throws SQLException {
-        DatabaseTypeSet types = Jdbc.getTypeInfo(connection);
+        catalog = this.parseIdentifier(catalog);
+        schema = this.parseIdentifier(schema);
+        tableName = this.parseIdentifier(tableName);
+
+        DatabaseTypeSet types = this.getFieldInformation(connection);
         ResultSet resultSet = null;
         try {
             List<DatabaseTable> list = new ArrayList<DatabaseTable>();
@@ -441,7 +482,7 @@ public abstract class AbstractDialect implements DatabaseDialect {
                 table.setCatalog(StringUtils.trim(resultSet.getString("TABLE_CAT")));
                 table.setType(StringUtils.trim(resultSet.getString("TABLE_TYPE")));
                 table.setRemark(StringUtils.trim(resultSet.getString("REMARKS")));
-                table.setFullName(this.toTableName(table.getCatalog(), table.getSchema(), table.getName()));
+                table.setFullName(this.generateTableName(table.getCatalog(), table.getSchema(), table.getName()));
 
                 // 索引信息
                 List<DatabaseIndex> indexs = this.getIndexs(connection, catalog, table.getSchema(), table.getName());
@@ -461,13 +502,17 @@ public abstract class AbstractDialect implements DatabaseDialect {
 
             return list;
         } catch (SQLException e) {
-            throw new DatabaseException("database.stdout.message004", this.toTableName(catalog, schema, tableName), e);
+            throw new DatabaseException("database.stdout.message004", this.generateTableName(catalog, schema, tableName), e);
         } finally {
             IO.closeQuietly(resultSet);
         }
     }
 
     protected List<DatabaseTableColumn> getTableColumns(Connection connection, DatabaseTypeSet types, String catalog, String schema, String tableName) {
+        catalog = this.parseIdentifier(catalog);
+        schema = this.parseIdentifier(schema);
+        tableName = this.parseIdentifier(tableName);
+
         ResultSet resultSet = null;
         try {
             List<DatabaseTableColumn> list = new ArrayList<DatabaseTableColumn>();
@@ -507,7 +552,7 @@ public abstract class AbstractDialect implements DatabaseDialect {
                 column.setTableCatalog(StringUtils.trimBlank(resultSet.getString("TABLE_CAT")));
                 column.setTableSchema(StringUtils.trimBlank(resultSet.getString("TABLE_SCHEM")));
                 column.setTableName(StringUtils.trimBlank(resultSet.getString("TABLE_NAME")));
-                column.setTableFullName(this.toTableName(column.getTableCatalog(), column.getTableSchema(), column.getTableName()));
+                column.setTableFullName(this.generateTableName(column.getTableCatalog(), column.getTableSchema(), column.getTableName()));
                 // col.setScopeCatlog(ST.trimBlank(res.getString("SCOPE_CATLOG")));
                 // col.setScopeSchema(ST.trimBlank(res.getString("SCOPE_SCHEMA")));
                 // col.setScopeTable(ST.trimBlank(res.getString("SCOPE_TABLE")));
@@ -516,44 +561,51 @@ public abstract class AbstractDialect implements DatabaseDialect {
                 if (type == null) {
                     throw new UnsupportedOperationException(TYPE_NAME);
                 }
-                column.setType(type);
                 list.add(column);
             }
 
             return list;
         } catch (SQLException e) {
-            throw new DatabaseException("database.stdout.message004", this.toTableName(catalog, schema, tableName), e);
+            throw new DatabaseException("database.stdout.message004", this.generateTableName(catalog, schema, tableName), e);
         } finally {
             IO.closeQuietly(resultSet);
         }
     }
 
-    public String toDeleteQuicklySQL(Connection connection, String catalog, String schema, String tableName) {
-        return "delete from " + this.toTableName(catalog, schema, tableName);
+    public String generateDeleteQuicklySQL(Connection connection, String catalog, String schema, String tableName) {
+        return "delete from " + this.generateTableName(catalog, schema, tableName);
     }
 
-    public String toTableName(String catalog, String schema, String tableName) {
+    public String generateTableName(String catalog, String schema, String tableName) {
         return SQL.toTableName(schema, tableName);
     }
 
-    public String toIndexName(String catalog, String schema, String tableName) {
+    public String generateIndexName(String catalog, String schema, String tableName) {
         return SQL.toTableName(schema, tableName);
     }
 
     public boolean containsTable(Connection connection, String catalog, String schema, String tableName) throws SQLException {
+        catalog = this.parseIdentifier(catalog);
+        schema = this.parseIdentifier(schema);
+        tableName = this.parseIdentifier(tableName);
+
         ResultSet resultSet = null;
         try {
             resultSet = connection.getMetaData().getTables(catalog, schema, tableName, null);
             return resultSet.next() && StringUtils.isNotBlank(resultSet.getString("TABLE_NAME"));
         } catch (SQLException e) {
-            throw new DatabaseException("database.stdout.message004", this.toTableName(catalog, schema, tableName), e);
+            throw new DatabaseException("database.stdout.message004", this.generateTableName(catalog, schema, tableName), e);
         } finally {
             IO.closeQuietly(resultSet);
         }
     }
 
     public DatabaseProcedure getProcedureForceOne(Connection connection, String catalog, String schema, String procedureName) throws SQLException {
-        List<DatabaseProcedure> list = this.getProcedure(connection, catalog, schema, procedureName);
+        catalog = this.parseIdentifier(catalog);
+        schema = this.parseIdentifier(schema);
+        procedureName = this.parseIdentifier(procedureName);
+
+        List<DatabaseProcedure> list = this.getProcedures(connection, catalog, schema, procedureName);
         if (list.isEmpty()) {
             return null;
         } else if (list.size() != 1) {
@@ -581,7 +633,22 @@ public abstract class AbstractDialect implements DatabaseDialect {
         return new Properties();
     }
 
-    public List<String> alterTableColumn(Connection connection, DatabaseTableColumn oc, DatabaseTableColumn nc) throws SQLException {
-        throw new UnsupportedOperationException();
+    public String parseIdentifier(String str) {
+        if (str == null) {
+            return str;
+        }
+
+        if (str.length() <= 1) {
+            return str.toUpperCase();
+        }
+
+        int last = str.length() - 1;
+        char f = str.charAt(0);
+        char l = str.charAt(last);
+        if ((f == '`' && l == '`') || (f == '\"' && l == '\"') || (f == '\'' && l == '\'')) {
+            return str.substring(1, last);
+        } else {
+            return str.toUpperCase();
+        }
     }
 }

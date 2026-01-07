@@ -15,6 +15,7 @@ import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.CharsetUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
+import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 
 /**
@@ -526,13 +527,16 @@ public class UniversalScriptContext {
      * @return 返回true表示存在变量
      */
     public boolean containsVariable(String name) {
-        return this.globalVariable.containsKey(name) || this.localVariable.containsKey(name) || this.environmentVariable.containsKey(name);
+        return this.localVariable.containsKey(name) || this.globalVariable.containsKey(name) || this.ioc.hasProperty(name) || this.environmentVariable.containsKey(name) || Settings.containsVariable(name);
     }
 
     /**
      * 返回变量值 <br>
      * 如果在不同的域中存在同名的变量名时，按域的优先级从高到低返回变量值，域的优先级如下：<br>
      * {@literal 局部变量域 > 全局变量域 > 环境变量域 }
+     *
+     * @param name 变量名
+     * @return 变量值
      */
     public Object getVariable(String name) {
         if (this.localVariable.containsKey(name)) {
@@ -543,11 +547,32 @@ public class UniversalScriptContext {
             return this.getGlobalVariable(name);
         }
 
-        if (this.environmentVariable.containsKey(name)) {
-            return this.getEnvironmentVariable(name);
+        if (this.ioc.hasProperty(name)) {
+            return this.ioc.getProperty(name);
         }
 
-        return null;
+        if (this.environmentVariable.containsKey(name)) {
+            return this.environmentVariable.get(name);
+        }
+
+        return Settings.getVariable(name);
+    }
+
+    /**
+     * 返回变量值 <br>
+     * 如果在不同的域中存在同名的变量名时，按域的优先级从高到低返回变量值，域的优先级如下：<br>
+     * {@literal session > 局部变量域 > 全局变量域 > 环境变量域 }
+     *
+     * @param session 会话信息
+     * @param name    变量名
+     * @return 变量值
+     */
+    public Object getVariable(UniversalScriptSession session, String name) {
+        if (session.containsVariable(name)) {
+            return session.getVariable(name);
+        } else {
+            return this.getVariable(name);
+        }
     }
 
     /**
@@ -675,16 +700,18 @@ public class UniversalScriptContext {
      *
      * @return 变量名集合
      */
-    public Set<String> getVariableNames() {
+    public Set<String> getVariableNames(UniversalScriptSession session) {
+        Set<String> sks = (session == null) ? new HashSet<String>() : session.getVariables().keySet();
         Set<String> lks = this.getLocalVariable().keySet(); // 局部变量名
         Set<String> gks = this.getGlobalVariable().keySet(); // 全局变量名
         Set<String> eks = this.getEnvironmentVariable().keySet(); // 环境变量名
 
-        int size = lks.size() + gks.size() + eks.size();
+        int size = sks.size() + lks.size() + gks.size() + eks.size();
         HashSet<String> names = new LinkedHashSet<String>(size);
-        names.addAll(lks);
-        names.addAll(gks);
         names.addAll(eks);
+        names.addAll(gks);
+        names.addAll(lks);
+        names.addAll(sks);
         return names;
     }
 

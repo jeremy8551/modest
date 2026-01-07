@@ -18,7 +18,7 @@ public class LoadListenerFactory {
      * @param context 数据装载引擎上下文信息
      * @return 输入流监听器
      */
-    public static TextTableFileReaderListener create(LoadEngineContext context) {
+    public static TextTableFileReaderListener newInstance(LoadEngineContext context) {
         CommonTextTableFileReaderListener listener = null;
 
         // 设置不带回车与换行符

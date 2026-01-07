@@ -42,7 +42,7 @@ public class DataWriterFactory {
      * @return 输出流
      * @throws Exception 发生错误
      */
-    public synchronized DataWriter create() throws Exception {
+    public synchronized DataWriter newInstance() throws Exception {
         for (DataWriter writer : this.list) {
             if (writer != null && !writer.isAlive()) {
                 writer.open();

@@ -17,15 +17,17 @@ import cn.org.expect.util.StringUtils;
 @EasyBean
 public class ScriptConfiguration implements UniversalScriptConfiguration {
 
-    /**
-     * 配置信息
-     */
+    /** 配置信息 */
     private final Properties config;
+
+    /** 脚本引擎关键字集合 */
+    private final Set<String> keywords;
 
     /**
      * 初始化
      */
     public ScriptConfiguration() throws IOException {
+        this.keywords = new CaseSensitivSet();
         InputStream in = UniversalScriptEngine.class.getResourceAsStream("ScriptEngine.properties");
         this.config = new Properties();
         this.config.load(in);
@@ -87,9 +89,8 @@ public class ScriptConfiguration implements UniversalScriptConfiguration {
     public Set<String> getKeywords() {
         String keywords = this.getProperty("universal.script.keywords");
         String[] array = StringUtils.removeBlank(StringUtils.split(keywords, ','));
-        Set<String> set = new CaseSensitivSet();
-        Collections.addAll(set, array);
-        return set;
+        Collections.addAll(this.keywords, array);
+        return this.keywords;
     }
 
     public String getProperty(String name) {

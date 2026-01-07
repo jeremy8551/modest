@@ -73,9 +73,9 @@ public class ExportEngine extends AbstractJob {
 
         if (log.isInfoEnabled()) {
             if (this.message.getMessagefile() == null) {
-                log.info("extract.stdout.message008", this.message.getTarget(), this.message.getRows(), DataUnitExpression.toString(new BigDecimal(this.message.getBytes())), this.watch.useTime());
+                log.info("extract.stdout.message008", this.message.getTarget(), this.message.getRows(), DataUnitExpression.toString(new BigDecimal(this.message.getBytes()), true), this.watch.useTime());
             } else {
-                log.info("extract.stdout.message009", this.message.getTarget(), this.message.getRows(), DataUnitExpression.toString(new BigDecimal(this.message.getBytes())), this.message.getMessagefile(), this.watch.useTime());
+                log.info("extract.stdout.message009", this.message.getTarget(), this.message.getRows(), DataUnitExpression.toString(new BigDecimal(this.message.getBytes()), true), this.message.getMessagefile(), this.watch.useTime());
             }
         }
 

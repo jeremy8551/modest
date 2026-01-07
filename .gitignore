@@ -48,10 +48,17 @@ build/
 ### 运行配置 ###
 .run/
 
+### gradle ###
 **/.gradle
 
-# Maven
+### cusor ###
+.cursor
+
+### maven-wrapper ###
 .mvn/wrapper/maven-wrapper.jar
 
-# 过滤JDK方言的实现类
-modest-jdk/src/main/java/cn/org/expect/jdk/JDK*.java
+### 缓存 ###
+modest-build/.cache
+
+### arthas ###
+arthas-output

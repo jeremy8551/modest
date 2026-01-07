@@ -12,17 +12,17 @@ db connect to testdb
 
 db connect reset 
 
-step 子脚本第一步
+step childPartOne
 
 
 
-step 子脚本第二部
-step 子脚本第3部
+step childPartTwo
+step childPart3
 
 
 java cn.org.expect.script.command.JavaCommandTest '1 ' "2 2" 3 4
 
 
 
-echo 子脚本退出脚本执行
+echo "Subscript exits script execution"
 exit 0

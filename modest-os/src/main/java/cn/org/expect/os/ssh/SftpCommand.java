@@ -260,6 +260,10 @@ public class SftpCommand implements OSFtpCommand {
         return file;
     }
 
+    public void enterPassiveMode(final boolean remotePassive) {
+        throw new UnsupportedOperationException();
+    }
+
     public void terminate() {
         if (log.isDebugEnabled()) {
             log.debug("ssh2.jsch.stdout.message012", "terminate");

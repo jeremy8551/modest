@@ -16,12 +16,12 @@ public class JdbcTest {
 
     @Test
     public void testremoveSchema() {
-        Assert.assertEquals(Jdbc.removeSchema(""), "");
-        Assert.assertEquals(Jdbc.removeSchema("table"), "table");
-        Assert.assertEquals(Jdbc.removeSchema(".table"), "table");
-        Assert.assertEquals(Jdbc.removeSchema("1.table"), "table");
-        Assert.assertEquals(Jdbc.removeSchema("schema.table"), "table");
-        Assert.assertEquals(Jdbc.removeSchema("schema.sdsf.table"), "table");
+        Assert.assertEquals("", Jdbc.removeSchema(""));
+        Assert.assertEquals("table", Jdbc.removeSchema("table"));
+        Assert.assertEquals("table", Jdbc.removeSchema(".table"));
+        Assert.assertEquals("table", Jdbc.removeSchema("1.table"));
+        Assert.assertEquals("table", Jdbc.removeSchema("schema.table"));
+        Assert.assertEquals("table", Jdbc.removeSchema("schema.sdsf.table"));
     }
 
     @Test
@@ -29,9 +29,9 @@ public class JdbcTest {
         Assert.assertNull(Jdbc.getSchema(""));
         Assert.assertNull(Jdbc.getSchema("table"));
         Assert.assertNull(Jdbc.getSchema(".table"));
-        Assert.assertEquals(Jdbc.getSchema("1.table"), "1");
-        Assert.assertEquals(Jdbc.getSchema("schema.table"), "schema");
-        Assert.assertEquals(Jdbc.getSchema("schema.sdsf.table"), "schema");
+        Assert.assertEquals("1", Jdbc.getSchema("1.table"));
+        Assert.assertEquals("schema", Jdbc.getSchema("schema.table"));
+        Assert.assertEquals("schema", Jdbc.getSchema("schema.sdsf.table"));
     }
 
     @Test

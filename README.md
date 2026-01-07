@@ -1,17 +1,17 @@
 # 功能介绍
 
-通用脚本引擎（以下简称脚本引擎）基于 **Java** 语言实现，具备以下核心功能：
+通用脚本引擎（以下简称脚本引擎）基于 **Java** 语言实现，具备以下功能：
 
-- 支持通过实现自定义 **命令编译器** 扩展业务指令；
-- 支持通过定义自定义 **变量方法** 扩展变量解析和处理能力；
-- 支持执行 **SQL DML（数据操作语言）** 与 **DDL（数据定义语言）** 语句，操作关系型数据库；
-- 支持将**数据文件解析并装载至数据库表**；
-- 支持从**数据库表导出数据至文件**；
-- 支持**文件剥离增量处理机制**，并可按需实现自定义文件格式解析器；
-- 支持**远程主机连接**，在远程服务器上执行 **Shell 命令**；
-- 支持**多线程并发执行任务**；
+- 支持执行 SQL 语句，操作关系型数据库；
+- 支持将数据文件解析并装载至数据库表；
+- 支持从数据库表导出数据至文件；
+- 支持文件剥离增量处理机制，并可按需实现自定义文件格式解析器；
+- 支持远程主机连接，在远程服务器上执行 Shell 命令；
+- 支持多线程并发执行任务；
+- 支持自定义扩展脚本引擎的命令；
+- 支持自定义扩展脚本引擎的变量方法；
 - 兼容 **JDK5** 及以上版本；
-- 提供对 **JSR 223: Scripting for the Java Platform** 标准接口 `javax.script.ScriptEngineManager` 与 `javax.script.ScriptEngine` 的实现，支持通过标准化方式集成脚本引擎。
+- 提供对 **JSR 223: Scripting for the Java Platform** 标准接口的实现，支持通过标准化方式集成脚本引擎；
 
 
 
@@ -22,150 +22,160 @@
 
 ## 引入依赖
 
-**JDK5** 环境下，在项目的 `pom.xml` 文件中添加以下依赖：
+**JDK5** 环境添加依赖：
 
 ```xml
 <dependency>
   <groupId>cn.org.expect</groupId>
   <artifactId>modest-script</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
 </dependency>
 ```
 
-**JDK6** 环境下，在项目的 `pom.xml` 文件中添加以下依赖：
+**JDK6** 及更高版的 JDK 添加依赖：
 
 ```xml
 <dependency>
   <groupId>cn.org.expect</groupId>
   <artifactId>modest-script-engine</artifactId>
-  <version>1.0.3</version>
+  <version>1.0.4</version>
 </dependency>
 ```
 
-
-
-## 运行示例
-
-基于 **JDK6**（**JSR-223**）脚本引擎标准**API**的调用：
-
-
-```java
-public class Main {
-    public static void main(String[] args) throws ScriptException {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
-        engine.eval("echo hello world!");
-    }
-}
-```
-
-基于工厂模式的脚本引擎实例化与执行：
-
-
-```java
-public class Main {
-    public static void main(String[] args) {
-        EasyContext context = new EasyBeanContext();
-        UniversalScriptEngineFactory factory = new UniversalScriptEngineFactory(context);
-        UniversalScriptEngine engine = factory.getScriptEngine();
-        engine.eval("echo hello world!");
-    }
-}
-```
-
-
-
-##  SpringBoot场景启动器
-
-脚本引擎可作为 **Spring Boot Starter** 自动装配模块集成至项目中，随着 **Spring Boot 应用上下文** 启动自动初始化，引擎实例可通过依赖注入获取，进一步简化创建与使用流程。
-
-
-
-### 引入依赖
-
-在 **Spring Boot 项目** 的 **pom.xml** 文件中配置如下依赖项：
+**Spring Boot 项目**添加依赖：
 
 ```xml
 <dependency>
     <groupId>cn.org.expect</groupId>
     <artifactId>modest-spring-boot-starter</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
 </dependency>
 ```
 
-上述 **Starter 模块** 内部已集成脚本引擎的配置与生命周期管理，开发者无需手动初始化，依赖注入后即可直接使用。
 
 
+## Hello World
 
-### 场景示例
+**JDK6**（**JSR-223**）脚本引擎标准**API**：
 
-基于 **Spring MVC** 构建接口服务，通过注入脚本引擎实例动态执行脚本：
 
 ```java
+package cn.org.expect.javax.script.sample;
+
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+
+public class ScriptSample {
+
+    public static void main(String[] args) throws ScriptException {
+        ScriptEngineManager manager = new ScriptEngineManager();
+        ScriptEngine engine = manager.getEngineByExtension("usl");
+        engine.eval("echo hello world!");
+    }
+}
+
+```
+
+脚本引擎实例化与执行：
+
+
+```java
+package cn.org.expect.script.sample;
+
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.script.UniversalScriptEngine;
+import cn.org.expect.script.UniversalScriptEngineFactory;
+
+public class ScriptSample {
+
+    public static void main(String[] args) {
+        EasyContext context = new DefaultEasyContext();
+        UniversalScriptEngineFactory factory = new UniversalScriptEngineFactory(context);
+        UniversalScriptEngine engine = factory.getScriptEngine();
+        engine.evaluate("echo hello world!");
+    }
+}
+
+```
+
+在 **Spring Boot** 项目注入脚本引擎实例并执行脚本：
+
+```java
+package cn.org.expect.ssm.controller;
+
+import java.io.IOException;
+import javax.script.ScriptEngine;
+import javax.script.ScriptException;
+
+import cn.org.expect.ioc.EasyContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 @Controller
-public class HelloController {
+public class HelloControllerSample {
 
     @Autowired
     private ScriptEngine engine;
-  
+
     @Autowired
     private EasyContext context;
 
-    @RequestMapping("/help")
+    @RequestMapping("/helloWorld")
     @ResponseBody
     public String help() throws ScriptException, IOException {
-      engine.eval("echo hello world!");
-      return "success";
+        this.engine.eval("echo hello world!");
+        return "success";
     }
 }
+
 ```
 
 
 
-### 属性
-
-在编写脚本时，脚本引擎支持读取 **Spring Boot 配置文件**（如 `application.properties` 和 `application.yaml`），包括按环境分隔的配置。
-
-
-
-### 线程池复用机制
-
-为避免脚本执行过程中线程资源的无序扩张，脚本引擎支持与 **Spring 容器** 线程池资源共享：
-
-脚本引擎复用 **Spring** 容器线程池的机制：
-
-- 优先查找 **Spring 容器** 中名称为 `taskExecutor` 的线程池；
-- 若未找到，查找类型为 `ThreadPoolTaskExecutor` 的线程池实例；
-- 若仍未找到，则尝试获取实现了 `ExecutorService` 接口的线程池实例；
-
-
-
-### 启动流程与 Bean 生命周期管理
-
-在 **Spring Boot 项目启动阶段**，脚本引擎容器与实例的初始化流程如下：
-
-应用启动时，初始化 **脚本引擎容器组件**，负责维护脚本运行环境及组件信息；
-
-初始化完成后，将该 **容器组件** 交由 **Spring 容器** 进行统一管理；
-
-开发者可通过 **Spring 依赖注入机制** 获取以下两个核心对象：
-
-脚本引擎容器 `cn.org.expect.ioc.EasyContext`：单例作用域（`@Scope("singleton")`），负责全局脚本环境管理；
-
-脚本引擎实例 `cn.org.expect.script.UniversalScriptEngine`：请求作用域（`@Scope("request")`），每次请求生成一个新的引擎实例。
-
-
-
-## ETL示例
-
-在 `resources` 目录下新建脚本文件 `script/test_etl.sql`
+## ETL脚本示例
 
 ```sql
+package cn.org.expect.script.sample;
+
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.script.UniversalScriptEngine;
+import cn.org.expect.script.UniversalScriptEngineFactory;
+import cn.org.expect.test.ModestRunner;
+import cn.org.expect.test.annotation.RunWithFeature;
+import cn.org.expect.test.annotation.RunWithLogSettings;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+@RunWith(ModestRunner.class)
+@RunWithLogSettings("sout:info")
+@RunWithFeature("mysql")
+public class MysqlTest {
+
+    @Test
+    public void test() {
+        EasyContext context = new DefaultEasyContext();
+        UniversalScriptEngineFactory factory = new UniversalScriptEngineFactory(context);
+        UniversalScriptEngine engine = factory.getScriptEngine();
+        engine.evaluate(". classpath:/script/sample/mysql.sql");
+    }
+}
+
+```
+
+在 `resources` 目录下新建脚本文件：
+
+```JAVA
 # 设置变量值
-set databaseDriverName="com.ibm.db2.jcc.DB2Driver"
-set databaseUrl="jdbc:db2://127.0.0.1:50000/sample"
-set username="db2inst1"
-set password="db2inst1"
+set properties=this.getContext().getContainer().getClassLoader().loadProperties("mysql.properties", "active.test.env")
+set databaseDriverName=properties.getProperty("databaseDriverName")
+set databaseUrl=properties.getProperty("databaseUrl")
+set username=properties.getProperty("username")
+set password=properties.getProperty("password")
 
 # 打印所有内置变量
 set
@@ -177,10 +187,10 @@ declare DBID catalog configuration use driver $databaseDriverName url "${databas
 db connect to DBID
 
 # quiet命令会忽略DROP语句的错误
-quiet drop table v_test_tab;
+quiet drop table V_TEST_TAB;
 
 # 建表
-CREATE TABLE v_test_tab (
+CREATE TABLE V_TEST_TAB (
     ORGCODE CHAR(20),
     task_name CHAR(60) NOT NULL,
     task_file_path VARCHAR(512),
@@ -190,69 +200,89 @@ CREATE TABLE v_test_tab (
     status CHAR(1),
     step_id VARCHAR(4000),
     error_time TIMESTAMP,
-    error_log CLOB,
+    error_log TEXT,
     oper_id CHAR(20),
     oper_name VARCHAR(60),
     PRIMARY KEY (task_name,file_data)
 );
 commit;
 
-INSERT INTO v_test_tab
+INSERT INTO V_TEST_TAB
 (ORGCODE, TASK_NAME, TASK_FILE_PATH, FILE_DATA, CREATE_DATE, FINISH_DATE, STATUS, STEP_ID, ERROR_TIME, ERROR_LOG, OPER_ID, OPER_NAME)
 VALUES('0', '1', '/was/sql', '2021-02-03', '2021-08-09 23:54:26.928000', NULL, '1', '使用sftp登录测试系统服务器', '2021-08-09 23:47:02.197000', '设置脚本引擎异常处理逻辑', '', '');
 
-INSERT INTO v_test_tab
+INSERT INTO V_TEST_TAB
 (ORGCODE, TASK_NAME, TASK_FILE_PATH, FILE_DATA, CREATE_DATE, FINISH_DATE, STATUS, STEP_ID, ERROR_TIME, ERROR_LOG, OPER_ID, OPER_NAME)
 VALUES('1', '2', '/was/test', '2021-02-03', '2021-08-09 23:54:26.928000', NULL, '1', '使用sftp登录测试系统服务器', '2021-08-09 23:47:02.197000', '使用sftp登录测试系统服务器', '', '');
 commit;
 
 # 创建索引
 quiet drop index vtesttabidx01;
-create index vtesttabidx01 on v_test_tab(ORGCODE,error_time);
+create index vtesttabidx01 on V_TEST_TAB(ORGCODE,error_time);
 commit;
 
+# 打印当前数据库的字段信息
+db get cfg for catalog;
+db get cfg for schema;
+db get cfg for table type;
+db get cfg for field type;
+
 # 将表中数据卸载到文件中
-db export to $temp/v_test_tab.del of del select * from v_test_tab;
+db export to ${TMPDIR}/v_test_tab.del of del select * from V_TEST_TAB;
+
+cat ${TMPDIR}/v_test_tab.del
 
 # 将数据文件装载到指定数据库表中
-db load from $temp/v_test_tab.del of del replace into v_test_tab;
+db load from ${TMPDIR}/v_test_tab.del of del replace into V_TEST_TAB;
 
 # 返回0表示脚本执行成功
 exit 0
-```
-
-运行脚本文件：
-
-```JAVA
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-public class ScriptEngineTest {
-
-    @Test
-    public void test() throws ScriptException {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
-        engine.eval(". classpath:/script/test_etl.sql");
-    }
-}
 ```
 
 
 
 ## 存储过程示例
 
-可以作为存储过程使用，首先建立脚本文件 `/script/test_procedure.sql`，内容如下所示： 
+可以作为存储过程使用
 
 ```sql
+package cn.org.expect.script.sample;
+
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.script.UniversalScriptEngine;
+import cn.org.expect.script.UniversalScriptEngineFactory;
+import cn.org.expect.test.ModestRunner;
+import cn.org.expect.test.annotation.RunWithFeature;
+import cn.org.expect.test.annotation.RunWithLogSettings;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+@RunWith(ModestRunner.class)
+@RunWithLogSettings("sout:info")
+@RunWithFeature("db2")
+public class SQLProcedureTest {
+
+    @Test
+    public void test() {
+        EasyContext context = new DefaultEasyContext();
+        UniversalScriptEngineFactory factory = new UniversalScriptEngineFactory(context);
+        UniversalScriptEngine engine = factory.getScriptEngine();
+        engine.evaluate(". classpath:/script/sample/sql_procedure.sql");
+    }
+}
+
+```
+
+在 `resources` 目录下新建脚本文件：
+
+```java
 # 设置变量值
-set databaseDriverName="com.ibm.db2.jcc.DB2Driver"
-set databaseUrl="jdbc:db2://127.0.0.1:50000/sample"
-set username="db2inst1"
-set password="db2inst1"
+set properties=this.getContext().getContainer().getClassLoader().loadProperties("db2.properties", "active.test.env")
+set databaseDriverName=properties.getProperty("databaseDriverName")
+set databaseUrl=properties.getProperty("databaseUrl")
+set username=properties.getProperty("username")
+set password=properties.getProperty("password")
 
 # 打印所有内置变量
 set
@@ -262,9 +292,13 @@ declare DBID catalog configuration use driver $databaseDriverName url "${databas
 
 # 连接数据库
 db connect to DBID
+db get cfg for catalog;
+db get cfg for schema;
+db get cfg for table type;
+db get cfg for field type;
 
 # 建立异常捕获逻辑
-declare continue global handler for errorcode == -601 begin
+declare global continue handler for errorcode == -601 begin
   echo 执行命令 ${errorscript} 发生错误, 对象已存在不能重复建立 ${errorcode} ..
 end
 
@@ -306,36 +340,48 @@ commit;
 exit 0
 ```
 
-运行脚本文件：
-
-```java
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-public class ScriptEngineTest {
-
-    @Test
-    public void test() throws ScriptException {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
-        engine.eval(". classpath:/script/test_produce.sql");
-    }
-}
-```
-
 
 
 ## 脚本示例
 
 ```sql
+package cn.org.expect.script.sample;
+
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.script.UniversalScriptEngine;
+import cn.org.expect.script.UniversalScriptEngineFactory;
+import cn.org.expect.test.ModestRunner;
+import cn.org.expect.test.annotation.RunWithFeature;
+import cn.org.expect.test.annotation.RunWithLogSettings;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+@RunWith(ModestRunner.class)
+@RunWithLogSettings("sout:info")
+@RunWithFeature("db2")
+public class DB2Test {
+
+    @Test
+    public void test() {
+        EasyContext context = new DefaultEasyContext();
+        UniversalScriptEngineFactory factory = new UniversalScriptEngineFactory(context);
+        UniversalScriptEngine engine = factory.getScriptEngine();
+        engine.evaluate(". classpath:/script/sample/db2.sql");
+    }
+}
+
+```
+
+在 `resources` 目录下新建脚本文件：
+
+```
 # 设置变量值
-set databaseDriverName="com.ibm.db2.jcc.DB2Driver"
-set databaseUrl="jdbc:db2://127.0.0.1:50000/sample"
-set username="db2inst1"
-set password="db2inst1"
+set properties=this.getContext().getContainer().getClassLoader().loadProperties("db2.properties", "active.test.env")
+set databaseDriverName=properties.getProperty("databaseDriverName")
+set databaseUrl=properties.getProperty("databaseUrl")
+set username=properties.getProperty("username")
+set password=properties.getProperty("password")
 
 # 打印所有内置变量
 set
@@ -365,15 +411,15 @@ set v_test_tmp_records=10123
 DECLARE s1 Statement WITH insert into v_test_tmp (branch_id, branch_name, branch_type, branch_no, status) values (?, ?, ?, ?, ?) ;
 
 # 建立进度输出
-declare progress use out print '插入数据库记录 ${process}%, 一共${totalRecord}笔记录 ${leftTime}' total ${v_test_tmp_records} times
+declare progress use out print 'insert records ${process}%, total ${totalRecord} records ${leftTime}' total ${v_test_tmp_records} times
 
 # 逐条插入数据
 set i=1
 while $i <= $v_test_tmp_records loop
   set c1 = "$i"
-  set c2 = "机构$i"
-  set c3 = "机构类型$i"
-  set c4 = "编号$i"
+  set c2 = "orgCode$i"
+  set c3 = "orgType$i"
+  set c4 = "ID$i"
   set c5 = "0"
 
   # 设置SQL参数
@@ -400,12 +446,14 @@ exit 0
 ## shell示例
 
 ```shell
-$ ssh ${admin}@${host}:22?password=${adminPw} 
-&& export LANG=zh_CN.GBK 
-&& db2 connect to ${databaseName} user ${username} using ${password} 
-&& db2 "load client from /dev/null of del replace into v10_test_tmp " 
-&& db2 "load client from `pwd`/v_test_tmp.del of del replace into v_test_tmp " 
-&& db2 connect reset;
+# 设置变量值
+set properties=this.getContext().getContainer().getClassLoader().loadProperties("ssh.properties", "active.test.env")
+set sshHost=properties.getProperty("ssh.host")
+set sshPort=properties.getProperty("ssh.port")
+set sshUsername=properties.getProperty("ssh.username")
+set sshPassword=properties.getProperty("ssh.password")
+
+ssh ${sshUsername}@${sshHost}:${sshPort}?password=${sshPassword} && export LANG=zh_CN.UTF-8 && pwd && ls -ltrha
 ```
 
 
@@ -413,21 +461,33 @@ $ ssh ${admin}@${host}:22?password=${adminPw}
 ## sftp示例
 
 ```shell
-sftp ${ftpuser}@${ftphost}:22?password=${ftppass}
+# 设置变量值
+set properties=this.getContext().getContainer().getClassLoader().loadProperties("sftp.properties", "active.test.env")
+set sftphost=properties.getProperty("sftp.host")
+set sftpport=properties.getProperty("sftp.port")
+set sftpuser=properties.getProperty("sftp.username")
+set sftppass=properties.getProperty("sftp.password")
+
+cd ${TMPDIR}
+echo "select * from table " > ${TMPDIR}/test.sql
+
+sftp ${sftpuser}@${sftphost}:${sftpport}?password=${sftppass}
   set ftphome=`pwd`
   ls ${ftphome}
-  set remotetestdir="${ftphome}/test"
+  set remotetestdir="test"
   rm ${remotetestdir}
   mkdir ${remotetestdir}
   cd ${remotetestdir}
   put `pwd -l`/test.sql
   ls
+  pwd
+  cd ..
   exists ${remotetestdir}/test.sql
   isfile ${remotetestdir}/test.sql
   mkdir ${ftphome}/test
   rm ${ftphome}/test
-  get ${remotetestdir}/test.sql ${temp}
-  exists -l ${temp}/test.sql
+  get ${remotetestdir}/test.sql ${TMPDIR}
+  exists -l ${TMPDIR}/test.sql
 bye
 ```
 
@@ -436,24 +496,35 @@ bye
 ## ftp示例
 
 ```shell
-ftp ${ftpuser}@${ftphost}:21?password=${ftppass}
+# 设置变量值
+set properties=this.getContext().getContainer().getClassLoader().loadProperties("ftp.properties", "active.test.env")
+set ftphost=properties.getProperty("ftp.host")
+set ftpport=properties.getProperty("ftp.port")
+set ftpuser=properties.getProperty("ftp.username")
+set ftppass=properties.getProperty("ftp.password")
+
+echo "select * from table " > ${TMPDIR}/test.sql
+
+ftp ${ftpuser}@${ftphost}:${ftpport}?password=${ftppass}
+  passive
   set ftphome=`pwd`
-  set remotetestdir="${ftphome}/rpt"
+  set remotetestdir="rpt"
   pwd
   rm ${remotetestdir}
   mkdir ${remotetestdir}
-  exists ${remotetestdir}/
+  exists ${remotetestdir}
   ls ${remotetestdir}
-  cd ${remotetestdir}
-  put $temp/test.sql ${remotetestdir}
+  ls ${ftphome}
+  put $TMPDIR/test.sql ${remotetestdir}
   ls ${remotetestdir}
   exists ${remotetestdir}/test.sql
   isfile ${remotetestdir}/test.sql
-  mkdir ${ftphome}/test
-  isDirectory ${ftphome}/test
-  rm ${ftphome}/test
-  get ${remotetestdir}/test.sql ${temp}
-  exists -l ${temp}/test.sql
+  mkdir test
+  isDirectory test
+  rm test
+  get ${remotetestdir}/test.sql ${TMPDIR}
+  exists -l ${TMPDIR}/test.sql
+  cd ${remotetestdir}
 bye
 ```
 
@@ -461,15 +532,21 @@ bye
 
 # 编译方法
 
-将工程根目录下的 `toolchains.xml` 文件复制到本地 Maven 仓库的根目录下（通常是 `~/.m2` 目录）。
+在 MacOS 下执行命令：
 
-然后编辑 `toolchains.xml` 文件，将其中的 `jdkHome` 路径修改为实际安装的 JDK 目录。
+```shell
+git clone git@github.com:jeremy8551/modest.git && cd modest && ./build.sh
+```
 
-执行 `mvn install`
+自动下载项目、JDK、Maven、生成 `toolchains-modest.xml` 文件、编译项目。
+
+> 其他操作系统需要手动安装 JDK，并将 `.mvn/toolchains-modest.xml` 复制到用户根目录中的 `.m2` 目录下，并修改配置文件中的 JDK 的安装目录。
 
 
 
 # 脚本命令
+
+
 
 ## 内置命令概览
 
@@ -480,6 +557,8 @@ bye
 所有命令可与变量、函数、组件等结合，实现复杂业务逻辑编排与自动化处理能力。
 
 按功能类别划分如下：
+
+
 
 ### 基础命令类
 
@@ -520,7 +599,7 @@ bye
 - **delete**：执行数据库删除操作。
 - **update**：执行数据库更新操作。
 - **merge**：执行数据库合并操作。
-- **db**：配置或切换数据库连接。
+- **db**：配置或连接数据库、卸载与装载数据文件、查看数据库元信息。
 
 
 
@@ -529,6 +608,7 @@ bye
 - **os**：远程操作系统命令执行。
 - **ftp**：FTP 文件传输。
 - **sftp**：SFTP 文件安全传输。
+- **wget**：下载网络文件
 
 
 
@@ -761,6 +841,11 @@ $ set varname='content';
 
 ```shell
 $ set varname="content";
+$ set varMultiyLine="""
+	1213
+	567
+	890
+"""
 ```
 
 设置数值型变量
@@ -789,7 +874,7 @@ $ set -e
 
 
 
-### variablemethod
+### variable method
 
 执行变量方法
 
@@ -802,7 +887,7 @@ $ 变量名.变量方法 | 变量名[位置信息]
 #### 示例
 
 ```shell
-set testline=`wc -l $temp/test.log`
+set testline=`wc -l $TMPDIR/test.log`
 set testline=testline.split()[0]
 echo $testline
 ```
@@ -910,7 +995,7 @@ $ function error() {echo $1;}
 
 
 
-### executefunction
+### execute function
 
 执行自定义方法
 
@@ -936,18 +1021,18 @@ $ test “hello world!”
 如下代码，是一个复制文件的脚本片段
 
 ```shell
-set delfilepath="$temp/bhc_finish.del"
+set delfilepath="$TMPDIR/bhc_finish.del"
 rm ${delfilepath}
-cp classpath:/bhc_finish.del ${temp}
+cp classpath:/bhc_finish.del ${TMPDIR}
 ```
 
 想要在 cp 命令执行之前进入 debug 模式，可以在脚本命令中增加 debug 命令，在 `cn.org.expect.script.command.DebugCommand` 类的 `execute` 方法中打断点
 
 ```shell
-set delfilepath="$temp/bhc_finish.del"
+set delfilepath="$TMPDIR/bhc_finish.del"
 rm ${delfilepath}
 debug
-cp classpath:/bhc_finish.del ${temp}
+cp classpath:/bhc_finish.del ${TMPDIR}
 ```
 
 IDE 在执行到 debug 命令时会停留在断点位置上，便于调试
@@ -1026,7 +1111,7 @@ function error() {
 ### 记录报错时 step 位置信息, 用于下一次从报错处开始执行 
 insert into table ... 
 ... 
-} 
+}
 
 
 ### 查询上一次执行位置信息 
@@ -1131,8 +1216,6 @@ exit result
 
 需要对 SQL 语句进行转义：把字符 `$` 替换成 `&ads;`
 
-内置变量名 `	updateRows` 表示 SQL 语句影响的记录数。
-
 在脚本文件中可以使用 SQL 注释 `--` 与 `/** */`
 
 #### 语法
@@ -1144,13 +1227,13 @@ $ [sql] [ select .. | insert .. | delete .. | update .. | merge .. | alter .. | 
 #### 示例
 
 ```shell
-update tableName set field='a' where ...;
-echo "SQL共更新 ${updateRows} 条记录!"
+set rows=update tableName set field='a' where ...;
+echo "SQL共更新 ${rows} 条记录!"
 ```
 
 
 
-### declarecatalog
+### declare catalog
 
 定义数据库编目信息
 
@@ -1207,7 +1290,7 @@ $ declare global name catalog configuration use driver com.ibm.db2.jcc.DB2Driver
 
 
 
-### dbconnect
+### db connect
 
 #### 语法
 
@@ -1225,7 +1308,7 @@ $ db connect reset[;]
 
 
 
-### dbexport
+### db export
 
 从数据库中卸载数据到指定位置。
 
@@ -1237,12 +1320,12 @@ $ db export to 卸载位置 of 文件类型 [ modified by 参数名=参数值 �
 
 #### 卸载位置
 
-|  组件名   | 类名                                                      | 说明                                                                                                                                                                                                                                                         |
-| --------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-|  **ftp**  | `cn.org.expect.database.export.inernal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
-| **http**  | `cn.org.expect.database.export.inernal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
-| **local** | `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
-| **sftp**  | `cn.org.expect.database.export.inernal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
+| Component Name | Class Name                                                | Description                                                                                                                                                                                                                                                  |
+| -------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|    **ftp**     | `cn.org.expect.database.export.inernal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
+|    **http**    | `cn.org.expect.database.export.inernal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
+|   **local**    | `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
+|    **sftp**    | `cn.org.expect.database.export.inernal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
 
 
 自定义卸载位置格式：`bean://name`，例如：
@@ -1260,11 +1343,11 @@ db export to bean://name of txt select * from table;
 
 #### 文件类型
 
-| 组件名  | 类名                                       | 说明                                                                            |
-| ------- | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| **csv** | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
-| **del** | `cn.org.expect.database.db2.DB2ExportFile` | DB2数据库export命令导出文件格式, 逗号分隔，双引号转义字符，双引号是字符串限定符 |
-| **txt** | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
+| Component Name | Class Name                                 | Description                                                                     |
+| -------------- | ------------------------------------------ | ------------------------------------------------------------------------------- |
+|    **csv**     | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
+|    **del**     | `cn.org.expect.database.db2.DB2ExportFile` | DB2数据库export命令导出文件格式, 逗号分隔，双引号转义字符，双引号是字符串限定符 |
+|    **txt**     | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
 
 
 自定义文件类型：实现 `cn.org.expect.io.TextTableFile` 接口
@@ -1320,12 +1403,12 @@ db connect to test0001
 
 declare exportTaskId progress use out print "${taskId}正在执行 ${process}%, 总共${totalRecord}个记录${leftTime}" total $tcount times
 
-db export to $tempv7_test_tmp.del of del modified by progress=exportTaskId chardel=* charhide=0 escapes=1 writebuf=200 maxrows=30041 title message=$temp/v7_test_tmp.txt select * from v7_test_tmp with ur;
+db export to $TMPDIRv7_test_tmp.del of del modified by progress=exportTaskId chardel=* charhide=0 escapes=1 writebuf=200 maxrows=30041 title message=$TMPDIR/v7_test_tmp.txt select * from v7_test_tmp with ur;
 ```
 
 
 
-### dbload
+### db load
 
 将指定位置的数据文件装载到数据库表中。
 
@@ -1341,11 +1424,11 @@ $ db load from 文件位置 of 文件类型 [ method P(3,2,1) C(字段名, 字�
 
 #### 文件类型
 
-| 组件名  | 类名                                       | 说明                                                                            |
-| ------- | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| **csv** | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
-| **del** | `cn.org.expect.database.db2.DB2ExportFile` | DB2数据库export命令导出文件格式, 逗号分隔，双引号转义字符，双引号是字符串限定符 |
-| **txt** | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
+| Component Name | Class Name                                 | Description                                                                     |
+| -------------- | ------------------------------------------ | ------------------------------------------------------------------------------- |
+|    **csv**     | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
+|    **del**     | `cn.org.expect.database.db2.DB2ExportFile` | DB2数据库export命令导出文件格式, 逗号分隔，双引号转义字符，双引号是字符串限定符 |
+|    **txt**     | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
 
 
 实现用户自定义文件类型：实现 `cn.org.expect.io.TextTableFile` 接口
@@ -1433,6 +1516,38 @@ statistics use profile
 
 
 
+### db get cfg for
+
+返回数据库元信息
+
+#### 语法
+
+打印数据库支持的字段类型
+
+```shell
+$ db get cfg for field type
+```
+
+打印数据库中的表的类型
+
+```shell
+$ db get cfg for table type
+```
+
+打印数据库中的 catalog
+
+```shell
+$ db get cfg for catalog
+```
+
+打印数据库中的 schema
+
+```shell
+$ db get cfg for schema
+```
+
+
+
 ### increment
 
 对比 2 个表格型数据文件并抽取增量数据
@@ -1449,11 +1564,11 @@ $ extract increment compare 新文件 of 文件类型 modified by 属性名=属�
 
 #### 文件类型
 
-| 组件名  | 类名                                       | 说明                                                                            |
-| ------- | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| **csv** | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
-| **del** | `cn.org.expect.database.db2.DB2ExportFile` | DB2数据库export命令导出文件格式, 逗号分隔，双引号转义字符，双引号是字符串限定符 |
-| **txt** | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
+| Component Name | Class Name                                 | Description                                                                     |
+| -------------- | ------------------------------------------ | ------------------------------------------------------------------------------- |
+|    **csv**     | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
+|    **del**     | `cn.org.expect.database.db2.DB2ExportFile` | DB2数据库export命令导出文件格式, 逗号分隔，双引号转义字符，双引号是字符串限定符 |
+|    **txt**     | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
 
 
 可以自定义增量数据输出流：将新增数据，变化数据，删除数据输出到指定文件中，如下面语句表示将新增数据与变化的数据写入到 filepath 文件中，且新增数据的第一个字段修改为false，第二个字段内容修改 uuid，第三个字段内容修改为格式是 `yyyyMMddHHmmss` 的当前时间
@@ -1479,47 +1594,48 @@ write log into stderr
 #### 文件属性
 
 ```properties
-charset:    表示数据文件的字符集，默认使用 JVM 的 file.encoding 参数作为默认值 
-codepage:   表示数据文件的字符集，默认使用 JVM 的 file.encoding 参数作为默认值（与 charset 属性冲突） 
-rowdel:     表示数据文件中的行间分隔符，使用回车或换行符需要转义，如: r n 
-coldel:     表示数据文件中字段间的分隔符 
+charset:    表示数据文件的字符集，默认使用 JVM 的 file.encoding 参数作为默认值
+codepage:   表示数据文件的字符集，默认使用 JVM 的 file.encoding 参数作为默认值（与 charset 属性冲突）
+rowdel:     表示数据文件中的行间分隔符，使用回车或换行符需要转义，如: r n
+coldel:     表示数据文件中字段间的分隔符
 escape:     表示数据文件中字符串中的转义字符 
 chardel:    表示数据文件中字符串型字段的二端的限定符 
-column:     表示数据文件中每行记录的字段个数（如果记录的字段数不等于这个值时会抛出异常） 
+column:     表示数据文件中每行记录的字段个数（如果记录的字段数不等于这个值时会抛出异常）
 colname:    表示数据文件中字段名，格式是：位置信息:字段名，如: 1:客户名,2:客户编号 如果已设置 table 属性则可以使用表中字段名如：username:客户名,2:userage 
 index:      必填，表示数据文件中唯一确定一条记录的索引字段集合，格式: 字段位置信息, 如：1,2,3,4 如果已设置 table 属性则可以使用表中字段名如： id,name,age,value 
-compare:    表示文件中比较字段（相同索引字段时，用于区分二条记录是否相等的字段，如果二条记录中的索引字段与比较字段都相等则认为二条记录相等），格式: 字段位置信息如：1,2,3,4 如果已设置 table 属性则可以使用表中字段名如：name,age,val1,val2。未设置参数时会默认比较记录中每个字段值 
+compare:    表示文件中比较字段（相同索引字段时，用于区分二条记录是否相等的字段，如果二条记录中的索引字段与比较字段都相等则认为二条记录相等），格式: 字段位置信息如：1,2,3,4 如果已设置 table 属性则可以使用表中字段名如：name,age,val1,val2。未设置参数时会默认比较记录中每个字段值
 table:      表示文件中字段对应的数据库表名（可以是 schema.tableName 格式）
-catalog:    表示脚本引擎中定义的数据库编目号 
+catalog:    表示脚本引擎中定义的数据库编目号
 readbuf:    表示读取文件时使用的字符缓冲区长度，默认 100M 个字符 
 progress:   表示脚本引擎中已定义的进度输出编号，用于输出文件的读取进度信息 
-nosort:     设置 true 表示剥离增量之前不会排序文件，默认是 false 表示先排序文件然后再执行剥离增量 
+nosort:     设置 true 表示剥离增量之前不会排序文件，默认是 false 表示先排序文件然后再执行剥离增量
 sortcache:  排序文件输出流使用的缓冲行数，默认是 100 行 
 sortrows:   排序文件时每个临时文件的最大行数，默认是 10000 行
-sortThread: 排序文件时的线程数，默认是 3 个线程 
-sortReadBuf:排序文件时的输入流的缓冲区长度，默认是 10M 个字符 
-maxfile:    排序文件时，每个线程每次合并的最大临时文件数, 默认是 4 个文件 
-keeptemp:   设置 true 表示排序文件后保留临时文件，默认是 false 表示删除产生的临时文件 
-covsrc:     设置 true 表示排序文件后覆盖源文件，默认是 false 表示保留源文件内容 
+sortThread: 排序文件时的线程数，默认是 3 个线程
+sortReadBuf:排序文件时的输入流的缓冲区长度，默认是 10M 个字符
+maxfile:    排序文件时，每个线程每次合并的最大临时文件数, 默认是 4 个文件
+keeptemp:   设置 true 表示排序文件后保留临时文件，默认是 false 表示删除产生的临时文件
+covsrc:     设置 true 表示排序文件后覆盖源文件，默认是 false 表示保留源文件内容
+temp:       排序文件使用的临时目录
 ```
 
 增量数据输出流支持的属性有：
 
 ```properties
-newchg:     表示对新增数据中字段的替换规则 
-updchg:     表示对变化数据中字段的替换规则 
-delchg:     表示对删除数据中字段的替换规则 
-charset:    表示文件对应的字符集编码，默认使用JAVA虚拟机默认的文件字符集 
+newchg:     表示对新增数据中字段的替换规则
+updchg:     表示对变化数据中字段的替换规则
+delchg:     表示对删除数据中字段的替换规则
+charset:    表示文件对应的字符集编码，默认使用JAVA虚拟机默认的文件字符集
 codepage:   表示文件对应的代码页（与 charset 属性冲突）
-append:     设置 true 表示追加方式写入文件，默认是 false 表示覆盖文件 
-outbuf:     设置输出流的缓冲行数，默认是 20 行 
+append:     设置 true 表示追加方式写入文件，默认是 false 表示覆盖文件
+outbuf:     设置输出流的缓冲行数，默认是 20 行
 ```
 
 剥离增量命令支持 container 命令，可以并行执行多个剥离增量命令。
 
 
 
-### sorttablefile
+### sort table file
 
 对表格型文件排序
 
@@ -1531,31 +1647,31 @@ $ sort table file 数据文件绝对路径 of 文件类型 [modified by 属性�
 
 #### 文件类型
 
-| 组件名  | 类名                                       | 说明                                                                            |
-| ------- | ------------------------------------------ | ------------------------------------------------------------------------------- |
-| **csv** | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
-| **del** | `cn.org.expect.database.db2.DB2ExportFile` | DB2数据库export命令导出文件格式, 逗号分隔，双引号转义字符，双引号是字符串限定符 |
-| **txt** | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
+| Component Name | Class Name                                 | Description                                                                     |
+| -------------- | ------------------------------------------ | ------------------------------------------------------------------------------- |
+|    **csv**     | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
+|    **del**     | `cn.org.expect.database.db2.DB2ExportFile` | DB2数据库export命令导出文件格式, 逗号分隔，双引号转义字符，双引号是字符串限定符 |
+|    **txt**     | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
 
 
 #### 文件属性
 
 ```properties
-charset:    表示数据卸载后的字符集，默认使用 JVM 的 file.encoding 参数作为默认值 
-codepage:   表示数据卸载后的字符集，默认使用 JVM 的 file.encoding 参数作为默认值（与 charset 属性冲突） 
-rowdel:     表示行间分隔符，使用回车或换行符需要转义，如: r n 
-coldel:     表示文件中字段间的分隔符 
-escape:     表示文件中字符串中的转义字符 
-chardel:    表示字符串型的字段二端的限定符 
-column:     表示文件中每行记录的字段个数（如果记录的字段数不等于这个值时会抛出异常） 
-colname:    表示文件中字段名，格式是：位置信息:字段名，如: 1:客户名,2:客户编号 如果已设置 table 属性则可以使用表中字段名如：username:客户名,2:userage 
-readbuf:    表示读取文件时使用的字符缓冲区长度，默认 10M 个字符 
-writebuf:   表示写文件时使用的缓存行数，默认 100 行 
-thread:     排序文件时的线程数，默认是 3 个线程 
-maxrow:     表示每个临时文件最大记录书, 默认是 10000 行 
-maxfile:    排序文件时，每个线程每次合并的最大临时文件数, 默认是 4 个文件 
-keeptemp:   无属性值，使用属性表示排序文件后保留临时文件，否则表示自动删除产生的临时文件 
-covsrc:     设置 true 表示排序文件后覆盖源文件，默认是 false 表示保留源文件内容 
+charset:    表示数据卸载后的字符集，默认使用 JVM 的 file.encoding 参数作为默认值
+codepage:   表示数据卸载后的字符集，默认使用 JVM 的 file.encoding 参数作为默认值（与 charset 属性冲突）
+rowdel:     表示行间分隔符，使用回车或换行符需要转义，如: r n
+coldel:     表示文件中字段间的分隔符
+escape:     表示文件中字符串中的转义字符
+chardel:    表示字符串型的字段二端的限定符
+column:     表示文件中每行记录的字段个数（如果记录的字段数不等于这个值时会抛出异常）
+colname:    表示文件中字段名，格式是：位置信息:字段名，如: 1:客户名,2:客户编号 如果已设置 table 属性则可以使用表中字段名如：username:客户名,2:userage
+readbuf:    表示读取文件时使用的字符缓冲区长度，默认 10M 个字符
+writebuf:   表示写文件时使用的缓存行数，默认 100 行
+thread:     排序文件时的线程数，默认是 3 个线程
+maxrow:     表示每个临时文件最大记录书, 默认是 10000 行
+maxfile:    排序文件时，每个线程每次合并的最大临时文件数, 默认是 4 个文件
+keeptemp:   无属性值，使用属性表示排序文件后保留临时文件，否则表示自动删除产生的临时文件
+covsrc:     设置 true 表示排序文件后覆盖源文件，默认是 false 表示保留源文件内容
 ```
 
 排序字段:    由排序字段的位置（大于零）组成，如: 1、2、3
@@ -1581,13 +1697,13 @@ $ container to execute tasks in parallel [ using 参数名=参数值 参数名=�
 #### 示例
 
 ```shell
-container to execute tasks in parallel using thread=3 rowdel=rn coldel=: begin  
-  db export to $filepath1.del of del select * from table with ur; 
-  db export to $filepath2.del of del select * from table with ur; 
-  db export to $filepath3.del of del select * from table with ur; 
-  db export to $filepath4.del of del select * from table with ur; 
-  db export to $filepath5.del of del select * from table with ur; 
-  db export to $filepath6.del of del select * from table with ur; 
+container to execute tasks in parallel using thread=3 rowdel=rn coldel=: begin
+  db export to $filepath1.del of del select * from table with ur;
+  db export to $filepath2.del of del select * from table with ur;
+  db export to $filepath3.del of del select * from table with ur;
+  db export to $filepath4.del of del select * from table with ur;
+  db export to $filepath5.del of del select * from table with ur;
+  db export to $filepath6.del of del select * from table with ur;
 end
 ```
 
@@ -1638,7 +1754,7 @@ $ quiet commit
 
 
 
-### callprocudure
+### call procudure
 
 执行存储过程
 
@@ -1658,7 +1774,7 @@ $ call TEST('read in msg', $RES); echo $RES;
 
 
 
-### declarecursor
+### declare cursor
 
 声明游标
 
@@ -1822,7 +1938,7 @@ $ ssh admin@192.168.1.1:10?password=admin && ./shell.sh && . ~/load.sh
 
 
 
-### declaresshtunnel
+### declare ssh tunnel
 
 建立本地端口转发隧道，配合 **sftp** 命令实现通过本地局域网代理服务器访问远程服务器 **ssh** 端口功能。
 
@@ -1871,19 +1987,19 @@ $ sftp 用户名@服务器HOST:端口?password=密码
 
 #### 相关命令
 
-```properties
-cd          filepath 进入远程服务器目录  
-ls          filepath 查看远程服务器上文件列表信息 
-rm          filepath 删除远程服务器上文件或目录 
-mkdir       filepath 在远程服务器上创建目录 
-pwd         filepath 查看远程服务器上当前目录的绝对路径 
-exists      filepath 判断远程服务器上的文件或目录是否存在  
-isfile      filepath 判断远程服务器的文件是否存在 
-isDirectory filepath 判断远程服务器的目录文件是否存在 
-get         remotefilepath localfilepath 从远程服务器下载文件 
-put         localfilepath remotefilepath 上传文件到远程服务器 
-bye         关闭 SFTP 连接 
-```
+| 命令          | 说明                                 |
+| ------------- | ------------------------------------ |
+| `cd`          | 进入远程服务器目录                   |
+| `ls`          | 查看远程服务器上文件列表信息         |
+| `rm`          | 删除远程服务器上文件或目录           |
+| `mkdir`       | 在远程服务器上创建目录               |
+| `pwd`         | 查看远程服务器上当前目录的绝对路径   |
+| `exists`      | 判断远程服务器上的文件或目录是否存在 |
+| `isfile`      | 判断远程服务器的文件是否存在         |
+| `isDirectory` | 判断远程服务器的目录文件是否存在     |
+| `get`         | 从远程服务器下载文件                 |
+| `put`         | 上传文件到远程服务器                 |
+| `bye`         | 关闭 FTP 连接                        |
 
 在 `cd ls rm mkdir pwd exists isFile isDirectory` 语句中可以使用 `-l` 选项，表示操作本地操作系统上的文件。
 
@@ -1901,21 +2017,36 @@ $ ftp 用户名@服务器HOST:端口?password=密码
 
 #### 相关命令
 
-```properties
-cd          filepath 进入远程服务器目录  
-ls          filepath 查看远程服务器上文件列表信息 
-rm          filepath 删除远程服务器上文件或目录 
-mkdir       filepath 在远程服务器上创建目录 
-pwd         filepath 查看远程服务器上当前目录的绝对路径 
-exists      filepath 判断远程服务器上的文件或目录是否存在  
-isfile      filepath 判断远程服务器的文件是否存在 
-isDirectory filepath 判断远程服务器的目录文件是否存在 
-get         remotefilepath localfilepath 从远程服务器下载文件 
-put         localfilepath remotefilepath 上传文件到远程服务器 
-bye         关闭 FTP 连接 
-```
+| 命令          | 说明                                 |
+| ------------- | ------------------------------------ |
+| `passive`     | 被动模式                             |
+| `cd`          | 进入远程服务器目录                   |
+| `ls`          | 查看远程服务器上文件列表信息         |
+| `rm`          | 删除远程服务器上文件或目录           |
+| `mkdir`       | 在远程服务器上创建目录               |
+| `pwd`         | 查看远程服务器上当前目录的绝对路径   |
+| `exists`      | 判断远程服务器上的文件或目录是否存在 |
+| `isfile`      | 判断远程服务器的文件是否存在         |
+| `isDirectory` | 判断远程服务器的目录文件是否存在     |
+| `get`         | 从远程服务器下载文件                 |
+| `put`         | 上传文件到远程服务器                 |
+| `bye`         | 关闭 FTP 连接                        |
 
 在 `cd ls rm mkdir pwd exists isFile isDirectory` 语句中可以使用 `-l` 选项，表示操作本地操作系统上的文件。
+
+
+
+### passive
+
+使用被动模式连接 FTP 服务器
+
+#### 语法
+
+```shell
+$ passive -r
+```
+
+`-r` 选项：强制 FTP 客户端以反向模式解析 PASV 地址
 
 
 
@@ -1951,6 +2082,12 @@ $ cd 文件名或文件路径 [;]
 
 文件名或文件路径二端可以使用成对的单引号或双引号。
 
+```shell
+$ cd -
+```
+
+切换到上一次所在的目录
+
 #### 选项
 
 ```shell
@@ -1971,13 +2108,11 @@ $ length string;
 
 #### 选项
 
-```shell
--h 选项表示输出可读高的信息
--b 选项表示显示字节数 
--c 选项表示显示字符数 
--f 选项表示本地文件的字节数 
--r 选项表示显示远程文件的字节数
-```
+`-h` 选项：表示输出可读高的信息
+`-b` 选项：表示显示字节数 
+`-c` 选项：表示显示字符数 
+`-f` 选项：表示本地文件的字节数 
+`-r` 选项：表示显示远程文件的字节数
 
 #### 示例
 
@@ -2181,11 +2316,9 @@ $ wc [-l] [-w] [-c] filepath [;]
 
 #### 选项
 
-```shell
--l 选项表示行数 
--w 选项表示字符数 
--c 选项表示字节数 
-```
+`-l` 选项：表示行数 
+`-w` 选项：表示字符数 
+`-c` 选项：表示字节数 
 
 
 
@@ -2238,20 +2371,18 @@ $ grep string
 
 #### 选项
 
-```shell
--i 选项表示忽略字符大小写 
--v 选项表示不包括字符串参数 
-```
+`-i` 选项：表示忽略字符大小写 
+`-v` 选项：表示不包括字符串参数 
 
 #### 示例
 
 ```shell
-$ cat $temp/greptest.txt | grep -i test | wc -l
+$ cat $TMPDIR/greptest.txt | grep -i test | wc -l
 ```
 
 
 
-### executeos
+### os
 
 执行本地操作系统命令
 
@@ -2272,7 +2403,7 @@ $ os ipconfig /all
 
 
 
-### executefile
+### execute file
 
 执行脚本文件，使用 `nohup` 命令实现并行执行脚本文件。
 
@@ -2319,7 +2450,7 @@ $ daemon 文件名或文件路径 [;]
 
 
 
-### declareprogress
+### declare progress
 
 进度输出
 
@@ -2367,7 +2498,7 @@ end loop
 
 
 
-### declarehandler
+### declare handler
 
 异常处理逻辑
 
@@ -2379,17 +2510,19 @@ $ declare (exit | continue) handler for ( exception | exitcode != 0 | sqlstate =
 
 #### 保留变量
 
-```shell
-exception       当脚本引擎发生异常时,      exception       表示异常详细信息
-errorcode       当脚本引擎发生数据库错误时, errorcode       表示数据库厂商提供的错误码
-sqlstate        当脚本引擎发生数据库错误时, sqlstate        表示数据库厂商提供的SQL状态
-errorscript     当脚本引擎发生异常错误时,   errorscript     表示发生错误的脚本语句
-exitcode        当脚本引擎执行语句完毕时,   exitcode        表示语句执行的返回值, 一般来讲返回0表示正确 非0表示错误
-```
+在 `begin` 与 `end` 区块中，脚本引擎会提供一组内置变量，用于获取异常或语句执行的相关信息：
+
+| 变量   | 说明                                                         |
+| ------ | ------------------------------------------------------------ |
+| `exception` | 当脚本引擎触发异常时，表示异常的完整描述信息。               |
+| `errorcode` | 当发生数据库错误时，表示数据库厂商提供的错误码（Vendor Error Code）。 |
+| `sqlstate` | 当发生数据库错误时，表示数据库厂商提供的 SQL 状态码（SQLSTATE）。 |
+| `errorscript` | 当发生异常时，表示引发错误的脚本语句内容。                   |
+| `exitcode` | 表示当前语句的执行返回值。一般 0 表示成功，非 0 表示失败。   |
 
 
 
-### undeclarehandler
+### undeclare handler
 
 删除异常处理逻辑
 
@@ -2448,7 +2581,7 @@ $ undeclare global command callback for echo
 
 
 
-### declarestatement
+### declare statement
 
 数据库批处理
 
@@ -2548,21 +2681,21 @@ $ wait pid=进程编号 1{day|h|m|s|millis} [;]
 
 #### 时间单位
 
-```properties
-day       表示天 
-millis    表示毫秒
-seconds   表示秒
-second    表示秒
-sec       表示秒
-s         表示秒
-minutes   表示分钟
-minute    表示分钟
-min       表示分钟
-m         表示分钟 
-hour      表示小时
-hou       表示小时
-h         表示小时
-```
+|         |          |
+| ------- | -------- |
+| day     | 表示天   |
+| millis  | 表示毫秒 |
+| seconds | 表示秒   |
+| second  | 表示秒   |
+| sec     | 表示秒   |
+| s       | 表示秒   |
+| minutes | 表示分钟 |
+| minute  | 表示分钟 |
+| min     | 表示分钟 |
+| m       | 表示分钟 |
+| hour    | 表示小时 |
+| hou     | 表示小时 |
+| h       | 表示小时 |
 
 
 
@@ -2596,21 +2729,21 @@ $ sleep 1 {day|h|m|s|millis}[;]
 
 #### 时间单位
 
-```properties
-day       表示天 
-millis    表示毫秒
-seconds   表示秒
-second    表示秒
-sec       表示秒
-s         表示秒
-minutes   表示分钟
-minute    表示分钟
-min       表示分钟
-m         表示分钟 
-hour      表示小时
-hou       表示小时
-h         表示小时
-```
+|         |          |
+| ------- | -------- |
+| day     | 表示天   |
+| millis  | 表示毫秒 |
+| seconds | 表示秒   |
+| second  | 表示秒   |
+| sec     | 表示秒   |
+| s       | 表示秒   |
+| minutes | 表示分钟 |
+| minute  | 表示分钟 |
+| min     | 表示分钟 |
+| m       | 表示分钟 |
+| hour    | 表示小时 |
+| hou     | 表示小时 |
+| h       | 表示小时 |
 
 
 
@@ -2720,16 +2853,14 @@ $ find -n string [-r] [-h] [-e charsetName] [-o logfilepath] [-s delimiter] [-d]
 
 #### 选项
 
-```properties
--n 搜索内容（可以是正则表达式）  
--R 只遍历当前目录  
--h 查找隐藏文件  
--e 被搜索文件的字符集  
--o 输出文件  
--s 输出信息的分隔符   
--d 去掉重复记录  
--p 显示字符串所在位置的详细信息 
-```
+`-n` 选项：搜索内容（可以是正则表达式） 
+`-R` 选项：只遍历当前目录
+`-h` 选项：查找隐藏文件
+`-e` 选项：被搜索文件的字符集
+`-o` 选项：输出文件
+`-s` 选项：输出信息的分隔符 
+`-d` 选项：去掉重复记录 
+`-p` 选项：显示字符串所在位置的详细信息 
 
 
 
@@ -2747,6 +2878,30 @@ $ java JavaClassName [参数]... [;]
 
 ```shell
 $ java cn.test.JavaCommandTest 10 -c 20200101
+```
+
+
+
+### wget
+
+从网络下载文件
+
+#### 语法
+
+```shell
+$ wget -PO: -n URL
+```
+
+`-P` 选项：文件保存的目录
+
+`-O` 选项：文件保存的名字
+
+`-n` 选项：只打印从服务器端得到的文件名
+
+#### 示例
+
+```shell
+$ wget -P ${project.basedir}/.cache https://mirrors.huaweicloud.com/openjdk-25.tar.gz
 ```
 
 
@@ -2785,9 +2940,22 @@ $ md5sum 字符内容
 #### 语法
 
 ```shell
-$ tar -zcvf 文件名或绝对路径 
-$ tar -xvf 文件名或绝对路径
+$ tar -tzxcvfC 文件名或绝对路径
 ```
+
+`-t` 选项：只打印不解压
+
+`-z` 选项：gzip 解压/压缩文件
+
+`-x` 选项：解压文件
+
+`-c` 选项：压缩文件
+
+`-v` 选项：打印解压缩文件日志
+
+`-f` 选项：解压/压缩文件的绝对路径
+
+`-C` 选项：文件解压到的目录
 
 #### 示例
 
@@ -2812,7 +2980,7 @@ $ tar -xvf 文件名或绝对路径
 #### 语法
 
 ```shell
-$ gzip 文件名或绝对路径
+$ gzip 文件路径
 ```
 
 
@@ -2824,7 +2992,7 @@ $ gzip 文件名或绝对路径
 #### 语法
 
 ```shell
-$ gunzip 文件名或绝对路径
+$ gunzip 文件路径
 ```
 
 
@@ -2836,8 +3004,14 @@ $ gunzip 文件名或绝对路径
 #### 语法
 
 ```shell
-$ zip 文件名或绝对路径
+$ zip [压缩文件路径] 被压缩文件路径
 ```
+
+`-r` 选项：使用递归压缩目录
+
+`-m` 选项：使用移动模式（压缩后删除源文件）
+
+`-v` 选项：打印日志
 
 
 
@@ -2848,8 +3022,10 @@ $ zip 文件名或绝对路径
 #### 语法
 
 ```shell
-$ unrar 文件名或绝对路径
+$ unrar 压缩文件路径 [解压文件的目录]
 ```
+
+`-v` 选项：打印日志
 
 
 
@@ -2860,8 +3036,10 @@ $ unrar 文件名或绝对路径
 #### 语法
 
 ```shell
-$ unzip 文件名或绝对路径
+$ unzip 压缩文件路径
 ```
+
+`-d` 选项：设置解压文件的目录
 
 
 
@@ -2892,8 +3070,9 @@ $ help
 
 ```javascript
 set str = "12345 ";
-set strtrim = str.trim();
-echo "字符串内容是 $strtrim .."
+set str1 = """12345n678n9n0""";
+set str2 = str.trim();
+echo "字符串内容是 $str2 .."
 ```
 
 上述例子中，`str.trim()` 便是变量方法的调用，它调用了 `String` 类的 `trim()` 方法，对变量 `str` 的值去除首尾空白符。
@@ -2910,25 +3089,15 @@ echo "字符串内容是 $strtrim .."
 
 脚本引擎内置了一批系统级变量，可在脚本执行过程中直接访问：
 
-| 变量标识 | 描述                                                      |
-| -------- | --------------------------------------------------------- |
-| `this`   | 当前脚本引擎实例对象。                                    |
-| `pwd`    | 当前执行目录的绝对路径。                                  |
-| `HOME`   | 当前用户的根目录路径。                                    |
-| `scriptName`    | 当前正在执行的脚本文件名。                                |
-| `charset`    | 当前脚本文件的字符集编码。                                |
-| `lineSeparator`    | 脚本文件的行间分隔符，变量值为 `\n`。                    |
-| `exception`   | 最近一次异常的堆栈信息。                                  |
-| `errorscript`   | 最近一次异常发生时的脚本语句。                            |
-| `errorcode`   | 数据库厂商定义的异常错误码。                              |
-| `sqlstate`   | 数据库厂商定义的 SQL 状态码。                             |
-| `exitcode`   | 最近一次执行脚本的状态码。                                |
-| `updateRows`   | 最近一次 SQL 语句影响的数据记录数。                       |
-| `jump`   | 当前是否处于 `jump` 语句执行过程中，`true` 表示正在执行。 |
-| `step`   | 上一个 `step` 命令的参数值。                              |
-| `temp`   | 系统临时文件目录路径。                                    |
-| `scriptFile`   | 当前执行脚本的绝对路径。                                  |
-| `catalog`   | 最近一次使用的数据库编目名。                              |
+| 变量标识 | 描述                       |
+| -------- | -------------------------- |
+| `this`    | 当前脚本引擎实例对象。     |
+| `HOME`    | 操作系统当前用户的根目录。 |
+| `TMPDIR`   | 系统临时文件目录路径。     |
+| `scriptFile`   | 当前执行脚本的绝对路径。   |
+| `PWD`   | 当前目录的绝对路径。       |
+| `OLDPWD`   | 上一次所在的目录。         |
+| `charset`   | 当前脚本文件的字符集编码。 |
 
 
 
@@ -3020,1985 +3189,2132 @@ public class JsonFunction {
 ### Object[int]
 返回数组中指定位置上的元素
 
-**变量**
+**Variable**
 
 `Object[]`
 
 
-**方法**
+**Method**
 ```java
 Object[int index]
 ```
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.array.ElementMethod
 ```
 ### CharSequence[int]
 返回字符串中指定位置上的字符
 
-**变量**
+**Variable**
 
 `CharSequence`
 
 
-**方法**
+**Method**
 ```java
 CharSequence[int index]
 ```
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.string.CharAtMethod
 ```
 ### add(Object)
 在集合中添加元素
 
-**变量**
+**Variable**
 
 `Collection` 集合
 
 
-**方法**
+**Method**
 ```java
 add(Object object)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 元素
 
 
-**返回值**
+**Return Value**
 
 返回true表示成功，false表示失败
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.CollectionExtension.add(java.util.Collection,java.lang.Object)
 ```
 ### booleanValue()
 将字符串转为布尔值
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 booleanValue()
 ```
 
-**返回值**
+**Return Value**
 
 布尔值
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.booleanValue(java.lang.CharSequence)
 ```
 ### charAt(int)
 获取字符串中某个位置上的字符
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 charAt(int index)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 位置信息，从0开始
 
 
-**返回值**
+**Return Value**
 
 字符
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.charAt(java.lang.CharSequence,int)
 ```
 ### check(int)
 检查位置信息是否数组越界
 
-**变量**
+**Variable**
 
 `Object[]` 数组
 
 
-**方法**
+**Method**
 ```java
 check(int index)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 位置信息
 
 
-**返回值**
+**Return Value**
 
 返回true表示未越界，false表示越界
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ArrayExtension.check(java.lang.Object[],int)
 ```
 ### currentTimeMillis()
 返回当前时间戳
 
-**变量**
+**Variable**
 
 `UniversalScriptEngine` 脚本引擎
 
 
-**方法**
+**Method**
 ```java
 currentTimeMillis()
 ```
 
-**返回值**
+**Return Value**
 
 时间戳
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ScriptEngineExtension.currentTimeMillis(cn.org.expect.script.UniversalScriptEngine)
 ```
 ### date()
 将对象解析为日期时间
 
-**变量**
+**Variable**
 
 `Object` 对象（字符串、日期、时间、long、日历）
 
 
-**方法**
+**Method**
 ```java
 date()
 ```
 
-**返回值**
+**Return Value**
 
 日期时间
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.DateExtension.date(java.lang.Object)
 ```
 ### deleteFile()
 删除文件
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 deleteFile()
 ```
 
-**返回值**
+**Return Value**
 
 返回true表示成功，false表示失败
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.deleteFile(java.lang.CharSequence)
 ```
 ### evaluate(int, List)
 
 
-**变量**
+**Variable**
 
 `UniversalScriptEngine`
 
 
-**方法**
+**Method**
 ```java
 evaluate(int, List)
 ```
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ScriptEngineExtension.evaluate(cn.org.expect.script.UniversalScriptEngine,int,java.util.List<java.lang.String>) throws java.lang.Exception
 ```
 ### existsFile()
 判断文件是否存在
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 existsFile()
 ```
 
-**返回值**
+**Return Value**
 
 返回true表示存在，false表示不存在
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.existsFile(java.lang.CharSequence)
 ```
 ### filter(String...)
 
 
-**变量**
+**Variable**
 
 `List`
 
 
-**方法**
+**Method**
 ```java
 filter(String...)
 ```
 
-**代码**
+**Implement Class**
 ```java
-cn.org.expect.script.method.XmlFunction.filter(java.util.List<org.w3c.dom.Node>,java.lang.String...)
+cn.org.expect.script.method.XmlExtension.filter(java.util.List<org.w3c.dom.Node>,java.lang.String...)
 ```
 ### forName(String)
 根据类全名加载类
 
-**变量**
+**Variable**
 
 `UniversalScriptEngine`
 
 
-**方法**
+**Method**
 ```java
 forName(String)
 ```
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.clazz.ForNameStrMethod
 ```
 ### forName()
 根据类全名加载类
 
-**变量**
+**Variable**
 
 `CharSequence`
 
 
-**方法**
+**Method**
 ```java
 forName()
 ```
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.clazz.ForNameMethod
 ```
 ### format(String)
 按指定格式打印日期时间
 
-**变量**
+**Variable**
 
 `Object` 对象（字符串、日期、时间、long、日历）
 
 
-**方法**
+**Method**
 ```java
 format(String pattern)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 格式, 如: yyyy-MM-dd 详见: SimpleDateFormat
 
 
-**返回值**
+**Return Value**
 
 字符串
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.DateExtension.format(java.lang.Object,java.lang.String)
 ```
 ### get(int)
 返回集合中某个位置上的元素
 
-**变量**
+**Variable**
 
 `List` 集合
 
 
-**方法**
+**Method**
 ```java
 get(int index)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 位置信息，从 0 开始
 
 
-**返回值**
+**Return Value**
 
 集合元素
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.CollectionExtension.get(java.util.List,int)
 ```
 ### get(String)
 返回标签中的属性值
 
-**变量**
+**Variable**
 
 `Node` 标签
 
 
-**方法**
+**Method**
 ```java
 get(String name)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 属性名
 
 
-**返回值**
+**Return Value**
 
 属性值
 
-**代码**
+**Implement Class**
 ```java
-cn.org.expect.script.method.XmlFunction.get(org.w3c.dom.Node,java.lang.String)
+cn.org.expect.script.method.XmlExtension.get(org.w3c.dom.Node,java.lang.String)
 ```
 ### getBean(String, String)
 返回组件
 
-**变量**
+**Variable**
 
 `UniversalScriptEngine` 脚本引擎
 
 
-**方法**
+**Method**
 ```java
 getBean(String beanClassName, String name)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 组件类信息
 
-**第 2 个参数**
+**Parameter 2**
 
 组件名
 
 
-**返回值**
+**Return Value**
 
 组件
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ScriptEngineExtension.getBean(cn.org.expect.script.UniversalScriptEngine,java.lang.String,java.lang.String)
 ```
 ### getChildNodes(String...)
 
 
-**变量**
+**Variable**
 
 `Node`
 
 
-**方法**
+**Method**
 ```java
 getChildNodes(String...)
 ```
 
-**代码**
+**Implement Class**
 ```java
-cn.org.expect.script.method.XmlFunction.getChildNodes(org.w3c.dom.Node,java.lang.String...)
+cn.org.expect.script.method.XmlExtension.getChildNodes(org.w3c.dom.Node,java.lang.String...)
 ```
 ### getClass()
 返回对象的类信息
 
-**变量**
+**Variable**
 
 `Object` 对象
 
 
-**方法**
+**Method**
 ```java
 getClass()
 ```
 
-**返回值**
+**Return Value**
 
 类信息
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ClassExtension.getClass(java.lang.Object)
 ```
 ### getDay()
 返回日期是月份中的第几天
 
-**变量**
+**Variable**
 
 `Object` 对象（字符串、日期、时间、long、日历）
 
 
-**方法**
+**Method**
 ```java
 getDay()
 ```
 
-**返回值**
+**Return Value**
 
 月份中的第几天
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.DateExtension.getDay(java.lang.Object)
 ```
 ### getDays()
 返回日期从1970年开始的第几天
 
-**变量**
+**Variable**
 
 `Object` 对象（字符串、日期、时间、long、日历）
 
 
-**方法**
+**Method**
 ```java
 getDays()
 ```
 
-**返回值**
+**Return Value**
 
 整数
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.DateExtension.getDays(java.lang.Object)
 ```
 ### getEnum(String)
 返回枚举常量
 
-**变量**
+**Variable**
 
 `Class` 枚举的类信息
 
 
-**方法**
+**Method**
 ```java
 getEnum(String name)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 枚举常量名
 
 
-**返回值**
+**Return Value**
 
 枚举常量
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ClassExtension.getEnum(java.lang.Class<? extends java.lang.Enum>,java.lang.String)
 ```
 ### getFileExt()
 返回文件扩展名
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 getFileExt()
 ```
 
-**返回值**
+**Return Value**
 
 文件扩展名
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.getFileExt(java.lang.CharSequence)
 ```
 ### getFileLineSeparator()
 返回文件的换行符
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 getFileLineSeparator()
 ```
 
-**返回值**
+**Return Value**
 
 换行符
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.getFileLineSeparator(java.lang.CharSequence) throws java.io.IOException
 ```
 ### getFileSuffix()
 返回文件名后缀
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 getFileSuffix()
 ```
 
-**返回值**
+**Return Value**
 
 文件名后缀
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.getFileSuffix(java.lang.CharSequence) throws java.io.IOException
 ```
 ### getFilename()
 返回文件名
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 getFilename()
 ```
 
-**返回值**
+**Return Value**
 
 文件名
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.getFilename(java.lang.CharSequence) throws java.io.IOException
 ```
 ### getFilenameNoExt()
 返回不含扩展名的文件名
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 getFilenameNoExt()
 ```
 
-**返回值**
+**Return Value**
 
 文件名
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.getFilenameNoExt(java.lang.CharSequence) throws java.io.IOException
 ```
 ### getFilenameNoSuffix()
 返回不含后缀的文件名
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 getFilenameNoSuffix()
 ```
 
-**返回值**
+**Return Value**
 
 文件名
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.getFilenameNoSuffix(java.lang.CharSequence) throws java.io.IOException
 ```
 ### getHour()
 返回小时
 
-**变量**
+**Variable**
 
 `Object` 对象（字符串、日期、时间、long、日历）
 
 
-**方法**
+**Method**
 ```java
 getHour()
 ```
 
-**返回值**
+**Return Value**
 
 小时
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.DateExtension.getHour(java.lang.Object)
 ```
 ### getJobService(int)
 返回并发任务容器
 
-**变量**
+**Variable**
 
 `UniversalScriptEngine` 脚本引擎
 
 
-**方法**
+**Method**
 ```java
 getJobService(int number)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 容器并发数（同时运行任务的个数）
 
 
-**返回值**
+**Return Value**
 
 并发任务容器
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ScriptEngineExtension.getJobService(cn.org.expect.script.UniversalScriptEngine,int)
 ```
 ### getMillis()
 返回毫秒数
 
-**变量**
+**Variable**
 
 `Object` 对象（字符串、日期、时间、long、日历）
 
 
-**方法**
+**Method**
 ```java
 getMillis()
 ```
 
-**返回值**
+**Return Value**
 
 毫秒数
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.DateExtension.getMillis(java.lang.Object)
 ```
 ### getMinute()
 返回分钟
 
-**变量**
+**Variable**
 
 `Object` 对象（字符串、日期、时间、long、日历）
 
 
-**方法**
+**Method**
 ```java
 getMinute()
 ```
 
-**返回值**
+**Return Value**
 
 分钟
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.DateExtension.getMinute(java.lang.Object)
 ```
 ### getMonth()
 返回月份
 
-**变量**
+**Variable**
 
 `Object` 对象（字符串、日期、时间、long、日历）
 
 
-**方法**
+**Method**
 ```java
 getMonth()
 ```
 
-**返回值**
+**Return Value**
 
 月份
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.DateExtension.getMonth(java.lang.Object)
 ```
 ### getName()
 返回标签名
 
-**变量**
+**Variable**
 
 `Node` 标签信息
 
 
-**方法**
+**Method**
 ```java
 getName()
 ```
 
-**返回值**
+**Return Value**
 
 标签名
 
-**代码**
+**Implement Class**
 ```java
-cn.org.expect.script.method.XmlFunction.getName(org.w3c.dom.Node)
+cn.org.expect.script.method.XmlExtension.getName(org.w3c.dom.Node)
 ```
 ### getParent()
 返回文件的目录
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 getParent()
 ```
 
-**返回值**
+**Return Value**
 
 文件的上级目录
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.getParent(java.lang.CharSequence) throws java.io.IOException
+```
+### getProperty(String)
+Settings.getProperty(key)
+
+**Variable**
+
+`UniversalScriptEngine`
+
+
+**Method**
+```java
+getProperty(String)
+```
+
+**Implement Class**
+```java
+cn.org.expect.script.method.clazz.GetPropertyStrMethod
 ```
 ### getSecond()
 返回秒钟
 
-**变量**
+**Variable**
 
 `Object` 对象（字符串、日期、时间、long、日历）
 
 
-**方法**
+**Method**
 ```java
 getSecond()
 ```
 
-**返回值**
+**Return Value**
 
 秒钟
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.DateExtension.getSecond(java.lang.Object)
 ```
 ### getText()
 返回标签内容
 
-**变量**
+**Variable**
 
 `Node` 标签信息
 
 
-**方法**
+**Method**
 ```java
 getText()
 ```
 
-**返回值**
+**Return Value**
 
 标签中的字符串
 
-**代码**
+**Implement Class**
 ```java
-cn.org.expect.script.method.XmlFunction.getText(org.w3c.dom.Node)
+cn.org.expect.script.method.XmlExtension.getText(org.w3c.dom.Node)
 ```
 ### getTime()
 返回日期从1970年开始的毫秒
 
-**变量**
+**Variable**
 
 `Object` 对象（字符串、日期、时间、long、日历）
 
 
-**方法**
+**Method**
 ```java
 getTime()
 ```
 
-**返回值**
+**Return Value**
 
 毫秒
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.DateExtension.getTime(java.lang.Object)
 ```
 ### getYear()
 返回年份
 
-**变量**
+**Variable**
 
 `Object` 对象（字符串、日期、时间、long、日历）
 
 
-**方法**
+**Method**
 ```java
 getYear()
 ```
 
-**返回值**
+**Return Value**
 
 年份
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.DateExtension.getYear(java.lang.Object)
 ```
 ### help()
 打印所有变量方法
 
-**变量**
+**Variable**
 
 `Object`
 
 
-**方法**
+**Method**
 ```java
 help()
 ```
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.object.HelpMethod
 ```
 ### indexOf(String)
 在数组中搜索
 
-**变量**
+**Variable**
 
 `Object[]`
 
 
-**方法**
+**Method**
 ```java
 indexOf(String)
 ```
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.array.IndexOfMethod
 ```
 ### indexOf(String, int)
 在字符串中搜索
 
-**变量**
+**Variable**
 
 `Object[]`
 
 
-**方法**
+**Method**
 ```java
 indexOf(String, int)
 ```
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.array.IndexOfStrIntMethod
 ```
 ### indexOf(CharSequence)
 在字符串中搜索
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 indexOf(CharSequence dest)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 搜索的内容
 
 
-**返回值**
+**Return Value**
 
 位置信息，从0开始，-1表示未搜索到
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.indexOf(java.lang.CharSequence,java.lang.CharSequence)
 ```
 ### indexOf(CharSequence, int)
 在字符串中搜索
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 indexOf(CharSequence dest, int from)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 搜索的内容
 
-**第 2 个参数**
+**Parameter 2**
 
 搜索起始位置，从 0 开始
 
 
-**返回值**
+**Return Value**
 
 位置信息，从0开始，-1表示未搜索到
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.indexOf(java.lang.CharSequence,java.lang.CharSequence,int)
 ```
 ### indexOf(CharSequence, int, boolean)
 在字符串中搜索
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 indexOf(CharSequence dest, int from, boolean ignoreCase)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 搜索的内容
 
-**第 2 个参数**
+**Parameter 2**
 
 搜索起始位置，从 0 开始
 
-**第 3 个参数**
+**Parameter 3**
 
 true表示忽略大小写
 
 
-**返回值**
+**Return Value**
 
 位置信息，从0开始，-1表示未搜索到
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.indexOf(java.lang.CharSequence,java.lang.CharSequence,int,boolean)
 ```
 ### int()
 将对象转为整数
 
-**变量**
+**Variable**
 
 `Object`
 
 
-**方法**
+**Method**
 ```java
 int()
 ```
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.object.IntMethod
 ```
 ### isBlank()
 判断字符串是否是空白
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 isBlank()
 ```
 
-**返回值**
+**Return Value**
 
 返回true表示空白，false表示不是空白
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.isBlank(java.lang.CharSequence)
 ```
 ### isDirectory()
 判读文件路径是否是目录
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 isDirectory()
 ```
 
-**返回值**
+**Return Value**
 
 返回true表示是目录，false表示不是目录
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.isDirectory(java.lang.CharSequence) throws java.io.IOException
 ```
 ### isFile()
 判断文件路径是否是一个文件
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 isFile()
 ```
 
-**返回值**
+**Return Value**
 
 返回true表示是文件，false表示不是文件
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.isFile(java.lang.CharSequence) throws java.io.IOException
+```
+### joinPath(String...)
+
+
+**Variable**
+
+`String`
+
+
+**Method**
+```java
+joinPath(String...)
+```
+
+**Implement Class**
+```java
+cn.org.expect.script.method.FileExtension.joinPath(java.lang.String,java.lang.String...)
 ```
 ### length()
 返回数组长度
 
-**变量**
+**Variable**
 
 `Object[]` 数组
 
 
-**方法**
+**Method**
 ```java
 length()
 ```
 
-**返回值**
+**Return Value**
 
 长度
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ArrayExtension.length(java.lang.Object[])
 ```
 ### length()
 返回字符串长度
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 length()
 ```
 
-**返回值**
+**Return Value**
 
 长度
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.length(java.lang.CharSequence)
+```
+### loadProperties()
+加载属性集合
+
+**Variable**
+
+`InputStream` 属性集合输入流
+
+
+**Method**
+```java
+loadProperties()
+```
+
+**Return Value**
+
+属性集合
+
+**Implement Class**
+```java
+cn.org.expect.script.method.FileExtension.loadProperties(java.io.InputStream)
+```
+### loadProperties(String, String)
+加载 Properties 文件中的属性
+
+**Variable**
+
+`ClassLoader` 类加载器
+
+
+**Method**
+```java
+loadProperties(String name, String envPropertyName)
+```
+**Parameter 1**
+
+资源文件位置
+
+**Parameter 2**
+
+分环境资源文件
+
+
+**Return Value**
+
+属性集合
+
+**Implement Class**
+```java
+cn.org.expect.script.method.FileExtension.loadProperties(java.lang.ClassLoader,java.lang.String,java.lang.String)
 ```
 ### lower()
 将字符串转为小写
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 lower()
 ```
 
-**返回值**
+**Return Value**
 
 字符串
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.lower(java.lang.CharSequence)
 ```
 ### ls()
 显示目录中的文件
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 ls()
 ```
 
-**返回值**
+**Return Value**
 
 目录中文件
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.ls(java.lang.CharSequence) throws java.io.IOException
 ```
 ### ltrim()
 删除数组中字符串左侧的空白字符
 
-**变量**
+**Variable**
 
 `Object[]` 数组
 
 
-**方法**
+**Method**
 ```java
 ltrim()
 ```
 
-**返回值**
+**Return Value**
 
 新数组
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ArrayExtension.ltrim(java.lang.Object[])
 ```
 ### ltrim(String)
 删除数组中字符串左侧的空白字符与指定字符
 
-**变量**
+**Variable**
 
 `Object[]` 数组
 
 
-**方法**
+**Method**
 ```java
 ltrim(String chars)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 待删除的字符
 
 
-**返回值**
+**Return Value**
 
 新数组
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ArrayExtension.ltrim(java.lang.Object[],java.lang.String)
 ```
 ### ltrim()
 删除字符串左侧的空白字符
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 ltrim()
 ```
 
-**返回值**
+**Return Value**
 
 字符串
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.ltrim(java.lang.CharSequence)
 ```
 ### ltrim(String)
 删除字符串左侧的空白字符与字符参数
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 ltrim(String chars)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 字符参数
 
 
-**返回值**
+**Return Value**
 
 字符串
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.ltrim(java.lang.CharSequence,java.lang.String)
 ```
 ### mkdir()
 创建目录
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 mkdir()
 ```
 
-**返回值**
+**Return Value**
 
 返回true表示成功，false表示失败
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.mkdir(java.lang.CharSequence) throws java.io.IOException
 ```
 ### newDocument()
 将 xml 解析为 Document 对象
 
-**变量**
+**Variable**
 
 `String` 字符串
 
 
-**方法**
+**Method**
 ```java
 newDocument()
 ```
 
-**返回值**
+**Return Value**
 
 Document 对象
 
-**代码**
+**Implement Class**
 ```java
-cn.org.expect.script.method.XmlFunction.newDocument(java.lang.String)
+cn.org.expect.script.method.XmlExtension.newDocument(java.lang.String)
 ```
 ### newInstance(Object...)
 创建类的实例对象
 
-**变量**
+**Variable**
 
 `Class`
 
 
-**方法**
+**Method**
 ```java
 newInstance(Object...)
 ```
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.clazz.NewInstanceMethod
 ```
 ### print()
 打印数组
 
-**变量**
+**Variable**
 
 `Object[]`
 
 
-**方法**
+**Method**
 ```java
 print()
 ```
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.array.PrintMethod
 ```
 ### print()
 打印对象
 
-**变量**
+**Variable**
 
 `Object`
 
 
-**方法**
+**Method**
 ```java
 print()
 ```
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.object.PrintMethod
 ```
 ### read(String)
 读取文件内容
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 read(String charsetName)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 文件的字符集编码
 
 
-**返回值**
+**Return Value**
 
 文件内容
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.read(java.lang.CharSequence,java.lang.String) throws java.io.IOException
 ```
 ### readTag(String, int)
 读取 xml 中指定标签
 
-**变量**
+**Variable**
 
 `String` 字符串
 
 
-**方法**
+**Method**
 ```java
 readTag(String tagName, int from)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 标签名
 
-**第 2 个参数**
+**Parameter 2**
 
 起始位置，从 0 开始
 
 
-**返回值**
+**Return Value**
 
 标签内容
 
-**代码**
+**Implement Class**
 ```java
-cn.org.expect.script.method.XmlFunction.readTag(java.lang.String,java.lang.String,int)
+cn.org.expect.script.method.XmlExtension.readTag(java.lang.String,java.lang.String,int)
 ```
-### replace(String, String)
-替换字符串中的内容
+### removePrefix(CharSequence)
+从字符串 str 的最左段移除字符串 prefix
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
+```java
+removePrefix(CharSequence prefix)
+```
+**Parameter 1**
+
+字符串
+
+
+**Return Value**
+
+移除后的字符串
+
+**Implement Class**
+```java
+cn.org.expect.script.method.StringExtension.removePrefix(java.lang.CharSequence,java.lang.CharSequence)
+```
+### replace(String, String)
+替换字符串中的内容
+
+**Variable**
+
+`CharSequence` 字符串
+
+
+**Method**
 ```java
 replace(String oldStr, String newStr)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 替换的字符串
 
-**第 2 个参数**
+**Parameter 2**
 
 替换后的字符串
 
 
-**返回值**
+**Return Value**
 
 字符串
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.replace(java.lang.CharSequence,java.lang.String,java.lang.String)
+```
+### replaceFolderSeparator()
+把文件路径参数 filepath 中的 '/' 和 '\' 字符替换成当前操作系统的路径分隔符
+
+**Variable**
+
+`String` 文件路径
+
+
+**Method**
+```java
+replaceFolderSeparator()
+```
+
+**Return Value**
+
+文件路径
+
+**Implement Class**
+```java
+cn.org.expect.script.method.FileExtension.replaceFolderSeparator(java.lang.String)
 ```
 ### rtrim()
 删除数组中字符串右侧的空白字符
 
-**变量**
+**Variable**
 
 `Object[]` 数组
 
 
-**方法**
+**Method**
 ```java
 rtrim()
 ```
 
-**返回值**
+**Return Value**
 
 新数组
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ArrayExtension.rtrim(java.lang.Object[])
 ```
 ### rtrim(String)
 删除数组中字符串右侧的空白字符与指定字符
 
-**变量**
+**Variable**
 
 `Object[]` 数组
 
 
-**方法**
+**Method**
 ```java
 rtrim(String chars)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 待删除的字符
 
 
-**返回值**
+**Return Value**
 
 新数组
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ArrayExtension.rtrim(java.lang.Object[],java.lang.String)
 ```
 ### rtrim()
 删除字符串右侧的空白字符
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 rtrim()
 ```
 
-**返回值**
+**Return Value**
 
 字符串
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.rtrim(java.lang.CharSequence)
 ```
 ### rtrim(String)
 删除字符串右侧的空白字符与字符参数
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 rtrim(String chars)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 字符参数
 
 
-**返回值**
+**Return Value**
 
 字符串
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.rtrim(java.lang.CharSequence,java.lang.String)
+```
+### sendHttp(CharSequence, Object...)
+
+
+**Variable**
+
+`UniversalScriptEngine`
+
+
+**Method**
+```java
+sendHttp(CharSequence, Object...)
+```
+
+**Implement Class**
+```java
+cn.org.expect.script.method.HttpExtension.sendHttp(cn.org.expect.script.UniversalScriptEngine,java.lang.CharSequence,java.lang.Object...) throws java.net.UnknownHostException
 ```
 ### size()
 返回集合长度
 
-**变量**
+**Variable**
 
 `Collection` 集合
 
 
-**方法**
+**Method**
 ```java
 size()
 ```
 
-**返回值**
+**Return Value**
 
 集合长度
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.CollectionExtension.size(java.util.Collection)
 ```
 ### size()
 返回集合长度
 
-**变量**
+**Variable**
 
 `Map` 集合
 
 
-**方法**
+**Method**
 ```java
 size()
 ```
 
-**返回值**
+**Return Value**
 
 集合长度
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.CollectionExtension.size(java.util.Map)
 ```
 ### split()
 将字符串使用空白字符分隔
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 split()
 ```
 
-**返回值**
+**Return Value**
 
 字段集合
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.split(java.lang.CharSequence)
 ```
 ### split(String)
 将字符串使用指定字符分隔
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 split(String delimiter)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 分隔字符
 
 
-**返回值**
+**Return Value**
 
 字段集合
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.split(java.lang.CharSequence,java.lang.String)
 ```
 ### split(String, String)
 使用分隔符、转义字符提取字符串中的字段
 
-**变量**
+**Variable**
 
 `CharSequence`
 
 
-**方法**
+**Method**
 ```java
 split(String, String)
 ```
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.string.SplitMethod
 ```
 ### startsWith(CharSequence)
 判断字符串是否以指定前缀开头
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 startsWith(CharSequence prefix)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 前缀
 
 
-**返回值**
+**Return Value**
 
 返回true表示是，false表示否
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.startsWith(java.lang.CharSequence,java.lang.CharSequence)
 ```
 ### startsWith(CharSequence, int)
 判断字符串是否以指定前缀开头
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 startsWith(CharSequence prefix, int from)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 前缀
 
-**第 2 个参数**
+**Parameter 2**
 
 起始位置，从 0 开始
 
 
-**返回值**
+**Return Value**
 
 返回true表示是，false表示否
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.startsWith(java.lang.CharSequence,java.lang.CharSequence,int)
 ```
 ### startsWith(CharSequence, int, boolean)
 判断字符串是否以指定前缀开头
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 startsWith(CharSequence prefix, int from, boolean ignoreCase)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 前缀
 
-**第 2 个参数**
+**Parameter 2**
 
 起始位置，从 0 开始
 
-**第 3 个参数**
+**Parameter 3**
 
 true表示忽略大小写
 
 
-**返回值**
+**Return Value**
 
 返回true表示是，false表示否
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.startsWith(java.lang.CharSequence,java.lang.CharSequence,int,boolean)
 ```
 ### startsWith(CharSequence, int, boolean, boolean)
 判断字符串是否以指定前缀开头
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 startsWith(CharSequence prefix, int from, boolean ignoreCase, boolean ignoreBlank)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 前缀
 
-**第 2 个参数**
+**Parameter 2**
 
 起始位置，从 0 开始
 
-**第 3 个参数**
+**Parameter 3**
 
 true表示忽略大小写
 
-**第 4 个参数**
+**Parameter 4**
 
 false表示忽略空白字符
 
 
-**返回值**
+**Return Value**
 
 返回true表示是，false表示否
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.startsWith(java.lang.CharSequence,java.lang.CharSequence,int,boolean,boolean)
 ```
 ### subArray(int)
 截取数组
 
-**变量**
+**Variable**
 
 `Object[]` 数组
 
 
-**方法**
+**Method**
 ```java
 subArray(int begin)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 截取数组的长度
 
 
-**返回值**
+**Return Value**
 
 新数组
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ArrayExtension.subArray(java.lang.Object[],int)
 ```
 ### subArray(int, int)
 截取数组
 
-**变量**
+**Variable**
 
 `Object[]` 数组
 
 
-**方法**
+**Method**
 ```java
 subArray(int begin, int end)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 起始位置，从 0 开始
 
-**第 2 个参数**
+**Parameter 2**
 
 结束位置（不包括）
 
 
-**返回值**
+**Return Value**
 
 新数组
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ArrayExtension.subArray(java.lang.Object[],int,int)
 ```
 ### substr(int)
 截取字符串
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 substr(int begin)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 截取起始位置，从 0 开始
 
 
-**返回值**
+**Return Value**
 
 字符串
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.substr(java.lang.CharSequence,int)
 ```
 ### substr(int, int)
 截取字符串
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 substr(int begin, int end)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 截取起始位置，从 0 开始
 
-**第 2 个参数**
+**Parameter 2**
 
 结束位置（不包括）
 
 
-**返回值**
+**Return Value**
 
 字符串
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.substr(java.lang.CharSequence,int,int)
 ```
 ### touch()
 创建文件
 
-**变量**
+**Variable**
 
 `CharSequence` 文件绝对路径
 
 
-**方法**
+**Method**
 ```java
 touch()
 ```
 
-**返回值**
+**Return Value**
 
 返回true表示成功，false表示失败
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.FileExtension.touch(java.lang.CharSequence) throws java.io.IOException
 ```
 ### trim()
 删除数组中字符串二端的空白字符
 
-**变量**
+**Variable**
 
 `Object[]` 数组
 
 
-**方法**
+**Method**
 ```java
 trim()
 ```
 
-**返回值**
+**Return Value**
 
 新数组
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ArrayExtension.trim(java.lang.Object[])
 ```
 ### trim(String)
 删除数组中字符串二端的空白字符与指定字符
 
-**变量**
+**Variable**
 
 `Object[]` 数组
 
 
-**方法**
+**Method**
 ```java
 trim(String chars)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 待删除的字符
 
 
-**返回值**
+**Return Value**
 
 新数组
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.ArrayExtension.trim(java.lang.Object[],java.lang.String)
 ```
 ### trim()
 删除字符串二端的空白字符
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 trim()
 ```
 
-**返回值**
+**Return Value**
 
 字符串
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.trim(java.lang.CharSequence)
 ```
 ### trim(String)
 删除字符串二端的空白字符与字符参数
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 trim(String chars)
 ```
-**第 1 个参数**
+**Parameter 1**
 
 字符参数
 
 
-**返回值**
+**Return Value**
 
 字符串
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.trim(java.lang.CharSequence,java.lang.String)
 ```
 ### upper()
 将字符串转为大写
 
-**变量**
+**Variable**
 
 `CharSequence` 字符串
 
 
-**方法**
+**Method**
 ```java
 upper()
 ```
 
-**返回值**
+**Return Value**
 
 字符串
 
-**代码**
+**Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.upper(java.lang.CharSequence)
 ```
@@ -5007,6 +5323,46 @@ cn.org.expect.script.method.StringExtension.upper(java.lang.CharSequence)
 
 
 # 内部设计
+
+
+
+##  Spring Boot 场景启动器
+
+脚本引擎可作为 **Spring Boot Starter** 自动装配模块集成至项目中，随着 **Spring Boot 应用上下文** 启动自动初始化，引擎实例可通过依赖注入获取，进一步简化创建与使用流程。
+
+
+
+### 属性
+
+在编写脚本时，支持使用 **Spring Boot 配置文件**（如 `application.properties` 和 `application.yaml`）中设置的属性。
+
+
+
+### 线程池复用机制
+
+为避免脚本执行过程中线程资源的无序扩张，脚本引擎支持与 **Spring 容器** 线程池资源共享：
+
+脚本引擎复用 **Spring** 容器线程池的机制：
+
+- 优先查找 **Spring 容器** 中名称为 `taskExecutor` 的线程池；
+- 若未找到，查找类型为 `ThreadPoolTaskExecutor` 的线程池实例；
+- 若仍未找到，则尝试获取实现了 `ExecutorService` 接口的线程池实例；
+
+
+
+### 启动流程与 Bean 生命周期管理
+
+在 **Spring Boot 项目启动阶段**，脚本引擎容器与实例的初始化流程如下：
+
+应用启动时，初始化 **脚本引擎容器组件**，负责维护脚本运行环境及组件信息；
+
+初始化完成后，将该 **容器组件** 交由 **Spring 容器** 进行统一管理；
+
+开发者可通过 **Spring 依赖注入机制** 获取以下两个核心对象：
+
+脚本引擎容器 `cn.org.expect.ioc.EasyContext`：单例作用域（`@Scope("singleton")`），负责全局脚本环境管理；
+
+脚本引擎实例 `cn.org.expect.script.UniversalScriptEngine`：请求作用域（`@Scope("request")`），每次请求生成一个新的引擎实例。
 
 
 
@@ -5188,7 +5544,7 @@ ResourcesUtils.getMessage("date.stdout.message003")
 
 支持在 `set`，`if`，`while` 等命令中使用表达式进行计算。
 
-开发人员可以使用类 `` 完成如下表达式运算：
+开发人员可以使用类 `cn.org.expect.expression.Expression` 完成如下表达式运算：
 
 算数运算 `() +`(正)`-`(负) `*`(乘) `/`(除) `%`(取余) `+`(加) `-`(减) 
 
@@ -5282,12 +5638,13 @@ FileUtils.getTempDir(String[]);
 
 已注册的数据库方言如下所示：
 
-|   数据库   | 说明 |                                数据库方言类名 |
-| ---------- | ---- | --------------------------------------------- |
-|  **db2**   |      |       `cn.org.expect.database.db2.DB2Dialect` |
-|   **h2**   |      |         `cn.org.expect.database.h2.H2Dialect` |
-| **mysql**  |      |   `cn.org.expect.database.mysql.MysqlDialect` |
-| **oracle** |      | `cn.org.expect.database.oracle.OracleDialect` |
+|  Database  | Description |                   Database Dialect Class Name |
+| ---------- | ----------- | --------------------------------------------- |
+|  **db2**   |             |       `cn.org.expect.database.db2.DB2Dialect` |
+|  **db2**   | DB2 11.5    |   `cn.org.expect.database.db2.DB2Dialect11_5` |
+|   **h2**   |             |         `cn.org.expect.database.h2.H2Dialect` |
+| **mysql**  |             |   `cn.org.expect.database.mysql.MysqlDialect` |
+| **oracle** |             | `cn.org.expect.database.oracle.OracleDialect` |
 
 
 
@@ -5462,7 +5819,7 @@ Dates.isWorkDay("zh_CN", Dates.parse("2019-08-31"));
 
 - 将 XML 文件存储到 Java 工程 `cn/org/expect` 包中，文件名必须为：`holidays.xml`
 
-- 将 XML 文件存储到 `/Users/user/.modest`，文件名必须遵循命名规则：`holiday*.xml`
+- 将 XML 文件存储到 `/Users/user/.modest/config`，文件名必须遵循命名规则：`holiday*.xml`
 
 - 通过 JVM 参数指定 XML 文件所在目录，文件名必须遵循命名规则：`holiday*.xml`
 
@@ -5507,249 +5864,267 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### AbstractCommandCompiler
-| 组件类名                                                         | 说明 |
-| ---------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.BreakCommandCompiler`              |      |
-| `cn.org.expect.script.command.ByeCommandCompiler`                |      |
-| `cn.org.expect.script.command.CallProcudureCommandCompiler`      |      |
-| `cn.org.expect.script.command.CallbackCommandCompiler`           |      |
-| `cn.org.expect.script.command.CatCommandCompiler`                |      |
-| `cn.org.expect.script.command.CdCommandCompiler`                 |      |
-| `cn.org.expect.script.command.CommitCommandCompiler`             |      |
-| `cn.org.expect.script.command.ContainerCommandCompiler`          |      |
-| `cn.org.expect.script.command.ContinueCommandCompiler`           |      |
-| `cn.org.expect.script.command.CpCommandCompiler`                 |      |
-| `cn.org.expect.script.command.CursorCommandCompiler`             |      |
-| `cn.org.expect.script.command.DBConnectCommandCompiler`          |      |
-| `cn.org.expect.script.command.DBExportCommandCompiler`           |      |
-| `cn.org.expect.script.command.DBLoadCommandCompiler`             |      |
-| `cn.org.expect.script.command.DDLCommandCompiler`                |      |
-| `cn.org.expect.script.command.DaemonCommandCompiler`             |      |
-| `cn.org.expect.script.command.DateCommandCompiler`               |      |
-| `cn.org.expect.script.command.DebugCommandCompiler`              |      |
-| `cn.org.expect.script.command.DeclareCatalogCommandCompiler`     |      |
-| `cn.org.expect.script.command.DeclareCursorCommandCompiler`      |      |
-| `cn.org.expect.script.command.DeclareHandlerCommandCompiler`     |      |
-| `cn.org.expect.script.command.DeclareProgressCommandCompiler`    |      |
-| `cn.org.expect.script.command.DeclareSSHClientCommandCompiler`   |      |
-| `cn.org.expect.script.command.DeclareSSHTunnelCommandCompiler`   |      |
-| `cn.org.expect.script.command.DeclareStatementCommandCompiler`   |      |
-| `cn.org.expect.script.command.DefaultCommandCompiler`            |      |
-| `cn.org.expect.script.command.DfCommandCompiler`                 |      |
-| `cn.org.expect.script.command.Dos2UnixCommandCompiler`           |      |
-| `cn.org.expect.script.command.EchoCommandCompiler`               |      |
-| `cn.org.expect.script.command.EmailSendCommandCompiler`          |      |
-| `cn.org.expect.script.command.ErrorCommandCompiler`              |      |
-| `cn.org.expect.script.command.ExecuteFileCommandCompiler`        |      |
-| `cn.org.expect.script.command.ExecuteFunctionCommandCompiler`    |      |
-| `cn.org.expect.script.command.ExecuteOSCommandCompiler`          |      |
-| `cn.org.expect.script.command.ExistsCommandCompiler`             |      |
-| `cn.org.expect.script.command.ExitCommandCompiler`               |      |
-| `cn.org.expect.script.command.ExportCommandCompiler`             |      |
-| `cn.org.expect.script.command.FetchCursorCommandCompiler`        |      |
-| `cn.org.expect.script.command.FetchStatementCommandCompiler`     |      |
-| `cn.org.expect.script.command.FindCommandCompiler`               |      |
-| `cn.org.expect.script.command.ForCommandCompiler`                |      |
-| `cn.org.expect.script.command.FtpCommandCompiler`                |      |
-| `cn.org.expect.script.command.FunctionCommandCompiler`           |      |
-| `cn.org.expect.script.command.GetCommandCompiler`                |      |
-| `cn.org.expect.script.command.GrepCommandCompiler`               |      |
-| `cn.org.expect.script.command.GunzipCommandCompiler`             |      |
-| `cn.org.expect.script.command.GzipCommandCompiler`               |      |
-| `cn.org.expect.script.command.HandlerCommandCompiler`            |      |
-| `cn.org.expect.script.command.HeadCommandCompiler`               |      |
-| `cn.org.expect.script.command.HelpCommandCompiler`               |      |
-| `cn.org.expect.script.command.IfCommandCompiler`                 |      |
-| `cn.org.expect.script.command.IncrementCommandCompiler`          |      |
-| `cn.org.expect.script.command.IsDirectoryCommandCompiler`        |      |
-| `cn.org.expect.script.command.IsFileCommandCompiler`             |      |
-| `cn.org.expect.script.command.JavaCommandCompiler`               |      |
-| `cn.org.expect.script.command.JumpCommandCompiler`               |      |
-| `cn.org.expect.script.command.LengthCommandCompiler`             |      |
-| `cn.org.expect.script.command.LsCommandCompiler`                 |      |
-| `cn.org.expect.script.command.MD5CommandCompiler`                |      |
-| `cn.org.expect.script.command.MkdirCommandCompiler`              |      |
-| `cn.org.expect.script.command.NohupCommandCompiler`              |      |
-| `cn.org.expect.script.command.PSCommandCompiler`                 |      |
-| `cn.org.expect.script.command.PipeCommandCompiler`               |      |
-| `cn.org.expect.script.command.ProgressCommandCompiler`           |      |
-| `cn.org.expect.script.command.PutCommandCompiler`                |      |
-| `cn.org.expect.script.command.PwdCommandCompiler`                |      |
-| `cn.org.expect.script.command.QuietCommandCompiler`              |      |
-| `cn.org.expect.script.command.ReadCommandCompiler`               |      |
-| `cn.org.expect.script.command.ReturnCommandCompiler`             |      |
-| `cn.org.expect.script.command.RmCommandCompiler`                 |      |
-| `cn.org.expect.script.command.RollbackCommandCompiler`           |      |
-| `cn.org.expect.script.command.SQLCommandCompiler`                |      |
-| `cn.org.expect.script.command.SSH2CommandCompiler`               |      |
-| `cn.org.expect.script.command.SetCommandCompiler`                |      |
-| `cn.org.expect.script.command.SftpCommandCompiler`               |      |
-| `cn.org.expect.script.command.SleepCommandCompiler`              |      |
-| `cn.org.expect.script.command.SortTableFileCommandCompiler`      |      |
-| `cn.org.expect.script.command.StacktraceCommandCompiler`         |      |
-| `cn.org.expect.script.command.StepCommandCompiler`               |      |
-| `cn.org.expect.script.command.SubCommandCompiler`                |      |
-| `cn.org.expect.script.command.TailCommandCompiler`               |      |
-| `cn.org.expect.script.command.TarCommandCompiler`                |      |
-| `cn.org.expect.script.command.TerminateCommandCompiler`          |      |
-| `cn.org.expect.script.command.UUIDCommandCompiler`               |      |
-| `cn.org.expect.script.command.UndeclareCallbackCommandCompiler`  |      |
-| `cn.org.expect.script.command.UndeclareCatalogCommandCompiler`   |      |
-| `cn.org.expect.script.command.UndeclareCursorCommandCompiler`    |      |
-| `cn.org.expect.script.command.UndeclareHandlerCommandCompiler`   |      |
-| `cn.org.expect.script.command.UndeclareSSHCommandCompiler`       |      |
-| `cn.org.expect.script.command.UndeclareStatementCommandCompiler` |      |
-| `cn.org.expect.script.command.UnrarCommandCompiler`              |      |
-| `cn.org.expect.script.command.UnzipCommandCompiler`              |      |
-| `cn.org.expect.script.command.VariableMethodCommandCompiler`     |      |
-| `cn.org.expect.script.command.WaitCommandCompiler`               |      |
-| `cn.org.expect.script.command.WcCommandCompiler`                 |      |
-| `cn.org.expect.script.command.WhileCommandCompiler`              |      |
-| `cn.org.expect.script.command.ZipCommandCompiler`                |      |
+| Component Class Name                                             | Description |
+| ---------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.BreakCommandCompiler`              |             |
+| `cn.org.expect.script.command.ByeCommandCompiler`                |             |
+| `cn.org.expect.script.command.CallProcudureCommandCompiler`      |             |
+| `cn.org.expect.script.command.CallbackCommandCompiler`           |             |
+| `cn.org.expect.script.command.CatCommandCompiler`                |             |
+| `cn.org.expect.script.command.CdCommandCompiler`                 |             |
+| `cn.org.expect.script.command.CommitCommandCompiler`             |             |
+| `cn.org.expect.script.command.ContainerCommandCompiler`          |             |
+| `cn.org.expect.script.command.ContinueCommandCompiler`           |             |
+| `cn.org.expect.script.command.CpCommandCompiler`                 |             |
+| `cn.org.expect.script.command.CursorCommandCompiler`             |             |
+| `cn.org.expect.script.command.DBConnectCommandCompiler`          |             |
+| `cn.org.expect.script.command.DBExportCommandCompiler`           |             |
+| `cn.org.expect.script.command.DBGetCfgForCommandCompiler`        |             |
+| `cn.org.expect.script.command.DBLoadCommandCompiler`             |             |
+| `cn.org.expect.script.command.DDLCommandCompiler`                |             |
+| `cn.org.expect.script.command.DaemonCommandCompiler`             |             |
+| `cn.org.expect.script.command.DateCommandCompiler`               |             |
+| `cn.org.expect.script.command.DebugCommandCompiler`              |             |
+| `cn.org.expect.script.command.DeclareCatalogCommandCompiler`     |             |
+| `cn.org.expect.script.command.DeclareCursorCommandCompiler`      |             |
+| `cn.org.expect.script.command.DeclareHandlerCommandCompiler`     |             |
+| `cn.org.expect.script.command.DeclareProgressCommandCompiler`    |             |
+| `cn.org.expect.script.command.DeclareSSHClientCommandCompiler`   |             |
+| `cn.org.expect.script.command.DeclareSSHTunnelCommandCompiler`   |             |
+| `cn.org.expect.script.command.DeclareStatementCommandCompiler`   |             |
+| `cn.org.expect.script.command.DefaultCommandCompiler`            |             |
+| `cn.org.expect.script.command.DfCommandCompiler`                 |             |
+| `cn.org.expect.script.command.Dos2UnixCommandCompiler`           |             |
+| `cn.org.expect.script.command.EchoCommandCompiler`               |             |
+| `cn.org.expect.script.command.EmailSendCommandCompiler`          |             |
+| `cn.org.expect.script.command.ErrorCommandCompiler`              |             |
+| `cn.org.expect.script.command.ExecuteFileCommandCompiler`        |             |
+| `cn.org.expect.script.command.ExecuteFunctionCommandCompiler`    |             |
+| `cn.org.expect.script.command.ExecuteOSCommandCompiler`          |             |
+| `cn.org.expect.script.command.ExistsCommandCompiler`             |             |
+| `cn.org.expect.script.command.ExitCommandCompiler`               |             |
+| `cn.org.expect.script.command.ExportCommandCompiler`             |             |
+| `cn.org.expect.script.command.FetchCursorCommandCompiler`        |             |
+| `cn.org.expect.script.command.FetchStatementCommandCompiler`     |             |
+| `cn.org.expect.script.command.FindCommandCompiler`               |             |
+| `cn.org.expect.script.command.ForCommandCompiler`                |             |
+| `cn.org.expect.script.command.FtpCommandCompiler`                |             |
+| `cn.org.expect.script.command.FunctionCommandCompiler`           |             |
+| `cn.org.expect.script.command.GetCommandCompiler`                |             |
+| `cn.org.expect.script.command.GrepCommandCompiler`               |             |
+| `cn.org.expect.script.command.GunzipCommandCompiler`             |             |
+| `cn.org.expect.script.command.GzipCommandCompiler`               |             |
+| `cn.org.expect.script.command.HandlerCommandCompiler`            |             |
+| `cn.org.expect.script.command.HeadCommandCompiler`               |             |
+| `cn.org.expect.script.command.HelpCommandCompiler`               |             |
+| `cn.org.expect.script.command.IfCommandCompiler`                 |             |
+| `cn.org.expect.script.command.IncrementCommandCompiler`          |             |
+| `cn.org.expect.script.command.IsDirectoryCommandCompiler`        |             |
+| `cn.org.expect.script.command.IsFileCommandCompiler`             |             |
+| `cn.org.expect.script.command.JavaCommandCompiler`               |             |
+| `cn.org.expect.script.command.JumpCommandCompiler`               |             |
+| `cn.org.expect.script.command.LengthCommandCompiler`             |             |
+| `cn.org.expect.script.command.LsCommandCompiler`                 |             |
+| `cn.org.expect.script.command.MD5CommandCompiler`                |             |
+| `cn.org.expect.script.command.MkdirCommandCompiler`              |             |
+| `cn.org.expect.script.command.NohupCommandCompiler`              |             |
+| `cn.org.expect.script.command.PSCommandCompiler`                 |             |
+| `cn.org.expect.script.command.PassiveCommandCompiler`            |             |
+| `cn.org.expect.script.command.PipeCommandCompiler`               |             |
+| `cn.org.expect.script.command.ProgressCommandCompiler`           |             |
+| `cn.org.expect.script.command.PutCommandCompiler`                |             |
+| `cn.org.expect.script.command.PwdCommandCompiler`                |             |
+| `cn.org.expect.script.command.QuietCommandCompiler`              |             |
+| `cn.org.expect.script.command.ReadCommandCompiler`               |             |
+| `cn.org.expect.script.command.ReturnCommandCompiler`             |             |
+| `cn.org.expect.script.command.RmCommandCompiler`                 |             |
+| `cn.org.expect.script.command.RollbackCommandCompiler`           |             |
+| `cn.org.expect.script.command.SQLCommandCompiler`                |             |
+| `cn.org.expect.script.command.SSH2CommandCompiler`               |             |
+| `cn.org.expect.script.command.SetCommandCompiler`                |             |
+| `cn.org.expect.script.command.SftpCommandCompiler`               |             |
+| `cn.org.expect.script.command.SleepCommandCompiler`              |             |
+| `cn.org.expect.script.command.SortTableFileCommandCompiler`      |             |
+| `cn.org.expect.script.command.StacktraceCommandCompiler`         |             |
+| `cn.org.expect.script.command.StepCommandCompiler`               |             |
+| `cn.org.expect.script.command.SubCommandCompiler`                |             |
+| `cn.org.expect.script.command.TailCommandCompiler`               |             |
+| `cn.org.expect.script.command.TarCommandCompiler`                |             |
+| `cn.org.expect.script.command.TerminateCommandCompiler`          |             |
+| `cn.org.expect.script.command.UUIDCommandCompiler`               |             |
+| `cn.org.expect.script.command.UndeclareCallbackCommandCompiler`  |             |
+| `cn.org.expect.script.command.UndeclareCatalogCommandCompiler`   |             |
+| `cn.org.expect.script.command.UndeclareCursorCommandCompiler`    |             |
+| `cn.org.expect.script.command.UndeclareHandlerCommandCompiler`   |             |
+| `cn.org.expect.script.command.UndeclareSSHCommandCompiler`       |             |
+| `cn.org.expect.script.command.UndeclareStatementCommandCompiler` |             |
+| `cn.org.expect.script.command.UnrarCommandCompiler`              |             |
+| `cn.org.expect.script.command.UnzipCommandCompiler`              |             |
+| `cn.org.expect.script.command.VariableMethodCommandCompiler`     |             |
+| `cn.org.expect.script.command.WaitCommandCompiler`               |             |
+| `cn.org.expect.script.command.WcCommandCompiler`                 |             |
+| `cn.org.expect.script.command.WgetCommandCompiler`               |             |
+| `cn.org.expect.script.command.WhileCommandCompiler`              |             |
+| `cn.org.expect.script.command.ZipCommandCompiler`                |             |
+
+
+
+### AbstractCompress
+| Component Class Name                  | Description |
+| ------------------------------------- | ----------- |
+| `cn.org.expect.compress.GzipCompress` |             |
+| `cn.org.expect.compress.RarCompress`  |             |
+| `cn.org.expect.compress.TarCompress`  |             |
+| `cn.org.expect.compress.ZipCompress`  |             |
 
 
 
 ### AbstractDialect
-| 组件类名                                      | 说明 |
-| --------------------------------------------- | ---- |
-| `cn.org.expect.database.db2.DB2Dialect`       |      |
-| `cn.org.expect.database.h2.H2Dialect`         |      |
-| `cn.org.expect.database.mysql.MysqlDialect`   |      |
-| `cn.org.expect.database.oracle.OracleDialect` |      |
+| Component Class Name                          | Description |
+| --------------------------------------------- | ----------- |
+| `cn.org.expect.database.db2.DB2Dialect`       |             |
+| `cn.org.expect.database.db2.DB2Dialect11_5`   | DB2 11.5    |
+| `cn.org.expect.database.h2.H2Dialect`         |             |
+| `cn.org.expect.database.mysql.MysqlDialect`   |             |
+| `cn.org.expect.database.oracle.OracleDialect` |             |
 
 
 
 ### AbstractFileCommandCompiler
-| 组件类名                                                  | 说明 |
-| --------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.CatCommandCompiler`         |      |
-| `cn.org.expect.script.command.CdCommandCompiler`          |      |
-| `cn.org.expect.script.command.CpCommandCompiler`          |      |
-| `cn.org.expect.script.command.ExistsCommandCompiler`      |      |
-| `cn.org.expect.script.command.FtpCommandCompiler`         |      |
-| `cn.org.expect.script.command.GetCommandCompiler`         |      |
-| `cn.org.expect.script.command.GunzipCommandCompiler`      |      |
-| `cn.org.expect.script.command.GzipCommandCompiler`        |      |
-| `cn.org.expect.script.command.HeadCommandCompiler`        |      |
-| `cn.org.expect.script.command.IsDirectoryCommandCompiler` |      |
-| `cn.org.expect.script.command.IsFileCommandCompiler`      |      |
-| `cn.org.expect.script.command.LsCommandCompiler`          |      |
-| `cn.org.expect.script.command.MD5CommandCompiler`         |      |
-| `cn.org.expect.script.command.MkdirCommandCompiler`       |      |
-| `cn.org.expect.script.command.PutCommandCompiler`         |      |
-| `cn.org.expect.script.command.PwdCommandCompiler`         |      |
-| `cn.org.expect.script.command.RmCommandCompiler`          |      |
-| `cn.org.expect.script.command.SftpCommandCompiler`        |      |
-| `cn.org.expect.script.command.TailCommandCompiler`        |      |
-| `cn.org.expect.script.command.TarCommandCompiler`         |      |
-| `cn.org.expect.script.command.UnrarCommandCompiler`       |      |
-| `cn.org.expect.script.command.UnzipCommandCompiler`       |      |
-| `cn.org.expect.script.command.WcCommandCompiler`          |      |
-| `cn.org.expect.script.command.ZipCommandCompiler`         |      |
+| Component Class Name                                      | Description |
+| --------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.CatCommandCompiler`         |             |
+| `cn.org.expect.script.command.CdCommandCompiler`          |             |
+| `cn.org.expect.script.command.CpCommandCompiler`          |             |
+| `cn.org.expect.script.command.ExistsCommandCompiler`      |             |
+| `cn.org.expect.script.command.FtpCommandCompiler`         |             |
+| `cn.org.expect.script.command.GetCommandCompiler`         |             |
+| `cn.org.expect.script.command.GunzipCommandCompiler`      |             |
+| `cn.org.expect.script.command.GzipCommandCompiler`        |             |
+| `cn.org.expect.script.command.HeadCommandCompiler`        |             |
+| `cn.org.expect.script.command.IsDirectoryCommandCompiler` |             |
+| `cn.org.expect.script.command.IsFileCommandCompiler`      |             |
+| `cn.org.expect.script.command.LsCommandCompiler`          |             |
+| `cn.org.expect.script.command.MD5CommandCompiler`         |             |
+| `cn.org.expect.script.command.MkdirCommandCompiler`       |             |
+| `cn.org.expect.script.command.PassiveCommandCompiler`     |             |
+| `cn.org.expect.script.command.PutCommandCompiler`         |             |
+| `cn.org.expect.script.command.PwdCommandCompiler`         |             |
+| `cn.org.expect.script.command.RmCommandCompiler`          |             |
+| `cn.org.expect.script.command.SftpCommandCompiler`        |             |
+| `cn.org.expect.script.command.TailCommandCompiler`        |             |
+| `cn.org.expect.script.command.TarCommandCompiler`         |             |
+| `cn.org.expect.script.command.UnrarCommandCompiler`       |             |
+| `cn.org.expect.script.command.UnzipCommandCompiler`       |             |
+| `cn.org.expect.script.command.WcCommandCompiler`          |             |
+| `cn.org.expect.script.command.WgetCommandCompiler`        |             |
+| `cn.org.expect.script.command.ZipCommandCompiler`         |             |
 
 
 
 ### AbstractGlobalCommandCompiler
-| 组件类名                                                        | 说明 |
-| --------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.CallbackCommandCompiler`          |      |
-| `cn.org.expect.script.command.DeclareCatalogCommandCompiler`    |      |
-| `cn.org.expect.script.command.DeclareHandlerCommandCompiler`    |      |
-| `cn.org.expect.script.command.DeclareProgressCommandCompiler`   |      |
-| `cn.org.expect.script.command.SetCommandCompiler`               |      |
-| `cn.org.expect.script.command.UndeclareCallbackCommandCompiler` |      |
-| `cn.org.expect.script.command.UndeclareCatalogCommandCompiler`  |      |
-| `cn.org.expect.script.command.UndeclareHandlerCommandCompiler`  |      |
+| Component Class Name                                            | Description |
+| --------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.CallbackCommandCompiler`          |             |
+| `cn.org.expect.script.command.DeclareCatalogCommandCompiler`    |             |
+| `cn.org.expect.script.command.DeclareHandlerCommandCompiler`    |             |
+| `cn.org.expect.script.command.DeclareProgressCommandCompiler`   |             |
+| `cn.org.expect.script.command.SetCommandCompiler`               |             |
+| `cn.org.expect.script.command.UndeclareCallbackCommandCompiler` |             |
+| `cn.org.expect.script.command.UndeclareCatalogCommandCompiler`  |             |
+| `cn.org.expect.script.command.UndeclareHandlerCommandCompiler`  |             |
 
 
 
 ### AbstractSlaveCommandCompiler
-| 组件类名                                               | 说明 |
-| ------------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.BreakCommandCompiler`    |      |
-| `cn.org.expect.script.command.ContinueCommandCompiler` |      |
-| `cn.org.expect.script.command.ReturnCommandCompiler`   |      |
+| Component Class Name                                   | Description |
+| ------------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.BreakCommandCompiler`    |             |
+| `cn.org.expect.script.command.ContinueCommandCompiler` |             |
+| `cn.org.expect.script.command.ReturnCommandCompiler`   |             |
 
 
 
 ### AbstractTraceCommandCompiler
-| 组件类名                                                         | 说明 |
-| ---------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.BreakCommandCompiler`              |      |
-| `cn.org.expect.script.command.ByeCommandCompiler`                |      |
-| `cn.org.expect.script.command.CallProcudureCommandCompiler`      |      |
-| `cn.org.expect.script.command.CatCommandCompiler`                |      |
-| `cn.org.expect.script.command.CdCommandCompiler`                 |      |
-| `cn.org.expect.script.command.CommitCommandCompiler`             |      |
-| `cn.org.expect.script.command.ContinueCommandCompiler`           |      |
-| `cn.org.expect.script.command.CpCommandCompiler`                 |      |
-| `cn.org.expect.script.command.DBConnectCommandCompiler`          |      |
-| `cn.org.expect.script.command.DBExportCommandCompiler`           |      |
-| `cn.org.expect.script.command.DBLoadCommandCompiler`             |      |
-| `cn.org.expect.script.command.DDLCommandCompiler`                |      |
-| `cn.org.expect.script.command.DaemonCommandCompiler`             |      |
-| `cn.org.expect.script.command.DateCommandCompiler`               |      |
-| `cn.org.expect.script.command.DefaultCommandCompiler`            |      |
-| `cn.org.expect.script.command.DfCommandCompiler`                 |      |
-| `cn.org.expect.script.command.Dos2UnixCommandCompiler`           |      |
-| `cn.org.expect.script.command.EchoCommandCompiler`               |      |
-| `cn.org.expect.script.command.EmailSendCommandCompiler`          |      |
-| `cn.org.expect.script.command.ErrorCommandCompiler`              |      |
-| `cn.org.expect.script.command.ExecuteFileCommandCompiler`        |      |
-| `cn.org.expect.script.command.ExecuteFunctionCommandCompiler`    |      |
-| `cn.org.expect.script.command.ExecuteOSCommandCompiler`          |      |
-| `cn.org.expect.script.command.ExistsCommandCompiler`             |      |
-| `cn.org.expect.script.command.ExitCommandCompiler`               |      |
-| `cn.org.expect.script.command.FindCommandCompiler`               |      |
-| `cn.org.expect.script.command.FtpCommandCompiler`                |      |
-| `cn.org.expect.script.command.GetCommandCompiler`                |      |
-| `cn.org.expect.script.command.GrepCommandCompiler`               |      |
-| `cn.org.expect.script.command.GunzipCommandCompiler`             |      |
-| `cn.org.expect.script.command.GzipCommandCompiler`               |      |
-| `cn.org.expect.script.command.HandlerCommandCompiler`            |      |
-| `cn.org.expect.script.command.HeadCommandCompiler`               |      |
-| `cn.org.expect.script.command.HelpCommandCompiler`               |      |
-| `cn.org.expect.script.command.IncrementCommandCompiler`          |      |
-| `cn.org.expect.script.command.IsDirectoryCommandCompiler`        |      |
-| `cn.org.expect.script.command.IsFileCommandCompiler`             |      |
-| `cn.org.expect.script.command.JavaCommandCompiler`               |      |
-| `cn.org.expect.script.command.JumpCommandCompiler`               |      |
-| `cn.org.expect.script.command.LengthCommandCompiler`             |      |
-| `cn.org.expect.script.command.LsCommandCompiler`                 |      |
-| `cn.org.expect.script.command.MD5CommandCompiler`                |      |
-| `cn.org.expect.script.command.MkdirCommandCompiler`              |      |
-| `cn.org.expect.script.command.PSCommandCompiler`                 |      |
-| `cn.org.expect.script.command.ProgressCommandCompiler`           |      |
-| `cn.org.expect.script.command.PutCommandCompiler`                |      |
-| `cn.org.expect.script.command.PwdCommandCompiler`                |      |
-| `cn.org.expect.script.command.QuietCommandCompiler`              |      |
-| `cn.org.expect.script.command.ReturnCommandCompiler`             |      |
-| `cn.org.expect.script.command.RmCommandCompiler`                 |      |
-| `cn.org.expect.script.command.RollbackCommandCompiler`           |      |
-| `cn.org.expect.script.command.SSH2CommandCompiler`               |      |
-| `cn.org.expect.script.command.SftpCommandCompiler`               |      |
-| `cn.org.expect.script.command.SleepCommandCompiler`              |      |
-| `cn.org.expect.script.command.SortTableFileCommandCompiler`      |      |
-| `cn.org.expect.script.command.StacktraceCommandCompiler`         |      |
-| `cn.org.expect.script.command.StepCommandCompiler`               |      |
-| `cn.org.expect.script.command.TailCommandCompiler`               |      |
-| `cn.org.expect.script.command.TarCommandCompiler`                |      |
-| `cn.org.expect.script.command.TerminateCommandCompiler`          |      |
-| `cn.org.expect.script.command.UUIDCommandCompiler`               |      |
-| `cn.org.expect.script.command.UndeclareCursorCommandCompiler`    |      |
-| `cn.org.expect.script.command.UndeclareSSHCommandCompiler`       |      |
-| `cn.org.expect.script.command.UndeclareStatementCommandCompiler` |      |
-| `cn.org.expect.script.command.UnrarCommandCompiler`              |      |
-| `cn.org.expect.script.command.UnzipCommandCompiler`              |      |
-| `cn.org.expect.script.command.VariableMethodCommandCompiler`     |      |
-| `cn.org.expect.script.command.WaitCommandCompiler`               |      |
-| `cn.org.expect.script.command.WcCommandCompiler`                 |      |
-| `cn.org.expect.script.command.ZipCommandCompiler`                |      |
+| Component Class Name                                             | Description |
+| ---------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.BreakCommandCompiler`              |             |
+| `cn.org.expect.script.command.ByeCommandCompiler`                |             |
+| `cn.org.expect.script.command.CallProcudureCommandCompiler`      |             |
+| `cn.org.expect.script.command.CatCommandCompiler`                |             |
+| `cn.org.expect.script.command.CdCommandCompiler`                 |             |
+| `cn.org.expect.script.command.CommitCommandCompiler`             |             |
+| `cn.org.expect.script.command.ContinueCommandCompiler`           |             |
+| `cn.org.expect.script.command.CpCommandCompiler`                 |             |
+| `cn.org.expect.script.command.DBConnectCommandCompiler`          |             |
+| `cn.org.expect.script.command.DBExportCommandCompiler`           |             |
+| `cn.org.expect.script.command.DBGetCfgForCommandCompiler`        |             |
+| `cn.org.expect.script.command.DBLoadCommandCompiler`             |             |
+| `cn.org.expect.script.command.DDLCommandCompiler`                |             |
+| `cn.org.expect.script.command.DaemonCommandCompiler`             |             |
+| `cn.org.expect.script.command.DateCommandCompiler`               |             |
+| `cn.org.expect.script.command.DefaultCommandCompiler`            |             |
+| `cn.org.expect.script.command.DfCommandCompiler`                 |             |
+| `cn.org.expect.script.command.Dos2UnixCommandCompiler`           |             |
+| `cn.org.expect.script.command.EchoCommandCompiler`               |             |
+| `cn.org.expect.script.command.EmailSendCommandCompiler`          |             |
+| `cn.org.expect.script.command.ErrorCommandCompiler`              |             |
+| `cn.org.expect.script.command.ExecuteFileCommandCompiler`        |             |
+| `cn.org.expect.script.command.ExecuteFunctionCommandCompiler`    |             |
+| `cn.org.expect.script.command.ExistsCommandCompiler`             |             |
+| `cn.org.expect.script.command.ExitCommandCompiler`               |             |
+| `cn.org.expect.script.command.FindCommandCompiler`               |             |
+| `cn.org.expect.script.command.FtpCommandCompiler`                |             |
+| `cn.org.expect.script.command.GetCommandCompiler`                |             |
+| `cn.org.expect.script.command.GrepCommandCompiler`               |             |
+| `cn.org.expect.script.command.GunzipCommandCompiler`             |             |
+| `cn.org.expect.script.command.GzipCommandCompiler`               |             |
+| `cn.org.expect.script.command.HandlerCommandCompiler`            |             |
+| `cn.org.expect.script.command.HeadCommandCompiler`               |             |
+| `cn.org.expect.script.command.HelpCommandCompiler`               |             |
+| `cn.org.expect.script.command.IncrementCommandCompiler`          |             |
+| `cn.org.expect.script.command.IsDirectoryCommandCompiler`        |             |
+| `cn.org.expect.script.command.IsFileCommandCompiler`             |             |
+| `cn.org.expect.script.command.JavaCommandCompiler`               |             |
+| `cn.org.expect.script.command.JumpCommandCompiler`               |             |
+| `cn.org.expect.script.command.LengthCommandCompiler`             |             |
+| `cn.org.expect.script.command.LsCommandCompiler`                 |             |
+| `cn.org.expect.script.command.MD5CommandCompiler`                |             |
+| `cn.org.expect.script.command.MkdirCommandCompiler`              |             |
+| `cn.org.expect.script.command.PSCommandCompiler`                 |             |
+| `cn.org.expect.script.command.PassiveCommandCompiler`            |             |
+| `cn.org.expect.script.command.ProgressCommandCompiler`           |             |
+| `cn.org.expect.script.command.PutCommandCompiler`                |             |
+| `cn.org.expect.script.command.PwdCommandCompiler`                |             |
+| `cn.org.expect.script.command.QuietCommandCompiler`              |             |
+| `cn.org.expect.script.command.ReturnCommandCompiler`             |             |
+| `cn.org.expect.script.command.RmCommandCompiler`                 |             |
+| `cn.org.expect.script.command.RollbackCommandCompiler`           |             |
+| `cn.org.expect.script.command.SSH2CommandCompiler`               |             |
+| `cn.org.expect.script.command.SftpCommandCompiler`               |             |
+| `cn.org.expect.script.command.SleepCommandCompiler`              |             |
+| `cn.org.expect.script.command.SortTableFileCommandCompiler`      |             |
+| `cn.org.expect.script.command.StacktraceCommandCompiler`         |             |
+| `cn.org.expect.script.command.StepCommandCompiler`               |             |
+| `cn.org.expect.script.command.TailCommandCompiler`               |             |
+| `cn.org.expect.script.command.TarCommandCompiler`                |             |
+| `cn.org.expect.script.command.TerminateCommandCompiler`          |             |
+| `cn.org.expect.script.command.UUIDCommandCompiler`               |             |
+| `cn.org.expect.script.command.UndeclareCursorCommandCompiler`    |             |
+| `cn.org.expect.script.command.UndeclareSSHCommandCompiler`       |             |
+| `cn.org.expect.script.command.UndeclareStatementCommandCompiler` |             |
+| `cn.org.expect.script.command.UnrarCommandCompiler`              |             |
+| `cn.org.expect.script.command.UnzipCommandCompiler`              |             |
+| `cn.org.expect.script.command.VariableMethodCommandCompiler`     |             |
+| `cn.org.expect.script.command.WaitCommandCompiler`               |             |
+| `cn.org.expect.script.command.WcCommandCompiler`                 |             |
+| `cn.org.expect.script.command.WgetCommandCompiler`               |             |
+| `cn.org.expect.script.command.ZipCommandCompiler`                |             |
 
 
 
 ### Analysis
-| 组件类名                                       | 说明           |
+| Component Class Name                           | Description    |
 | ---------------------------------------------- | -------------- |
 | `cn.org.expect.expression.DefaultAnalysis`     | 脚本语句分析器 |
 | `cn.org.expect.script.compiler.ScriptAnalysis` |                |
@@ -5757,29 +6132,29 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### ArrayExtension
-| 组件类名                                     | 说明 |
-| -------------------------------------------- | ---- |
-| `cn.org.expect.script.method.ArrayExtension` |      |
+| Component Class Name                         | Description |
+| -------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.ArrayExtension` |             |
 
 
 
 ### AutoCloseable
-| 组件类名                                                  | 说明                                                                                                                                                                                                                                                         |
+| Component Class Name                                      | Description                                                                                                                                                                                                                                                  |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `cn.org.expect.concurrent.EasyThreadSource`               | 线程池                                                                                                                                                                                                                                                       |
 | `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
 | `cn.org.expect.database.export.inernal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
-| `cn.org.expect.zip.GzipCompress`                          |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.compress.GzipCompress`                     |                                                                                                                                                                                                                                                              |
 | `cn.org.expect.database.export.inernal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
-| `cn.org.expect.zip.RarCompress`                           |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.compress.RarCompress`                      |                                                                                                                                                                                                                                                              |
 | `cn.org.expect.database.export.inernal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
-| `cn.org.expect.zip.TarCompress`                           |                                                                                                                                                                                                                                                              |
-| `cn.org.expect.zip.ZipCompress`                           |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.compress.TarCompress`                      |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.compress.ZipCompress`                      |                                                                                                                                                                                                                                                              |
 
 
 
 ### BaseAnalysis
-| 组件类名                                       | 说明           |
+| Component Class Name                           | Description    |
 | ---------------------------------------------- | -------------- |
 | `cn.org.expect.expression.DefaultAnalysis`     | 脚本语句分析器 |
 | `cn.org.expect.script.compiler.ScriptAnalysis` |                |
@@ -5787,56 +6162,56 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### BreakCommandCompiler
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.BreakCommandCompiler` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.BreakCommandCompiler` |             |
 
 
 
 ### ByeCommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ByeCommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ByeCommandCompiler` |             |
 
 
 
 ### CallProcudureCommandCompiler
-| 组件类名                                                    | 说明 |
-| ----------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.CallProcudureCommandCompiler` |      |
+| Component Class Name                                        | Description |
+| ----------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.CallProcudureCommandCompiler` |             |
 
 
 
 ### CallbackCommandCompiler
-| 组件类名                                               | 说明 |
-| ------------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.CallbackCommandCompiler` |      |
+| Component Class Name                                   | Description |
+| ------------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.CallbackCommandCompiler` |             |
 
 
 
 ### CatCommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.CatCommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.CatCommandCompiler` |             |
 
 
 
 ### CdCommandCompiler
-| 组件类名                                         | 说明 |
-| ------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.CdCommandCompiler` |      |
+| Component Class Name                             | Description |
+| ------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.CdCommandCompiler` |             |
 
 
 
 ### CharAtMethod
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.method.string.CharAtMethod` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.string.CharAtMethod` |             |
 
 
 
 ### CharsetName
-| 组件类名                                   | 说明                                                                            |
+| Component Class Name                       | Description                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------- |
 | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
 | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
@@ -5850,14 +6225,14 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### ClassExtension
-| 组件类名                                     | 说明 |
-| -------------------------------------------- | ---- |
-| `cn.org.expect.script.method.ClassExtension` |      |
+| Component Class Name                         | Description |
+| -------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.ClassExtension` |             |
 
 
 
 ### Cloneable
-| 组件类名                                        | 说明                                                                            |
+| Component Class Name                            | Description                                                                     |
 | ----------------------------------------------- | ------------------------------------------------------------------------------- |
 | `cn.org.expect.io.CommonTextTableFile`          | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
 | `cn.org.expect.io.CsvFile`                      | CSV格式文件                                                                     |
@@ -5868,36 +6243,36 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### Closeable
-| 组件类名                                                  | 说明                                                                                                                                                                                                                                                         |
+| Component Class Name                                      | Description                                                                                                                                                                                                                                                  |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `cn.org.expect.concurrent.EasyThreadSource`               | 线程池                                                                                                                                                                                                                                                       |
 | `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
 | `cn.org.expect.database.export.inernal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
-| `cn.org.expect.zip.GzipCompress`                          |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.compress.GzipCompress`                     |                                                                                                                                                                                                                                                              |
 | `cn.org.expect.database.export.inernal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
-| `cn.org.expect.zip.RarCompress`                           |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.compress.RarCompress`                      |                                                                                                                                                                                                                                                              |
 | `cn.org.expect.database.export.inernal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
-| `cn.org.expect.zip.TarCompress`                           |                                                                                                                                                                                                                                                              |
-| `cn.org.expect.zip.ZipCompress`                           |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.compress.TarCompress`                      |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.compress.ZipCompress`                      |                                                                                                                                                                                                                                                              |
 
 
 
 ### CollectionExtension
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.method.CollectionExtension` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.CollectionExtension` |             |
 
 
 
 ### CommitCommandCompiler
-| 组件类名                                             | 说明 |
-| ---------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.CommitCommandCompiler` |      |
+| Component Class Name                                 | Description |
+| ---------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.CommitCommandCompiler` |             |
 
 
 
 ### CommonTextTableFile
-| 组件类名                                   | 说明                                                                            |
+| Component Class Name                       | Description                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------- |
 | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
 | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
@@ -5906,7 +6281,7 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### Comparator
-| 组件类名                                   | 说明                       |
+| Component Class Name                       | Description                |
 | ------------------------------------------ | -------------------------- |
 | `cn.org.expect.util.StrAsIntComparator`    | 字符串作为整数的比较规则   |
 | `cn.org.expect.util.StrAsNumberComparator` | 字符串作为浮点数的比较规则 |
@@ -5915,196 +6290,211 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### CompressFactory
-| 组件类名                            | 说明 |
-| ----------------------------------- | ---- |
-| `cn.org.expect.zip.CompressFactory` |      |
+| Component Class Name                     | Description |
+| ---------------------------------------- | ----------- |
+| `cn.org.expect.compress.CompressFactory` |             |
 
 
 
 ### ContainerCommandCompiler
-| 组件类名                                                | 说明 |
-| ------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ContainerCommandCompiler` |      |
+| Component Class Name                                    | Description |
+| ------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ContainerCommandCompiler` |             |
 
 
 
 ### ContinueCommandCompiler
-| 组件类名                                               | 说明 |
-| ------------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.ContinueCommandCompiler` |      |
+| Component Class Name                                   | Description |
+| ------------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.ContinueCommandCompiler` |             |
 
 
 
 ### CpCommandCompiler
-| 组件类名                                         | 说明 |
-| ------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.CpCommandCompiler` |      |
+| Component Class Name                             | Description |
+| ------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.CpCommandCompiler` |             |
 
 
 
 ### CsvFile
-| 组件类名                   | 说明        |
+| Component Class Name       | Description |
 | -------------------------- | ----------- |
 | `cn.org.expect.io.CsvFile` | CSV格式文件 |
 
 
 
 ### CursorCommandCompiler
-| 组件类名                                             | 说明 |
-| ---------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.CursorCommandCompiler` |      |
+| Component Class Name                                 | Description |
+| ---------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.CursorCommandCompiler` |             |
 
 
 
 ### DB2Command
-| 组件类名                                     | 说明 |
-| -------------------------------------------- | ---- |
-| `cn.org.expect.database.db2.DB2LinuxCommand` |      |
+| Component Class Name                         | Description |
+| -------------------------------------------- | ----------- |
+| `cn.org.expect.database.db2.DB2LinuxCommand` |             |
 
 
 
 ### DB2Dialect
-| 组件类名                                | 说明 |
-| --------------------------------------- | ---- |
-| `cn.org.expect.database.db2.DB2Dialect` |      |
+| Component Class Name                        | Description |
+| ------------------------------------------- | ----------- |
+| `cn.org.expect.database.db2.DB2Dialect`     |             |
+| `cn.org.expect.database.db2.DB2Dialect11_5` | DB2 11.5    |
+
+
+
+### DB2Dialect11_5
+| Component Class Name                        | Description |
+| ------------------------------------------- | ----------- |
+| `cn.org.expect.database.db2.DB2Dialect11_5` | DB2 11.5    |
 
 
 
 ### DB2ExportFile
-| 组件类名                                   | 说明                                                                            |
+| Component Class Name                       | Description                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------- |
 | `cn.org.expect.database.db2.DB2ExportFile` | DB2数据库export命令导出文件格式, 逗号分隔，双引号转义字符，双引号是字符串限定符 |
 
 
 
 ### DB2LinuxCommand
-| 组件类名                                     | 说明 |
-| -------------------------------------------- | ---- |
-| `cn.org.expect.database.db2.DB2LinuxCommand` |      |
+| Component Class Name                         | Description |
+| -------------------------------------------- | ----------- |
+| `cn.org.expect.database.db2.DB2LinuxCommand` |             |
 
 
 
 ### DBConnectCommandCompiler
-| 组件类名                                                | 说明 |
-| ------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.DBConnectCommandCompiler` |      |
+| Component Class Name                                    | Description |
+| ------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DBConnectCommandCompiler` |             |
 
 
 
 ### DBExportCommandCompiler
-| 组件类名                                               | 说明 |
-| ------------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.DBExportCommandCompiler` |      |
+| Component Class Name                                   | Description |
+| ------------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.DBExportCommandCompiler` |             |
+
+
+
+### DBGetCfgForCommandCompiler
+| Component Class Name                                      | Description |
+| --------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DBGetCfgForCommandCompiler` |             |
 
 
 
 ### DBLoadCommandCompiler
-| 组件类名                                             | 说明 |
-| ---------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.DBLoadCommandCompiler` |      |
+| Component Class Name                                 | Description |
+| ---------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DBLoadCommandCompiler` |             |
 
 
 
 ### DDLCommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.DDLCommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DDLCommandCompiler` |             |
 
 
 
 ### DaemonCommandCompiler
-| 组件类名                                             | 说明 |
-| ---------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.DaemonCommandCompiler` |      |
+| Component Class Name                                 | Description |
+| ---------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DaemonCommandCompiler` |             |
 
 
 
 ### DatabaseConfigurationContainer
-| 组件类名                                                                 | 说明 |
-| ------------------------------------------------------------------------ | ---- |
-| `cn.org.expect.database.internal.StandardDatabaseConfigurationContainer` |      |
+| Component Class Name                                                     | Description |
+| ------------------------------------------------------------------------ | ----------- |
+| `cn.org.expect.database.internal.StandardDatabaseConfigurationContainer` |             |
 
 
 
 ### DatabaseDialectFactory
-| 组件类名                                                 | 说明 |
-| -------------------------------------------------------- | ---- |
-| `cn.org.expect.database.internal.DatabaseDialectFactory` |      |
+| Component Class Name                                     | Description |
+| -------------------------------------------------------- | ----------- |
+| `cn.org.expect.database.internal.DatabaseDialectFactory` |             |
 
 
 
 ### DateCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.DateCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DateCommandCompiler` |             |
 
 
 
 ### DateExtension
-| 组件类名                                    | 说明 |
-| ------------------------------------------- | ---- |
-| `cn.org.expect.script.method.DateExtension` |      |
+| Component Class Name                        | Description |
+| ------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.DateExtension` |             |
 
 
 
 ### DebugCommandCompiler
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.DebugCommandCompiler` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DebugCommandCompiler` |             |
 
 
 
 ### DeclareCatalogCommandCompiler
-| 组件类名                                                     | 说明 |
-| ------------------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.DeclareCatalogCommandCompiler` |      |
+| Component Class Name                                         | Description |
+| ------------------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.DeclareCatalogCommandCompiler` |             |
 
 
 
 ### DeclareCursorCommandCompiler
-| 组件类名                                                    | 说明 |
-| ----------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.DeclareCursorCommandCompiler` |      |
+| Component Class Name                                        | Description |
+| ----------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DeclareCursorCommandCompiler` |             |
 
 
 
 ### DeclareHandlerCommandCompiler
-| 组件类名                                                     | 说明 |
-| ------------------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.DeclareHandlerCommandCompiler` |      |
+| Component Class Name                                         | Description |
+| ------------------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.DeclareHandlerCommandCompiler` |             |
 
 
 
 ### DeclareProgressCommandCompiler
-| 组件类名                                                      | 说明 |
-| ------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.DeclareProgressCommandCompiler` |      |
+| Component Class Name                                          | Description |
+| ------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DeclareProgressCommandCompiler` |             |
 
 
 
 ### DeclareSSHClientCommandCompiler
-| 组件类名                                                       | 说明 |
-| -------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.DeclareSSHClientCommandCompiler` |      |
+| Component Class Name                                           | Description |
+| -------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DeclareSSHClientCommandCompiler` |             |
 
 
 
 ### DeclareSSHTunnelCommandCompiler
-| 组件类名                                                       | 说明 |
-| -------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.DeclareSSHTunnelCommandCompiler` |      |
+| Component Class Name                                           | Description |
+| -------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DeclareSSHTunnelCommandCompiler` |             |
 
 
 
 ### DeclareStatementCommandCompiler
-| 组件类名                                                       | 说明 |
-| -------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.DeclareStatementCommandCompiler` |      |
+| Component Class Name                                           | Description |
+| -------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DeclareStatementCommandCompiler` |             |
 
 
 
 ### DefaultAnalysis
-| 组件类名                                       | 说明           |
+| Component Class Name                           | Description    |
 | ---------------------------------------------- | -------------- |
 | `cn.org.expect.expression.DefaultAnalysis`     | 脚本语句分析器 |
 | `cn.org.expect.script.compiler.ScriptAnalysis` |                |
@@ -6112,105 +6502,106 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### DefaultCommandCompiler
-| 组件类名                                              | 说明 |
-| ----------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.DefaultCommandCompiler` |      |
+| Component Class Name                                  | Description |
+| ----------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DefaultCommandCompiler` |             |
 
 
 
 ### DefaultCommandSupported
-| 组件类名                                                | 说明 |
-| ------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ExecuteOSCommandCompiler` |      |
-| `cn.org.expect.script.command.QuietCommandCompiler`     |      |
-| `cn.org.expect.script.command.SQLCommandCompiler`       |      |
+| Component Class Name                                    | Description |
+| ------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ExecuteOSCommandCompiler` |             |
+| `cn.org.expect.script.command.QuietCommandCompiler`     |             |
+| `cn.org.expect.script.command.SQLCommandCompiler`       |             |
 
 
 
 ### DefaultEasyContext
-| 组件类名                               | 说明 |
-| -------------------------------------- | ---- |
-| `cn.org.expect.ioc.DefaultEasyContext` |      |
+| Component Class Name                   | Description |
+| -------------------------------------- | ----------- |
+| `cn.org.expect.ioc.DefaultEasyContext` |             |
 
 
 
 ### DfCommandCompiler
-| 组件类名                                         | 说明 |
-| ------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.DfCommandCompiler` |      |
+| Component Class Name                             | Description |
+| ------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.DfCommandCompiler` |             |
 
 
 
 ### Dos2UnixCommandCompiler
-| 组件类名                                               | 说明 |
-| ------------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.Dos2UnixCommandCompiler` |      |
+| Component Class Name                                   | Description |
+| ------------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.Dos2UnixCommandCompiler` |             |
 
 
 
 ### EasyBeanFactory
-| 组件类名                                                 | 说明 |
-| -------------------------------------------------------- | ---- |
-| `cn.org.expect.zip.CompressFactory`                      |      |
-| `cn.org.expect.database.internal.DatabaseDialectFactory` |      |
-| `cn.org.expect.database.export.ExtractWriterFactory`     |      |
-| `cn.org.expect.increment.IncrementReplaceFactory`        |      |
-| `cn.org.expect.os.OSFactory`                             |      |
-| `cn.org.expect.database.export.inernal.ReaderFactory`    |      |
-| `cn.org.expect.io.TableLineRulerFactory`                 |      |
-| `cn.org.expect.io.TextTableFileFactory`                  |      |
-| `cn.org.expect.ioc.impl.ThreadSourceFactory`             |      |
+| Component Class Name                                     | Description |
+| -------------------------------------------------------- | ----------- |
+| `cn.org.expect.compress.CompressFactory`                 |             |
+| `cn.org.expect.database.internal.DatabaseDialectFactory` |             |
+| `cn.org.expect.database.export.ExtractWriterFactory`     |             |
+| `cn.org.expect.increment.IncrementReplaceFactory`        |             |
+| `cn.org.expect.os.OSFactory`                             |             |
+| `cn.org.expect.database.export.inernal.ReaderFactory`    |             |
+| `cn.org.expect.io.TableLineRulerFactory`                 |             |
+| `cn.org.expect.io.TextTableFileFactory`                  |             |
+| `cn.org.expect.ioc.impl.ThreadSourceFactory`             |             |
 
 
 
 ### EasyBeanFactoryRepository
-| 组件类名                               | 说明 |
-| -------------------------------------- | ---- |
-| `cn.org.expect.ioc.DefaultEasyContext` |      |
+| Component Class Name                   | Description |
+| -------------------------------------- | ----------- |
+| `cn.org.expect.ioc.DefaultEasyContext` |             |
 
 
 
 ### EasyBeanInjector
-| 组件类名                               | 说明 |
-| -------------------------------------- | ---- |
-| `cn.org.expect.ioc.DefaultEasyContext` |      |
+| Component Class Name                   | Description |
+| -------------------------------------- | ----------- |
+| `cn.org.expect.ioc.DefaultEasyContext` |             |
 
 
 
 ### EasyBeanRepository
-| 组件类名                               | 说明 |
-| -------------------------------------- | ---- |
-| `cn.org.expect.ioc.DefaultEasyContext` |      |
+| Component Class Name                   | Description |
+| -------------------------------------- | ----------- |
+| `cn.org.expect.ioc.DefaultEasyContext` |             |
 
 
 
 ### EasyContainer
-| 组件类名                               | 说明 |
-| -------------------------------------- | ---- |
-| `cn.org.expect.ioc.DefaultEasyContext` |      |
+| Component Class Name                   | Description |
+| -------------------------------------- | ----------- |
+| `cn.org.expect.ioc.DefaultEasyContext` |             |
 
 
 
 ### EasyContainerRepository
-| 组件类名                               | 说明 |
-| -------------------------------------- | ---- |
-| `cn.org.expect.ioc.DefaultEasyContext` |      |
+| Component Class Name                   | Description |
+| -------------------------------------- | ----------- |
+| `cn.org.expect.ioc.DefaultEasyContext` |             |
 
 
 
 ### EasyContext
-| 组件类名                               | 说明 |
-| -------------------------------------- | ---- |
-| `cn.org.expect.ioc.DefaultEasyContext` |      |
+| Component Class Name                   | Description |
+| -------------------------------------- | ----------- |
+| `cn.org.expect.ioc.DefaultEasyContext` |             |
 
 
 
 ### EasyContextAware
-| 组件类名                                                  | 说明                                                                                             |
+| Component Class Name                                      | Description                                                                                      |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | `cn.org.expect.io.CommonTextTableFile`                    | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                                   |
 | `cn.org.expect.io.CsvFile`                                | CSV格式文件                                                                                      |
 | `cn.org.expect.database.db2.DB2Dialect`                   |                                                                                                  |
+| `cn.org.expect.database.db2.DB2Dialect11_5`               | DB2 11.5                                                                                         |
 | `cn.org.expect.database.db2.DB2ExportFile`                | DB2数据库export命令导出文件格式, 逗号分隔，双引号转义字符，双引号是字符串限定符                  |
 | `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件                                                                               |
 | `cn.org.expect.os.ftp.FtpCommand`                         | FTP协议的实现类                                                                                  |
@@ -6222,49 +6613,49 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### EasyPropertyProvider
-| 组件类名                               | 说明 |
-| -------------------------------------- | ---- |
-| `cn.org.expect.ioc.DefaultEasyContext` |      |
+| Component Class Name                   | Description |
+| -------------------------------------- | ----------- |
+| `cn.org.expect.ioc.DefaultEasyContext` |             |
 
 
 
 ### EasyThreadSource
-| 组件类名                                    | 说明   |
-| ------------------------------------------- | ------ |
-| `cn.org.expect.concurrent.EasyThreadSource` | 线程池 |
+| Component Class Name                        | Description |
+| ------------------------------------------- | ----------- |
+| `cn.org.expect.concurrent.EasyThreadSource` | 线程池      |
 
 
 
 ### EchoCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.EchoCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.EchoCommandCompiler` |             |
 
 
 
 ### ElementMethod
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.method.array.ElementMethod` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.array.ElementMethod` |             |
 
 
 
 ### EmailSendCommandCompiler
-| 组件类名                                                | 说明 |
-| ------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.EmailSendCommandCompiler` |      |
+| Component Class Name                                    | Description |
+| ------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.EmailSendCommandCompiler` |             |
 
 
 
 ### ErrorCommandCompiler
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ErrorCommandCompiler` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ErrorCommandCompiler` |             |
 
 
 
 ### Escape
-| 组件类名                                       | 说明                                                                            |
+| Component Class Name                           | Description                                                                     |
 | ---------------------------------------------- | ------------------------------------------------------------------------------- |
 | `cn.org.expect.io.CommonTextTableFile`         | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
 | `cn.org.expect.io.CsvFile`                     | CSV格式文件                                                                     |
@@ -6274,92 +6665,92 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### ExecuteFileCommandCompiler
-| 组件类名                                                  | 说明 |
-| --------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.DaemonCommandCompiler`      |      |
-| `cn.org.expect.script.command.ExecuteFileCommandCompiler` |      |
+| Component Class Name                                      | Description |
+| --------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.DaemonCommandCompiler`      |             |
+| `cn.org.expect.script.command.ExecuteFileCommandCompiler` |             |
 
 
 
 ### ExecuteFunctionCommandCompiler
-| 组件类名                                                      | 说明 |
-| ------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ExecuteFunctionCommandCompiler` |      |
+| Component Class Name                                          | Description |
+| ------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ExecuteFunctionCommandCompiler` |             |
 
 
 
 ### ExecuteOSCommandCompiler
-| 组件类名                                                | 说明 |
-| ------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ExecuteOSCommandCompiler` |      |
+| Component Class Name                                    | Description |
+| ------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ExecuteOSCommandCompiler` |             |
 
 
 
 ### ExistsCommandCompiler
-| 组件类名                                             | 说明 |
-| ---------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ExistsCommandCompiler` |      |
+| Component Class Name                                 | Description |
+| ---------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ExistsCommandCompiler` |             |
 
 
 
 ### ExitCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ExitCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ExitCommandCompiler` |             |
 
 
 
 ### ExportCommandCompiler
-| 组件类名                                             | 说明 |
-| ---------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ExportCommandCompiler` |      |
+| Component Class Name                                 | Description |
+| ---------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ExportCommandCompiler` |             |
 
 
 
 ### ExtractFileWriter
-| 组件类名                                                  | 说明               |
+| Component Class Name                                      | Description        |
 | --------------------------------------------------------- | ------------------ |
 | `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件 |
 
 
 
 ### ExtractWriterFactory
-| 组件类名                                             | 说明 |
-| ---------------------------------------------------- | ---- |
-| `cn.org.expect.database.export.ExtractWriterFactory` |      |
+| Component Class Name                                 | Description |
+| ---------------------------------------------------- | ----------- |
+| `cn.org.expect.database.export.ExtractWriterFactory` |             |
 
 
 
 ### FetchCursorCommandCompiler
-| 组件类名                                                  | 说明 |
-| --------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.FetchCursorCommandCompiler` |      |
+| Component Class Name                                      | Description |
+| --------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.FetchCursorCommandCompiler` |             |
 
 
 
 ### FetchStatementCommandCompiler
-| 组件类名                                                     | 说明 |
-| ------------------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.FetchStatementCommandCompiler` |      |
+| Component Class Name                                         | Description |
+| ------------------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.FetchStatementCommandCompiler` |             |
 
 
 
 ### FileExtension
-| 组件类名                                    | 说明 |
-| ------------------------------------------- | ---- |
-| `cn.org.expect.script.method.FileExtension` |      |
+| Component Class Name                        | Description |
+| ------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.FileExtension` |             |
 
 
 
 ### FindCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.FindCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.FindCommandCompiler` |             |
 
 
 
 ### Flushable
-| 组件类名                                                  | 说明                                                                                                                                                                                                                                                         |
+| Component Class Name                                      | Description                                                                                                                                                                                                                                                  |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
 | `cn.org.expect.database.export.inernal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
@@ -6369,217 +6760,231 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### ForCommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ForCommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ForCommandCompiler` |             |
 
 
 
 ### ForNameMethod
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.method.clazz.ForNameMethod` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.clazz.ForNameMethod` |             |
 
 
 
 ### ForNameStrMethod
-| 组件类名                                             | 说明 |
-| ---------------------------------------------------- | ---- |
-| `cn.org.expect.script.method.clazz.ForNameStrMethod` |      |
+| Component Class Name                                 | Description |
+| ---------------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.clazz.ForNameStrMethod` |             |
 
 
 
 ### Format
-| 组件类名                                        | 说明 |
-| ----------------------------------------------- | ---- |
-| `cn.org.expect.script.internal.ScriptFormatter` |      |
+| Component Class Name                            | Description |
+| ----------------------------------------------- | ----------- |
+| `cn.org.expect.script.internal.ScriptFormatter` |             |
 
 
 
 ### FtpCommand
-| 组件类名                          | 说明            |
+| Component Class Name              | Description     |
 | --------------------------------- | --------------- |
 | `cn.org.expect.os.ftp.FtpCommand` | FTP协议的实现类 |
 
 
 
 ### FtpCommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.FtpCommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.FtpCommandCompiler` |             |
 
 
 
 ### FtpFileWriter
-| 组件类名                                              | 说明                                                                                           |
+| Component Class Name                                  | Description                                                                                    |
 | ----------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
 | `cn.org.expect.database.export.inernal.FtpFileWriter` | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径 |
 
 
 
 ### FunctionCommandCompiler
-| 组件类名                                               | 说明 |
-| ------------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.FunctionCommandCompiler` |      |
+| Component Class Name                                   | Description |
+| ------------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.FunctionCommandCompiler` |             |
 
 
 
 ### GetCommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.GetCommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.GetCommandCompiler` |             |
+
+
+
+### GetPropertyStrMethod
+| Component Class Name                                     | Description |
+| -------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.clazz.GetPropertyStrMethod` |             |
 
 
 
 ### GrepCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.GrepCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.GrepCommandCompiler` |             |
 
 
 
 ### GunzipCommandCompiler
-| 组件类名                                             | 说明 |
-| ---------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.GunzipCommandCompiler` |      |
+| Component Class Name                                 | Description |
+| ---------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.GunzipCommandCompiler` |             |
 
 
 
 ### GzipCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.GzipCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.GzipCommandCompiler` |             |
 
 
 
 ### GzipCompress
-| 组件类名                         | 说明 |
-| -------------------------------- | ---- |
-| `cn.org.expect.zip.GzipCompress` |      |
+| Component Class Name                  | Description |
+| ------------------------------------- | ----------- |
+| `cn.org.expect.compress.GzipCompress` |             |
 
 
 
 ### H2Dialect
-| 组件类名                              | 说明 |
-| ------------------------------------- | ---- |
-| `cn.org.expect.database.h2.H2Dialect` |      |
+| Component Class Name                  | Description |
+| ------------------------------------- | ----------- |
+| `cn.org.expect.database.h2.H2Dialect` |             |
 
 
 
 ### HandlerCommandCompiler
-| 组件类名                                              | 说明 |
-| ----------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.HandlerCommandCompiler` |      |
+| Component Class Name                                  | Description |
+| ----------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.HandlerCommandCompiler` |             |
 
 
 
 ### HeadCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.HeadCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.HeadCommandCompiler` |             |
 
 
 
 ### HelpCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.HelpCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.HelpCommandCompiler` |             |
 
 
 
 ### HelpMethod
-| 组件类名                                        | 说明 |
-| ----------------------------------------------- | ---- |
-| `cn.org.expect.script.method.object.HelpMethod` |      |
+| Component Class Name                            | Description |
+| ----------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.object.HelpMethod` |             |
+
+
+
+### HttpExtension
+| Component Class Name                        | Description |
+| ------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.HttpExtension` |             |
 
 
 
 ### HttpRequestWriter
-| 组件类名                                                  | 说明                                                                                                                                                                                                                                                         |
+| Component Class Name                                      | Description                                                                                                                                                                                                                                                  |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `cn.org.expect.database.export.inernal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
 
 
 
 ### IfCommandCompiler
-| 组件类名                                         | 说明 |
-| ------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.IfCommandCompiler` |      |
+| Component Class Name                             | Description |
+| ------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.IfCommandCompiler` |             |
 
 
 
 ### IncrementCommandCompiler
-| 组件类名                                                | 说明 |
-| ------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.IncrementCommandCompiler` |      |
+| Component Class Name                                    | Description |
+| ------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.IncrementCommandCompiler` |             |
 
 
 
 ### IncrementReplaceFactory
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.increment.IncrementReplaceFactory` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.increment.IncrementReplaceFactory` |             |
 
 
 
 ### IndexOfMethod
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.method.array.IndexOfMethod` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.array.IndexOfMethod` |             |
 
 
 
 ### IndexOfStrIntMethod
-| 组件类名                                                | 说明 |
-| ------------------------------------------------------- | ---- |
-| `cn.org.expect.script.method.array.IndexOfStrIntMethod` |      |
+| Component Class Name                                    | Description |
+| ------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.array.IndexOfStrIntMethod` |             |
 
 
 
 ### IntMethod
-| 组件类名                                       | 说明 |
-| ---------------------------------------------- | ---- |
-| `cn.org.expect.script.method.object.IntMethod` |      |
+| Component Class Name                           | Description |
+| ---------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.object.IntMethod` |             |
 
 
 
 ### IsDirectoryCommandCompiler
-| 组件类名                                                  | 说明 |
-| --------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.IsDirectoryCommandCompiler` |      |
+| Component Class Name                                      | Description |
+| --------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.IsDirectoryCommandCompiler` |             |
 
 
 
 ### IsFileCommandCompiler
-| 组件类名                                             | 说明 |
-| ---------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.IsFileCommandCompiler` |      |
+| Component Class Name                                 | Description |
+| ---------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.IsFileCommandCompiler` |             |
 
 
 
 ### JavaCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.JavaCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.JavaCommandCompiler` |             |
 
 
 
 ### JumpCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.JumpCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.JumpCommandCompiler` |             |
 
 
 
 ### LengthCommandCompiler
-| 组件类名                                             | 说明 |
-| ---------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.LengthCommandCompiler` |      |
+| Component Class Name                                 | Description |
+| ---------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.LengthCommandCompiler` |             |
 
 
 
 ### LineSeparator
-| 组件类名                                   | 说明                                                                            |
+| Component Class Name                       | Description                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------- |
 | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
 | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
@@ -6588,100 +6993,100 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### LinuxLocalOS
-| 组件类名                              | 说明 |
-| ------------------------------------- | ---- |
-| `cn.org.expect.os.linux.LinuxLocalOS` |      |
-| `cn.org.expect.os.macos.MacOS`        |      |
+| Component Class Name                  | Description |
+| ------------------------------------- | ----------- |
+| `cn.org.expect.os.linux.LinuxLocalOS` |             |
+| `cn.org.expect.os.macos.MacOS`        |             |
 
 
 
 ### LinuxRemoteOS
-| 组件类名                               | 说明 |
-| -------------------------------------- | ---- |
-| `cn.org.expect.os.linux.LinuxRemoteOS` |      |
+| Component Class Name                   | Description |
+| -------------------------------------- | ----------- |
+| `cn.org.expect.os.linux.LinuxRemoteOS` |             |
 
 
 
 ### Loader
-| 组件类名                                                  | 说明 |
-| --------------------------------------------------------- | ---- |
-| `cn.org.expect.database.load.serial.SerialLoadFileEngine` |      |
+| Component Class Name                                      | Description |
+| --------------------------------------------------------- | ----------- |
+| `cn.org.expect.database.load.serial.SerialLoadFileEngine` |             |
 
 
 
 ### LsCommandCompiler
-| 组件类名                                         | 说明 |
-| ------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.LsCommandCompiler` |      |
+| Component Class Name                             | Description |
+| ------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.LsCommandCompiler` |             |
 
 
 
 ### MD5CommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.MD5CommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.MD5CommandCompiler` |             |
 
 
 
 ### MacOS
-| 组件类名                       | 说明 |
-| ------------------------------ | ---- |
-| `cn.org.expect.os.macos.MacOS` |      |
+| Component Class Name           | Description |
+| ------------------------------ | ----------- |
+| `cn.org.expect.os.macos.MacOS` |             |
 
 
 
 ### Mail
-| 组件类名                      | 说明 |
-| ----------------------------- | ---- |
-| `cn.org.expect.mail.MailImpl` |      |
+| Component Class Name          | Description |
+| ----------------------------- | ----------- |
+| `cn.org.expect.mail.MailImpl` |             |
 
 
 
 ### MailImpl
-| 组件类名                      | 说明 |
-| ----------------------------- | ---- |
-| `cn.org.expect.mail.MailImpl` |      |
+| Component Class Name          | Description |
+| ----------------------------- | ----------- |
+| `cn.org.expect.mail.MailImpl` |             |
 
 
 
 ### MkdirCommandCompiler
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.MkdirCommandCompiler` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.MkdirCommandCompiler` |             |
 
 
 
 ### MysqlDialect
-| 组件类名                                    | 说明 |
-| ------------------------------------------- | ---- |
-| `cn.org.expect.database.mysql.MysqlDialect` |      |
+| Component Class Name                        | Description |
+| ------------------------------------------- | ----------- |
+| `cn.org.expect.database.mysql.MysqlDialect` |             |
 
 
 
 ### NewInstanceMethod
-| 组件类名                                              | 说明 |
-| ----------------------------------------------------- | ---- |
-| `cn.org.expect.script.method.clazz.NewInstanceMethod` |      |
+| Component Class Name                                  | Description |
+| ----------------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.clazz.NewInstanceMethod` |             |
 
 
 
 ### NohupCommandCompiler
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.NohupCommandCompiler` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.NohupCommandCompiler` |             |
 
 
 
 ### OSCommand
-| 组件类名                                  | 说明       |
-| ----------------------------------------- | ---------- |
-| `cn.org.expect.os.ssh.SecureShellCommand` | jsch       |
-| `cn.org.expect.os.telnet.TelnetCommand`   | apache-net |
+| Component Class Name                      | Description |
+| ----------------------------------------- | ----------- |
+| `cn.org.expect.os.ssh.SecureShellCommand` | jsch        |
+| `cn.org.expect.os.telnet.TelnetCommand`   | apache-net  |
 
 
 
 ### OSConnectCommand
-| 组件类名                                  | 说明            |
+| Component Class Name                      | Description     |
 | ----------------------------------------- | --------------- |
 | `cn.org.expect.os.ftp.FtpCommand`         | FTP协议的实现类 |
 | `cn.org.expect.os.ssh.SecureShellCommand` | jsch            |
@@ -6691,23 +7096,23 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### OSDateCommand
-| 组件类名                               | 说明 |
-| -------------------------------------- | ---- |
-| `cn.org.expect.os.linux.LinuxLocalOS`  |      |
-| `cn.org.expect.os.linux.LinuxRemoteOS` |      |
-| `cn.org.expect.os.macos.MacOS`         |      |
+| Component Class Name                   | Description |
+| -------------------------------------- | ----------- |
+| `cn.org.expect.os.linux.LinuxLocalOS`  |             |
+| `cn.org.expect.os.linux.LinuxRemoteOS` |             |
+| `cn.org.expect.os.macos.MacOS`         |             |
 
 
 
 ### OSFactory
-| 组件类名                     | 说明 |
-| ---------------------------- | ---- |
-| `cn.org.expect.os.OSFactory` |      |
+| Component Class Name         | Description |
+| ---------------------------- | ----------- |
+| `cn.org.expect.os.OSFactory` |             |
 
 
 
 ### OSFileCommand
-| 组件类名                               | 说明            |
+| Component Class Name                   | Description     |
 | -------------------------------------- | --------------- |
 | `cn.org.expect.os.ftp.FtpCommand`      | FTP协议的实现类 |
 | `cn.org.expect.os.linux.LinuxRemoteOS` |                 |
@@ -6716,7 +7121,7 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### OSFtpCommand
-| 组件类名                           | 说明            |
+| Component Class Name               | Description     |
 | ---------------------------------- | --------------- |
 | `cn.org.expect.os.ftp.FtpCommand`  | FTP协议的实现类 |
 | `cn.org.expect.os.ssh.SftpCommand` | jsch-0.1.51     |
@@ -6724,262 +7129,269 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### OSNetwork
-| 组件类名                               | 说明 |
-| -------------------------------------- | ---- |
-| `cn.org.expect.os.linux.LinuxLocalOS`  |      |
-| `cn.org.expect.os.linux.LinuxRemoteOS` |      |
-| `cn.org.expect.os.macos.MacOS`         |      |
+| Component Class Name                   | Description |
+| -------------------------------------- | ----------- |
+| `cn.org.expect.os.linux.LinuxLocalOS`  |             |
+| `cn.org.expect.os.linux.LinuxRemoteOS` |             |
+| `cn.org.expect.os.macos.MacOS`         |             |
 
 
 
 ### OSSecureShellCommand
-| 组件类名                                  | 说明 |
-| ----------------------------------------- | ---- |
-| `cn.org.expect.os.ssh.SecureShellCommand` | jsch |
+| Component Class Name                      | Description |
+| ----------------------------------------- | ----------- |
+| `cn.org.expect.os.ssh.SecureShellCommand` | jsch        |
 
 
 
 ### OSShellCommand
-| 组件类名                                  | 说明       |
-| ----------------------------------------- | ---------- |
-| `cn.org.expect.os.ssh.SecureShellCommand` | jsch       |
-| `cn.org.expect.os.telnet.TelnetCommand`   | apache-net |
+| Component Class Name                      | Description |
+| ----------------------------------------- | ----------- |
+| `cn.org.expect.os.ssh.SecureShellCommand` | jsch        |
+| `cn.org.expect.os.telnet.TelnetCommand`   | apache-net  |
 
 
 
 ### OracleDialect
-| 组件类名                                      | 说明 |
-| --------------------------------------------- | ---- |
-| `cn.org.expect.database.oracle.OracleDialect` |      |
+| Component Class Name                          | Description |
+| --------------------------------------------- | ----------- |
+| `cn.org.expect.database.oracle.OracleDialect` |             |
 
 
 
 ### PSCommandCompiler
-| 组件类名                                         | 说明 |
-| ------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.PSCommandCompiler` |      |
+| Component Class Name                             | Description |
+| ------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.PSCommandCompiler` |             |
+
+
+
+### PassiveCommandCompiler
+| Component Class Name                                  | Description |
+| ----------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.PassiveCommandCompiler` |             |
 
 
 
 ### PipeCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.PipeCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.PipeCommandCompiler` |             |
 
 
 
 ### PrintMethod
-| 组件类名                                        | 说明 |
-| ----------------------------------------------- | ---- |
-| `cn.org.expect.script.method.array.PrintMethod` |      |
+| Component Class Name                            | Description |
+| ----------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.array.PrintMethod` |             |
 
 
 
 ### PrintMethod
-| 组件类名                                         | 说明 |
-| ------------------------------------------------ | ---- |
-| `cn.org.expect.script.method.object.PrintMethod` |      |
+| Component Class Name                             | Description |
+| ------------------------------------------------ | ----------- |
+| `cn.org.expect.script.method.object.PrintMethod` |             |
 
 
 
 ### ProgressCommandCompiler
-| 组件类名                                               | 说明 |
-| ------------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.ProgressCommandCompiler` |      |
+| Component Class Name                                   | Description |
+| ------------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.ProgressCommandCompiler` |             |
 
 
 
 ### PutCommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.PutCommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.PutCommandCompiler` |             |
 
 
 
 ### PwdCommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.PwdCommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.PwdCommandCompiler` |             |
 
 
 
 ### QuietCommandCompiler
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.QuietCommandCompiler` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.QuietCommandCompiler` |             |
 
 
 
 ### RarCompress
-| 组件类名                        | 说明 |
-| ------------------------------- | ---- |
-| `cn.org.expect.zip.RarCompress` |      |
+| Component Class Name                 | Description |
+| ------------------------------------ | ----------- |
+| `cn.org.expect.compress.RarCompress` |             |
 
 
 
 ### ReadCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ReadCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ReadCommandCompiler` |             |
 
 
 
 ### ReaderFactory
-| 组件类名                                              | 说明 |
-| ----------------------------------------------------- | ---- |
-| `cn.org.expect.database.export.inernal.ReaderFactory` |      |
+| Component Class Name                                  | Description |
+| ----------------------------------------------------- | ----------- |
+| `cn.org.expect.database.export.inernal.ReaderFactory` |             |
 
 
 
 ### ResourceMessageBundle
-| 组件类名                                                | 说明 |
-| ------------------------------------------------------- | ---- |
-| `cn.org.expect.message.ResourceMessageBundleRepository` |      |
+| Component Class Name                                    | Description |
+| ------------------------------------------------------- | ----------- |
+| `cn.org.expect.message.ResourceMessageBundleRepository` |             |
 
 
 
 ### ResourceMessageBundleRepository
-| 组件类名                                                | 说明 |
-| ------------------------------------------------------- | ---- |
-| `cn.org.expect.message.ResourceMessageBundleRepository` |      |
+| Component Class Name                                    | Description |
+| ------------------------------------------------------- | ----------- |
+| `cn.org.expect.message.ResourceMessageBundleRepository` |             |
 
 
 
 ### ReturnCommandCompiler
-| 组件类名                                             | 说明 |
-| ---------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ReturnCommandCompiler` |      |
+| Component Class Name                                 | Description |
+| ---------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ReturnCommandCompiler` |             |
 
 
 
 ### RmCommandCompiler
-| 组件类名                                         | 说明 |
-| ------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.RmCommandCompiler` |      |
+| Component Class Name                             | Description |
+| ------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.RmCommandCompiler` |             |
 
 
 
 ### RollbackCommandCompiler
-| 组件类名                                               | 说明 |
-| ------------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.RollbackCommandCompiler` |      |
+| Component Class Name                                   | Description |
+| ------------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.RollbackCommandCompiler` |             |
 
 
 
 ### Runnable
-| 组件类名                                | 说明       |
-| --------------------------------------- | ---------- |
-| `cn.org.expect.os.telnet.TelnetCommand` | apache-net |
+| Component Class Name                    | Description |
+| --------------------------------------- | ----------- |
+| `cn.org.expect.os.telnet.TelnetCommand` | apache-net  |
 
 
 
 ### SQLCommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.SQLCommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.SQLCommandCompiler` |             |
 
 
 
 ### SSH2CommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.SSH2CommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.SSH2CommandCompiler` |             |
 
 
 
 ### ScriptAnalysis
-| 组件类名                                       | 说明 |
-| ---------------------------------------------- | ---- |
-| `cn.org.expect.script.compiler.ScriptAnalysis` |      |
+| Component Class Name                           | Description |
+| ---------------------------------------------- | ----------- |
+| `cn.org.expect.script.compiler.ScriptAnalysis` |             |
 
 
 
 ### ScriptChecker
-| 组件类名                                      | 说明 |
-| --------------------------------------------- | ---- |
-| `cn.org.expect.script.compiler.ScriptChecker` |      |
+| Component Class Name                          | Description |
+| --------------------------------------------- | ----------- |
+| `cn.org.expect.script.compiler.ScriptChecker` |             |
 
 
 
 ### ScriptCompiler
-| 组件类名                                       | 说明       |
-| ---------------------------------------------- | ---------- |
-| `cn.org.expect.script.compiler.ScriptCompiler` | 即时编译器 |
+| Component Class Name                           | Description |
+| ---------------------------------------------- | ----------- |
+| `cn.org.expect.script.compiler.ScriptCompiler` | 即时编译器  |
 
 
 
 ### ScriptConfiguration
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.internal.ScriptConfiguration` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.internal.ScriptConfiguration` |             |
 
 
 
 ### ScriptEngineExtension
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.method.ScriptEngineExtension` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.ScriptEngineExtension` |             |
 
 
 
 ### ScriptFormatter
-| 组件类名                                        | 说明 |
-| ----------------------------------------------- | ---- |
-| `cn.org.expect.script.internal.ScriptFormatter` |      |
+| Component Class Name                            | Description |
+| ----------------------------------------------- | ----------- |
+| `cn.org.expect.script.internal.ScriptFormatter` |             |
 
 
 
 ### SecureShellCommand
-| 组件类名                                  | 说明 |
-| ----------------------------------------- | ---- |
-| `cn.org.expect.os.ssh.SecureShellCommand` | jsch |
+| Component Class Name                      | Description |
+| ----------------------------------------- | ----------- |
+| `cn.org.expect.os.ssh.SecureShellCommand` | jsch        |
 
 
 
 ### SerialLoadFileEngine
-| 组件类名                                                  | 说明 |
-| --------------------------------------------------------- | ---- |
-| `cn.org.expect.database.load.serial.SerialLoadFileEngine` |      |
+| Component Class Name                                      | Description |
+| --------------------------------------------------------- | ----------- |
+| `cn.org.expect.database.load.serial.SerialLoadFileEngine` |             |
 
 
 
 ### Serializable
-| 组件类名                                        | 说明 |
-| ----------------------------------------------- | ---- |
-| `cn.org.expect.script.internal.ScriptFormatter` |      |
+| Component Class Name                            | Description |
+| ----------------------------------------------- | ----------- |
+| `cn.org.expect.script.internal.ScriptFormatter` |             |
 
 
 
 ### SessionFactory
-| 组件类名                                      | 说明             |
+| Component Class Name                          | Description      |
 | --------------------------------------------- | ---------------- |
 | `cn.org.expect.script.session.SessionFactory` | 脚本引擎会话工厂 |
 
 
 
 ### SetCommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.SetCommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.SetCommandCompiler` |             |
 
 
 
 ### SftpCommand
-| 组件类名                           | 说明        |
+| Component Class Name               | Description |
 | ---------------------------------- | ----------- |
 | `cn.org.expect.os.ssh.SftpCommand` | jsch-0.1.51 |
 
 
 
 ### SftpCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.SftpCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.SftpCommandCompiler` |             |
 
 
 
 ### SftpFileWriter
-| 组件类名                                               | 说明                                                                                             |
+| Component Class Name                                   | Description                                                                                      |
 | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
 | `cn.org.expect.database.export.inernal.FtpFileWriter`  | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径   |
 | `cn.org.expect.database.export.inernal.SftpFileWriter` | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径 |
@@ -6987,84 +7399,84 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### SleepCommandCompiler
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.SleepCommandCompiler` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.SleepCommandCompiler` |             |
 
 
 
 ### SortTableFileCommandCompiler
-| 组件类名                                                    | 说明 |
-| ----------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.SortTableFileCommandCompiler` |      |
+| Component Class Name                                        | Description |
+| ----------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.SortTableFileCommandCompiler` |             |
 
 
 
 ### SplitMethod
-| 组件类名                                         | 说明 |
-| ------------------------------------------------ | ---- |
-| `cn.org.expect.script.method.string.SplitMethod` |      |
+| Component Class Name                             | Description |
+| ------------------------------------------------ | ----------- |
+| `cn.org.expect.script.method.string.SplitMethod` |             |
 
 
 
 ### StacktraceCommandCompiler
-| 组件类名                                                 | 说明 |
-| -------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.StacktraceCommandCompiler` |      |
+| Component Class Name                                     | Description |
+| -------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.StacktraceCommandCompiler` |             |
 
 
 
 ### StandardDatabaseConfigurationContainer
-| 组件类名                                                                 | 说明 |
-| ------------------------------------------------------------------------ | ---- |
-| `cn.org.expect.database.internal.StandardDatabaseConfigurationContainer` |      |
+| Component Class Name                                                     | Description |
+| ------------------------------------------------------------------------ | ----------- |
+| `cn.org.expect.database.internal.StandardDatabaseConfigurationContainer` |             |
 
 
 
 ### StepCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.StepCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.StepCommandCompiler` |             |
 
 
 
 ### StrAsIntComparator
-| 组件类名                                | 说明                     |
+| Component Class Name                    | Description              |
 | --------------------------------------- | ------------------------ |
 | `cn.org.expect.util.StrAsIntComparator` | 字符串作为整数的比较规则 |
 
 
 
 ### StrAsNumberComparator
-| 组件类名                                   | 说明                       |
+| Component Class Name                       | Description                |
 | ------------------------------------------ | -------------------------- |
 | `cn.org.expect.util.StrAsNumberComparator` | 字符串作为浮点数的比较规则 |
 
 
 
 ### StringComparator
-| 组件类名                              | 说明           |
+| Component Class Name                  | Description    |
 | ------------------------------------- | -------------- |
 | `cn.org.expect.util.StringComparator` | 字符串比较规则 |
 
 
 
 ### StringExtension
-| 组件类名                                      | 说明 |
-| --------------------------------------------- | ---- |
-| `cn.org.expect.script.method.StringExtension` |      |
+| Component Class Name                          | Description |
+| --------------------------------------------- | ----------- |
+| `cn.org.expect.script.method.StringExtension` |             |
 
 
 
 ### SubCommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.SubCommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.SubCommandCompiler` |             |
 
 
 
 ### Table
-| 组件类名                                   | 说明                                                                            |
+| Component Class Name                       | Description                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------- |
 | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
 | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
@@ -7073,84 +7485,85 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### TableLineRulerFactory
-| 组件类名                                 | 说明 |
-| ---------------------------------------- | ---- |
-| `cn.org.expect.io.TableLineRulerFactory` |      |
+| Component Class Name                     | Description |
+| ---------------------------------------- | ----------- |
+| `cn.org.expect.io.TableLineRulerFactory` |             |
 
 
 
 ### TailCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.TailCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.TailCommandCompiler` |             |
 
 
 
 ### TarCommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.TarCommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.TarCommandCompiler` |             |
 
 
 
 ### TarCompress
-| 组件类名                        | 说明 |
-| ------------------------------- | ---- |
-| `cn.org.expect.zip.TarCompress` |      |
+| Component Class Name                  | Description |
+| ------------------------------------- | ----------- |
+| `cn.org.expect.compress.GzipCompress` |             |
+| `cn.org.expect.compress.TarCompress`  |             |
 
 
 
 ### TelnetCommand
-| 组件类名                                | 说明       |
-| --------------------------------------- | ---------- |
-| `cn.org.expect.os.telnet.TelnetCommand` | apache-net |
+| Component Class Name                    | Description |
+| --------------------------------------- | ----------- |
+| `cn.org.expect.os.telnet.TelnetCommand` | apache-net  |
 
 
 
 ### TelnetNotificationHandler
-| 组件类名                                | 说明       |
-| --------------------------------------- | ---------- |
-| `cn.org.expect.os.telnet.TelnetCommand` | apache-net |
+| Component Class Name                    | Description |
+| --------------------------------------- | ----------- |
+| `cn.org.expect.os.telnet.TelnetCommand` | apache-net  |
 
 
 
 ### Terminate
-| 组件类名                                                  | 说明       |
-| --------------------------------------------------------- | ---------- |
-| `cn.org.expect.zip.GzipCompress`                          |            |
-| `cn.org.expect.zip.RarCompress`                           |            |
-| `cn.org.expect.script.compiler.ScriptCompiler`            | 即时编译器 |
-| `cn.org.expect.os.ssh.SecureShellCommand`                 | jsch       |
-| `cn.org.expect.database.load.serial.SerialLoadFileEngine` |            |
-| `cn.org.expect.zip.TarCompress`                           |            |
-| `cn.org.expect.os.telnet.TelnetCommand`                   | apache-net |
-| `cn.org.expect.zip.ZipCompress`                           |            |
+| Component Class Name                                      | Description |
+| --------------------------------------------------------- | ----------- |
+| `cn.org.expect.compress.GzipCompress`                     |             |
+| `cn.org.expect.compress.RarCompress`                      |             |
+| `cn.org.expect.script.compiler.ScriptCompiler`            | 即时编译器  |
+| `cn.org.expect.os.ssh.SecureShellCommand`                 | jsch        |
+| `cn.org.expect.database.load.serial.SerialLoadFileEngine` |             |
+| `cn.org.expect.compress.TarCompress`                      |             |
+| `cn.org.expect.os.telnet.TelnetCommand`                   | apache-net  |
+| `cn.org.expect.compress.ZipCompress`                      |             |
 
 
 
 ### TerminateCommandCompiler
-| 组件类名                                                | 说明 |
-| ------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.TerminateCommandCompiler` |      |
+| Component Class Name                                    | Description |
+| ------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.TerminateCommandCompiler` |             |
 
 
 
 ### Terminator
-| 组件类名                                                  | 说明       |
-| --------------------------------------------------------- | ---------- |
-| `cn.org.expect.zip.GzipCompress`                          |            |
-| `cn.org.expect.zip.RarCompress`                           |            |
-| `cn.org.expect.script.compiler.ScriptCompiler`            | 即时编译器 |
-| `cn.org.expect.os.ssh.SecureShellCommand`                 | jsch       |
-| `cn.org.expect.database.load.serial.SerialLoadFileEngine` |            |
-| `cn.org.expect.zip.TarCompress`                           |            |
-| `cn.org.expect.os.telnet.TelnetCommand`                   | apache-net |
-| `cn.org.expect.zip.ZipCompress`                           |            |
+| Component Class Name                                      | Description |
+| --------------------------------------------------------- | ----------- |
+| `cn.org.expect.compress.GzipCompress`                     |             |
+| `cn.org.expect.compress.RarCompress`                      |             |
+| `cn.org.expect.script.compiler.ScriptCompiler`            | 即时编译器  |
+| `cn.org.expect.os.ssh.SecureShellCommand`                 | jsch        |
+| `cn.org.expect.database.load.serial.SerialLoadFileEngine` |             |
+| `cn.org.expect.compress.TarCompress`                      |             |
+| `cn.org.expect.os.telnet.TelnetCommand`                   | apache-net  |
+| `cn.org.expect.compress.ZipCompress`                      |             |
 
 
 
 ### TextFile
-| 组件类名                                   | 说明                                                                            |
+| Component Class Name                       | Description                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------- |
 | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
 | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
@@ -7159,7 +7572,7 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### TextTable
-| 组件类名                                   | 说明                                                                            |
+| Component Class Name                       | Description                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------- |
 | `cn.org.expect.io.CommonTextTableFile`     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                  |
 | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
@@ -7168,209 +7581,216 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### TextTableFileFactory
-| 组件类名                                | 说明 |
-| --------------------------------------- | ---- |
-| `cn.org.expect.io.TextTableFileFactory` |      |
+| Component Class Name                    | Description |
+| --------------------------------------- | ----------- |
+| `cn.org.expect.io.TextTableFileFactory` |             |
 
 
 
 ### ThreadSourceFactory
-| 组件类名                                     | 说明 |
-| -------------------------------------------- | ---- |
-| `cn.org.expect.ioc.impl.ThreadSourceFactory` |      |
+| Component Class Name                         | Description |
+| -------------------------------------------- | ----------- |
+| `cn.org.expect.ioc.impl.ThreadSourceFactory` |             |
 
 
 
 ### UUIDCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.UUIDCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.UUIDCommandCompiler` |             |
 
 
 
 ### UndeclareCallbackCommandCompiler
-| 组件类名                                                        | 说明 |
-| --------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.UndeclareCallbackCommandCompiler` |      |
+| Component Class Name                                            | Description |
+| --------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.UndeclareCallbackCommandCompiler` |             |
 
 
 
 ### UndeclareCatalogCommandCompiler
-| 组件类名                                                       | 说明 |
-| -------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.UndeclareCatalogCommandCompiler` |      |
+| Component Class Name                                           | Description |
+| -------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.UndeclareCatalogCommandCompiler` |             |
 
 
 
 ### UndeclareCursorCommandCompiler
-| 组件类名                                                      | 说明 |
-| ------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.UndeclareCursorCommandCompiler` |      |
+| Component Class Name                                          | Description |
+| ------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.UndeclareCursorCommandCompiler` |             |
 
 
 
 ### UndeclareHandlerCommandCompiler
-| 组件类名                                                       | 说明 |
-| -------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.UndeclareHandlerCommandCompiler` |      |
+| Component Class Name                                           | Description |
+| -------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.UndeclareHandlerCommandCompiler` |             |
 
 
 
 ### UndeclareSSHCommandCompiler
-| 组件类名                                                   | 说明 |
-| ---------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.UndeclareSSHCommandCompiler` |      |
+| Component Class Name                                       | Description |
+| ---------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.UndeclareSSHCommandCompiler` |             |
 
 
 
 ### UndeclareStatementCommandCompiler
-| 组件类名                                                         | 说明 |
-| ---------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.UndeclareStatementCommandCompiler` |      |
+| Component Class Name                                             | Description |
+| ---------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.UndeclareStatementCommandCompiler` |             |
 
 
 
 ### UniversalScriptAnalysis
-| 组件类名                                       | 说明 |
-| ---------------------------------------------- | ---- |
-| `cn.org.expect.script.compiler.ScriptAnalysis` |      |
+| Component Class Name                           | Description |
+| ---------------------------------------------- | ----------- |
+| `cn.org.expect.script.compiler.ScriptAnalysis` |             |
 
 
 
 ### UniversalScriptChecker
-| 组件类名                                      | 说明 |
-| --------------------------------------------- | ---- |
-| `cn.org.expect.script.compiler.ScriptChecker` |      |
+| Component Class Name                          | Description |
+| --------------------------------------------- | ----------- |
+| `cn.org.expect.script.compiler.ScriptChecker` |             |
 
 
 
 ### UniversalScriptCompiler
-| 组件类名                                       | 说明       |
-| ---------------------------------------------- | ---------- |
-| `cn.org.expect.script.compiler.ScriptCompiler` | 即时编译器 |
+| Component Class Name                           | Description |
+| ---------------------------------------------- | ----------- |
+| `cn.org.expect.script.compiler.ScriptCompiler` | 即时编译器  |
 
 
 
 ### UniversalScriptConfiguration
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.internal.ScriptConfiguration` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.internal.ScriptConfiguration` |             |
 
 
 
 ### UniversalScriptContextAware
-| 组件类名                                                      | 说明 |
-| ------------------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ExecuteFunctionCommandCompiler` |      |
-| `cn.org.expect.script.command.VariableMethodCommandCompiler`  |      |
+| Component Class Name                                          | Description |
+| ------------------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ExecuteFunctionCommandCompiler` |             |
+| `cn.org.expect.script.command.VariableMethodCommandCompiler`  |             |
 
 
 
 ### UniversalScriptEngineFactory
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.UniversalScriptEngineFactory` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.UniversalScriptEngineFactory` |             |
 
 
 
 ### UniversalScriptFormatter
-| 组件类名                                        | 说明 |
-| ----------------------------------------------- | ---- |
-| `cn.org.expect.script.internal.ScriptFormatter` |      |
+| Component Class Name                            | Description |
+| ----------------------------------------------- | ----------- |
+| `cn.org.expect.script.internal.ScriptFormatter` |             |
 
 
 
 ### UniversalScriptSessionFactory
-| 组件类名                                      | 说明             |
+| Component Class Name                          | Description      |
 | --------------------------------------------- | ---------------- |
 | `cn.org.expect.script.session.SessionFactory` | 脚本引擎会话工厂 |
 
 
 
 ### UnrarCommandCompiler
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.UnrarCommandCompiler` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.UnrarCommandCompiler` |             |
 
 
 
 ### UnzipCommandCompiler
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.UnzipCommandCompiler` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.UnzipCommandCompiler` |             |
 
 
 
 ### VariableMethodCommandCompiler
-| 组件类名                                                     | 说明 |
-| ------------------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.VariableMethodCommandCompiler` |      |
+| Component Class Name                                         | Description |
+| ------------------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.VariableMethodCommandCompiler` |             |
 
 
 
 ### VariableMethodRepository
-| 组件类名                                               | 说明 |
-| ------------------------------------------------------ | ---- |
-| `cn.org.expect.script.method.VariableMethodRepository` |      |
+| Component Class Name                                   | Description |
+| ------------------------------------------------------ | ----------- |
+| `cn.org.expect.script.method.VariableMethodRepository` |             |
 
 
 
 ### WaitCommandCompiler
-| 组件类名                                           | 说明 |
-| -------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.WaitCommandCompiler` |      |
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.WaitCommandCompiler` |             |
 
 
 
 ### WcCommandCompiler
-| 组件类名                                         | 说明 |
-| ------------------------------------------------ | ---- |
-| `cn.org.expect.script.command.WcCommandCompiler` |      |
+| Component Class Name                             | Description |
+| ------------------------------------------------ | ----------- |
+| `cn.org.expect.script.command.WcCommandCompiler` |             |
+
+
+
+### WgetCommandCompiler
+| Component Class Name                               | Description |
+| -------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.WgetCommandCompiler` |             |
 
 
 
 ### WhileCommandCompiler
-| 组件类名                                            | 说明 |
-| --------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.WhileCommandCompiler` |      |
+| Component Class Name                                | Description |
+| --------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.WhileCommandCompiler` |             |
 
 
 
-### XmlFunction
-| 组件类名                                  | 说明 |
-| ----------------------------------------- | ---- |
-| `cn.org.expect.script.method.XmlFunction` |      |
+### XmlExtension
+| Component Class Name                       | Description |
+| ------------------------------------------ | ----------- |
+| `cn.org.expect.script.method.XmlExtension` |             |
 
 
 
 ### ZipCommandCompiler
-| 组件类名                                          | 说明 |
-| ------------------------------------------------- | ---- |
-| `cn.org.expect.script.command.ZipCommandCompiler` |      |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.ZipCommandCompiler` |             |
 
 
 
 ### ZipCompress
-| 组件类名                        | 说明 |
-| ------------------------------- | ---- |
-| `cn.org.expect.zip.ZipCompress` |      |
+| Component Class Name                 | Description |
+| ------------------------------------ | ----------- |
+| `cn.org.expect.compress.ZipCompress` |             |
 
 
 
 ### Compress
-**容器使用组件工厂 `cn.org.expect.zip.CompressFactory` 创建实例对象**
-| 组件类名                         | 说明 |
-| -------------------------------- | ---- |
-| `cn.org.expect.zip.ZipCompress`  |      |
-| `cn.org.expect.zip.TarCompress`  |      |
-| `cn.org.expect.zip.RarCompress`  |      |
-| `cn.org.expect.zip.GzipCompress` |      |
+**Container use component factory `cn.org.expect.compress.CompressFactory` to create instance**
+| Component Class Name                  | Description |
+| ------------------------------------- | ----------- |
+| `cn.org.expect.compress.ZipCompress`  |             |
+| `cn.org.expect.compress.TarCompress`  |             |
+| `cn.org.expect.compress.RarCompress`  |             |
+| `cn.org.expect.compress.GzipCompress` |             |
 
 
 
 ### ExtractWriter
-**容器使用组件工厂 `cn.org.expect.database.export.ExtractWriterFactory` 创建实例对象**
-| 组件类名                                                  | 说明                                                                                                                                                                                                                                                         |
+**Container use component factory `cn.org.expect.database.export.ExtractWriterFactory` to create instance**
+| Component Class Name                                      | Description                                                                                                                                                                                                                                                  |
 | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `cn.org.expect.database.export.inernal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
 | `cn.org.expect.database.export.inernal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
@@ -7380,18 +7800,18 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### OS
-**容器使用组件工厂 `cn.org.expect.os.OSFactory` 创建实例对象**
-| 组件类名                               | 说明 |
-| -------------------------------------- | ---- |
-| `cn.org.expect.os.macos.MacOS`         |      |
-| `cn.org.expect.os.linux.LinuxLocalOS`  |      |
-| `cn.org.expect.os.linux.LinuxRemoteOS` |      |
+**Container use component factory `cn.org.expect.os.OSFactory` to create instance**
+| Component Class Name                   | Description |
+| -------------------------------------- | ----------- |
+| `cn.org.expect.os.macos.MacOS`         |             |
+| `cn.org.expect.os.linux.LinuxLocalOS`  |             |
+| `cn.org.expect.os.linux.LinuxRemoteOS` |             |
 
 
 
 ### TextTableFile
-**容器使用组件工厂 `cn.org.expect.io.TextTableFileFactory` 创建实例对象**
-| 组件类名                                   | 说明                                                                            |
+**Container use component factory `cn.org.expect.io.TextTableFileFactory` to create instance**
+| Component Class Name                       | Description                                                                     |
 | ------------------------------------------ | ------------------------------------------------------------------------------- |
 | `cn.org.expect.io.CsvFile`                 | CSV格式文件                                                                     |
 | `cn.org.expect.database.db2.DB2ExportFile` | DB2数据库export命令导出文件格式, 逗号分隔，双引号转义字符，双引号是字符串限定符 |
@@ -7400,8 +7820,7 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### ThreadSource
-**容器使用组件工厂 `cn.org.expect.ioc.impl.ThreadSourceFactory` 创建实例对象**
-| 组件类名                                    | 说明   |
-| ------------------------------------------- | ------ |
-| `cn.org.expect.concurrent.EasyThreadSource` | 线程池 |
-
+**Container use component factory `cn.org.expect.ioc.impl.ThreadSourceFactory` to create instance**
+| Component Class Name                        | Description |
+| ------------------------------------------- | ----------- |
+| `cn.org.expect.concurrent.EasyThreadSource` | 线程池      |

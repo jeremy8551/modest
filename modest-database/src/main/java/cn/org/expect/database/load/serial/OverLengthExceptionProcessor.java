@@ -1,6 +1,5 @@
 package cn.org.expect.database.load.serial;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -12,6 +11,7 @@ import cn.org.expect.concurrent.EasyJob;
 import cn.org.expect.concurrent.EasyJobReader;
 import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.concurrent.internal.DefaultJobReader;
+import cn.org.expect.database.DatabaseDialect;
 import cn.org.expect.database.DatabaseTableColumn;
 import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.load.DestTable;
@@ -55,24 +55,12 @@ public class OverLengthExceptionProcessor {
      */
     public int execute(EasyContext context, JdbcDao dao, TextTableFile file, DestTable target) throws Exception {
         // 扫描数据文件中的长度字段
-        ExpandLengthJobReader in = new ExpandLengthJobReader(file, target, DataUnitExpression.parse("100M").longValue());
+        ExpandLengthJobReader in = new ExpandLengthJobReader(dao, file, target, DataUnitExpression.parse("100M").longValue());
         context.getBean(ThreadSource.class).getJobService(this.concurrent).execute(new DefaultJobReader(in));
         List<DatabaseTableColumn> columns = in.getColumns();
         in.close();
 
-        // 修改数据库表中超长字段的长度
-        for (DatabaseTableColumn column : columns) {
-            DatabaseTableColumn old = target.getTable().getColumns().getColumn(column.getPosition());
-            if (!old.equals(column)) {
-                List<String> list = dao.getDialect().alterTableColumn(dao.getConnection(), old, column);
-                if (log.isDebugEnabled()) {
-                    for (String sql : list) {
-                        log.debug(sql);
-                    }
-                }
-            }
-        }
-        dao.commit();
+        dao.getDialect().expandLength(dao.getConnection(), target.getTable().getColumns(), columns);
         return columns.size();
     }
 
@@ -80,6 +68,9 @@ public class OverLengthExceptionProcessor {
      * 文件分段识别输入流
      */
     private static class ExpandLengthJobReader extends Terminator implements EasyJobReader {
+
+        /** 数据库连接 */
+        private JdbcDao dao;
 
         /** 数据文件 */
         private TextTableFile file;
@@ -102,12 +93,14 @@ public class OverLengthExceptionProcessor {
         /**
          * 初始化
          *
+         * @param dao    数据库连接
          * @param file   数据文件
          * @param target 目标表信息
          * @param size   每次读取文件的长度
          */
-        public ExpandLengthJobReader(TextTableFile file, DestTable target, long size) {
+        public ExpandLengthJobReader(JdbcDao dao, TextTableFile file, DestTable target, long size) {
             super();
+            this.dao = Ensure.notNull(dao);
             this.terminate = false;
             this.index = 0;
             this.file = Ensure.notNull(file);
@@ -129,6 +122,7 @@ public class OverLengthExceptionProcessor {
             }
 
             LoadFileExecutorContext context = new LoadFileExecutorContext();
+            context.setDao(this.dao);
             context.setFile(this.file);
             context.setReadBuffer(IO.getCharArrayLength());
             context.setRange(new LoadFileRange(begin, end, -1));
@@ -137,7 +131,7 @@ public class OverLengthExceptionProcessor {
             return new ExpandLengthJob(context, this.target, this.set);
         }
 
-        public void close() throws IOException {
+        public void close() {
             this.set.clear();
         }
 
@@ -181,6 +175,7 @@ public class OverLengthExceptionProcessor {
                 int[] positions = this.target.getFilePositions();
                 List<DatabaseTableColumn> list = this.target.getTableColumns();
                 String charsetName = this.context.getFile().getCharsetName();
+                DatabaseDialect dialect = this.context.getDao().getDialect();
 
                 // 读取文件中的记录并插入到数据库表中
                 TextTableLine line;
@@ -190,7 +185,7 @@ public class OverLengthExceptionProcessor {
                         String value = line.getColumn(position);
 
                         DatabaseTableColumn column = list.get(i);
-                        if (column.expandLength(value, charsetName)) {
+                        if (dialect.expandLength(column, value, charsetName)) {
                             this.set.add(column);
                         }
                     }

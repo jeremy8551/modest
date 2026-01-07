@@ -26,13 +26,14 @@ public class DB2DialectTest {
 
     @Test
     public void test2() {
-        Assert.assertNull(DB2Dialect.to(null));
-        Assert.assertEquals("", DB2Dialect.to(""));
-        Assert.assertEquals("A", DB2Dialect.to("a"));
-        Assert.assertEquals("AB", DB2Dialect.to("ab"));
-        Assert.assertEquals("aBc", DB2Dialect.to("\"aBc\""));
-        Assert.assertEquals("aBc", DB2Dialect.to("'aBc'"));
-        Assert.assertEquals("", DB2Dialect.to(""));
+        DatabaseDialect dialect = new DB2Dialect();
+        Assert.assertNull(dialect.parseIdentifier(null));
+        Assert.assertEquals("", dialect.parseIdentifier(""));
+        Assert.assertEquals("A", dialect.parseIdentifier("a"));
+        Assert.assertEquals("AB", dialect.parseIdentifier("ab"));
+        Assert.assertEquals("aBc", dialect.parseIdentifier("\"aBc\""));
+        Assert.assertEquals("aBc", dialect.parseIdentifier("'aBc'"));
+        Assert.assertEquals("", dialect.parseIdentifier(""));
     }
 
     @Test

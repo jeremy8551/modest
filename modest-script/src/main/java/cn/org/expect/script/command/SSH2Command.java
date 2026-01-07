@@ -33,7 +33,7 @@ public class SSH2Command extends AbstractTraceCommand implements JumpCommandSupp
 
     private String password;
 
-    private OSSecureShellCommand client;
+    private volatile OSSecureShellCommand client;
 
     public SSH2Command(UniversalCommandCompiler compiler, String command, String host, String port, String username, String password, String oscommand) {
         super(compiler, command);
@@ -50,15 +50,14 @@ public class SSH2Command extends AbstractTraceCommand implements JumpCommandSupp
         String port = analysis.replaceShellVariable(session, context, this.port, true, true);
         String username = analysis.replaceShellVariable(session, context, this.username, true, true);
         String password = analysis.replaceShellVariable(session, context, this.password, true, true);
-        String oscommand = analysis.replaceShellVariable(session, context, this.oscommand, true, false);
-        String osCmd = analysis.unQuotation(oscommand);
+        String oscommand = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.oscommand), true, false);
 
         boolean print = session.isEchoEnable() || forceStdout;
         if (print) {
             stdout.println("ssh " + username + "@" + host + ":" + port + "?password=" + password);
         }
 
-        if (analysis.isBlank(osCmd)) {
+        if (analysis.isBlank(oscommand)) {
             stderr.println(ResourcesUtils.getMessage("script.stderr.message077", this.command));
             return UniversalScriptCommand.COMMAND_ERROR;
         }
@@ -75,10 +74,10 @@ public class SSH2Command extends AbstractTraceCommand implements JumpCommandSupp
             this.client.setStderr(new OutputStreamPrinter(stderr, this.client.getCharsetName()));
 
             if (print) {
-                stdout.println(osCmd);
+                stdout.println(oscommand);
             }
 
-            int exitcode = this.client.execute(osCmd, 0);
+            int exitcode = this.client.execute(oscommand, 0);
             if (exitcode == 0) {
                 return 0;
             } else {
@@ -86,7 +85,7 @@ public class SSH2Command extends AbstractTraceCommand implements JumpCommandSupp
                 if (!analysis.isBlank(errout)) {
                     stderr.println(errout);
                 }
-                stderr.println(ResourcesUtils.getMessage("script.stderr.message017", this.command, osCmd, exitcode, host));
+                stderr.println(ResourcesUtils.getMessage("script.stderr.message017", this.command, oscommand, exitcode, host));
                 return exitcode;
             }
         } finally {

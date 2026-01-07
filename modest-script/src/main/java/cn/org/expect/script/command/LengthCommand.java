@@ -21,7 +21,7 @@ import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.internal.FtpList;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.CollectionUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
@@ -71,7 +71,7 @@ public class LengthCommand extends AbstractTraceCommand implements UniversalScri
                 return UniversalScriptCommand.COMMAND_ERROR;
             }
 
-            String filepath = ScriptFile.replaceFilepath(session, context, this.parameter, false);
+            String filepath = PathExpression.resolve(session, context, this.parameter, false);
             if (ftp.isDirectory(filepath)) {
                 String parent = FileUtils.getParent(filepath);
                 String filename = FileUtils.getFilename(filepath);
@@ -98,27 +98,27 @@ public class LengthCommand extends AbstractTraceCommand implements UniversalScri
                 return UniversalScriptCommand.COMMAND_ERROR;
             }
         } else if (this.type == 'f') { // local file path
-            File file = new ScriptFile(session, context, this.parameter);
+            File file = PathExpression.toFile(session, context, this.parameter);
             if (print) {
                 stdout.println(file.length());
             }
             return 0;
         } else if (this.type == 'c') { // character length
-            String str = analysis.unQuotation(analysis.replaceShellVariable(session, context, this.parameter, true, true));
+            String str = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.parameter), true, !analysis.containsQuotation(this.parameter));
             if (print) {
                 stdout.println(str.length());
             }
             return 0;
         } else if (this.type == 'b') { // string's bytes
-            String str = analysis.unQuotation(analysis.replaceShellVariable(session, context, this.parameter, true, true));
+            String str = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.parameter), true, !analysis.containsQuotation(this.parameter));
             if (print) {
                 stdout.println(StringUtils.toBytes(str, context.getCharsetName()).length);
             }
             return 0;
         } else if (this.type == 'h') { // Humanize view
-            String str = analysis.unQuotation(analysis.replaceShellVariable(session, context, this.parameter, true, true));
+            String str = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.parameter), true, !analysis.containsQuotation(this.parameter));
             if (print) {
-                stdout.println(DataUnitExpression.toString(BigDecimal.valueOf(StringUtils.toBytes(str, context.getCharsetName()).length)));
+                stdout.println(DataUnitExpression.toString(BigDecimal.valueOf(StringUtils.toBytes(str, context.getCharsetName()).length), true));
             }
             return 0;
         } else {

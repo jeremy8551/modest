@@ -575,10 +575,10 @@ public class LinuxLocalOS implements OS, OSDateCommand, OSNetwork {
                     obj.setId(map.get("processor"));
                     obj.setModeName(map.get("model name"));
                     obj.setCoreId(map.get("core id"));
-                    obj.setCacheSize(DataUnitExpression.parse(StringUtils.coalesce(map.get("cache size"), "0")));
+                    // obj.setCacheSize(DataUnitExpression.parse(StringUtils.coalesce(map.get("cache size"), "0")));
                     obj.setCores(StringUtils.parseInt(map.get("cpu cores"), 0));
-                    obj.setPhysicalId(map.get("physical id"));
-                    obj.setSiblings(StringUtils.parseInt(map.get("siblings"), 0));
+                    // obj.setPhysicalId(map.get("physical id"));
+                    // obj.setSiblings(StringUtils.parseInt(map.get("siblings"), 0));
                     list.add(obj);
                 }
             }

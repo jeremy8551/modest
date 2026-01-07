@@ -71,7 +71,7 @@ public class ContainerCommandReader extends Terminator implements EasyJobReader 
                 // 判断命令是否已准备好执行
                 if (job.isPrepared(this.session, this.context, this.stdout, this.stderr)) {
                     this.job = job.getJob();
-                    this.stdout.println(analysis.unQuotation(analysis.replaceShellVariable(this.session, this.context, command.getScript(), false, true)));
+                    this.stdout.println(analysis.replaceShellVariable(this.session, this.context, analysis.unQuotation(command.getScript()), false, !analysis.containsQuotation(command.getScript())));
                     return true;
                 }
             }

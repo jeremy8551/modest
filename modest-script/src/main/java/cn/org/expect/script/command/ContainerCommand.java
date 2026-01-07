@@ -30,7 +30,7 @@ public class ContainerCommand extends AbstractCommand implements WithBodyCommand
     private List<UniversalScriptCommand> cmdlist;
 
     /** 运行容器 */
-    private EasyJobService service;
+    private volatile EasyJobService service;
 
     public ContainerCommand(UniversalCommandCompiler compiler, String command, Map<String, String> attributes, List<UniversalScriptCommand> cmdlist) {
         super(compiler, command);
@@ -40,7 +40,7 @@ public class ContainerCommand extends AbstractCommand implements WithBodyCommand
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
         UniversalScriptAnalysis analysis = session.getAnalysis();
-        String thread = analysis.unQuotation(analysis.replaceShellVariable(session, context, this.attributes.get("thread"), true, true));
+        String thread = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.attributes.get("thread")), true, !analysis.containsQuotation(this.attributes.get("thread")));
         int number = StringUtils.parseInt(thread, 2);
 
         if (session.isEchoEnable() || forceStdout) {

@@ -35,7 +35,7 @@ public class LogSettings {
     /** 日志上下文信息 */
     private final LogContext context;
 
-    public LogSettings(LogContext context) {
+    protected LogSettings(LogContext context) {
         this.context = Ensure.notNull(context);
     }
 
@@ -60,12 +60,12 @@ public class LogSettings {
      *             sout+:info 使用指定日志级别输出日志 <br>
      *             sout+pattern:info 使用指定日志级别输出日志 <br>
      *             <br>
-     *             >${temp}/file.log 不带格式输出日志 <br>
-     *             >${temp}/file.log+ 带格式输出日志 <br>
-     *             >${temp}/file.log+pattern 使用指定格式输出日志 <br>
+     *             >${TMPDIR}/file.log 不带格式输出日志 <br>
+     *             >${TMPDIR}/file.log+ 带格式输出日志 <br>
+     *             >${TMPDIR}/file.log+pattern 使用指定格式输出日志 <br>
      *             <br>
      *             案例: <br>
-     *             sout+,>>${temp}/file.log
+     *             sout+,>>${TMPDIR}/file.log
      * @return 返回与日志配置无关的配置信息
      */
     public String[] load(String... args) {
@@ -164,9 +164,9 @@ public class LogSettings {
      * @param expression 配置信息
      */
     protected boolean parseBuilder(String expression) {
-        // >${temp}/file.log 不带格式输出日志
-        // >${temp}/file.log+ 带格式输出日志
-        // >${temp}/file.log+pattern 使用指定格式输出日志
+        // >${TMPDIR}/file.log 不带格式输出日志
+        // >${TMPDIR}/file.log+ 带格式输出日志
+        // >${TMPDIR}/file.log+pattern 使用指定格式输出日志
         if (expression.length() >= 1 && expression.charAt(0) == '>') {
             boolean append = false;
             String logfileExpr = StringUtils.trimBlank(expression.substring(1));

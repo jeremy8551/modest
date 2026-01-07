@@ -2,10 +2,10 @@ package cn.org.expect.ioc;
 
 import java.util.Arrays;
 
-import cn.org.expect.ProjectPom;
 import cn.org.expect.ioc.internal.ScanPatternList;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.util.Settings;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -46,7 +46,7 @@ public class EasyScanPatternListTest {
 
         list.addGroupID();
         Assert.assertEquals(old + 1, list.size());
-        Assert.assertEquals(ProjectPom.getGroupID(), list.get(0).getPrefix());
+        Assert.assertEquals(Settings.getPackageName(), list.get(0).getPrefix());
 
         Assert.assertEquals("cn.org.expect,org.apache,!com.spring,a.b,!d.c,g.h.c,!a.c.d", list.toArgumentString());
         Assert.assertEquals("[cn.org.expect, org.apache, !com.spring, a.b, !d.c, g.h.c, !a.c.d]", Arrays.toString(list.toArray()));

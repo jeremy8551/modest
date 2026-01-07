@@ -26,7 +26,7 @@ public class ExecuteFunctionCommand extends AbstractTraceCommand implements Nohu
     private String parameters;
 
     /** 正在运行的脚本命令 */
-    protected UniversalScriptCommand command;
+    protected volatile UniversalScriptCommand command;
 
     public ExecuteFunctionCommand(UniversalCommandCompiler compiler, String command, String parameters) {
         super(compiler, command);
@@ -35,23 +35,23 @@ public class ExecuteFunctionCommand extends AbstractTraceCommand implements Nohu
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         UniversalScriptAnalysis analysis = session.getAnalysis();
-        String str = analysis.trim(analysis.replaceShellVariable(session, context, this.parameters, true, true), 0, 1);
         List<String> list = new ArrayList<String>();
-        analysis.split(str, list);
+        analysis.split(this.parameters, list);
         for (int i = 0; i < list.size(); i++) {
-            list.set(i, analysis.unQuotation(list.get(i)));
+            String str = list.get(i);
+            list.set(i, analysis.replaceShellVariable(session, context, analysis.unQuotation(str), true, !analysis.containsQuotation(str)));
         }
-        String[] args = str == null ? null : CollectionUtils.toArray(list);
+        String[] args = CollectionUtils.toArray(list);
+
         String name = args[0];
         boolean reverse = name.startsWith("!");
-
         String functionName = reverse ? name.substring(1) : name;
         CommandList body = FunctionSet.get(context, false).get(functionName); // 优先从局部域中查询自定义方法
         if (body == null) { //
             body = FunctionSet.get(context, true).get(functionName); // 从全局域中查找自定义方法
         }
-        int exitcode = this.execute(session, context, stdout, stderr, forceStdout, body, args);
 
+        int exitcode = this.execute(session, context, stdout, stderr, forceStdout, body, args);
         if (reverse) {
             return exitcode == 0 ? UniversalScriptCommand.COMMAND_ERROR : 0;
         } else {
@@ -96,13 +96,13 @@ public class ExecuteFunctionCommand extends AbstractTraceCommand implements Nohu
                 if (command instanceof LoopCommandKind) {
                     LoopCommandKind cmd = (LoopCommandKind) command;
                     int type = cmd.kind();
-                    if (type == ExitCommand.KIND) { // Exit script
+                    if (type == LoopCommandKind.EXIT_COMMAND) { // Exit script
                         return exitcode;
-                    } else if (type == ReturnCommand.KIND) { // Exit method
+                    } else if (type == LoopCommandKind.RETURN_COMMAND) { // Exit method
                         return exitcode;
-                    } else if (type == BreakCommand.KIND) { // break
+                    } else if (type == LoopCommandKind.BREAK_COMMAND) { // break
                         throw new UniversalScriptException("script.stderr.message028", this.getScript());
-                    } else if (type == ContinueCommand.KIND) { // continue
+                    } else if (type == LoopCommandKind.CONTINUE_COMMAND) { // continue
                         throw new UniversalScriptException("script.stderr.message029", this.getScript());
                     }
                 }

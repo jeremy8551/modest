@@ -37,7 +37,7 @@ public class TerminateCommand extends AbstractTraceCommand {
         UniversalScriptAnalysis analysis = session.getAnalysis();
         if (this.processIds != null) {
             for (String str : this.processIds) {
-                String pid = analysis.replaceShellVariable(session, context, str, true, false);
+                String pid = analysis.replaceShellVariable(session, context, str, true, true);
                 ScriptProcess process = session.getSubProcess().get(pid);
                 if (process == null) {
                     return UniversalScriptCommand.COMMAND_ERROR;
@@ -54,7 +54,7 @@ public class TerminateCommand extends AbstractTraceCommand {
         UniversalScriptSessionFactory manager = session.getSessionFactory();
         if (this.sessionIds != null) {
             for (String str : this.sessionIds) {
-                String id = analysis.replaceShellVariable(session, context, str, true, false);
+                String id = analysis.replaceShellVariable(session, context, str, true, true);
                 UniversalScriptSession obj = manager.get(id);
                 if (obj == null) {
                     return UniversalScriptCommand.COMMAND_ERROR;

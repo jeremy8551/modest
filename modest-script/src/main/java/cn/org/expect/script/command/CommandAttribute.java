@@ -30,10 +30,16 @@ public class CommandAttribute implements Attribute<String> {
     /** 无属性值的范围 */
     private Set<String> novalue;
 
+    /** 用户会话信息 */
+    private UniversalScriptSession session;
+
+    /** 脚本引擎上下文信息 */
+    private UniversalScriptContext context;
+
     /**
      * 初始化
      */
-    public CommandAttribute() {
+    protected CommandAttribute() {
         this.attributes = new CaseSensitivMap<String>();
         this.value = new CaseSensitivSet();
         this.novalue = new CaseSensitivSet();
@@ -42,15 +48,19 @@ public class CommandAttribute implements Attribute<String> {
     /**
      * 初始化
      *
-     * @param names 支持的属性名数组（添加数组之外的属性会抛出异常）<br>
-     *              属性名右侧没有半角冒号表示不存在属性值（会抛出异常）<br>
-     *              属性名右侧使用半角冒号表示存在属性值 <br>
+     * @param session 用户会话信息
+     * @param context 脚本引擎上下文信息
+     * @param names   支持的属性名数组（添加数组之外的属性会抛出异常）<br>
+     *                属性名右侧没有半角冒号表示不存在属性值（会抛出异常）<br>
+     *                属性名右侧使用半角冒号表示存在属性值 <br>
      */
-    public CommandAttribute(String... names) {
+    public CommandAttribute(UniversalScriptSession session, UniversalScriptContext context, String... names) {
         this();
         if (names.length == 0) {
             throw new IllegalArgumentException();
         }
+        this.session = session;
+        this.context = context;
 
         for (int i = 0; i < names.length; i++) {
             String name = Ensure.notNull(names[i]);
@@ -109,12 +119,14 @@ public class CommandAttribute implements Attribute<String> {
     }
 
     public void setAttribute(String name, String value) {
-        if (value != null && value.length() > 0 && this.novalue.contains(name)) {
+        String newValue = this.session.getAnalysis().replaceShellVariable(this.session, this.context, value, true, true);
+
+        if (newValue != null && newValue.length() > 0 && this.novalue.contains(name)) {
             throw new UnsupportedOperationException(name);
         } else if (!this.value.contains(name) && !this.novalue.contains(name)) {
             throw new UnsupportedOperationException(name);
         } else {
-            this.attributes.put(name, value);
+            this.attributes.put(name, newValue);
         }
     }
 
@@ -128,7 +140,7 @@ public class CommandAttribute implements Attribute<String> {
         while (it.hasNext()) {
             String key = it.next();
             String value = this.attributes.get(key);
-            String newValue = analysis.unQuotation(analysis.replaceShellVariable(session, context, value, true, true));
+            String newValue = analysis.replaceShellVariable(session, context, analysis.unQuotation(value), true, !analysis.containsQuotation(value));
             obj.attributes.put(key, newValue);
         }
         return obj;

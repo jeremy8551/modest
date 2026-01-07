@@ -1,27 +1,54 @@
 package cn.org.expect.database.mysql;
 
+import java.sql.Clob;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import cn.org.expect.collection.CaseSensitivSet;
 import cn.org.expect.database.DatabaseDDL;
 import cn.org.expect.database.DatabaseIndex;
 import cn.org.expect.database.DatabaseProcedure;
+import cn.org.expect.database.DatabaseTable;
 import cn.org.expect.database.DatabaseTableColumn;
+import cn.org.expect.database.DatabaseTableColumnList;
+import cn.org.expect.database.DatabaseTypeFactory;
 import cn.org.expect.database.DatabaseURL;
 import cn.org.expect.database.JdbcConverterMapper;
 import cn.org.expect.database.JdbcDao;
+import cn.org.expect.database.JdbcQueryStatement;
+import cn.org.expect.database.SQL;
+import cn.org.expect.database.db2.expconv.StringConverter;
+import cn.org.expect.database.export.converter.AbstractConverter;
+import cn.org.expect.database.export.converter.BlobConverter;
+import cn.org.expect.database.export.converter.ByteArrayConverter;
+import cn.org.expect.database.export.converter.ClobConverter;
+import cn.org.expect.database.export.converter.DateConverter;
+import cn.org.expect.database.export.converter.FloatConverter;
+import cn.org.expect.database.export.converter.IntegerConverter;
+import cn.org.expect.database.export.converter.LongConverter;
 import cn.org.expect.database.internal.AbstractDialect;
+import cn.org.expect.database.internal.StandardDatabaseDDL;
+import cn.org.expect.database.internal.StandardDatabaseProcedure;
 import cn.org.expect.database.internal.StandardDatabaseURL;
+import cn.org.expect.database.internal.StandardJdbcConverterMapper;
+import cn.org.expect.io.ClobWriter;
 import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
 @EasyBean(value = "mysql")
 public class MysqlDialect extends AbstractDialect {
+
+    /** 数据库中字段类型与卸载处理逻辑的映射关系 */
+    protected StandardJdbcConverterMapper exp;
+
+    /** 类型映射关系 */
+    protected StandardJdbcConverterMapper map;
 
     /**
      * 初始化
@@ -30,16 +57,33 @@ public class MysqlDialect extends AbstractDialect {
         super();
     }
 
-    public String toDeleteQuicklySQL(Connection connection, String catalog, String schema, String tableName) {
+    public String generateDeleteQuicklySQL(Connection connection, String catalog, String schema, String tableName) {
         if (StringUtils.isBlank(tableName)) {
             throw new IllegalArgumentException(tableName);
         } else {
-            return "truncate table " + this.toTableName(catalog, schema, tableName);
+            return "truncate table " + this.generateTableName(catalog, schema, tableName);
         }
     }
 
+    public String generateTableName(String catalog, String schema, String tableName) {
+        return super.generateTableName(catalog, schema, tableName);
+    }
+
+    public boolean terminate(Connection conn, Properties p) throws SQLException {
+        return super.terminate(conn, p);
+    }
+
+    public String getSchema(Connection conn) throws SQLException {
+        String schema = StringUtils.trimBlank((String) JdbcDao.queryFirstRowFirstCol(conn, "SELECT SCHEMA()"));
+        return schema == null ? schema : schema.toUpperCase();
+    }
+
     public void setSchema(Connection conn, String schema) throws SQLException {
-        JdbcDao.execute(conn, "set schema " + schema);
+        JdbcDao.execute(conn, "USE " + schema);
+    }
+
+    protected DatabaseTypeFactory getDatabaseTypeFactory() {
+        return new MysqlDatabaseTypeFactory();
     }
 
     public List<DatabaseURL> parseJdbcUrl(String url) {
@@ -115,69 +159,237 @@ public class MysqlDialect extends AbstractDialect {
         }
     }
 
-    public List<DatabaseProcedure> getProcedure(Connection connection, String catalog, String schema, String procedureName) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public List<DatabaseProcedure> getProcedures(Connection connection, String catalog, String schema, String procedureName) throws SQLException {
+        catalog = this.parseIdentifier(catalog);
+        schema = this.parseIdentifier(schema);
+        procedureName = this.parseIdentifier(procedureName);
+
+        schema = SQL.escapeQuote(schema);
+        procedureName = SQL.escapeQuote(procedureName);
+
+        String where = "";
+        if (StringUtils.isNotBlank(schema)) {
+            where += " and ROUTINE_SCHEMA='" + SQL.toIdentifier(schema) + "'";
+        }
+        if (StringUtils.isNotBlank(procedureName)) {
+            if (procedureName.indexOf('%') != -1) {
+                where += " and ROUTINE_NAME like '" + SQL.toIdentifier(procedureName) + "'";
+            } else {
+                where += " and ROUTINE_NAME = '" + SQL.toIdentifier(procedureName) + "'";
+            }
+        }
+
+        List<DatabaseProcedure> list = new ArrayList<DatabaseProcedure>();
+        String sql = "select ROUTINE_CATALOG,ROUTINE_SCHEMA,ROUTINE_NAME,EXTERNAL_LANGUAGE from INFORMATION_SCHEMA.ROUTINES where ROUTINE_TYPE = 'PROCEDURE' " + where;
+        JdbcQueryStatement dao = new JdbcQueryStatement(connection, sql);
+        ResultSet resultSet = dao.query();
+        while (resultSet.next()) {
+            StandardDatabaseProcedure obj = new StandardDatabaseProcedure();
+            obj.setCatalog(StringUtils.rtrimBlank(resultSet.getString("ROUTINE_CATALOG")));
+            obj.setSchema(StringUtils.rtrimBlank(resultSet.getString("ROUTINE_SCHEMA")));
+            obj.setName(StringUtils.rtrimBlank(resultSet.getString("ROUTINE_NAME")));
+            obj.setFullName(this.generateTableName(obj.getCatalog(), obj.getSchema(), obj.getName()));
+            obj.setId(obj.getFullName());
+            obj.setCreator("");
+            obj.setCreatTime(null);
+            obj.setLanguage(StringUtils.rtrimBlank(resultSet.getString("EXTERNAL_LANGUAGE")));
+            list.add(obj);
+        }
+        dao.close();
+        return list;
     }
 
     public JdbcConverterMapper getObjectConverters() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (this.exp == null) {
+            this.exp = new StandardJdbcConverterMapper();
+            this.exp.add("TINYINT", IntegerConverter.class);
+            this.exp.add("SMALLINT", IntegerConverter.class);
+            this.exp.add("MEDIUMINT", IntegerConverter.class);
+            this.exp.add("INTEGER", IntegerConverter.class);
+            this.exp.add("BIGINT", LongConverter.class);
+            this.exp.add("DECIMAL", cn.org.expect.database.export.converter.BigDecimalConverter.class);
+            this.exp.add("NUMERIC", cn.org.expect.database.export.converter.BigDecimalConverter.class);
+            this.exp.add("FLOAT", FloatConverter.class);
+            this.exp.add("DOUBLE", cn.org.expect.database.export.converter.DoubleConverter.class);
+            this.exp.add("REAL", cn.org.expect.database.export.converter.DoubleConverter.class);
+            this.exp.add("YEAR", DateConverter.class, AbstractConverter.PARAM_DATEFORMAT, "yyyy");
+            this.exp.add("DATE", DateConverter.class, AbstractConverter.PARAM_DATEFORMAT, "yyyy-MM-dd");
+            this.exp.add("TIME", cn.org.expect.database.export.converter.TimeConverter.class, AbstractConverter.PARAM_TIMEFORMAT, "hh:mm:ss");
+            this.exp.add("DATETIME", cn.org.expect.database.export.converter.TimestampConverter.class, AbstractConverter.PARAM_TIMESTAMPFORMAT, "yyyy-MM-dd HH:mm:ss");
+            this.exp.add("TIMESTAMP", cn.org.expect.database.export.converter.TimestampConverter.class, AbstractConverter.PARAM_TIMESTAMPFORMAT, "yyyy-MM-dd HH:mm:ss");
+            this.exp.add("CHAR", StringConverter.class);
+            this.exp.add("VARCHAR", StringConverter.class);
+            this.exp.add("TINYTEXT", ClobConverter.class);
+            this.exp.add("TEXT", ClobConverter.class);
+            this.exp.add("MEDIUMTEXT", ClobConverter.class);
+            this.exp.add("LONGTEXT", ClobConverter.class);
+            this.exp.add("BINARY", ByteArrayConverter.class);
+            this.exp.add("VARBINARY", ByteArrayConverter.class);
+            this.exp.add("TINYBLOB", BlobConverter.class);
+            this.exp.add("BLOB", BlobConverter.class);
+            this.exp.add("MEDIUMBLOB", BlobConverter.class);
+            this.exp.add("LONGBLOB", BlobConverter.class);
+        }
+        return this.exp;
+    }
+
+    public JdbcConverterMapper getStringConverters() {
+        if (this.map == null) {
+            this.map = new StandardJdbcConverterMapper();
+            this.map.add("TINYINT", cn.org.expect.database.load.converter.IntegerConverter.class);
+            this.map.add("SMALLINT", cn.org.expect.database.load.converter.IntegerConverter.class);
+            this.map.add("MEDIUMINT", cn.org.expect.database.load.converter.IntegerConverter.class);
+            this.map.add("INTEGER", cn.org.expect.database.load.converter.IntegerConverter.class);
+            this.map.add("BIGINT", cn.org.expect.database.load.converter.LongConverter.class);
+            this.map.add("DECIMAL", cn.org.expect.database.load.converter.BigDecimalConverter.class);
+            this.map.add("NUMERIC", cn.org.expect.database.load.converter.BigDecimalConverter.class);
+            this.map.add("FLOAT", cn.org.expect.database.load.converter.FloatConverter.class);
+            this.map.add("DOUBLE", cn.org.expect.database.load.converter.DoubleConverter.class);
+            this.map.add("REAL", cn.org.expect.database.load.converter.DoubleConverter.class);
+            this.map.add("YEAR", cn.org.expect.database.load.converter.DateConverter.class, AbstractConverter.PARAM_DATEFORMAT, "yyyy");
+            this.map.add("DATE", cn.org.expect.database.load.converter.DateConverter.class, AbstractConverter.PARAM_DATEFORMAT, "yyyy-MM-dd");
+            this.map.add("TIME", cn.org.expect.database.load.converter.TimeConverter.class, AbstractConverter.PARAM_TIMEFORMAT, "hh:mm:ss");
+            this.map.add("DATETIME", cn.org.expect.database.load.converter.TimestampConverter.class, AbstractConverter.PARAM_TIMESTAMPFORMAT, "yyyy-MM-dd HH:mm:ss");
+            this.map.add("TIMESTAMP", cn.org.expect.database.load.converter.TimestampConverter.class, AbstractConverter.PARAM_TIMESTAMPFORMAT, "yyyy-MM-dd HH:mm:ss");
+            this.map.add("CHAR", cn.org.expect.database.load.converter.StringConverter.class);
+            this.map.add("VARCHAR", cn.org.expect.database.load.converter.StringConverter.class);
+            this.map.add("TINYTEXT", cn.org.expect.database.load.converter.ClobConverter.class);
+            this.map.add("TEXT", cn.org.expect.database.load.converter.ClobConverter.class);
+            this.map.add("MEDIUMTEXT", cn.org.expect.database.load.converter.ClobConverter.class);
+            this.map.add("LONGTEXT", cn.org.expect.database.load.converter.ClobConverter.class);
+            this.map.add("BINARY", cn.org.expect.database.load.converter.ByteArrayConverter.class);
+            this.map.add("VARBINARY", cn.org.expect.database.load.converter.ByteArrayConverter.class);
+            this.map.add("TINYBLOB", cn.org.expect.database.load.converter.BlobConverter.class);
+            this.map.add("BLOB", cn.org.expect.database.load.converter.BlobConverter.class);
+            this.map.add("MEDIUMBLOB", cn.org.expect.database.load.converter.BlobConverter.class);
+            this.map.add("LONGBLOB", cn.org.expect.database.load.converter.BlobConverter.class);
+        }
+        return this.map;
     }
 
     public boolean isOverLengthException(Throwable e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (e instanceof SQLException) {
+            SQLException sqlExp = (SQLException) e;
+            while (sqlExp != null) {
+                if (sqlExp.getErrorCode() == 1406) {
+                    return true;
+                }
+
+                sqlExp = sqlExp.getNextException();
+            }
+        }
+
+        Throwable cause = e.getCause();
+        if (cause == null) {
+            return false;
+        } else {
+            return this.isOverLengthException(cause);
+        }
     }
 
     public boolean isRebuildTableException(Throwable e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (e instanceof SQLException) {
+            SQLException sqlExp = (SQLException) e;
+            while (sqlExp != null) {
+                if (sqlExp.getErrorCode() == 1064) {
+                    return true;
+                }
+
+                sqlExp = sqlExp.getNextException();
+            }
+        }
+
+        Throwable cause = e.getCause();
+        if (cause == null) {
+            return false;
+        } else {
+            return this.isRebuildTableException(cause);
+        }
     }
 
     public boolean isPrimaryRepeatException(Throwable e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (e instanceof SQLException) {
+            SQLException sqlExp = (SQLException) e;
+            while (sqlExp != null) {
+                if (sqlExp.getErrorCode() == 1062) {
+                    return true;
+                }
+
+                sqlExp = sqlExp.getNextException();
+            }
+        }
+
+        Throwable cause = e.getCause();
+        if (cause == null) {
+            return false;
+        } else {
+            return this.isPrimaryRepeatException(cause);
+        }
     }
 
     public boolean isIndexExistsException(Throwable e) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        if (e instanceof SQLException) {
+            SQLException sqlExp = (SQLException) e;
+            while (sqlExp != null) {
+                if (sqlExp.getErrorCode() == 1061) {
+                    return true;
+                }
+
+                sqlExp = sqlExp.getNextException();
+            }
+        }
+
+        Throwable cause = e.getCause();
+        if (cause == null) {
+            return false;
+        } else {
+            return this.isIndexExistsException(cause);
+        }
     }
 
     public void reorgRunstatsIndexs(Connection conn, List<DatabaseIndex> indexs) throws SQLException {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
     }
 
-    public void openLoadMode(JdbcDao conn, String fullname) throws SQLException {
+    public void openLoadMode(JdbcDao conn, String fullTableName) throws SQLException {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
     }
 
-    public void closeLoadMode(JdbcDao conn, String fullname) throws SQLException {
+    public void closeLoadMode(JdbcDao conn, String fullTableName) throws SQLException {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
     }
 
-    public void commitLoadData(JdbcDao conn, String fullname) throws SQLException {
+    public void commitLoadData(JdbcDao conn, String fullTableName) throws SQLException {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
     }
 
-    public JdbcConverterMapper getStringConverters() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public boolean expandLength(final DatabaseTableColumn column, final String value, final String charsetName) {
+        return false;
+    }
+
+    public void expandLength(final Connection conn, final DatabaseTableColumnList oldTableColumnList, final List<DatabaseTableColumn> newTableColumnList) throws SQLException {
     }
 
     public String getCatalog(Connection connection) throws SQLException {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+        return connection.getCatalog();
     }
 
-    public DatabaseDDL toDDL(Connection connection, DatabaseProcedure procedure) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException();
+    public DatabaseDDL generateDDL(Connection connection, DatabaseProcedure procedure) throws SQLException {
+        StandardDatabaseDDL ddl = new StandardDatabaseDDL();
+        JdbcQueryStatement dao = new JdbcQueryStatement(connection, "select ROUTINE_DEFINITION from INFORMATION_SCHEMA.ROUTINES where ROUTINE_NAME=? and ROUTINE_SCHEMA=? ");
+        try { // 从数据库系统表中查询储存过程的源代码信息
+            dao.setParameter(procedure.getName());
+            dao.setParameter(procedure.getSchema());
+
+            ResultSet resultSet = dao.query();
+            if (resultSet.next()) {
+                Clob value = resultSet.getClob("ROUTINE_DEFINITION");
+                ddl.add(new ClobWriter(value).toString());
+            }
+            return ddl;
+        } finally {
+            dao.close();
+        }
     }
 
     public String getKeepAliveSQL() {
@@ -188,7 +400,7 @@ public class MysqlDialect extends AbstractDialect {
         return true;
     }
 
-    public String toMergeStatement(String tableName, List<DatabaseTableColumn> columns, List<String> mergeColumn) {
+    public String generateMergeStatement(String tableName, List<DatabaseTableColumn> columns, List<String> mergeColumn) {
         CaseSensitivSet set = new CaseSensitivSet(mergeColumn);
         String sql = "INSERT INTO " + tableName + " (";
         for (Iterator<DatabaseTableColumn> it = columns.iterator(); it.hasNext(); ) {
@@ -224,5 +436,9 @@ public class MysqlDialect extends AbstractDialect {
             comma = true;
         }
         return sql;
+    }
+
+    public List<DatabaseTable> getTable(Connection connection, String catalog, String schema, String tableName) throws SQLException {
+        return super.getTable(connection, catalog, schema, tableName);
     }
 }

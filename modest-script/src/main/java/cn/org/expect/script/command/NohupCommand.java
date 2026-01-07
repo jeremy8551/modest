@@ -8,7 +8,6 @@ import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
-import cn.org.expect.script.UniversalScriptVariable;
 import cn.org.expect.script.session.ScriptProcess;
 import cn.org.expect.script.session.ScriptProcessEnvironment;
 import cn.org.expect.util.ResourcesUtils;
@@ -72,12 +71,11 @@ public class NohupCommand extends AbstractCommand {
         if (this.terminate) {
             return UniversalScriptCommand.TERMINATE;
         } else {
-            session.addVariable(UniversalScriptVariable.VARNAME_PID, process.getPid()); // 保存进程编号
             if (print) {
                 stdout.print("appending output to " + logfile.getAbsolutePath() + Settings.getLineSeparator() + process.getPid());
             }
 
-            session.putValue(process.getPid());
+            session.setValue(process.getPid());
             return 0;
         }
     }

@@ -44,7 +44,7 @@ public class EasyCombine {
      * @return 返回true表示任务进入等待状态成功，false表示发生异常
      */
     public boolean wakeup() {
-        synchronized (this.lock) { //上锁
+        synchronized (this.lock) { // 上锁
             try {
                 this.lock.notifyAll();
                 return true;

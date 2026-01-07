@@ -69,7 +69,7 @@ public class VariableMethodCommandCompiler extends AbstractTraceCommandCompiler 
         Ensure.isTrue(variableNameEnd < length, command);
         String variableName = command.substring(reverse ? 1 : 0, variableNameEnd); // 变量名
         String methodName = this.readMethodName(command, variableNameEnd); // 变量方法名
-        return new VariableMethodCommand(this, orginalScript, this.methodRepository, variableName, methodName, reverse);
+        return new VariableMethodCommand(this, orginalScript, this.methodRepository, variableName, methodName);
     }
 
     /**
@@ -78,11 +78,10 @@ public class VariableMethodCommandCompiler extends AbstractTraceCommandCompiler 
      * @param analysis     语句分析器
      * @param variableName 变量名
      * @param methodName   变量方法名, 如: substr(1, 2).length(), [0]
-     * @param reverse      true表示布尔值取反
      */
-    public VariableMethodCommand compile(UniversalScriptAnalysis analysis, String variableName, String methodName, boolean reverse) {
+    public VariableMethodCommand compile(UniversalScriptAnalysis analysis, String variableName, String methodName) {
         String command = methodName.length() > 0 && methodName.charAt(0) == '[' ? (variableName + methodName) : (variableName + "." + methodName);
-        return new VariableMethodCommand(this, command, this.methodRepository, variableName, methodName, reverse);
+        return new VariableMethodCommand(this, command, this.methodRepository, variableName, methodName);
     }
 
     /**

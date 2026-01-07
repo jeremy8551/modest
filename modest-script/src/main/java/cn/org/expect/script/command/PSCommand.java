@@ -55,7 +55,7 @@ public class PSCommand extends AbstractTraceCommand implements NohupCommandSuppo
      * @return 字符表格
      */
     public CharTable printAllProcess(UniversalScriptSession session) {
-        String[] titles = StringUtils.split(ResourcesUtils.getMessage("script.stdout.message043"), ',');
+        String[] titles = ResourcesUtils.getMessageArray("script.stdout.message043");
         CharTable table = new CharTable();
         table.addTitle(titles[0]);
         table.addTitle(titles[1], CharTable.ALIGN_RIGHT);
@@ -113,7 +113,7 @@ public class PSCommand extends AbstractTraceCommand implements NohupCommandSuppo
      * @return 字符表格
      */
     public CharTable printAllSession(UniversalScriptSession session) {
-        String[] titles = StringUtils.split(ResourcesUtils.getMessage("script.stdout.message044"), ',');
+        String[] titles = ResourcesUtils.getMessageArray("script.stdout.message044");
         CharTable table = new CharTable();
         table.addTitle(titles[0]);
         table.addTitle(titles[1]);

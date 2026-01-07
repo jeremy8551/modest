@@ -45,6 +45,6 @@ public class OSMemoryImpl implements OSMemory {
     }
 
     public String toString() {
-        return "OSMemoryImpl [total=" + DataUnitExpression.toString(total) + ", free=" + DataUnitExpression.toString(free) + ", active=" + DataUnitExpression.toString(active) + "]";
+        return "OSMemoryImpl [total=" + DataUnitExpression.toString(total, true) + ", free=" + DataUnitExpression.toString(free, true) + ", active=" + DataUnitExpression.toString(active, true) + "]";
     }
 }

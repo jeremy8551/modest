@@ -18,8 +18,9 @@ public class UnrarCommandCompiler extends AbstractFileCommandCompiler {
     }
 
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
-        CommandExpression expr = new CommandExpression(analysis, "unrar {0-1}", command);
-        String filepath = expr.getParameter();
-        return new UnrarCommand(this, orginalScript, filepath);
+        CommandExpression expr = new CommandExpression(analysis, "unrar -v {1-2}", command);
+        String zipFile = expr.getParameter(1);
+        String filepath = expr.getParameters().size() == 1 ? null : expr.getParameter(2);
+        return new UnrarCommand(this, orginalScript, zipFile, filepath, expr.containsOption("-v"));
     }
 }

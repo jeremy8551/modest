@@ -1,5 +1,5 @@
 
-echo "打印子脚本的所有异常处理规则 .."
+echo "Print all exception handling rules of the child script.."
 handler
 
 

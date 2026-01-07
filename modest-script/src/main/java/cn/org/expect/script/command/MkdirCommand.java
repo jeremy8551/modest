@@ -18,7 +18,7 @@ import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.JumpCommandSupported;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.internal.FtpList;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
@@ -58,12 +58,12 @@ public class MkdirCommand extends AbstractFileCommand implements UniversalScript
         OSFtpCommand ftp = FtpList.get(context).getFTPClient();
         boolean print = session.isEchoEnable() || forceStdout;
         if (this.localhost || ftp == null) {
-            ScriptFile file = new ScriptFile(session, context, this.filepath);
+            File file = PathExpression.toFile(session, context, this.filepath);
             if (print) {
                 stdout.println("mkdir " + file.getAbsolutePath());
             }
 
-            session.putValue(file);
+            session.setValue(file);
 
             if (this.reverse) {
                 return FileUtils.createDirectory(file) ? UniversalScriptCommand.COMMAND_ERROR : 0;
@@ -71,12 +71,12 @@ public class MkdirCommand extends AbstractFileCommand implements UniversalScript
                 return FileUtils.createDirectory(file) ? 0 : UniversalScriptCommand.COMMAND_ERROR;
             }
         } else {
-            String filepath = ScriptFile.replaceFilepath(session, context, this.filepath, false);
+            String filepath = PathExpression.resolve(session, context, this.filepath, false);
             if (print) {
                 stdout.println("mkdir " + filepath);
             }
 
-            session.putValue(new File(filepath));
+            session.setValue(new File(filepath));
 
             if (this.reverse) {
                 return ftp.exists(filepath) ? 0 : (ftp.mkdir(filepath) ? UniversalScriptCommand.COMMAND_ERROR : 0);

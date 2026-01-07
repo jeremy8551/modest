@@ -102,7 +102,7 @@ public class ParallelLoadFileEngine extends Terminator implements Loader, EasyCo
             int readBuffer = this.context.getReadBuffer(); // 读取输入流缓存大小
 
             // 创建并行任务输入与输出设备
-            LoadFileExecutorReader in = new LoadFileExecutorReader(factory, txtfile, readBuffer, result, msg.getFileFailRanage());
+            LoadFileExecutorReader in = new LoadFileExecutorReader(factory, txtfile, readBuffer, result, msg.getFileRangeList());
 
             // 将任务添加到容齐中并行执行装数任务
             EasyJobService container = this.ioc.getBean(ThreadSource.class).getJobService(thread);

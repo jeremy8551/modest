@@ -9,6 +9,7 @@ import cn.org.expect.expression.operation.Operator;
 import cn.org.expect.expression.parameter.Parameter;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.util.CharTable;
 
 /**
  * 运算公式
@@ -79,7 +80,9 @@ public class Formula {
 
         if (this.datas.size() == 1) {
             if (this.operations.isEmpty()) {
-                return this.datas.get(0);
+                Parameter parameter = this.datas.get(0);
+                parameter.execute();
+                return parameter;
             } else {
                 throw new ExpressionException("expression.stdout.message037");
             }
@@ -199,25 +202,41 @@ public class Formula {
      * @return 字符串
      */
     protected String toString(List<Parameter> datas, List<Operator> operations) {
+        CharTable table = new CharTable();
+        table.addTitle("Type");
+        table.addTitle("Class");
+        table.addTitle("");
+
         Iterator<Parameter> it = datas.iterator();
         Iterator<Operator> it1 = operations.iterator();
-        StringBuilder buf = new StringBuilder();
         while (it.hasNext()) {
             Parameter data = it.next();
-            Object value = data.value();
-            buf.append(value == null ? data : value);
-            buf.append(" ");
+
+            table.addCell("Data");
+            table.addCell(data.getClass().getName());
+            table.addCell(data);
 
             if (it1.hasNext()) {
-                buf.append(it1.next().getClass().getSimpleName());
-                buf.append(" ");
+                Operator operator = it1.next();
+
+                table.addCell("Operator");
+                table.addCell(operator.getClass().getName());
+                table.addCell(operator);
             }
         }
 
         while (it1.hasNext()) {
-            buf.append(it1.next().getClass().getSimpleName());
-            buf.append(" ");
+            Operator operator = it1.next();
+
+            table.addCell("Operator");
+            table.addCell(operator.getClass().getName());
+            table.addCell(operator);
         }
-        return buf.toString();
+
+        return table.toString(CharTable.Style.DB2);
+    }
+
+    public String toStandardString() {
+        return this.toString(this.datas, this.operations);
     }
 }

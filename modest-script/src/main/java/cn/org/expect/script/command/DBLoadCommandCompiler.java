@@ -51,7 +51,7 @@ public class DBLoadCommandCompiler extends AbstractTraceCommandCompiler {
         cxt.setNorepeat(false);
         cxt.setSavecount(10000);
 
-        CommandAttribute attrs = new CommandAttribute( //
+        CommandAttribute attrs = new CommandAttribute(session, context, //
             "charset:", // 文件字符集
             "codepage:", // 文件代码页
             "rowdel:", // 行间分隔符
@@ -78,26 +78,27 @@ public class DBLoadCommandCompiler extends AbstractTraceCommandCompiler {
         );
         cxt.setAttributes(attrs);
 
-        WordIterator it = analysis.parse(analysis.replaceShellVariable(session, context, command, true, true));
+        WordIterator it = analysis.parse(command);
         it.assertNext("db");
         it.assertNext("load");
         if (it.isNext("client")) {
             it.assertNext("client");
         }
         it.assertNext("from");
-        String filepath = analysis.unQuotation(it.readUntil("of"));
+        String filepathExpression = it.readUntil("of");
+        String filepath = analysis.replaceShellVariable(session, context, analysis.unQuotation(filepathExpression), true, !analysis.containsQuotation(filepathExpression));
         List<String> list = new ArrayList<String>();
-        analysis.split(analysis.unQuotation(filepath), list, analysis.getSegment());
+        analysis.split(filepath, list, analysis.getSegment());
         cxt.setFiles(list); // 设置文件路径与文件类型
-        cxt.setFiletype(it.next());
+        cxt.setFiletype(analysis.replaceShellVariable(session, context, it.next(), true, true));
 
         // method p(1,2,3) 表示文件中字段与数据库表中字段映射关系
         // method c(name1, name2, name3) 表示 merge 语句的关联字段
         if (it.isNext("method")) {
             it.assertNext("method");
 
-            boolean pb = false, cb = false;
-            String next = null;
+            boolean pb, cb = false;
+            String next;
             while ((next = it.previewNext()) != null && ((pb = analysis.startsWith(next, "p(", 0, false)) || (cb = analysis.startsWith(next, "c(", 0, false)))) {
                 if (!next.endsWith(")")) {
                     throw new UniversalScriptException("script.stderr.message102", orginalScript, next);
@@ -139,16 +140,16 @@ public class DBLoadCommandCompiler extends AbstractTraceCommandCompiler {
             // 逐个读取属性，直到遇见 replace insert 等装载模式
             while (!LoadMode.isMode(it.previewNext())) {
                 String next = it.next();
-                String[] array = StringUtils.splitProperty(analysis.unQuotation(next));
 
-                String key = null; // 属性名
-                String value = null; // 属性值
+                String[] array = StringUtils.splitProperty(analysis.unQuotation(next));
+                String key; // 属性名
+                String value; // 属性值
                 if (array == null) { // 只有属性名
                     key = next;
                     value = "";
                 } else { // 有属性名和属性值
                     key = array[0];
-                    value = analysis.unQuotation(array[1]);
+                    value = analysis.replaceShellVariable(session, context, analysis.unQuotation(array[1]), true, !analysis.containsQuotation(array[1]));
                 }
 
                 // 设置建立一致点的笔数
@@ -223,11 +224,11 @@ public class DBLoadCommandCompiler extends AbstractTraceCommandCompiler {
             cxt.setDataSource(dataSource.getPool());
         }
 
-        cxt.setLoadMode(LoadMode.valueof(it.next())); // 解析装数模式 insert replace merge
+        cxt.setLoadMode(LoadMode.valueof(analysis.replaceShellVariable(session, context, it.next(), true, true))); // 解析装数模式 insert replace merge
         it.assertNext("into");
 
         // 解析数据库表名 schema.tableName(..)
-        String targetExpr = it.next();
+        String targetExpr = analysis.replaceShellVariable(session, context, it.next(), true, true);
         int begin = targetExpr.indexOf('('); // 判断是否通过小括号设置表中字段装载顺序
         if (begin == -1) { // 未指定字段
             cxt.setTableSchema(Jdbc.getSchema(targetExpr));
@@ -256,7 +257,8 @@ public class DBLoadCommandCompiler extends AbstractTraceCommandCompiler {
         if (it.isNext("for")) {
             it.assertNext("for");
             it.assertNext("exception");
-            String tableExpr = it.next();
+
+            String tableExpr = analysis.replaceShellVariable(session, context, it.next(), true, true);
             cxt.setErrorTableSchema(Jdbc.getSchema(tableExpr));
             cxt.setErrorTableName(Jdbc.removeSchema(tableExpr));
 
@@ -271,7 +273,7 @@ public class DBLoadCommandCompiler extends AbstractTraceCommandCompiler {
             if (it.isNext("indexing")) {
                 it.assertNext("indexing");
                 it.assertNext("mode");
-                cxt.setIndexMode(IndexMode.valueof(it.next()));
+                cxt.setIndexMode(IndexMode.valueof(analysis.replaceShellVariable(session, context, it.next(), true, true)));
             }
 
             // 解析 statistics use profile 短句

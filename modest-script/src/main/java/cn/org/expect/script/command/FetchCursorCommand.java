@@ -22,10 +22,10 @@ import cn.org.expect.util.ResourcesUtils;
 public class FetchCursorCommand extends AbstractCommand {
 
     /** 游标名 */
-    private final String name;
+    private String name;
 
     /** 变量名数组 */
-    private final List<String> variableNames;
+    private List<String> variableNames;
 
     public FetchCursorCommand(UniversalCommandCompiler compiler, String command, String name, List<String> variableNames) {
         super(compiler, command);
@@ -34,7 +34,7 @@ public class FetchCursorCommand extends AbstractCommand {
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
-        if (!context.getEngine().getChecker().isVariableName(this.name)) {
+        if (!context.getEngine().getChecker().checkVariableName(this.name)) {
             stderr.println(ResourcesUtils.getMessage("script.stderr.message069", this.command, this.name));
             return UniversalScriptCommand.COMMAND_ERROR;
         }

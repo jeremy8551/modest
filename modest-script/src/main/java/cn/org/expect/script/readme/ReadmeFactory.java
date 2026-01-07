@@ -1,0 +1,648 @@
+package cn.org.expect.script.readme;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+
+import cn.org.expect.database.DatabaseDialect;
+import cn.org.expect.database.Jdbc;
+import cn.org.expect.database.JdbcObjectConverter;
+import cn.org.expect.database.db2.DB2Dialect;
+import cn.org.expect.database.export.ExtractUserListener;
+import cn.org.expect.database.export.ExtractWriter;
+import cn.org.expect.database.internal.AbstractDialect;
+import cn.org.expect.database.internal.DatabaseDialectFactory;
+import cn.org.expect.expression.Expression;
+import cn.org.expect.io.TextTableFile;
+import cn.org.expect.ioc.DefaultEasyContext;
+import cn.org.expect.ioc.EasyBeanEntry;
+import cn.org.expect.ioc.EasyBeanFactory;
+import cn.org.expect.ioc.EasyClassScan;
+import cn.org.expect.ioc.EasyClassScanner;
+import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.ioc.annotation.EasyBean;
+import cn.org.expect.ioc.internal.BeanRepository;
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
+import cn.org.expect.maven.plugin.MavenPluginLog;
+import cn.org.expect.maven.plugin.pom.MavenPom;
+import cn.org.expect.maven.plugin.pom.MavenPomFactory;
+import cn.org.expect.message.ResourceMessageInternalBundle;
+import cn.org.expect.os.OSConnectCommand;
+import cn.org.expect.os.OSShellCommand;
+import cn.org.expect.os.linux.Linuxs;
+import cn.org.expect.script.UniversalCommandCompiler;
+import cn.org.expect.script.UniversalScriptAnalysis;
+import cn.org.expect.script.UniversalScriptCommand;
+import cn.org.expect.script.UniversalScriptCompiler;
+import cn.org.expect.script.UniversalScriptConfiguration;
+import cn.org.expect.script.UniversalScriptContext;
+import cn.org.expect.script.UniversalScriptEngine;
+import cn.org.expect.script.UniversalScriptEngineFactory;
+import cn.org.expect.script.UniversalScriptFormatter;
+import cn.org.expect.script.UniversalScriptInputStream;
+import cn.org.expect.script.UniversalScriptParser;
+import cn.org.expect.script.UniversalScriptReader;
+import cn.org.expect.script.UniversalScriptSession;
+import cn.org.expect.script.UniversalScriptStderr;
+import cn.org.expect.script.UniversalScriptStdout;
+import cn.org.expect.script.UniversalScriptVariable;
+import cn.org.expect.script.UniversalScriptVariableMethod;
+import cn.org.expect.script.annotation.EasyCommandCompiler;
+import cn.org.expect.script.annotation.EasyVariableExtension;
+import cn.org.expect.script.annotation.EasyVariableMethod;
+import cn.org.expect.script.command.AbstractCommandCompiler;
+import cn.org.expect.script.command.AbstractFileCommandCompiler;
+import cn.org.expect.script.command.AbstractGlobalCommandCompiler;
+import cn.org.expect.script.command.AbstractJavaCommand;
+import cn.org.expect.script.command.AbstractSlaveCommandCompiler;
+import cn.org.expect.script.command.AbstractTraceCommandCompiler;
+import cn.org.expect.script.command.DebugCommand;
+import cn.org.expect.script.command.DeclareCatalogCommandCompiler;
+import cn.org.expect.script.command.feature.CallbackCommandSupported;
+import cn.org.expect.script.command.feature.JumpCommandSupported;
+import cn.org.expect.script.command.feature.LoopCommandKind;
+import cn.org.expect.script.command.feature.LoopCommandSupported;
+import cn.org.expect.script.command.feature.NohupCommandSupported;
+import cn.org.expect.script.command.feature.WithBodyCommandSupported;
+import cn.org.expect.script.compiler.ScriptAnalysis;
+import cn.org.expect.script.internal.MethodNote;
+import cn.org.expect.script.method.VariableMethodEntry;
+import cn.org.expect.script.method.VariableMethodNoteParse;
+import cn.org.expect.script.method.VariableMethodRepository;
+import cn.org.expect.util.CharTable;
+import cn.org.expect.util.CharsetName;
+import cn.org.expect.util.CharsetUtils;
+import cn.org.expect.util.ClassUtils;
+import cn.org.expect.util.FileUtils;
+import cn.org.expect.util.IO;
+import cn.org.expect.util.NationalHolidays;
+import cn.org.expect.util.OSUtils;
+import cn.org.expect.util.ResourcesUtils;
+import cn.org.expect.util.Settings;
+import cn.org.expect.util.StackTraceUtils;
+import cn.org.expect.util.StringUtils;
+
+public class ReadmeFactory {
+    public static MavenPluginLog log;
+
+    public static void createDesktopDocument() {
+        File desktop = OSUtils.getDesktop();
+        if (FileUtils.isDirectory(desktop)) {
+            DefaultEasyContext context = new DefaultEasyContext();
+            UniversalScriptEngine engine = context.getBean(UniversalScriptEngineFactory.class).getScriptEngine();
+            File document = new File(desktop, "脚本引擎文档.md");
+            log.info(ResourcesUtils.getMessage("script.stdout.message058", document.getAbsolutePath()));
+            engine.evaluate("help > " + document.getAbsolutePath());
+        }
+    }
+
+    public static void main(String[] args) throws IOException {
+        int i = 0;
+        String charsetName = StringUtils.trimBlank(args[i++]);
+        String sourceDirectory = StringUtils.trimBlank(args[i++]);
+        String outputDirectory = StringUtils.trimBlank(args[i++]);
+        File gitProperties = new File(StringUtils.trimBlank(FileUtils.replaceFolderSeparator(args[i++])));
+        File springbootStarterModule = new File(StringUtils.trimBlank(args[i++]));
+        File scriptSampleJavaFile = new File(StringUtils.trimBlank(FileUtils.replaceFolderSeparator(args[i++])));
+        File javaxScriptSampleJavaFile = new File(StringUtils.trimBlank(FileUtils.replaceFolderSeparator(args[i++])));
+        File springBootSampleJavaFile = new File(StringUtils.trimBlank(FileUtils.replaceFolderSeparator(args[i++])));
+        File mysqlJavaFile = new File(StringUtils.trimBlank(FileUtils.replaceFolderSeparator(args[i++])));
+        File mysqlUslFile = new File(StringUtils.trimBlank(FileUtils.replaceFolderSeparator(args[i++])));
+        File sqlProcedureJavaFile = new File(StringUtils.trimBlank(FileUtils.replaceFolderSeparator(args[i++])));
+        File sqlProcedureUslFile = new File(StringUtils.trimBlank(FileUtils.replaceFolderSeparator(args[i++])));
+        File db2JavaFile = new File(StringUtils.trimBlank(FileUtils.replaceFolderSeparator(args[i++])));
+        File db2UslFile = new File(StringUtils.trimBlank(FileUtils.replaceFolderSeparator(args[i++])));
+        File sshUslFile = new File(StringUtils.trimBlank(FileUtils.replaceFolderSeparator(args[i++])));
+        File sftpUslFile = new File(StringUtils.trimBlank(FileUtils.replaceFolderSeparator(args[i++])));
+        File ftpUslFile = new File(StringUtils.trimBlank(FileUtils.replaceFolderSeparator(args[i++])));
+
+        ReadmeFactoryContext factoryContext = new ReadmeFactoryContext();
+        factoryContext.setCharsetName(charsetName);
+        factoryContext.setJavaxScriptSampleJavaFile(javaxScriptSampleJavaFile);
+        factoryContext.setSourceDirectory(sourceDirectory);
+        factoryContext.setGitProperties(gitProperties);
+        factoryContext.setModestSpringBootStarterName(springbootStarterModule.getName());
+        factoryContext.setScriptSampleJavaFile(scriptSampleJavaFile);
+        factoryContext.setSpringBootSampleJavaFile(springBootSampleJavaFile);
+        factoryContext.setMysqlJavaFile(mysqlJavaFile);
+        factoryContext.setMysqlUslFile(mysqlUslFile);
+        factoryContext.setSqlProcedureJavaFile(sqlProcedureJavaFile);
+        factoryContext.setSqlProcedureUslFile(sqlProcedureUslFile);
+        factoryContext.setDb2JavaFile(db2JavaFile);
+        factoryContext.setDb2UslFile(db2UslFile);
+        factoryContext.setSshUslFile(sshUslFile);
+        factoryContext.setSftpUslFile(sftpUslFile);
+        factoryContext.setFtpUslFile(ftpUslFile);
+
+        // 生成使用说明
+        FileUtils.assertDirectory(springbootStarterModule);
+        DefaultEasyContext context = new DefaultEasyContext();
+        UniversalScriptEngine engine = context.getBean(UniversalScriptEngineFactory.class).getScriptEngine();
+        ReadmeFactory factory = new ReadmeFactory();
+        String content = factory.newInstance(engine.getContext(), factoryContext);
+
+        // 写入 target/classes/xxx/xxx/xxx/README.md 文件
+        File dir = new File(FileUtils.joinPath(outputDirectory, UniversalScriptEngine.class.getPackage().getName().replace('.', '/')));
+        FileUtils.createDirectory(dir);
+        File markdown = new File(dir, "README.md");
+        FileUtils.write(markdown, charsetName, false, content);
+        log.info(ResourcesUtils.getMessage("script.stdout.message058", markdown.getAbsolutePath()));
+
+        // 写入根项目的 README.md 文件
+        File rootProjectBaseDir = springbootStarterModule.getParentFile();
+        File readme = new File(rootProjectBaseDir, "README.md");
+        FileUtils.write(readme, charsetName, false, content);
+        log.info(ResourcesUtils.getMessage("script.stdout.message058", readme.getAbsolutePath()));
+    }
+
+    public String newInstance(UniversalScriptContext context, ReadmeFactoryContext factoryContext) throws IOException {
+        MavenPom scriptPom = MavenPomFactory.newInstance(UniversalScriptContext.class.getPackage().getName());
+        String gitBranch = FileUtils.loadProperties(new FileInputStream(factoryContext.getGitProperties())).getProperty("git.branch"); // 分支名
+
+        Object[] args = { //
+            scriptPom.getGroupID() // 0 groupId
+            , scriptPom.getArtifactID() // 1 artifactId
+            , scriptPom.getVersion() // 2 version
+            , factoryContext.getModestSpringBootStarterName() // 3
+            , "" // 4
+            , "-b " + gitBranch // 5
+            , UniversalScriptVariable.VARNAME_CHARSET // 6
+            , "" // 7
+            , UniversalScriptVariable.SESSION_VARNAME_THIS // 8
+            , UniversalScriptVariable.SESSION_VARNAME_HOME // 9
+            , UniversalScriptVariable.SESSION_VARNAME_TEMP // 10
+            , UniversalScriptVariable.SESSION_VARNAME_SCRIPTFILE // 11
+            , UniversalScriptVariable.SESSION_VARNAME_PWD // 12
+            , UniversalScriptVariable.SESSION_VARNAME_OLDPWD // 13
+            , UniversalScriptVariable.VARNAME_CHARSET // 14
+            , "" // 15
+            , "" // 16
+            , "" // 17
+            , "" // 18
+            , "" // 19
+            , "" // 20
+            , "" // 21
+            , EasyBean.class.getSimpleName() // 22
+            , TextTableFile.class.getSimpleName() // 23
+            , ExtractWriter.class.getSimpleName() // 24
+            , AbstractDialect.class.getName() // 25 基础数据库方言类
+            , DatabaseDialect.class.getName() // 26 数据库方言类
+            , this.supportedDatabase(context) // 27 所有数据库方言类
+            , EasyContext.class.getName()  // 28
+            , EasyBean.class.getName() // 29
+            , DatabaseDialect.class.getSimpleName() // 30
+            , DatabaseDialectFactory.class.getName() // 31
+            , EasyContext.class.getSimpleName() // 32
+            , DB2Dialect.class.getSimpleName() // 33
+            , Arrays.toString(context.getContainer().getScanPackages()) // 34
+            , StringUtils.removePrefix(FileUtils.getTempDir(false).getAbsolutePath(), Settings.getTempDir()) // 35
+            , BeanRepository.class.getName() // 36
+            , EasyBeanFactory.class.getName() // 37
+            , EasyBeanEntry.class.getName() // 38
+            , ClassUtils.toMethodName(EasyContext.class, "getBean", Class.class, Object[].class) // 39
+            , "" // 40
+            , Expression.class.getName() // 41
+            , DefaultEasyContext.class.getName() // 42
+            , FileUtils.class.getSimpleName() // 43
+            , ClassUtils.toMethodName(FileUtils.class, "getTempDir", String[].class) // 44
+            , FileUtils.readline(factoryContext.getScriptSampleJavaFile(), factoryContext.getCharsetName(), 0) // 45
+            , FileUtils.readline(factoryContext.getJavaxScriptSampleJavaFile(), factoryContext.getCharsetName(), 0) // 46
+            , FileUtils.readline(factoryContext.getSpringBootSampleJavaFile(), factoryContext.getCharsetName(), 0) // 47
+            , FileUtils.readline(factoryContext.getMysqlJavaFile(), factoryContext.getCharsetName(), 0) // 48
+            , FileUtils.readline(factoryContext.getMysqlUslFile(), factoryContext.getCharsetName(), 0) // 49
+            , EasyCommandCompiler.class.getName() // 50
+            , EasyCommandCompiler.class.getSimpleName() // 51
+            , EasyVariableMethod.class.getName() // 52
+            , EasyVariableMethod.class.getSimpleName() // 53
+            , UniversalScriptVariableMethod.class.getName() // 54
+            , this.readCommandUsage(context) // 55
+            , this.readVariableMethodUsage(context, factoryContext.getSourceDirectory()) // 56
+            , ClassUtils.toMethodName(EasyVariableMethod.class, "name") // 57
+            , EasyVariableExtension.class.getName() // 58
+            , EasyVariableExtension.class.getSimpleName() // 59
+            , FileUtils.readline(factoryContext.getSqlProcedureJavaFile(), factoryContext.getCharsetName(), 0) // 60
+            , FileUtils.readline(factoryContext.getSqlProcedureUslFile(), factoryContext.getCharsetName(), 0) // 61
+            , FileUtils.readline(factoryContext.getDb2JavaFile(), factoryContext.getCharsetName(), 0) // 62
+            , FileUtils.readline(factoryContext.getDb2UslFile(), factoryContext.getCharsetName(), 0) // 63
+            , FileUtils.readline(factoryContext.getSshUslFile(), factoryContext.getCharsetName(), 0) // 64
+            , FileUtils.readline(factoryContext.getSftpUslFile(), factoryContext.getCharsetName(), 0) // 65
+            , FileUtils.readline(factoryContext.getFtpUslFile(), factoryContext.getCharsetName(), 0) // 66
+            , "" // 67
+            , "" // 68
+            , "" // 69
+            , EasyClassScanner.PROPERTY_SCAN_PKG // 70
+            , Log.PROPERTY_LOGGER // 71
+            , LogFactory.PROPERTY_LOG_SOUT // 72
+            , CharsetUtils.PROPERTY_CHARSET // 73
+            , IO.PROPERTY_BYTE_ARRAY_LENGTH // 74
+            , ResourcesUtils.PROPERTY_RESOURCE // 75
+            , IO.PROPERTY_CHAR_ARRAY_LENGTH // 76
+            , FileUtils.PROPERTY_TEMP_DIR // 77
+            , StackTraceUtils.PROPERTY_LOG_STACKTRACE // 78
+            , Jdbc.PROPERTY_DATABASE_LOG // 79
+            , Linuxs.PROPERTY_LINUX_BUILTIN_ACCT // 80
+            , LogFactory.SOUT_PLUS_PATTERN // 81
+            , ResourcesUtils.PROPERTY_RESOURCE_NAME // 82
+            , ResourcesUtils.PROPERTY_RESOURCE_LOCALE // 83
+            , ResourceMessageInternalBundle.RESOURCE_NAME // 84
+            , NationalHolidays.PROPERTY_HOLIDAY // 85
+            , FileUtils.getParent(NationalHolidays.RESOURCE_NAME) // 86
+            , NationalHolidays.HOLIDAY_CONFIG_DIR // 87
+            , "" // 88
+            , ResourcesUtils.class.getPackage().getName() // 89
+            , UniversalScriptEngineFactory.class.getName() // 90
+            , UniversalScriptEngine.class.getName() // 91
+            , UniversalScriptContext.class.getName() // 92
+            , UniversalCommandCompiler.class.getName() // 93
+            , UniversalScriptParser.class.getName() // 94
+            , UniversalScriptReader.class.getName() // 95
+            , UniversalScriptAnalysis.class.getName() // 96
+            , UniversalScriptFormatter.class.getName() // 97
+            , UniversalScriptConfiguration.class.getName() // 98
+            , UniversalScriptCommand.class.getName() // 99
+            , UniversalScriptVariableMethod.class.getName() // 100
+            , ResourcesUtils.class.getName() // 101
+            , EasyClassScan.class.getName() // 102
+            , ClassUtils.toMethodName(UniversalCommandCompiler.class, "read", UniversalScriptReader.class, UniversalScriptAnalysis.class) // 103
+            , ClassUtils.toMethodName(UniversalCommandCompiler.class, "compile", UniversalScriptSession.class, UniversalScriptContext.class, UniversalScriptParser.class, UniversalScriptAnalysis.class, String.class) // 104
+            , ClassUtils.toMethodName(UniversalScriptCommand.class, "execute", UniversalScriptSession.class, UniversalScriptContext.class, UniversalScriptStdout.class, UniversalScriptStderr.class, Boolean.class) // 105
+            , ClassUtils.toMethodName(UniversalCommandCompiler.class, "match", String.class, String.class) // 106
+            , EasyClassScanner.class.getName() // 107
+            , EasyClassScan.class.getSimpleName() // 108
+            , UniversalScriptCompiler.class.getName() // 109
+            , AbstractTraceCommandCompiler.class.getName() // 110
+            , AbstractCommandCompiler.class.getName() // 111
+            , AbstractFileCommandCompiler.class.getName() // 112
+            , AbstractGlobalCommandCompiler.class.getName() // 113
+            , AbstractSlaveCommandCompiler.class.getName() // 114
+            , UniversalScriptInputStream.class.getName() // 115
+            , LoopCommandKind.class.getName() // 116
+            , NohupCommandSupported.class.getName() // 117
+            , CallbackCommandSupported.class.getName() // 118
+            , LoopCommandSupported.class.getName() // 119
+            , LoopCommandKind.class.getName() // 120
+            , JumpCommandSupported.class.getName() // 121
+            , WithBodyCommandSupported.class.getName() // 122
+            , "" // 123
+            , "" // 124
+            , "" // 125
+            , "" // 126
+            , "" // 127
+            , "" // 128
+            , "" // 129
+            , "" // 130
+            , "" // 131
+            , "" // 132
+            , "" // 133
+            , "" // 134
+            , "" // 135
+            , "" // 136
+            , "" // 137
+            , "" // 138
+            , "" // 139
+            , "" // 140
+            , "" // 141
+            , "" // 142
+            , "" // 143
+            , "" // 144
+            , "" // 145
+            , "" // 146
+            , "" // 147
+            , "" // 148
+            , "" // 149
+            , this.toAllImplements(context) // 150
+        };
+
+        // 返回命令的使用说明文件
+        InputStream in = UniversalScriptEngine.class.getResourceAsStream("Help.md");
+        String readMe = new String(IO.read(in), factoryContext.getCharsetName());
+        return StringUtils.replaceIndexHolder(readMe, args);
+    }
+
+    public String readCommandUsage(UniversalScriptContext context) throws IOException {
+        String prefix = StringUtils.left("", 2, '#');
+        StringBuilder buf = new StringBuilder(500);
+        BufferedReader in = IO.getBufferedReader(new InputStreamReader(UniversalScriptEngine.class.getResourceAsStream("HelpCommand.md"), CharsetName.UTF_8));
+        try {
+            String line;
+            while ((line = in.readLine()) != null) {
+                if (line.startsWith("#")) {
+                    buf.append(prefix).append(line).append(Settings.getLineSeparator());
+                } else {
+                    buf.append(line).append(Settings.getLineSeparator());
+                }
+            }
+
+            Object[] args = {DebugCommand.class.getName(), // 0
+                context.getEngine().getFactory().buildCompiler().getAnalysis().getToken(), // 1
+                "", // 2
+                ScriptAnalysis.ESCAPE_STRING, // 3
+                StringUtils.left(OSConnectCommand.HOST, 17, ' '), // 4
+                StringUtils.left(Jdbc.driver, 17, ' '), // 5
+                StringUtils.left(Jdbc.URL, 17, ' '), // 6
+                StringUtils.left(OSConnectCommand.USERNAME, 17, ' '), // 7
+                StringUtils.left(OSConnectCommand.PASSWORD, 17, ' '), // 8
+                StringUtils.left(Jdbc.ADMIN_USERNAME, 17, ' '), // 9
+                StringUtils.left(Jdbc.ADMIN_PASSWORD, 17, ' '), // 10
+                StringUtils.left(DeclareCatalogCommandCompiler.file, 17, ' '), // 11
+                StringUtils.left(OSShellCommand.SSH_USERNAME, 17, ' '), // 12
+                StringUtils.left(OSShellCommand.SSH_PASSWORD, 17, ' '), // 13
+                StringUtils.left(OSShellCommand.SSH_PORT, 17, ' '), // 14
+                EasyBean.class.getSimpleName(), // 15
+                this.supportedExtractWriter(context), // 16
+                this.supportedTextTableFile(context), // 17
+                TextTableFile.class.getName(), // 18
+                ExtractUserListener.class.getName(), // 19
+                JdbcObjectConverter.class.getName(), // 20
+                UniversalScriptVariable.VARNAME_EXCEPTION, // 21
+                UniversalScriptVariable.VARNAME_ERRORCODE, // 22
+                UniversalScriptVariable.VARNAME_SQLSTATE, // 23
+                UniversalScriptVariable.VARNAME_ERRORSCRIPT, // 24
+                UniversalScriptVariable.VARNAME_EXITCODE, // 25
+                CallbackCommandSupported.class.getName(), // 26
+                UniversalScriptFormatter.class.getName(), // 27
+                AbstractJavaCommand.class.getName(), // 28
+                ExtractWriter.class.getName(), // 29
+                null, // 3
+                null, // 3
+            };
+            return StringUtils.replaceIndexHolder(buf.toString(), args);
+        } finally {
+            in.close();
+        }
+    }
+
+    public String readVariableMethodUsage(UniversalScriptContext context, String sourceDirectory) throws IOException {
+        StringBuilder buf = new StringBuilder(500);
+        VariableMethodRepository repository = context.getContainer().getBean(VariableMethodRepository.class);
+        VariableMethodNoteParse noteRepository = new VariableMethodNoteParse();
+        LinkedHashMap<VariableMethodEntry, MethodNote> methodNotes = noteRepository.load(repository, sourceDirectory);
+
+        // 保证自定义变量方法按固定顺序排序
+        List<VariableMethodEntry> entryList = new ArrayList<VariableMethodEntry>(methodNotes.keySet());
+        Collections.sort(entryList, new Comparator<VariableMethodEntry>() {
+            public int compare(VariableMethodEntry o1, VariableMethodEntry o2) {
+                int nv = o1.getName().compareTo(o2.getName());
+                if (nv != 0) {
+                    return nv;
+                }
+
+                int vcn = o1.getVariableClass().getName().compareTo(o2.getVariableClass().getName());
+                if (vcn != 0) {
+                    return vcn;
+                }
+
+                Class<?>[] type1 = o1.getParameters();
+                Class<?>[] type2 = o2.getParameters();
+                int tlv = type1.length - type2.length;
+                if (tlv != 0) {
+                    return tlv;
+                }
+
+                for (int i = 0; i < type1.length; i++) {
+                    Class<?> paramType1 = type1[i];
+                    Class<?> paramType2 = type2[i];
+
+                    int ptv = paramType1.getName().compareTo(paramType2.getName());
+                    if (ptv != 0) {
+                        return ptv;
+                    }
+                }
+
+                return 0;
+            }
+        });
+
+        for (VariableMethodEntry entry : entryList) {
+            MethodNote note = methodNotes.get(entry); // 注释
+            if (note.isIgnore()) {
+                continue;
+            }
+
+            // 方法名
+            buf.append(StringUtils.left("", 3, '#')).append(" ").append(entry.toTitle()).append(FileUtils.LINE_SEPARATOR_UNIX);
+
+            // 方法功能
+            buf.append(StringUtils.trimBlank(note.getText())).append(FileUtils.LINE_SEPARATOR_UNIX);
+
+            buf.append(FileUtils.LINE_SEPARATOR_UNIX);
+            buf.append(ResourcesUtils.getMessage("script.stdout.message066", entry.getVariableClass().getSimpleName()));
+            if (note.getVariable() != null && StringUtils.isNotBlank(note.getVariable().getNote())) {
+                buf.append(" ");
+                buf.append(note.getVariable().getNote());
+            }
+            buf.append(FileUtils.LINE_SEPARATOR_UNIX);
+            buf.append(FileUtils.LINE_SEPARATOR_UNIX);
+
+            // 使用方法
+            buf.append(FileUtils.LINE_SEPARATOR_UNIX);
+            buf.append(ResourcesUtils.getMessage("script.stdout.message067", entry.toStandardString(note)));
+
+            List<MethodNote.Property> list = note.getParameterList();
+            for (int i = 0; i < list.size(); i++) {
+                MethodNote.Property parameter = list.get(i);
+                buf.append(ResourcesUtils.getMessage("script.stdout.message068", i + 1, parameter.getNote()));
+            }
+
+            if (StringUtils.isNotBlank(note.getReturn())) {
+                buf.append(FileUtils.LINE_SEPARATOR_UNIX);
+                buf.append(ResourcesUtils.getMessage("script.stdout.message069", note.getReturn()));
+            }
+
+            // 定义方法的位置
+            buf.append(FileUtils.LINE_SEPARATOR_UNIX);
+            buf.append(ResourcesUtils.getMessage("script.stdout.message070", entry.getMethodInfo()));
+        }
+        return buf.toString();
+    }
+
+    public String toAllImplements(UniversalScriptContext context) {
+        EasyContext ioc = context.getContainer();
+        return implementsToStr(ioc);
+    }
+
+    public static String implementsToStr(EasyContext ioc) {
+        List<Class<?>> types1 = ioc.getBeanClassList();
+        Collections.sort(types1, new Comparator<Class<?>>() {
+            public int compare(Class<?> o1, Class<?> o2) {
+                return o1.getSimpleName().compareTo(o2.getSimpleName());
+            }
+        });
+        LinkedHashSet<Class<?>> keys = new LinkedHashSet<Class<?>>(types1);
+
+        // 以下这些接口的实现类已在帮助说明中删除
+        keys.remove(UniversalScriptVariableMethod.class);
+        keys.remove(UniversalCommandCompiler.class);
+        keys.remove(DatabaseDialect.class);
+
+        String[] array = ResourcesUtils.getMessageArray("script.stdout.message065");
+        String colName1 = array[0];
+        String colName2 = array[1];
+
+        StringBuilder buf = new StringBuilder();
+        for (Class<?> type : keys) {
+            if (ioc.getBeanFactory(type) != null) {
+                continue;
+            }
+
+            List<EasyBeanEntry> list = ioc.getBeanEntryCollection(type).values();
+            if (list.isEmpty()) {
+                continue;
+            }
+
+            // 排序
+            Collections.sort(list, new Comparator<EasyBeanEntry>() {
+                public int compare(EasyBeanEntry o1, EasyBeanEntry o2) {
+                    return o1.getType().getSimpleName().compareTo(o2.getType().getSimpleName());
+                }
+            });
+
+            CharTable table = new CharTable();
+            table.addTitle(colName1);
+            table.addTitle(colName2);
+            for (EasyBeanEntry entry : list) {
+                table.addCell("`" + entry.getType().getName() + "`");
+                table.addCell(entry.getDescription());
+            }
+
+            buf.append("### ").append(type.getSimpleName());
+            buf.append(FileUtils.LINE_SEPARATOR_UNIX);
+
+            buf.append(table.toString(CharTable.Style.MARKDOWN));
+            buf.append(FileUtils.LINE_SEPARATOR_UNIX);
+            buf.append(FileUtils.LINE_SEPARATOR_UNIX);
+            buf.append(FileUtils.LINE_SEPARATOR_UNIX);
+        }
+
+        List<Class<?>> types2 = ioc.getBeanFactoryClass();
+        Collections.sort(types2, new Comparator<Class<?>>() {
+            public int compare(Class<?> o1, Class<?> o2) {
+                return o1.getSimpleName().compareTo(o2.getSimpleName());
+            }
+        });
+
+        LinkedHashSet<Class<?>> factorys = new LinkedHashSet<Class<?>>(types2);
+        factorys.remove(UniversalScriptVariableMethod.class);
+        factorys.remove(UniversalCommandCompiler.class);
+        factorys.remove(DatabaseDialect.class);
+        for (Class<?> type : factorys) {
+            EasyBeanFactory<?> factory = ioc.getBeanFactory(type);
+            List<EasyBeanEntry> list = ioc.getBeanEntryCollection(type).values();
+            if (list.isEmpty()) {
+                continue;
+            }
+
+            CharTable ct = new CharTable();
+            ct.addTitle(colName1);
+            ct.addTitle(colName2);
+
+            for (EasyBeanEntry entry : list) {
+                ct.addCell("`" + entry.getType().getName() + "`");
+                ct.addCell(entry.getDescription());
+            }
+
+            buf.append(ResourcesUtils.getMessage("script.stdout.message071", type.getSimpleName(), factory.getClass().getName())).append(FileUtils.LINE_SEPARATOR_UNIX);
+            buf.append(ct.toString(CharTable.Style.MARKDOWN));
+            buf.append(FileUtils.LINE_SEPARATOR_UNIX);
+            buf.append(FileUtils.LINE_SEPARATOR_UNIX);
+            buf.append(FileUtils.LINE_SEPARATOR_UNIX);
+        }
+
+        return StringUtils.rtrimBlank(buf);
+    }
+
+    /**
+     * 查询当前支持的数据库
+     *
+     * @param context 脚本引擎上下文信息
+     * @return 当前支持的数据库
+     */
+    public String supportedDatabase(UniversalScriptContext context) {
+        List<EasyBeanEntry> list = context.getContainer().getBeanEntryCollection(DatabaseDialect.class).values();
+        Collections.sort(list, new Comparator<EasyBeanEntry>() {
+            public int compare(EasyBeanEntry o1, EasyBeanEntry o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+
+        String[] array = ResourcesUtils.getMessageArray("script.stdout.message001");
+        CharTable table = new CharTable(context.getCharsetName());
+        table.addTitle(array[0], CharTable.ALIGN_MIDDLE);
+        table.addTitle(array[1], CharTable.ALIGN_LEFT);
+        table.addTitle(array[2], CharTable.ALIGN_RIGHT);
+
+        for (EasyBeanEntry entry : list) {
+            table.addCell("**" + entry.getName() + "**");
+            table.addCell(StringUtils.coalesce(entry.getDescription(), "") + "     ");
+            table.addCell("          `" + entry.getType().getName() + "`");
+        }
+        return table.toString(CharTable.Style.MARKDOWN);
+    }
+
+    /**
+     * 查询当前支持的数据库
+     *
+     * @param context 脚本引擎上下文信息
+     * @return 当前支持的数据库
+     */
+    public String supportedExtractWriter(UniversalScriptContext context) {
+        List<EasyBeanEntry> list = context.getContainer().getBeanEntryCollection(ExtractWriter.class).values();
+        Collections.sort(list, new Comparator<EasyBeanEntry>() {
+            public int compare(EasyBeanEntry o1, EasyBeanEntry o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+
+        String[] array = ResourcesUtils.getMessageArray("script.stdout.message055");
+        CharTable table = new CharTable(context.getCharsetName());
+        table.addTitle(array[0], CharTable.ALIGN_MIDDLE);
+        table.addTitle(array[1], CharTable.ALIGN_LEFT);
+        table.addTitle(array[2], CharTable.ALIGN_LEFT);
+
+        for (EasyBeanEntry entry : list) {
+            table.addCell("**" + entry.getName() + "**");
+            table.addCell("`" + entry.getType().getName() + "`");
+            table.addCell(entry.getDescription());
+        }
+        return table.toString(CharTable.Style.MARKDOWN);
+    }
+
+    /**
+     * 查询当前支持的数据库
+     *
+     * @param context 脚本引擎上下文信息
+     * @return 当前支持的数据库
+     */
+    public String supportedTextTableFile(UniversalScriptContext context) {
+        List<EasyBeanEntry> list = context.getContainer().getBeanEntryCollection(TextTableFile.class).values();
+        Collections.sort(list, new Comparator<EasyBeanEntry>() {
+            public int compare(EasyBeanEntry o1, EasyBeanEntry o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+
+        String[] array = ResourcesUtils.getMessageArray("script.stdout.message055");
+        CharTable table = new CharTable(context.getCharsetName());
+        table.addTitle(array[0], CharTable.ALIGN_MIDDLE);
+        table.addTitle(array[1], CharTable.ALIGN_LEFT);
+        table.addTitle(array[2], CharTable.ALIGN_LEFT);
+
+        for (EasyBeanEntry entry : list) {
+            table.addCell("**" + entry.getName() + "**");
+            table.addCell("`" + entry.getType().getName() + "`");
+            table.addCell(entry.getDescription());
+        }
+        return table.toString(CharTable.Style.MARKDOWN);
+    }
+}

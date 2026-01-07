@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import cn.org.expect.jdk.JavaDialectFactory;
+import cn.org.expect.util.JavaDialectFactory;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.Dates;

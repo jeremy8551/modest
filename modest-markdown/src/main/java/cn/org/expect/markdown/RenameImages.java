@@ -3,6 +3,7 @@ package cn.org.expect.markdown;
 import java.io.File;
 import java.io.IOException;
 
+import cn.org.expect.ModestException;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.FileUtils;
@@ -20,7 +21,7 @@ public class RenameImages {
 
     public static String NEW_IMAGE_NAME_PREFIX = "markdown_local_image_";
 
-    public void execute(File fileOrDir) throws IOException {
+    public void execute(File fileOrDir) throws IOException, ModestException {
         if (fileOrDir.isDirectory()) {
             File[] files = FileUtils.array(fileOrDir.listFiles());
             for (File file : files) {
@@ -32,8 +33,8 @@ public class RenameImages {
         this.rename(fileOrDir);
     }
 
-    private void rename(File file) throws IOException {
-        Utils.deleteTempfile(file);
+    private void rename(File file) throws IOException, ModestException {
+        MarkdownUtils.deleteTempfile(file);
 
         // 读取文件内容
         String extName = FileUtils.getFilenameExt(file.getName());
@@ -49,7 +50,7 @@ public class RenameImages {
                 File[] files = FileUtils.array(imgDir.listFiles());
                 int number = this.getFileNumber(files) + 1;
                 if (number > 0) {
-                    log.info("目录 " + imgDir.getAbsolutePath() + " 起始图片序号是: " + number);
+                    log.info("markdown.stdout.message002", imgDir.getAbsolutePath(), number);
                 }
 
                 for (File imgfile : files) {
@@ -58,7 +59,7 @@ public class RenameImages {
                     }
 
                     if (StringUtils.isBlank(FileUtils.getFilenameSuffix(imgfile.getName()))) {
-                        log.warn("图片文件缺失扩展名 " + imgfile.getAbsolutePath());
+                        log.info("markdown.stdout.message003", imgfile.getAbsolutePath());
                     }
 
                     String oldImageName = "/" + imgfile.getName();
@@ -68,10 +69,10 @@ public class RenameImages {
 
                         File newImagefile = new File(imgfile.getParentFile(), newImageName);
                         if (newImagefile.exists()) {
-                            throw new IOException("文件 " + newImagefile.getAbsolutePath() + " 已存在!");
+                            throw new ModestException("markdown.stdout.message004", newImagefile.getAbsolutePath());
                         }
 
-                        log.info("将图片 " + imgfile.getAbsolutePath() + " 重命名为 " + newImagefile.getName() + " " + (FileUtils.rename(imgfile, newImagefile, null) ? "[success]" : "[fail]"));
+                        log.info("markdown.stdout.message005", imgfile.getAbsolutePath(), newImagefile.getAbsolutePath(), (FileUtils.rename(imgfile, newImagefile, null) ? "[success]" : "[fail]"));
                         continue;
                     }
                 }

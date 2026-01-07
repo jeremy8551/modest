@@ -1,14 +1,10 @@
 package cn.org.expect.database.internal;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-
 import cn.org.expect.database.DatabaseTableColumn;
 import cn.org.expect.database.DatabaseType;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.Ensure;
-import cn.org.expect.util.Numbers;
 import cn.org.expect.util.StringUtils;
 
 /**
@@ -54,57 +50,8 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
 
     private DatabaseType type;
 
-    private String fullTypeName;
-
-    private boolean isChar;
-
-    private boolean isFloat;
-
-    private boolean isNchar;
-
-    /**
-     * 返回字段类型信息
-     *
-     * @return 字段类型信息
-     */
     public DatabaseType getType() {
         return type;
-    }
-
-    /**
-     * 设置字段类型信息
-     *
-     * @param type 字段类型信息
-     */
-    public void setType(DatabaseType type) {
-        this.type = Ensure.notNull(type);
-
-        // 生成字段类型全名
-        String expression = this.type.getExpression();
-        StringBuilder buf = new StringBuilder(15);
-        buf.append(this.getFieldType());
-        if (StringUtils.isBlank(expression)) {
-        } else if (expression.equalsIgnoreCase("LENGTH")) {
-            buf.append("(").append(this.length()).append(")");
-        } else if (expression.equalsIgnoreCase("PRECISION,SCALE")) {
-            buf.append("(").append(this.length()).append(", ").append(this.getDigit()).append(")");
-        } else if (expression.equalsIgnoreCase("SCALE")) {
-            buf.append("(").append(this.getDigit()).append(")");
-        } else if (expression.equalsIgnoreCase("PRECISION")) {
-            buf.append("(").append(this.length()).append(")");
-        } else {
-            throw new UnsupportedOperationException(this.getName() + " " + this.getFieldType() + " " + expression);
-        }
-        this.fullTypeName = buf.toString();
-
-        // true-表示字符型字段（按字节存储）
-        this.isChar = "LENGTH".equalsIgnoreCase(expression) && StringUtils.isNotBlank(type.getTextPrefix()) && type.getRadix() == null;
-
-        // true-表示双字节型字符字段（按字符存储）
-        this.isNchar = this.isChar && Numbers.inArray(type.getSqlType(), -15, 2011, -9); // 对应 Types.NCHAR Types.NCLOB Types.NVARCHAR
-
-        // true-表示精度型字段
-        this.isFloat = "PRECISION,SCALE".equalsIgnoreCase(expression) || "PRECISION".equalsIgnoreCase(expression);
     }
 
     public String getTableFullName() {
@@ -119,11 +66,6 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
         return tableName;
     }
 
-    /**
-     * 表名称
-     *
-     * @param tableName 表名称
-     */
     public void setTableName(String tableName) {
         this.tableName = tableName;
     }
@@ -132,11 +74,6 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
         return tableSchema;
     }
 
-    /**
-     * 表模式（可为 null）
-     *
-     * @param tableSchema 表模式
-     */
     public void setTableSchema(String tableSchema) {
         this.tableSchema = tableSchema;
     }
@@ -145,20 +82,10 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
         return tableCatalog;
     }
 
-    /**
-     * 编目（可为 null）
-     *
-     * @param tableCatalog 编目
-     */
     public void setTableCatalog(String tableCatalog) {
         this.tableCatalog = tableCatalog;
     }
 
-    /**
-     * 列名称
-     *
-     * @param name 列名称
-     */
     public void setName(String name) {
         this.name = name;
     }
@@ -171,11 +98,6 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
         return isNullAble;
     }
 
-    /**
-     * "NO" 表示明确不允许列使用 NULL 值，"YES" 表示可能允许列使用 NULL 值。空字符串表示没人知道是否允许使用 null 值。
-     *
-     * @param str 字符串
-     */
     public void setNullAble(String str) {
         this.isNullAble = str == null ? "" : str.toUpperCase();
     }
@@ -184,11 +106,6 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
         return sqlType;
     }
 
-    /**
-     * 来自 {@linkplain java.sql.Types} 的 SQL 类型
-     *
-     * @param sqlType {@linkplain java.sql.Types}
-     */
     public void setSqlType(int sqlType) {
         this.sqlType = sqlType;
     }
@@ -197,15 +114,6 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
         return typeName;
     }
 
-    public String getFieldName() {
-        return this.fullTypeName;
-    }
-
-    /**
-     * 数据源依赖的类型名称，对于 UDT，该类型名称是完全限定的
-     *
-     * @param typeName 类型名称
-     */
     public void setFieldType(String typeName) {
         this.typeName = typeName;
     }
@@ -214,70 +122,18 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
         return length;
     }
 
-    /**
-     * 列的大小。对于 char 或 date 类型，列的大小是最大字符数，对于 numeric 和 decimal 类型，列的大小就是精度。
-     *
-     * @param length 列的大小
-     */
     public void setLength(int length) {
         this.length = length;
     }
-
-    public boolean expandLength(String value, String charsetName) throws IOException {
-        StandardDatabaseTableColumn column = this;
-
-        // 只有一个参数，存在文本限定符，不存在进制
-        if (this.isChar) {
-            int size = this.isNchar ? value.length() : value.getBytes(charsetName).length;
-            if (size > column.length()) {
-                column.setLength(size);
-                return true;
-            } else {
-                return false;
-            }
-        } else if (this.isFloat) {
-            boolean modify = false;
-            BigDecimal decimal = new BigDecimal(value);
-
-            int precision = decimal.precision();
-            if (precision > column.length()) {
-                column.setLength(precision);
-                modify = true;
-            }
-
-            int scale = decimal.scale();
-            if (scale > column.getDigit()) {
-                column.setDigit(scale);
-                modify = true;
-            }
-            return modify;
-        } else {
-            return false;
-        }
-    }
-
-//	public int getNullEnable() {
-//		return isNullEnable;
-//	}
 
     public String getRemark() {
         return remarks;
     }
 
-    /**
-     * 描述列的注释（可为 null）
-     *
-     * @param remarks 注释
-     */
     public void setRemark(String remarks) {
         this.remarks = remarks;
     }
 
-    /**
-     * 设置字段的默认值（可为 null）
-     *
-     * @param defaultValue 字段的默认值
-     */
     public void setDefault(String defaultValue) {
         this.defaultValue = defaultValue;
     }
@@ -294,11 +150,6 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
         return maxLength;
     }
 
-    /**
-     * CHAR_OCTET_LENGTH 对于 char 类型，该长度是列中的最大字节数
-     *
-     * @param length 最大字节数
-     */
     public void setMaxLength(int length) {
         this.maxLength = length;
     }
@@ -307,11 +158,6 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
         return position;
     }
 
-    /**
-     * 表中的列的索引（从 1 开始）
-     *
-     * @param position 索引信息
-     */
     public void setPosition(int position) {
         this.position = position;
     }
@@ -320,11 +166,6 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
         return digits;
     }
 
-    /**
-     * 小数部分的位数
-     *
-     * @param n
-     */
     public void setDigit(int n) {
         this.digits = n;
     }
@@ -333,11 +174,6 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
         return numPrecRadix;
     }
 
-    /**
-     * 基数（通常为 10 或 2）
-     *
-     * @param n 基数
-     */
     public void setRadix(int n) {
         this.numPrecRadix = n;
     }
@@ -476,10 +312,6 @@ public class StandardDatabaseTableColumn implements Cloneable, Comparable<Databa
         col.tableCatalog = this.tableCatalog;
         col.tableFullName = this.tableFullName;
         col.autoIncrement = this.autoIncrement;
-        col.isChar = this.isChar;
-        col.isNchar = this.isNchar;
-        col.isFloat = this.isFloat;
-        col.fullTypeName = this.fullTypeName;
         col.type = this.type;
         return col;
     }

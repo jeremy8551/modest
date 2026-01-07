@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>cn.org.expect</groupId>
+        <artifactId>modest</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>modest-build</artifactId>
+    <name>${project.artifactId}</name>
+    <description>Generate Docker images for build project.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-script-engine</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>docker-build</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>evaluate</goal>
+                        </goals>
+                        <configuration>
+                            <eval>
+                                <job>
+                                    <command>export set projectBasedir="${project.basedir}"; export set revision="${revision}"; . classpath:cn/org/expect/build/docker-file.usl</command>
+                                </job>
+                                <job>
+                                    <command>os export REVISION=${revision} &amp;&amp; export PROJECT_BASEDIR=${project.basedir} &amp;&amp; export DOCKER_HUB_USERNAME=${dockerhub.login.username} &amp;&amp; export DOCKER_HUB_PASSWORD=${dockerhub.login.password} &amp;&amp; cd ${project.basedir} &amp;&amp; ./docker-build.sh 2>&amp;1</command>
+                                    <os>macos</os>
+                                    <active>${activeDevelop}</active>
+                                </job>
+                            </eval>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 将项目与所有依赖的 jar 打成一个包 -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>3.3.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <mainClass>cn.org.expect.build.ModestBuildApplication</mainClass>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <autoPublish>false</autoPublish>
+                    <skipPublishing>true</skipPublishing> <!-- 控制是否跳过上传 -->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

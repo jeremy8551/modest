@@ -12,7 +12,7 @@ public class JavaCommandTest1 extends AbstractJavaCommand {
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, String[] args) throws Exception {
-        context.getEngine().evaluate("step java类中的嵌套语句!");
+        context.getEngine().evaluate("step \"Nested statements in a Java class\"");
         return 0;
     }
 

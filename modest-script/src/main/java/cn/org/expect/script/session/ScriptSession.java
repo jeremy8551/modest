@@ -1,23 +1,20 @@
 package cn.org.expect.script.session;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.Reader;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptCompiler;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptEngine;
+import cn.org.expect.script.UniversalScriptEngineFactory;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptSessionFactory;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.UniversalScriptVariable;
-import cn.org.expect.script.io.ScriptFileExpression;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.ResourcesUtils;
@@ -31,6 +28,9 @@ import cn.org.expect.util.Terminator;
  * @author jeremy8551@gmail.com
  */
 public class ScriptSession extends Terminator implements UniversalScriptSession {
+
+    /** 脚本引擎工厂 */
+    private final UniversalScriptEngineFactory engineFactory;
 
     /** 会话编号 */
     private String sessionId;
@@ -68,9 +68,6 @@ public class ScriptSession extends Terminator implements UniversalScriptSession 
     /** echo命令是否可用，true表示可用 false表示不可用 */
     private boolean echoEnabled;
 
-    /** 变量方法的缓存变量 */
-    private final Hashtable<String, Object> methodVariable;
-
     /** 语句分析器 */
     private UniversalScriptAnalysis anlaysis;
 
@@ -79,6 +76,12 @@ public class ScriptSession extends Terminator implements UniversalScriptSession 
 
     /** 变量集合 */
     private final Map<String, Object> variable;
+
+    /** 内部使用的变量集合 */
+    private final Map<String, Object> systemVariable;
+
+    /** 变量方法的缓存变量 */
+    private final Map<String, Object> methodVariable;
 
     /** 脚本引擎名（可以不唯一） */
     private String name;
@@ -95,17 +98,20 @@ public class ScriptSession extends Terminator implements UniversalScriptSession 
     /**
      * 初始化
      *
+     * @param engineFactory  脚本引擎工厂
      * @param scriptEngineId 脚本引擎编号
      */
-    private ScriptSession(String scriptEngineId) {
+    private ScriptSession(UniversalScriptEngineFactory engineFactory, String scriptEngineId) {
+        this.engineFactory = Ensure.notNull(engineFactory);
         this.scriptEngineId = Ensure.notBlank(scriptEngineId);
         this.sessionId = "M" + StringUtils.toRandomUUID();
         this.name = ResourcesUtils.getMessage("script.stdout.message018"); // 脚本引擎
         this.isAlive = true;
         this.startTime = new Date();
         this.endTime = null;
-        this.variable = new HashMap<String, Object>();
-        this.methodVariable = new Hashtable<String, Object>();
+        this.variable = this.engineFactory.buildVariable();
+        this.systemVariable = this.engineFactory.buildVariable();
+        this.methodVariable = this.engineFactory.buildVariable();
         this.main = new ScriptMainProcess();
         this.subs = new ScriptSubProcess();
         this.echoEnabled = true;
@@ -114,27 +120,26 @@ public class ScriptSession extends Terminator implements UniversalScriptSession 
         this.checkExitcode = true;
 
         this.setDirectory(Settings.getUserHome()); // 会话当前目录
+        this.addVariable(UniversalScriptVariable.SESSION_VARNAME_HOME, Settings.getUserHome()); // 临时文件目录
         this.addVariable(UniversalScriptVariable.SESSION_VARNAME_TEMP, this.tempDir.getAbsolutePath()); // 临时文件目录
-        this.addVariable(UniversalScriptVariable.SESSION_VARNAME_HOME, Settings.getUserHome()); // 用户目录
-        this.addVariable(UniversalScriptVariable.SESSION_VARNAME_USER, Settings.getUserName()); // 当前用户名
     }
 
     /**
      * 初始化
      *
+     * @param engineFactory  脚本引擎工厂
      * @param scriptEngineId 脚本引擎编号
      * @param factory        脚本引擎会话工厂
      */
-    public ScriptSession(String scriptEngineId, SessionFactory factory) {
-        this(scriptEngineId);
+    public ScriptSession(UniversalScriptEngineFactory engineFactory, String scriptEngineId, SessionFactory factory) {
+        this(engineFactory, scriptEngineId);
         this.factory = Ensure.notNull(factory);
     }
 
-    public void setScriptFile(ScriptFileExpression file) throws IOException {
-        this.addVariable(UniversalScriptVariable.SESSION_VARNAME_SCRIPTNAME, file.getName());
-        this.addVariable(UniversalScriptVariable.SESSION_VARNAME_SCRIPTFILE, file.getAbsolutePath());
-        this.addVariable(UniversalScriptVariable.SESSION_VARNAME_LINESEPARATOR, file.getLineSeparator());
+    public void setScriptFilepath(String filepath) {
+        this.addVariable(UniversalScriptVariable.SESSION_VARNAME_SCRIPTFILE, filepath);
 
+        // TODO
         StringBuilder buf = new StringBuilder();
         if (StringUtils.isNotBlank(this.parentSessionId) && this.factory.get(this.parentSessionId).isScriptFile()) {
             buf.append(ResourcesUtils.getMessage("script.stdout.message020")); // 子脚本文件
@@ -142,7 +147,7 @@ public class ScriptSession extends Terminator implements UniversalScriptSession 
             buf.append(ResourcesUtils.getMessage("script.stdout.message021")); // 脚本文件
         }
         buf.append(' ');
-        buf.append(file.getAbsolutePath());
+        buf.append(filepath);
         this.name = buf.toString();
     }
 
@@ -224,10 +229,13 @@ public class ScriptSession extends Terminator implements UniversalScriptSession 
 
     public void setDirectory(File dir) {
         FileUtils.assertDirectory(dir);
-        this.addVariable(UniversalScriptVariable.SESSION_VARNAME_PWD, dir.getAbsolutePath());
+        File oldPwd = this.addVariable(UniversalScriptVariable.SESSION_VARNAME_PWD, dir);
+        if (oldPwd != null) {
+            this.addVariable(UniversalScriptVariable.SESSION_VARNAME_OLDPWD, oldPwd);
+        }
     }
 
-    public String getDirectory() {
+    public File getDirectory() {
         return this.getVariable(UniversalScriptVariable.SESSION_VARNAME_PWD);
     }
 
@@ -260,8 +268,16 @@ public class ScriptSession extends Terminator implements UniversalScriptSession 
         return (E) this.variable.get(key);
     }
 
-    public void addVariable(String key, Object value) {
-        this.variable.put(key, value);
+    public <E> E addVariable(String key, Object value) {
+        return (E) this.variable.put(key, value);
+    }
+
+    public <E> E getSystemVariable(String key) {
+        return (E) this.systemVariable.get(key);
+    }
+
+    public <E> E addSystemVariable(String key, Object value) {
+        return (E) this.systemVariable.put(key, value);
     }
 
     public Object removeVariable(String key) {
@@ -293,7 +309,7 @@ public class ScriptSession extends Terminator implements UniversalScriptSession 
         return (E) this.value;
     }
 
-    public void putValue(Object value) {
+    public void setValue(Object value) {
         this.value = value;
     }
 
@@ -306,7 +322,7 @@ public class ScriptSession extends Terminator implements UniversalScriptSession 
     }
 
     public UniversalScriptSession subsession() {
-        ScriptSession session = new ScriptSession(this.scriptEngineId);
+        ScriptSession session = new ScriptSession(this.engineFactory, this.scriptEngineId);
         session.factory = this.factory;
         session.parentSessionId = this.sessionId;
         session.sessionId = "S" + StringUtils.toRandomUUID();

@@ -27,7 +27,7 @@ import cn.org.expect.util.StringUtils;
 public class JavaCommand extends AbstractTraceCommand implements UniversalScriptInputStream, JumpCommandSupported, NohupCommandSupported {
 
     /** JAVA 对象 */
-    private AbstractJavaCommand obj;
+    private volatile AbstractJavaCommand obj;
 
     /** JAVA 类名 */
     private String className;
@@ -56,7 +56,7 @@ public class JavaCommand extends AbstractTraceCommand implements UniversalScript
         UniversalScriptAnalysis analysis = session.getAnalysis();
         String[] array = new String[this.args.size()];
         for (int i = 0; i < this.args.size(); i++) {
-            array[i] = analysis.unQuotation(analysis.replaceShellVariable(session, context, this.args.get(i), true, true));
+            array[i] = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.args.get(i)), true, !analysis.containsQuotation(this.args.get(i)));
 
             String value = array[i];
             if (StringUtils.indexOfBlank(value, 0, value.length() - 1) != -1) {
@@ -77,7 +77,7 @@ public class JavaCommand extends AbstractTraceCommand implements UniversalScript
         }
 
         this.obj = context.getContainer().newInstance(type);
-        session.putValue(this.obj);
+        session.setValue(this.obj);
 
         // 执行命令
         return this.obj.execute(session, context, stdout, stderr, array);

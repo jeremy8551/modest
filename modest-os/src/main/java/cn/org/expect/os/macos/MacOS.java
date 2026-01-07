@@ -95,20 +95,17 @@ public class MacOS extends LinuxLocalOS {
         List<String> commands = new ArrayList<String>();
         commands.add("modeName");
         commands.add("sysctl -n machdep.cpu.brand_string");
-
         commands.add("coreSize");
         commands.add("sysctl -n machdep.cpu.core_count");
-
         commands.add("cpuSize");
         commands.add("sysctl -n machdep.cpu.thread_count");
-
-        commands.add("cacheSize");
-        commands.add("sysctl -n machdep.cpu.cache.size");
+        // commands.add("cacheSize");
+        // commands.add("sysctl -n machdep.cpu.cache.size");
 
         OSCommandStdouts map = this.cmd.execute(commands);
         int cpuSize = new Expression(StringUtils.join(map.get("cpuSize"), "")).intValue();
         int coreSize = new Expression(StringUtils.join(map.get("coreSize"), "")).intValue();
-        BigDecimal cacheSize = new Expression(StringUtils.join(map.get("cacheSize"), "")).decimalValue();
+        // BigDecimal cacheSize = new Expression(StringUtils.join(map.get("cacheSize"), "")).decimalValue();
         String modeName = StringUtils.join(map.get("modeName"), "");
 
         List<OSCpu> list = new ArrayList<OSCpu>();
@@ -118,10 +115,10 @@ public class MacOS extends LinuxLocalOS {
             obj.setId(String.valueOf(i));
             obj.setModeName(modeName);
             obj.setCoreId(String.valueOf(c));
-            obj.setCacheSize(cacheSize);
+            // obj.setCacheSize(cacheSize);
             obj.setCores(coreSize);
-            obj.setPhysicalId(String.valueOf(c));
-            obj.setSiblings(1);
+            // obj.setPhysicalId(String.valueOf(c));
+            // obj.setSiblings(1);
 
             if (++c >= coreSize) {
                 c = 0;
@@ -168,28 +165,23 @@ public class MacOS extends LinuxLocalOS {
     }
 
     public OSMemory getOSMemory() {
-        OSMemoryImpl obj = new OSMemoryImpl();
-
         List<String> commands = new ArrayList<String>();
         commands.add("total");
         commands.add("sysctl -n hw.memsize");
-
         commands.add("pageSizeByte");
         commands.add("vm_stat | grep \"page size of \" | awk -F\" \" '{print $8}'");
-
         commands.add("free");
         commands.add("vm_stat | grep \"Pages free\" | awk -F\" \" '{print $3}'");
-
         commands.add("active");
         commands.add("vm_stat | grep \"Pages active\" | awk -F\" \" '{print $3}'");
 
         OSCommandStdouts map = this.cmd.execute(commands);
-
         BigDecimal total = new Expression(StringUtils.join(map.get("total"), "")).decimalValue();
         int pageSizeByte = new Expression(StringUtils.join(map.get("pageSizeByte"), "").toString()).intValue();
         BigDecimal free = new Expression(StringUtils.join(map.get("free"), "") + "00 * " + pageSizeByte).decimalValue();
         BigDecimal active = new Expression(StringUtils.join(map.get("active"), "") + "00 * " + pageSizeByte).decimalValue();
 
+        OSMemoryImpl obj = new OSMemoryImpl();
         obj.setTotal(total);
         obj.setFree(free);
         obj.setActive(active);

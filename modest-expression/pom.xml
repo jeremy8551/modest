@@ -11,7 +11,7 @@
 
     <artifactId>modest-expression</artifactId>
     <name>${project.artifactId}</name>
-    <description>表达式工具</description>
+    <description>Expression utilities</description>
 
     <dependencies>
         <dependency>
@@ -19,4 +19,13 @@
             <artifactId>modest-logger</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

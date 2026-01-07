@@ -60,7 +60,7 @@ public class LoadFileExecutor extends AbstractJob {
         DataWriter out = null;
         TextTableFileReader in = file.getReader(this.context.getStartPointer(), this.context.length(), this.context.getReadBuffer());
         try {
-            out = this.factory.create();
+            out = this.factory.newInstance();
 
             // 读取文件中的记录并插入到数据库表中
             TextTableLine line = null;

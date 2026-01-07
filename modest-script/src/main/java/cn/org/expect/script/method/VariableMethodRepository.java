@@ -141,7 +141,7 @@ public class VariableMethodRepository {
         CharTable table = new CharTable(CharsetUtils.get());
 
         // 标题
-        String[] titles = StringUtils.split(ResourcesUtils.getMessage("script.stdout.message002"), ',');
+        String[] titles = ResourcesUtils.getMessageArray("script.stdout.message002");
         table.addTitle(titles[0], CharTable.ALIGN_LEFT);
         table.addTitle(titles[1], CharTable.ALIGN_LEFT);
 

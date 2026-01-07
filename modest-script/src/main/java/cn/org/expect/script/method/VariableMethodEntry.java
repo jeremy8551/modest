@@ -191,7 +191,12 @@ public class VariableMethodEntry {
         return varargClass;
     }
 
-    public boolean canGetMethod() {
+    /**
+     * 变量方法是否可用
+     *
+     * @return 返回true表示变量方法可以被使用 false表示变量方法已被使用
+     */
+    public boolean isAvailable() {
         return canUse;
     }
 
@@ -209,7 +214,7 @@ public class VariableMethodEntry {
         }
     }
 
-    public void returnMethod(UniversalScriptVariableMethod method) {
+    public void release(UniversalScriptVariableMethod method) {
         if (method != null && method.equals(this.variableMethod)) {
             this.canUse = true;
         }

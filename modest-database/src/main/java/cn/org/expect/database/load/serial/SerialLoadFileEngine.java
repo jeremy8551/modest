@@ -113,7 +113,7 @@ public class SerialLoadFileEngine extends Terminator implements Loader, EasyCont
             }
 
             // 执行批量插入，向数据库表中大批量插入数据
-            DataWriter out = factory.create();
+            DataWriter out = factory.newInstance();
             List<String> files = context.getFiles(); // 按顺序逐个加载文件中的内容
             for (int i = 0; !this.terminate && i < files.size(); i++) {
                 String filepath = files.get(i);
@@ -229,7 +229,7 @@ public class SerialLoadFileEngine extends Terminator implements Loader, EasyCont
         }
 
         try {
-            in.setListener(LoadListenerFactory.create(context));
+            in.setListener(LoadListenerFactory.newInstance(context));
 
             // 逐行从文件中读取数据
             TextTableLine line;

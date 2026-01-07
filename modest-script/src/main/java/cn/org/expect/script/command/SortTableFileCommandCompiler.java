@@ -3,6 +3,7 @@ package cn.org.expect.script.command;
 import java.io.IOException;
 
 import cn.org.expect.expression.WordIterator;
+import cn.org.expect.increment.sort.OrderByExpression;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
@@ -10,7 +11,6 @@ import cn.org.expect.script.UniversalScriptParser;
 import cn.org.expect.script.UniversalScriptReader;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
-import cn.org.expect.sort.OrderByExpression;
 import cn.org.expect.util.StringUtils;
 
 /**
@@ -28,18 +28,18 @@ public class SortTableFileCommandCompiler extends AbstractTraceCommandCompiler {
     }
 
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws Exception {
-        WordIterator it = analysis.parse(analysis.unQuotation(analysis.replaceShellVariable(session, context, command, true, true)));
+        WordIterator it = analysis.parse(command);
         it.assertNext("sort");
         it.assertNext("table");
         it.assertNext("file");
-        String filepath = analysis.unQuotation(it.readUntil("of")); // 文件路径
+        String filepath = it.readUntil("of"); // 文件路径
         String filetype = it.next(); // 文件类型
-        CommandAttribute attrs = new CommandAttribute( //
+
+        CommandAttribute attrs = new CommandAttribute(session, context, //
             "charset:", "codepage:", "rowdel:", "coldel:", "escape:", //
             "chardel:", "column:", "colname:", "readbuf:", "writebuf:", //
             "thread:", "maxrow:", "maxfile:", "keeptemp", "covsrc", "temp:" //
         );
-
         if (it.isNext("modified")) {
             it.assertNext("modified");
             it.assertNext("by");
@@ -56,11 +56,11 @@ public class SortTableFileCommandCompiler extends AbstractTraceCommandCompiler {
         }
         it.assertNext("order");
         it.assertNext("by");
+        String orderBy = StringUtils.trimBlank(it.readOther());
 
-        EasyContext ioc = context.getContainer();
-        String position = it.readOther();
-        String[] array = StringUtils.split(StringUtils.trimBlank(position), analysis.getSegment()); // int(1) desc,2, 4,5
+        String[] array = StringUtils.split(orderBy, analysis.getSegment()); // int(1) desc,2, 4,5
         OrderByExpression[] orders = new OrderByExpression[array.length];
+        EasyContext ioc = context.getContainer();
         for (int i = 0; i < array.length; i++) {
             orders[i] = new OrderByExpression(ioc, analysis, array[i]);
         }

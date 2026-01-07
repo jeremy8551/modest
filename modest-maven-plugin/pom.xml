@@ -12,19 +12,18 @@
     <packaging>maven-plugin</packaging>
     <artifactId>modest-maven-plugin</artifactId>
     <name>${project.artifactId}</name>
-    <description>Maven插件</description>
+    <description>Maven plugin</description>
+
+    <properties>
+        <maven.compiler.source>6</maven.compiler.source>
+        <maven.compiler.target>6</maven.compiler.target>
+    </properties>
 
     <dependencies>
         <!-- 工具包 -->
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-tool</artifactId>
-        </dependency>
-
-        <!-- Maven 核心库 -->
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-core</artifactId>
+            <artifactId>modest-core</artifactId>
         </dependency>
 
         <!-- Maven 插件API -->
@@ -37,6 +36,28 @@
         <dependency>
             <groupId>org.apache.maven.plugin-tools</groupId>
             <artifactId>maven-plugin-annotations</artifactId>
+        </dependency>
+
+        <!-- Maven 核心库 -->
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-core</artifactId>
+            <scope>provided</scope> <!-- always provided by the Maven Core Classloader -->
+        </dependency>
+
+        <!-- dependency for JSR 330 annotation -->
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+            <scope>provided</scope> <!-- always provided by the Maven Core Classloader -->
+        </dependency>
+
+        <!-- dependency for plexus annotation -->
+        <dependency>
+            <groupId>org.codehaus.plexus</groupId>
+            <artifactId>plexus-component-annotations</artifactId>
+            <version>1.5.5</version>
         </dependency>
 
         <!-- Maven 工件管理库 -->
@@ -54,4 +75,20 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.plexus</groupId>
+                <artifactId>plexus-component-metadata</artifactId>
+                <version>1.5.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>generate-metadata</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

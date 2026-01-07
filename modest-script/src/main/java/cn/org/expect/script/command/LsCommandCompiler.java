@@ -20,13 +20,8 @@ public class LsCommandCompiler extends AbstractFileCommandCompiler {
     }
 
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
-        CommandExpression expr = new CommandExpression(analysis, "ls -l ", command);
-        List<String> filepathList = new ArrayList<String>(expr.getParameters());
-        for (int index = 0; index < filepathList.size(); index++) {
-            filepathList.set(index, filepathList.get(index));
-        }
-
-        boolean localhost = expr.containsOption("-l");
-        return new LsCommand(this, orginalScript, filepathList, localhost);
+        CommandExpression expression = new CommandExpression(analysis, "ls -l ", command);
+        List<String> list = new ArrayList<String>(expression.getParameters());
+        return new LsCommand(this, orginalScript, list, expression.containsOption("-l"));
     }
 }

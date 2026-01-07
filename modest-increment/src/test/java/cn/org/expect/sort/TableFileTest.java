@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 
 import cn.org.expect.concurrent.ThreadSource;
+import cn.org.expect.increment.sort.TableFileSortContext;
+import cn.org.expect.increment.sort.TableFileSorter;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileWriter;
 import cn.org.expect.ioc.EasyContext;
@@ -11,7 +13,7 @@ import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyLog;
+import cn.org.expect.test.annotation.RunWithLogSettings;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
@@ -19,8 +21,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@EasyLog("sout+:info")
 @RunWith(ModestRunner.class)
+@RunWithLogSettings("sout+:info")
 public class TableFileTest {
 
     @EasyBean
@@ -73,10 +75,10 @@ public class TableFileTest {
         context.setWriterBuffer(800);
         context.setRemoveLastField(true);
 
-        log.info("排序前文件: " + file.getAbsolutePath() + ", 列数: " + file.getColumn());
+        log.info("file before sort: " + file.getAbsolutePath() + ", columns: " + file.getColumn());
         TableFileSorter sorter = new TableFileSorter(context);
         File sort = sorter.execute(this.context, file, "1 asc");
-        log.info("排序后文件: " + sort.getAbsolutePath());
+        log.info("file after sort: " + sort.getAbsolutePath());
 
         // 再次排序
         TextTableFile sortfile = file.clone();
@@ -89,7 +91,7 @@ public class TableFileTest {
         context.setRemoveLastField(true);
 
         File oldfile = sorter.execute(this.context, sortfile, "1 desc");
-        log.info("再次排序后文件: " + oldfile.getAbsolutePath());
+        log.info("file after again sort: " + oldfile.getAbsolutePath());
         log.info("");
 
         log.info(txtfile.getAbsolutePath());

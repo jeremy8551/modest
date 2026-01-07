@@ -1,6 +1,5 @@
 package cn.org.expect.script.command;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 
@@ -26,13 +25,13 @@ import cn.org.expect.util.StringUtils;
  * 执行操作系统命令 <br>
  * os ps -ef
  */
-public class ExecuteOSCommand extends AbstractTraceCommand implements UniversalScriptInputStream, JumpCommandSupported, NohupCommandSupported {
+public class ExecuteOSCommand extends AbstractCommand implements UniversalScriptInputStream, JumpCommandSupported, NohupCommandSupported {
 
     /** 操作系统命令 */
     private String oscommand;
 
     /** 命令执行的终端 */
-    private OSCommand terminal;
+    private volatile OSCommand terminal;
 
     public ExecuteOSCommand(UniversalCommandCompiler compiler, String command, String oscommand) {
         super(compiler, command);
@@ -47,7 +46,7 @@ public class ExecuteOSCommand extends AbstractTraceCommand implements UniversalS
         }
     }
 
-    public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
+    public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
         this.terminal = SSHClientMap.get(context).last(); // 优先使用 declare ssh2 client 语句定义的客户端
         if (this.terminal == null) {
             OS os = context.getContainer().getBean(OS.class);
@@ -55,9 +54,14 @@ public class ExecuteOSCommand extends AbstractTraceCommand implements UniversalS
         }
 
         UniversalScriptAnalysis analysis = session.getAnalysis();
-        String command = analysis.replaceShellVariable(session, context, this.oscommand, true, false);
+        String oscommand = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.oscommand), true, false);
+
+        if (session.isEchoEnable() || forceStdout) {
+            stdout.println("os" + oscommand);
+        }
+
         String charsetName = StringUtils.coalesce(this.terminal.getCharsetName(), context.getCharsetName());
-        return this.terminal.execute(analysis.unQuotation(command), 0, new OutputStreamPrinter(stdout, charsetName), new OutputStreamPrinter(stderr, charsetName));
+        return this.terminal.execute(oscommand, 0, new OutputStreamPrinter(stdout, charsetName), new OutputStreamPrinter(stderr, charsetName));
     }
 
     public void terminate() throws Exception {

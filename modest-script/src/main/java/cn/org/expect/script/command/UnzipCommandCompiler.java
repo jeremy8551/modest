@@ -18,8 +18,8 @@ public class UnzipCommandCompiler extends AbstractFileCommandCompiler {
     }
 
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
-        CommandExpression expr = new CommandExpression(analysis, "unzip {0-1}", command);
+        CommandExpression expr = new CommandExpression(analysis, "unzip -d: {0-1}", command);
         String filepath = expr.getParameter();
-        return new UnzipCommand(this, orginalScript, filepath);
+        return new UnzipCommand(this, orginalScript, filepath, expr.getOptionValue("-d"));
     }
 }

@@ -237,15 +237,24 @@ public class CommandExpressionTest {
 
     @Test
     public void test12() {
-        TestAnalysisImpl analysis = new TestAnalysisImpl();
-        LoginExpression p = new LoginExpression(analysis, "ssh us@er@127.0.0.1:22?password=pass@wd&alive=true@&d=&c=@");
-        Assert.assertEquals("ssh", p.getName());
-        Assert.assertEquals("us@er", p.getLoginUsername());
-        Assert.assertEquals("pass@wd", p.getLoginPassword());
-        Assert.assertEquals("127.0.0.1", p.getLoginHost());
-        Assert.assertEquals("22", p.getLoginPort());
-        Assert.assertEquals("true@", p.getAttribute("alive"));
-        Assert.assertEquals("", p.getAttribute("d"));
-        Assert.assertEquals("@", p.getAttribute("c"));
+        CommandExpression p = new CommandExpression("tar [-c|-x] -zv -f:", "tar -xvf $TMPDIR/test.txt");
+        Assert.assertEquals("tar", p.getName());
+        Assert.assertFalse(p.isReverse());
+        Assert.assertEquals("$TMPDIR/test.txt", p.getOptionValue("-f"));
+        Assert.assertTrue(p.containsOption("-x"));
+        Assert.assertTrue(p.containsOption("-v"));
+        Assert.assertTrue(p.containsOption("-f"));
+        Assert.assertFalse(p.containsOption("-c"));
+        Assert.assertEquals(0, p.getParameters().size()); // 参数个数只能是1
+        Assert.assertEquals("$TMPDIR/test.txt", p.getOptionValue("-f"));
+    }
+
+    @Test
+    public void test13() {
+        try {
+            new CommandExpression("tar [-c|-x] -z -v: -f:", "tar -xvf $TMPDIR/test.txt");
+        } catch (ExpressionException e) {
+            log.info(e.getLocalizedMessage());
+        }
     }
 }

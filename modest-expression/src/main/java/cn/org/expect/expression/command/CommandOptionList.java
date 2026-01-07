@@ -44,9 +44,9 @@ public class CommandOptionList {
      * 判断字符串参数是否匹配选项的规则
      *
      * @param str 字符串
-     * @return 返回true表示匹配
+     * @return 返回true表示不匹配
      */
-    public boolean match(String str) {
+    public boolean isOptionRule(String str) {
         return this.isOption(str) //
             || (str.startsWith("[") && str.endsWith("]")) //
             || (str.startsWith("(") && str.endsWith(")")) //

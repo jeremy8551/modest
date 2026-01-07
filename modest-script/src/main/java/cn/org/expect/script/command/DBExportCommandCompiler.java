@@ -18,7 +18,7 @@ public class DBExportCommandCompiler extends AbstractTraceCommandCompiler {
 
     public final static String REGEX = "^(?i)db\\s+export\\s+to\\s*.*";
 
-    private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
+    private final Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
         return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
@@ -33,10 +33,10 @@ public class DBExportCommandCompiler extends AbstractTraceCommandCompiler {
         it.assertNext("db");
         it.assertNext("export");
         it.assertNext("to");
-        String filepath = analysis.unQuotation(it.readUntil("of"));
+        String filepath = it.readUntil("of");
         String filetype = it.next();
 
-        CommandAttribute attrs = new CommandAttribute( //
+        CommandAttribute attrs = new CommandAttribute(session, context, //
             "charset:", "codepage:", "rowdel:", "coldel:", "escape:", //
             "chardel:", "column:", "colname:", "catalog:", "message:", //
             "listener:", "convert:", "charhide:", "writebuf:", "append", //

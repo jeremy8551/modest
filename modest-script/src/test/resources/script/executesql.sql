@@ -1,7 +1,7 @@
 
 
 
-declare global test0001  catalog configuration use driver $databaseDriverName url "${databaseUrl}" username ${username} password $password admin.username ${username} admin.password $password
+declare global test0001  catalog configuration use driver $databaseDriverName url "${databaseUrl}" username ${username} password $password
 db connect to test0001
 
 declare cno cursor with return for select branch_id, branch_name from v10_test_tmp ;

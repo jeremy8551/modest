@@ -26,7 +26,7 @@ public class DfCommand extends AbstractTraceCommand implements NohupCommandSuppo
         OS os = context.getContainer().getBean(OS.class);
         try {
             CharTable table = new CharTable();
-            String[] titles = StringUtils.split(ResourcesUtils.getMessage("script.stdout.message007"), ',');
+            String[] titles = ResourcesUtils.getMessageArray("script.stdout.message007");
             table.addTitle(titles[0]);
             table.addTitle(titles[1]);
             table.addTitle(titles[2]);
@@ -37,9 +37,9 @@ public class DfCommand extends AbstractTraceCommand implements NohupCommandSuppo
             List<OSDisk> list = os.getOSDisk();
             for (OSDisk disk : list) {
                 table.addCell(disk.getId());
-                table.addCell(DataUnitExpression.toString(disk.total()));
-                table.addCell(DataUnitExpression.toString(disk.free()));
-                table.addCell(DataUnitExpression.toString(disk.used()));
+                table.addCell(DataUnitExpression.toString(disk.total(), true));
+                table.addCell(DataUnitExpression.toString(disk.free(), true));
+                table.addCell(DataUnitExpression.toString(disk.used(), true));
                 table.addCell(disk.getType());
                 table.addCell(disk.getAmount());
             }

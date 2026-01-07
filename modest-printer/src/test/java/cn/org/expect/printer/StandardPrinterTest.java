@@ -3,6 +3,7 @@ package cn.org.expect.printer;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
@@ -36,12 +37,12 @@ public class StandardPrinterTest {
 
         TimeWatch watch = new TimeWatch();
         int total = 101525401;
-        Progress progress = new Progress("任务1", out, "${taskId}共有 ${totalRecord} 条记录, 已加载 ${process} % ${leftTime} ..", total);
+        Progress progress = new Progress("task1", out, "${taskId} has ${totalRecord} records in total, ${process}% loaded, remaining ${leftTime} ..", total);
         for (int i = 1; i <= total; i++) {
             progress.print();
         }
 
-        log.info("遍历 {} 用时: {}", total, watch.useTime());
+        log.info("{} records, use time: {}", total, watch.useTime());
         Assert.assertEquals(total, progress.getCount().longValue());
     }
 

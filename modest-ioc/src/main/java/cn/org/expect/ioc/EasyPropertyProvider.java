@@ -1,6 +1,5 @@
 package cn.org.expect.ioc;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
@@ -10,12 +9,20 @@ import java.util.Properties;
 public interface EasyPropertyProvider {
 
     /**
+     * 判断属性是否存在
+     *
+     * @param name 属性名
+     * @return 返回true表示属性存在，false表示属性不存在
+     */
+    boolean hasProperty(String name);
+
+    /**
      * 添加属性集合
      *
      * @param properties 属性集合
      * @return 返回true表示成功，false表示失败（集合已存在）
      */
-    boolean add(Properties properties, Comparator<Properties> comparator);
+    boolean addProperties(Properties properties);
 
     /**
      * 返回属性值

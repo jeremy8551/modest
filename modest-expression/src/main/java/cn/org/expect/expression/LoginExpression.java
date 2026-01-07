@@ -45,12 +45,12 @@ public class LoginExpression extends CommandExpression {
         this.attributes = new LinkedHashMap<String, String>();
     }
 
-    protected void parse(String pattern) {
-        super.parse(pattern);
+    protected void parsePattern(String pattern) {
+        super.parsePattern(pattern);
     }
 
-    public void setValue(String command) {
-        super.setValue(command);
+    public void parseValue(String command) {
+        super.parseValue(command);
 
         int index = this.indexOfLogin();
         if (index != -1) {

@@ -1,11 +1,9 @@
 package cn.org.expect.ioc;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
-import cn.org.expect.ProjectPom;
 import cn.org.expect.ioc.impl.DefaultBeanEntry;
 import cn.org.expect.ioc.internal.BeanArgument;
 import cn.org.expect.ioc.internal.BeanBuilder;
@@ -35,7 +33,7 @@ import cn.org.expect.util.UniqueSequenceGenerator;
 public class DefaultEasyContext implements EasyContext {
 
     /** 序号生成器 */
-    protected final static UniqueSequenceGenerator UNIQUE = new UniqueSequenceGenerator(ProjectPom.getArtifactID() + "-{}", 1);
+    protected final static UniqueSequenceGenerator UNIQUE = new UniqueSequenceGenerator(EasyContext.class.getSimpleName() + "-{}", 1);
 
     /** 根容器锁 */
     protected final static Object lock = new Object();
@@ -112,6 +110,7 @@ public class DefaultEasyContext implements EasyContext {
      *                    !org.test 表示排除掉包名中的类 <br>
      */
     public DefaultEasyContext(ClassLoader classLoader, String... args) {
+        ClassUtils.setClassLoader(classLoader);
         this.setClassLoader(classLoader);
         this.setArgument(args);
 
@@ -172,7 +171,6 @@ public class DefaultEasyContext implements EasyContext {
     }
 
     public void setClassLoader(ClassLoader classLoader) {
-        ClassUtils.setClassLoader(classLoader);
         this.classLoader = ClassUtils.getClassLoader();
     }
 
@@ -319,7 +317,8 @@ public class DefaultEasyContext implements EasyContext {
     public <E> E getBeanQuietly(Class<E> type, Object... args) {
         try {
             return this.getBean(type, args);
-        } catch (Throwable ignored) {
+        } catch (Throwable e) {
+            e.printStackTrace();
             return null;
         }
     }
@@ -375,7 +374,7 @@ public class DefaultEasyContext implements EasyContext {
         Class<?> type = entry.getType();
 
         // 组件工厂接口
-        EasyBeanFactory<?> factory = this.beanFactoryRepository.create(type, this);
+        EasyBeanFactory<?> factory = this.beanFactoryRepository.newInstance(type, this);
         if (factory != null) {
             add = true;
         }
@@ -475,12 +474,16 @@ public class DefaultEasyContext implements EasyContext {
         }.load();
     }
 
-    public boolean add(Properties properties, Comparator<Properties> comparator) {
-        return this.properties.add(properties, comparator);
+    public boolean hasProperty(String name) {
+        return this.properties.hasProperty(name);
     }
 
     public String getProperty(String name) {
         return this.properties.getProperty(name);
+    }
+
+    public boolean addProperties(Properties properties) {
+        return this.properties.addProperties(properties);
     }
 
     public List<Properties> getProperties() {

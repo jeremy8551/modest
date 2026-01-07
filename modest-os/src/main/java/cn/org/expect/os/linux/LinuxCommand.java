@@ -5,6 +5,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
 
 import cn.org.expect.collection.ByteBuffer;
 import cn.org.expect.io.BufferedLineReader;
@@ -121,7 +123,7 @@ public class LinuxCommand extends Terminator implements OSCommand {
         return this.execute(command, timeout, this.stdoutOS, this.stderrOS);
     }
 
-    public synchronized int execute(String command, long timeout, OutputStream stdout, OutputStream stderr) throws OSCommandException {
+    public synchronized int execute(String command, final long timeout, final OutputStream stdout, final OutputStream stderr) throws OSCommandException {
         if (log.isDebugEnabled()) {
             log.debug("os.stdout.message001", command, timeout);
         }
@@ -132,57 +134,74 @@ public class LinuxCommand extends Terminator implements OSCommand {
         this.stdout.clear();
         this.stderr.clear();
 
-        long timeoutSec = (timeout / 1000);
-        TimeWatch watch = new TimeWatch();
+        final long timeoutSec = (timeout / 1000);
+        final TimeWatch watch = new TimeWatch();
         Process process = null;
         try {
-            String cmd = this.toShellCommand(command);
+            final String cmd = this.toShellCommand(command);
             process = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", cmd});
 
             // 从进程的标准输出流中读取信息
-            byte[] array = new byte[1024];
-            InputStream in = process.getInputStream();
-            for (int len = in.read(array, 0, array.length); len != -1; len = in.read(array, 0, array.length)) {
-                if (timeout > 0 && watch.useSeconds() > timeoutSec) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("os.stdout.message005", cmd);
+            final byte[] array = new byte[1024];
+            final Process finalProcess = process;
+            final ByteBuffer stdoutBuf = this.stdout;
+            Thread stdoutThread = new Thread(new FutureTask<String>(new Callable<String>() {
+                public String call() throws Exception {
+                    InputStream in = finalProcess.getInputStream();
+                    for (int len = in.read(array, 0, array.length); len != -1; len = in.read(array, 0, array.length)) {
+                        if (timeout > 0 && watch.useSeconds() > timeoutSec) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("os.stdout.message005", cmd);
+                            }
+                            break;
+                        }
+
+                        int size = extractPid(array, len);
+                        stdoutBuf.append(array, 0, size);
+
+                        if (log.isDebugEnabled()) {
+                            log.debug(new String(array, 0, size, getCharsetName()));
+                        }
+
+                        if (stdout != null) {
+                            stdout.write(array, 0, size);
+                            stdout.flush();
+                        }
                     }
-                    break;
+                    return "";
                 }
+            }));
+            stdoutThread.start();
 
-                int size = this.extractPid(array, len);
-                this.stdout.append(array, 0, size);
+            final Process finalProcess1 = process;
+            final ByteBuffer stderrBuffer = this.stdout;
+            Thread stderrThread = new Thread(new FutureTask<String>(new Callable<String>() {
+                public String call() throws Exception {
+                    InputStream is = finalProcess1.getErrorStream();
+                    for (int len = is.read(array, 0, array.length); len != -1; len = is.read(array, 0, array.length)) {
+                        if (timeout > 0 && watch.useSeconds() > timeoutSec) {
+                            if (log.isDebugEnabled()) {
+                                log.debug("os.stdout.message006", cmd);
+                            }
+                            break;
+                        }
 
-                if (log.isDebugEnabled()) {
-                    log.debug(new String(array, 0, size, this.getCharsetName()));
-                }
+                        stderrBuffer.append(array, 0, len);
 
-                if (stdout != null) {
-                    stdout.write(array, 0, size);
-                    stdout.flush();
-                }
-            }
+                        if (log.isDebugEnabled()) {
+                            log.debug(new String(array, 0, len, getCharsetName()));
+                        }
 
-            InputStream is = process.getErrorStream();
-            for (int len = is.read(array, 0, array.length); len != -1; len = is.read(array, 0, array.length)) {
-                if (timeout > 0 && watch.useSeconds() > timeoutSec) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("os.stdout.message006", cmd);
+                        if (stderr != null) {
+                            stderr.write(array, 0, len);
+                            stderr.flush();
+                        }
                     }
-                    break;
-                }
 
-                this.stderr.append(array, 0, len);
-
-                if (log.isDebugEnabled()) {
-                    log.debug(new String(array, 0, len, this.getCharsetName()));
+                    return "";
                 }
-
-                if (stderr != null) {
-                    stderr.write(array, 0, len);
-                    stderr.flush();
-                }
-            }
+            }));
+            stderrThread.start();
 
             if (timeout > 0) {
                 int count = 0;
@@ -202,6 +221,9 @@ public class LinuxCommand extends Terminator implements OSCommand {
                 }
                 process.waitFor();
             }
+
+            stdoutThread.join();
+            stderrThread.join();
 
             return process.exitValue();
         } catch (Throwable e) {

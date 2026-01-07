@@ -25,7 +25,7 @@ public class CleanMojo extends AbstractMojo {
 
     public void execute() {
         if (FileUtils.isDirectory(this.target)) {
-            getLog().info("Delete targetDirectory " + this.target.getAbsolutePath() + " " + (FileUtils.deleteDirectory(this.target) ? "[success]" : "[fail]"));
+            getLog().info("Delete target Directory " + this.target.getAbsolutePath() + " " + (FileUtils.deleteDirectory(this.target) ? "[success]" : "[fail]"));
         } else {
             getLog().info("skip not existing targetDirectory  " + this.target.getAbsolutePath());
         }

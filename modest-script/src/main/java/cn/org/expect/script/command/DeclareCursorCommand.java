@@ -24,10 +24,10 @@ import cn.org.expect.util.ResourcesUtils;
 public class DeclareCursorCommand extends AbstractCommand implements WithBodyCommandSupported {
 
     /** 游标名 */
-    private final String name;
+    private String name;
 
     /** SQL语句 */
-    private final String sql;
+    private String sql;
 
     /** 数据库操作类 */
     private JdbcDao dao;
@@ -48,9 +48,9 @@ public class DeclareCursorCommand extends AbstractCommand implements WithBodyCom
             }
 
             UniversalScriptAnalysis analysis = session.getAnalysis();
-            String name = analysis.replaceShellVariable(session, context, this.name, true, false);
+            String name = analysis.replaceShellVariable(session, context, this.name, true, true);
             UniversalScriptChecker checker = context.getEngine().getChecker();
-            if (!checker.isVariableName(name) || checker.isDatabaseKeyword(name)) {
+            if (!checker.checkVariableName(name) || !checker.checkDatabaseKeyword(name)) {
                 stderr.println(ResourcesUtils.getMessage("script.stderr.message062", this.command, name));
                 return UniversalScriptCommand.COMMAND_ERROR;
             }

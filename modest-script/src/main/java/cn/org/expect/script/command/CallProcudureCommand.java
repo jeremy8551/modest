@@ -32,7 +32,7 @@ public class CallProcudureCommand extends AbstractTraceCommand implements JumpCo
     private String sql;
 
     /** 数据库操作类 */
-    private JdbcDao dao;
+    private volatile JdbcDao dao;
 
     public CallProcudureCommand(UniversalCommandCompiler compiler, String command, String sql) {
         super(compiler, command);
@@ -59,7 +59,7 @@ public class CallProcudureCommand extends AbstractTraceCommand implements JumpCo
             DatabaseProcedureParameterList parameters = obj.getParameters();
             for (int i = 0, size = parameters.size(); i < size; i++) {
                 DatabaseProcedureParameter parameter = parameters.get(i);
-                if (parameter.isOutMode() && checker.isVariableName(parameter.getExpression())) {
+                if (parameter.isOutMode() && checker.checkVariableName(parameter.getExpression())) {
                     List<String> list = StringUtils.splitVariable(parameter.getExpression(), new ArrayList<String>());
                     if (list.size() != 1) {
                         stderr.println(ResourcesUtils.getMessage("script.stderr.message038", sql, parameter.getPlaceholder(), parameter.getExpression()));

@@ -88,7 +88,7 @@ public class ScriptStep {
      *
      * @return 返回 true 表示还未运行到目标位置
      */
-    public boolean containsTarget() {
+    public boolean isJumping() {
         return jumping;
     }
 
@@ -97,7 +97,7 @@ public class ScriptStep {
      *
      * @param step step 命令的参数值
      */
-    public void setTarget(String step) {
+    public void jump(String step) {
         this.target = Ensure.notBlank(step);
         this.jumping = true;
     }

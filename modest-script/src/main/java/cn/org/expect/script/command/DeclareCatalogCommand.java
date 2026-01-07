@@ -38,11 +38,11 @@ public class DeclareCatalogCommand extends AbstractGlobalCommand {
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
         UniversalScriptAnalysis analysis = session.getAnalysis();
-        String name = analysis.trim(analysis.replaceShellVariable(session, context, this.name, true, false), 0, 0);
+        String name = analysis.trim(analysis.replaceShellVariable(session, context, this.name, true, true), 0, 0);
 
         Set<String> keys = CollectionUtils.stringPropertyNames(this.catalog);
         for (String key : keys) {
-            String value = analysis.unQuotation(analysis.replaceShellVariable(session, context, this.catalog.getProperty(key), true, true));
+            String value = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.catalog.getProperty(key)), true, !analysis.containsQuotation(this.catalog.getProperty(key)));
             this.catalog.setProperty(key, value);
         }
 

@@ -3,7 +3,7 @@ package cn.org.expect.log.slf4j;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.org.expect.log.LevelLogger;
+import cn.org.expect.log.AbstractResourceLog;
 import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.StackTraceUtils;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  * @author jeremy8551@gmail.com
  * @createtime 2023-09-13
  */
-public class Slf4jLog extends LevelLogger {
+public class Slf4jLog extends AbstractResourceLog {
 
     /** 日志接口 */
     private final Logger log;
@@ -28,12 +28,8 @@ public class Slf4jLog extends LevelLogger {
     /** 创建日志的堆栈信息 */
     protected StackTraceElement stackTrace;
 
-    /** 日志所属的类名 */
-    private final String type;
-
     public Slf4jLog(LogContext context, Class<?> type) {
-        super(context);
-        this.type = type.getName();
+        super(context, type);
         this.list = new ArrayList<String>();
         this.log = LoggerFactory.getLogger(type);
         this.stackTrace = StackTraceUtils.get(LogFactory.class.getName());
@@ -189,7 +185,7 @@ public class Slf4jLog extends LevelLogger {
         } else if (log.isTraceEnabled()) {
             str += "trace";
         }
-        str += ", class=" + this.type;
+        str += ", class=" + super.getName();
         str += ", line=(" + stackTrace.getFileName() + ":" + this.stackTrace.getLineNumber() + ")";
         str += ", logClass=" + log.getClass().getName();
         str += '}';

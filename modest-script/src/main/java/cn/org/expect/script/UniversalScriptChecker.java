@@ -29,7 +29,7 @@ public interface UniversalScriptChecker {
      * @param name 变量名
      * @return 返回true表示变量名合法 false表示变量名非法
      */
-    boolean isVariableName(String name);
+    boolean checkVariableName(String name);
 
     /**
      * 判断字符串参数 name 是否是数据库关键字
@@ -37,5 +37,5 @@ public interface UniversalScriptChecker {
      * @param name 字符串
      * @return 返回true表示关键字合法 false表示关键字非法
      */
-    boolean isDatabaseKeyword(String name);
+    boolean checkDatabaseKeyword(String name);
 }

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.concurrent.BlockingQueue;
 
-import cn.org.expect.ProjectPom;
 import cn.org.expect.log.Console;
 import cn.org.expect.log.Layout;
 import cn.org.expect.log.LogEvent;
@@ -63,7 +62,9 @@ public class FileAppenderWriter {
      */
     public FileAppenderWriter(String logfile, String charsetName, BlockingQueue<LogEvent> queue, Layout layout, boolean append) throws IOException {
         if (StringUtils.isBlank(logfile)) {
-            logfile = FileUtils.joinPath(Settings.getUserHome().getAbsolutePath(), "." + ProjectPom.getArtifactID(), Settings.getUserName() + ".log");
+            File home = Settings.getProjectHome();
+            FileUtils.createDirectory(home);
+            logfile = FileUtils.joinPath(home.getAbsolutePath(), "logFile", Settings.getUserName() + ".log");
         }
 
         this.charsetName = CharsetUtils.get(charsetName);

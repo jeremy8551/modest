@@ -35,7 +35,7 @@ public class UndeclareHandlerCommand extends AbstractGlobalCommand implements Lo
             stdout.println(StringUtils.escapeLineSeparator(this.command));
         }
 
-        String condition = session.getAnalysis().replaceShellVariable(session, context, this.condition, true, false);
+        String condition = session.getAnalysis().replaceShellVariable(session, context, this.condition, true, true);
         if (this.isExitHandler) {
             ProcessExitcodeHandlerMap map = ProcessExitcodeHandlerMap.get(context, this.isGlobal());
             map.remove(condition);

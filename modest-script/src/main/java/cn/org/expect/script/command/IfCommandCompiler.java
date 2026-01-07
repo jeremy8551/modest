@@ -36,16 +36,11 @@ public class IfCommandCompiler extends AbstractCommandCompiler {
         }
 
         if (log.isDebugEnabled()) {
-            log.debug("script.stdout.message030", "if", condition);
+             log.debug("script.stdout.message029", "if", condition);
         }
 
         // 搜索 elseif 与 else 关键字
         String ifBody = it.read(rule); // 读取 then 关键到 elseif 或 else 关键字之间的逻辑
-
-        if (log.isDebugEnabled()) {
-            log.debug("script.stdout.message031", "if", ifBody);
-        }
-
         ifcommand.setIf(condition, parser.read(ifBody));
 
         while (true) {
@@ -56,13 +51,13 @@ public class IfCommandCompiler extends AbstractCommandCompiler {
                 }
 
                 if (log.isDebugEnabled()) {
-                    log.debug("script.stdout.message030", "elseif", condition);
+                    log.debug("script.stdout.message029", "elseif", condition);
                 }
 
                 String elseIfBody = it.read(rule);
 
                 if (log.isDebugEnabled()) {
-                    log.debug("script.stdout.message031", "elseif", elseIfBody);
+                    log.debug("script.stdout.message030", "elseif", elseIfBody);
                 }
 
                 ifcommand.addElseIf(condition, parser.read(elseIfBody));

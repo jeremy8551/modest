@@ -23,16 +23,16 @@ import cn.org.expect.util.ResourcesUtils;
 public class DeclareStatementCommand extends AbstractCommand {
 
     /** 批处理名字 */
-    private final String name;
+    private String name;
 
     /** SQL语句 */
-    private final String sql;
+    private String sql;
 
     /** 批量提交记录数 */
-    private final String batchRecords;
+    private String batchRecords;
 
     /** 数据库操作类 */
-    private JdbcDao dao;
+    private volatile JdbcDao dao;
 
     public DeclareStatementCommand(UniversalCommandCompiler compiler, String command, String name, String sql, String batchRecords) {
         super(compiler, command);
@@ -52,9 +52,9 @@ public class DeclareStatementCommand extends AbstractCommand {
                 return UniversalScriptCommand.COMMAND_ERROR;
             }
 
-            String name = analysis.replaceShellVariable(session, context, this.name, true, false);
+            String name = analysis.replaceShellVariable(session, context, this.name, true, true);
             UniversalScriptChecker checker = context.getEngine().getChecker();
-            if (!checker.isVariableName(name) || checker.isDatabaseKeyword(name)) {
+            if (!checker.checkVariableName(name) || !checker.checkDatabaseKeyword(name)) {
                 stderr.println(ResourcesUtils.getMessage("script.stderr.message064", this.command, name));
                 return UniversalScriptCommand.COMMAND_ERROR;
             }
@@ -63,7 +63,7 @@ public class DeclareStatementCommand extends AbstractCommand {
                 stdout.println("declare " + name + " statement with " + sql);
             }
 
-            int batch = Ensure.isInt(analysis.replaceShellVariable(session, context, this.batchRecords, true, false));
+            int batch = Ensure.isInt(analysis.replaceShellVariable(session, context, this.batchRecords, true, true));
             ScriptStatement statement = new ScriptStatement(this.dao, context.getEngine().getFormatter(), batch, name, sql);
             StatementMap.get(context).put(name, statement);
             return 0;

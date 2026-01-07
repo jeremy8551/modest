@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 
 import cn.org.expect.script.UniversalCommandCompiler;
 import cn.org.expect.script.UniversalScriptAnalysis;
@@ -16,8 +17,7 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
-import cn.org.expect.script.io.ScriptFile;
-import cn.org.expect.script.io.ScriptFileExpression;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
@@ -43,57 +43,36 @@ public class CpCommand extends AbstractFileCommand implements UniversalScriptInp
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
-        ScriptFileExpression srcfile = new ScriptFileExpression(session, context, this.srcFileExpression);
-        File dest = new ScriptFile(session, context, this.destFileExpression); // 目标文件/目录
+        PathExpression src = new PathExpression(session, context, this.srcFileExpression);
+        File destFile = PathExpression.toFile(session, context, this.destFileExpression); // 目标文件/目录
 
         if (session.isEchoEnable() || forceStdout) {
-            stdout.println("cp " + srcfile.getAbsolutePath() + " " + dest.getAbsolutePath());
+            stdout.println("cp " + src.getAbsolutePath() + " " + destFile.getAbsolutePath());
         }
 
-        if (srcfile.isResource()) {
-            File file;
-            if (dest.exists()) {
-                if (dest.isDirectory()) {
-                    file = new File(dest, srcfile.getName());
-                } else {
-                    file = dest;
-                }
-            } else {
-                file = dest;
-            }
-
+        if (src.startWithClasspath()) {
+            File file = new File(destFile, src.getName());
             FileUtils.assertCreateFile(file);
-            session.putValue(file);
-            IO.write(srcfile.getInputStream(), new FileOutputStream(file, false), null);
+            session.setValue(file);
+            IO.write(src.getInputStream(), new FileOutputStream(file, false), this);
             return 0;
         } else {
-            File src = new File(srcfile.getAbsolutePath());
-            FileUtils.assertExists(src);
-
-            File file;
-            if (src.isDirectory()) {
-                if (dest.exists()) {
-                    FileUtils.assertDirectory(dest);
-                    file = new File(dest, srcfile.getName());
-                } else {
-                    file = FileUtils.assertCreateDirectory(dest);
-                }
+            boolean success = true;
+            List<File> files = src.listFiles();
+            if (files.isEmpty()) {
+                success = false;
+                session.setValue(null);
             } else {
-                if (dest.exists()) {
-                    if (dest.isDirectory()) {
-                        file = new File(dest, srcfile.getName());
-                    } else {
-                        file = dest;
+                FileUtils.assertDirectory(destFile);
+                for (File file : files) {
+                    if (!FileUtils.copy(file, new File(destFile, file.getName()))) {
+                        success = false;
                     }
-                } else {
-                    file = dest;
                 }
-
-                FileUtils.assertCreateFile(file);
+                session.setValue(destFile);
             }
 
-            session.putValue(file);
-            return FileUtils.copy(src, file) ? 0 : UniversalScriptCommand.COMMAND_ERROR;
+            return success ? 0 : UniversalScriptCommand.COMMAND_ERROR;
         }
     }
 

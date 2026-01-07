@@ -3,7 +3,7 @@ package cn.org.expect.os.internal;
 import java.io.File;
 import java.util.Date;
 
-import cn.org.expect.jdk.JavaDialectFactory;
+import cn.org.expect.util.JavaDialectFactory;
 import cn.org.expect.os.OSFile;
 import cn.org.expect.os.linux.Linuxs;
 import cn.org.expect.util.Dates;
