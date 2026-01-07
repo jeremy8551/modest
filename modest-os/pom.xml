@@ -11,7 +11,7 @@
 
     <artifactId>modest-os</artifactId>
     <name>${project.artifactId}</name>
-    <description>操作系统与命令工具</description>
+    <description>Operating system and command utilities</description>
 
     <dependencies>
         <dependency>
@@ -77,4 +77,13 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

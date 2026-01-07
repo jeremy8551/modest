@@ -33,7 +33,7 @@ public class BeanFactoryRepository {
      * @param injector 组件工厂
      * @return 返回组件工厂对象
      */
-    public EasyBeanFactory<?> create(Class<?> type, EasyBeanInjector injector) {
+    public EasyBeanFactory<?> newInstance(Class<?> type, EasyBeanInjector injector) {
         if (ClassUtils.isAssignableFrom(EasyBeanFactory.class, type) && !Modifier.isAbstract(type.getModifiers())) {
             EasyBeanFactory<?> factory = injector.newInstance(type);
             if (this.add(factory, injector)) {

@@ -1,0 +1,71 @@
+<toolchains>
+   <toolchain>
+       <type>jdk</type>
+       <provides>
+           <version>25</version>
+       </provides>
+       <configuration>
+           <jdkHome>/Users/user/.m2/jdks/jdk-25.jdk/Contents/Home</jdkHome>
+       </configuration>
+   </toolchain>
+
+   <toolchain>
+       <type>jdk</type>
+       <provides>
+           <version>17</version>
+       </provides>
+       <configuration>
+           <jdkHome>/Users/user/.m2/jdks/jdk-17.0.2.jdk/Contents/Home</jdkHome>
+       </configuration>
+   </toolchain>
+
+   <toolchain>
+       <type>jdk</type>
+       <provides>
+           <version>12</version>
+       </provides>
+       <configuration>
+           <jdkHome>/Users/user/.m2/jdks/jdk-12.0.2.jdk/Contents/Home</jdkHome>
+       </configuration>
+   </toolchain>
+
+   <toolchain>
+       <type>jdk</type>
+       <provides>
+           <version>8</version>
+       </provides>
+       <configuration>
+           <jdkHome>/Users/user/.m2/jdks/zulu8.90.0.19-ca-jdk8.0.472-macosx_aarch64/zulu-8.jdk/Contents/Home</jdkHome>
+       </configuration>
+   </toolchain>
+
+   <toolchain>
+       <type>jdk</type>
+       <provides>
+           <version>7</version>
+       </provides>
+       <configuration>
+           <jdkHome>/Users/user/.m2/jdks/zulu8.90.0.19-ca-jdk8.0.472-macosx_aarch64/zulu-8.jdk/Contents/Home</jdkHome>
+       </configuration>
+   </toolchain>
+
+   <toolchain>
+       <type>jdk</type>
+       <provides>
+           <version>6</version>
+       </provides>
+       <configuration>
+           <jdkHome>/Users/user/.m2/jdks/zulu8.90.0.19-ca-jdk8.0.472-macosx_aarch64/zulu-8.jdk/Contents/Home</jdkHome>
+       </configuration>
+   </toolchain>
+
+   <toolchain>
+       <type>jdk</type>
+       <provides>
+           <version>5</version>
+       </provides>
+       <configuration>
+           <jdkHome>/Users/user/.m2/jdks/zulu8.90.0.19-ca-jdk8.0.472-macosx_aarch64/zulu-8.jdk/Contents/Home</jdkHome>
+       </configuration>
+   </toolchain>
+</toolchains>

@@ -17,7 +17,6 @@ import cn.org.expect.script.UniversalScriptParser;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
-import cn.org.expect.script.UniversalScriptVariable;
 import cn.org.expect.script.command.feature.JumpCommandSupported;
 import cn.org.expect.script.command.feature.LoopCommandSupported;
 import cn.org.expect.script.session.ScriptStep;
@@ -47,15 +46,18 @@ public class JumpCommand extends AbstractTraceCommand implements UniversalScript
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
-        UniversalScriptAnalysis analysis = session.getAnalysis();
-        String target = analysis.replaceShellVariable(session, context, this.message, true, false);
         if (session.isEchoEnable() || forceStdout) {
-            stdout.println(ResourcesUtils.getMessage("script.stdout.message033", target));
+            stdout.println(ResourcesUtils.getMessage("script.stdout.message033", this.message));
+        }
+
+        UniversalScriptAnalysis analysis = session.getAnalysis();
+        String message = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.message), true, !analysis.containsQuotation(this.message));
+        if (analysis.isBlank(message)) {
+            throw new UniversalScriptException("script.stderr.message074", this.command);
         }
 
         // 保存目标位置信息
-        ScriptStep.get(context, true).setTarget(target);
-        context.addGlobalVariable(UniversalScriptVariable.SESSION_VARNAME_JUMP, "true"); // JUMP 命令标识变量
+        ScriptStep.get(context, true).jump(message);
 
         // 添加 jump 命令的监听器
         UniversalScriptListenerList list = context.getListenerList();
@@ -83,7 +85,7 @@ public class JumpCommand extends AbstractTraceCommand implements UniversalScript
         }
 
         public boolean beforeCommand(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, UniversalScriptCommand command) throws Exception {
-            boolean value = ScriptStep.get(context, true).containsTarget() && (command instanceof JumpCommandSupported) && ((JumpCommandSupported) command).enableJump();
+            boolean value = ScriptStep.get(context, true).isJumping() && (command instanceof JumpCommandSupported) && ((JumpCommandSupported) command).enableJump();
             return !value;
         }
 

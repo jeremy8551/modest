@@ -50,7 +50,7 @@
         <property name="APP_NAME" value="${spring:spring.application.name}"/>
 
         <!-- 日志所在目录，可以是绝对路径或相对路径 -->
-        <property name="FILE_PATH" value="${sys:user.home}/logs/${APP_NAME}"/>
+        <property name="FILE_PATH" value="${sys:user.home}/.modest/${APP_NAME}"/>
     </Properties>
 
     <filter/>

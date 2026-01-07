@@ -141,6 +141,11 @@ $ set varname='content';
 
 ```shell
 $ set varname="content";
+$ set varMultiyLine="""
+	1213
+	567
+	890
+"""
 ```
 
 设置数值型变量
@@ -169,7 +174,7 @@ $ set -e
 
 
 
-# variablemethod
+# variable method
 
 执行变量方法
 
@@ -182,7 +187,7 @@ $ 变量名.变量方法 | 变量名[位置信息]
 ## 示例
 
 ```shell
-set testline=`wc -l $temp/test.log`
+set testline=`wc -l $TMPDIR/test.log`
 set testline=testline.split()[0]
 echo $testline
 ```
@@ -290,7 +295,7 @@ $ function error() {echo $1;}
 
 
 
-# executefunction
+# execute function
 
 执行自定义方法
 
@@ -316,18 +321,18 @@ $ test “hello world!”
 如下代码，是一个复制文件的脚本片段
 
 ```shell
-set delfilepath="$temp/bhc_finish.del"
+set delfilepath="$TMPDIR/bhc_finish.del"
 rm ${delfilepath}
-cp classpath:/bhc_finish.del ${temp}
+cp classpath:/bhc_finish.del ${TMPDIR}
 ```
 
 想要在 cp 命令执行之前进入 debug 模式，可以在脚本命令中增加 debug 命令，在 `{0}` 类的 `execute` 方法中打断点
 
 ```shell
-set delfilepath="$temp/bhc_finish.del"
+set delfilepath="$TMPDIR/bhc_finish.del"
 rm ${delfilepath}
 debug
-cp classpath:/bhc_finish.del ${temp}
+cp classpath:/bhc_finish.del ${TMPDIR}
 ```
 
 IDE 在执行到 debug 命令时会停留在断点位置上，便于调试
@@ -406,7 +411,7 @@ function error() {
 # 记录报错时 step 位置信息, 用于下一次从报错处开始执行 
 insert into table ... 
 ... 
-} 
+}
 
 
 # 查询上一次执行位置信息 
@@ -511,8 +516,6 @@ exit result
 
 需要对 SQL 语句进行转义：把字符 `$` 替换成 `{3}`
 
-内置变量名 `	{2}` 表示 SQL 语句影响的记录数。
-
 在脚本文件中可以使用 SQL 注释 `--` 与 `/** */`
 
 ## 语法
@@ -524,13 +527,13 @@ $ [sql] [ select .. | insert .. | delete .. | update .. | merge .. | alter .. | 
 ## 示例
 
 ```shell
-update tableName set field='a' where ...;
-echo "SQL共更新 ${{2}} 条记录!"
+set rows=update tableName set field='a' where ...;
+echo "SQL共更新 ${rows} 条记录!"
 ```
 
 
 
-# declarecatalog
+# declare catalog
 
 定义数据库编目信息
 
@@ -587,7 +590,7 @@ $ declare global name catalog configuration use driver com.ibm.db2.jcc.DB2Driver
 
 
 
-# dbconnect
+# db connect
 
 ## 语法
 
@@ -605,7 +608,7 @@ $ db connect reset[;]
 
 
 
-# dbexport
+# db export
 
 从数据库中卸载数据到指定位置。
 
@@ -689,12 +692,12 @@ db connect to test0001
 
 declare exportTaskId progress use out print "${taskId}正在执行 ${process}%, 总共${totalRecord}个记录${leftTime}" total $tcount times
 
-db export to $temp\v7_test_tmp.del of del modified by progress=exportTaskId chardel=* charhide=0 escapes=1 writebuf=200 maxrows=30041 title message=$temp/v7_test_tmp.txt select * from v7_test_tmp with ur;
+db export to $TMPDIR\v7_test_tmp.del of del modified by progress=exportTaskId chardel=* charhide=0 escapes=1 writebuf=200 maxrows=30041 title message=$TMPDIR/v7_test_tmp.txt select * from v7_test_tmp with ur;
 ```
 
 
 
-# dbload
+# db load
 
 将指定位置的数据文件装载到数据库表中。
 
@@ -797,6 +800,38 @@ statistics use profile
 
 
 
+# db get cfg for
+
+返回数据库元信息
+
+## 语法
+
+打印数据库支持的字段类型
+
+```shell
+$ db get cfg for field type
+```
+
+打印数据库中的表的类型
+
+```shell
+$ db get cfg for table type
+```
+
+打印数据库中的 catalog
+
+```shell
+$ db get cfg for catalog
+```
+
+打印数据库中的 schema
+
+```shell
+$ db get cfg for schema
+```
+
+
+
 # increment
 
 对比 2 个表格型数据文件并抽取增量数据
@@ -838,47 +873,48 @@ write log into stderr
 ## 文件属性
 
 ```properties
-charset:    表示数据文件的字符集，默认使用 JVM 的 file.encoding 参数作为默认值 
-codepage:   表示数据文件的字符集，默认使用 JVM 的 file.encoding 参数作为默认值（与 charset 属性冲突） 
-rowdel:     表示数据文件中的行间分隔符，使用回车或换行符需要转义，如: \\r \\n 
-coldel:     表示数据文件中字段间的分隔符 
+charset:    表示数据文件的字符集，默认使用 JVM 的 file.encoding 参数作为默认值
+codepage:   表示数据文件的字符集，默认使用 JVM 的 file.encoding 参数作为默认值（与 charset 属性冲突）
+rowdel:     表示数据文件中的行间分隔符，使用回车或换行符需要转义，如: \\r \\n
+coldel:     表示数据文件中字段间的分隔符
 escape:     表示数据文件中字符串中的转义字符 
 chardel:    表示数据文件中字符串型字段的二端的限定符 
-column:     表示数据文件中每行记录的字段个数（如果记录的字段数不等于这个值时会抛出异常） 
+column:     表示数据文件中每行记录的字段个数（如果记录的字段数不等于这个值时会抛出异常）
 colname:    表示数据文件中字段名，格式是：位置信息:字段名，如: 1:客户名,2:客户编号 如果已设置 table 属性则可以使用表中字段名如：username:客户名,2:userage 
 index:      必填，表示数据文件中唯一确定一条记录的索引字段集合，格式: 字段位置信息, 如：1,2,3,4 如果已设置 table 属性则可以使用表中字段名如： id,name,age,value 
-compare:    表示文件中比较字段（相同索引字段时，用于区分二条记录是否相等的字段，如果二条记录中的索引字段与比较字段都相等则认为二条记录相等），格式: 字段位置信息如：1,2,3,4 如果已设置 table 属性则可以使用表中字段名如：name,age,val1,val2。未设置参数时会默认比较记录中每个字段值 
+compare:    表示文件中比较字段（相同索引字段时，用于区分二条记录是否相等的字段，如果二条记录中的索引字段与比较字段都相等则认为二条记录相等），格式: 字段位置信息如：1,2,3,4 如果已设置 table 属性则可以使用表中字段名如：name,age,val1,val2。未设置参数时会默认比较记录中每个字段值
 table:      表示文件中字段对应的数据库表名（可以是 schema.tableName 格式）
-catalog:    表示脚本引擎中定义的数据库编目号 
+catalog:    表示脚本引擎中定义的数据库编目号
 readbuf:    表示读取文件时使用的字符缓冲区长度，默认 100M 个字符 
 progress:   表示脚本引擎中已定义的进度输出编号，用于输出文件的读取进度信息 
-nosort:     设置 true 表示剥离增量之前不会排序文件，默认是 false 表示先排序文件然后再执行剥离增量 
+nosort:     设置 true 表示剥离增量之前不会排序文件，默认是 false 表示先排序文件然后再执行剥离增量
 sortcache:  排序文件输出流使用的缓冲行数，默认是 100 行 
 sortrows:   排序文件时每个临时文件的最大行数，默认是 10000 行
-sortThread: 排序文件时的线程数，默认是 3 个线程 
-sortReadBuf:排序文件时的输入流的缓冲区长度，默认是 10M 个字符 
-maxfile:    排序文件时，每个线程每次合并的最大临时文件数, 默认是 4 个文件 
-keeptemp:   设置 true 表示排序文件后保留临时文件，默认是 false 表示删除产生的临时文件 
-covsrc:     设置 true 表示排序文件后覆盖源文件，默认是 false 表示保留源文件内容 
+sortThread: 排序文件时的线程数，默认是 3 个线程
+sortReadBuf:排序文件时的输入流的缓冲区长度，默认是 10M 个字符
+maxfile:    排序文件时，每个线程每次合并的最大临时文件数, 默认是 4 个文件
+keeptemp:   设置 true 表示排序文件后保留临时文件，默认是 false 表示删除产生的临时文件
+covsrc:     设置 true 表示排序文件后覆盖源文件，默认是 false 表示保留源文件内容
+temp:       排序文件使用的临时目录
 ```
 
 增量数据输出流支持的属性有：
 
 ```properties
-newchg:     表示对新增数据中字段的替换规则 
-updchg:     表示对变化数据中字段的替换规则 
-delchg:     表示对删除数据中字段的替换规则 
-charset:    表示文件对应的字符集编码，默认使用JAVA虚拟机默认的文件字符集 
+newchg:     表示对新增数据中字段的替换规则
+updchg:     表示对变化数据中字段的替换规则
+delchg:     表示对删除数据中字段的替换规则
+charset:    表示文件对应的字符集编码，默认使用JAVA虚拟机默认的文件字符集
 codepage:   表示文件对应的代码页（与 charset 属性冲突）
-append:     设置 true 表示追加方式写入文件，默认是 false 表示覆盖文件 
-outbuf:     设置输出流的缓冲行数，默认是 20 行 
+append:     设置 true 表示追加方式写入文件，默认是 false 表示覆盖文件
+outbuf:     设置输出流的缓冲行数，默认是 20 行
 ```
 
 剥离增量命令支持 container 命令，可以并行执行多个剥离增量命令。
 
 
 
-# sorttablefile
+# sort table file
 
 对表格型文件排序
 
@@ -895,21 +931,21 @@ $ sort table file 数据文件绝对路径 of 文件类型 [modified by 属性�
 ## 文件属性
 
 ```properties
-charset:    表示数据卸载后的字符集，默认使用 JVM 的 file.encoding 参数作为默认值 
-codepage:   表示数据卸载后的字符集，默认使用 JVM 的 file.encoding 参数作为默认值（与 charset 属性冲突） 
-rowdel:     表示行间分隔符，使用回车或换行符需要转义，如: \\r \\n 
-coldel:     表示文件中字段间的分隔符 
-escape:     表示文件中字符串中的转义字符 
-chardel:    表示字符串型的字段二端的限定符 
-column:     表示文件中每行记录的字段个数（如果记录的字段数不等于这个值时会抛出异常） 
-colname:    表示文件中字段名，格式是：位置信息:字段名，如: 1:客户名,2:客户编号 如果已设置 table 属性则可以使用表中字段名如：username:客户名,2:userage 
-readbuf:    表示读取文件时使用的字符缓冲区长度，默认 10M 个字符 
-writebuf:   表示写文件时使用的缓存行数，默认 100 行 
-thread:     排序文件时的线程数，默认是 3 个线程 
-maxrow:     表示每个临时文件最大记录书, 默认是 10000 行 
-maxfile:    排序文件时，每个线程每次合并的最大临时文件数, 默认是 4 个文件 
-keeptemp:   无属性值，使用属性表示排序文件后保留临时文件，否则表示自动删除产生的临时文件 
-covsrc:     设置 true 表示排序文件后覆盖源文件，默认是 false 表示保留源文件内容 
+charset:    表示数据卸载后的字符集，默认使用 JVM 的 file.encoding 参数作为默认值
+codepage:   表示数据卸载后的字符集，默认使用 JVM 的 file.encoding 参数作为默认值（与 charset 属性冲突）
+rowdel:     表示行间分隔符，使用回车或换行符需要转义，如: \\r \\n
+coldel:     表示文件中字段间的分隔符
+escape:     表示文件中字符串中的转义字符
+chardel:    表示字符串型的字段二端的限定符
+column:     表示文件中每行记录的字段个数（如果记录的字段数不等于这个值时会抛出异常）
+colname:    表示文件中字段名，格式是：位置信息:字段名，如: 1:客户名,2:客户编号 如果已设置 table 属性则可以使用表中字段名如：username:客户名,2:userage
+readbuf:    表示读取文件时使用的字符缓冲区长度，默认 10M 个字符
+writebuf:   表示写文件时使用的缓存行数，默认 100 行
+thread:     排序文件时的线程数，默认是 3 个线程
+maxrow:     表示每个临时文件最大记录书, 默认是 10000 行
+maxfile:    排序文件时，每个线程每次合并的最大临时文件数, 默认是 4 个文件
+keeptemp:   无属性值，使用属性表示排序文件后保留临时文件，否则表示自动删除产生的临时文件
+covsrc:     设置 true 表示排序文件后覆盖源文件，默认是 false 表示保留源文件内容
 ```
 
 排序字段:    由排序字段的位置（大于零）组成，如: 1、2、3
@@ -935,13 +971,13 @@ $ container to execute tasks in parallel [ using 参数名=参数值 参数名=�
 ## 示例
 
 ```shell
-container to execute tasks in parallel using thread=3 rowdel=\\r\\n coldel=: begin  
-  db export to $filepath1.del of del select * from table with ur; 
-  db export to $filepath2.del of del select * from table with ur; 
-  db export to $filepath3.del of del select * from table with ur; 
-  db export to $filepath4.del of del select * from table with ur; 
-  db export to $filepath5.del of del select * from table with ur; 
-  db export to $filepath6.del of del select * from table with ur; 
+container to execute tasks in parallel using thread=3 rowdel=\\r\\n coldel=: begin
+  db export to $filepath1.del of del select * from table with ur;
+  db export to $filepath2.del of del select * from table with ur;
+  db export to $filepath3.del of del select * from table with ur;
+  db export to $filepath4.del of del select * from table with ur;
+  db export to $filepath5.del of del select * from table with ur;
+  db export to $filepath6.del of del select * from table with ur;
 end
 ```
 
@@ -992,7 +1028,7 @@ $ quiet commit
 
 
 
-# callprocudure
+# call procudure
 
 执行存储过程
 
@@ -1012,7 +1048,7 @@ $ call TEST('read in msg', $RES); echo $RES;
 
 
 
-# declarecursor
+# declare cursor
 
 声明游标
 
@@ -1176,7 +1212,7 @@ $ ssh admin@192.168.1.1:10?password=admin && ./shell.sh && . ~/load.sh
 
 
 
-# declaresshtunnel
+# declare ssh tunnel
 
 建立本地端口转发隧道，配合 **sftp** 命令实现通过本地局域网代理服务器访问远程服务器 **ssh** 端口功能。
 
@@ -1225,19 +1261,19 @@ $ sftp 用户名@服务器HOST:端口?password=密码
 
 ## 相关命令
 
-```properties
-cd          filepath 进入远程服务器目录  
-ls          filepath 查看远程服务器上文件列表信息 
-rm          filepath 删除远程服务器上文件或目录 
-mkdir       filepath 在远程服务器上创建目录 
-pwd         filepath 查看远程服务器上当前目录的绝对路径 
-exists      filepath 判断远程服务器上的文件或目录是否存在  
-isfile      filepath 判断远程服务器的文件是否存在 
-isDirectory filepath 判断远程服务器的目录文件是否存在 
-get         remotefilepath localfilepath 从远程服务器下载文件 
-put         localfilepath remotefilepath 上传文件到远程服务器 
-bye         关闭 SFTP 连接 
-```
+| 命令          | 说明                                 |
+| ------------- | ------------------------------------ |
+| `cd`          | 进入远程服务器目录                   |
+| `ls`          | 查看远程服务器上文件列表信息         |
+| `rm`          | 删除远程服务器上文件或目录           |
+| `mkdir`       | 在远程服务器上创建目录               |
+| `pwd`         | 查看远程服务器上当前目录的绝对路径   |
+| `exists`      | 判断远程服务器上的文件或目录是否存在 |
+| `isfile`      | 判断远程服务器的文件是否存在         |
+| `isDirectory` | 判断远程服务器的目录文件是否存在     |
+| `get`         | 从远程服务器下载文件                 |
+| `put`         | 上传文件到远程服务器                 |
+| `bye`         | 关闭 FTP 连接                        |
 
 在 `cd ls rm mkdir pwd exists isFile isDirectory` 语句中可以使用 `-l` 选项，表示操作本地操作系统上的文件。
 
@@ -1255,21 +1291,36 @@ $ ftp 用户名@服务器HOST:端口?password=密码
 
 ## 相关命令
 
-```properties
-cd          filepath 进入远程服务器目录  
-ls          filepath 查看远程服务器上文件列表信息 
-rm          filepath 删除远程服务器上文件或目录 
-mkdir       filepath 在远程服务器上创建目录 
-pwd         filepath 查看远程服务器上当前目录的绝对路径 
-exists      filepath 判断远程服务器上的文件或目录是否存在  
-isfile      filepath 判断远程服务器的文件是否存在 
-isDirectory filepath 判断远程服务器的目录文件是否存在 
-get         remotefilepath localfilepath 从远程服务器下载文件 
-put         localfilepath remotefilepath 上传文件到远程服务器 
-bye         关闭 FTP 连接 
-```
+| 命令          | 说明                                 |
+| ------------- | ------------------------------------ |
+| `passive`     | 被动模式                             |
+| `cd`          | 进入远程服务器目录                   |
+| `ls`          | 查看远程服务器上文件列表信息         |
+| `rm`          | 删除远程服务器上文件或目录           |
+| `mkdir`       | 在远程服务器上创建目录               |
+| `pwd`         | 查看远程服务器上当前目录的绝对路径   |
+| `exists`      | 判断远程服务器上的文件或目录是否存在 |
+| `isfile`      | 判断远程服务器的文件是否存在         |
+| `isDirectory` | 判断远程服务器的目录文件是否存在     |
+| `get`         | 从远程服务器下载文件                 |
+| `put`         | 上传文件到远程服务器                 |
+| `bye`         | 关闭 FTP 连接                        |
 
 在 `cd ls rm mkdir pwd exists isFile isDirectory` 语句中可以使用 `-l` 选项，表示操作本地操作系统上的文件。
+
+
+
+# passive
+
+使用被动模式连接 FTP 服务器
+
+## 语法
+
+```shell
+$ passive -r
+```
+
+`-r` 选项：强制 FTP 客户端以反向模式解析 PASV 地址
 
 
 
@@ -1305,6 +1356,12 @@ $ cd 文件名或文件路径 [;]
 
 文件名或文件路径二端可以使用成对的单引号或双引号。
 
+```shell
+$ cd -
+```
+
+切换到上一次所在的目录
+
 ## 选项
 
 ```shell
@@ -1325,13 +1382,11 @@ $ length string;
 
 ## 选项
 
-```shell
--h 选项表示输出可读高的信息
--b 选项表示显示字节数 
--c 选项表示显示字符数 
--f 选项表示本地文件的字节数 
--r 选项表示显示远程文件的字节数
-```
+`-h` 选项：表示输出可读高的信息
+`-b` 选项：表示显示字节数 
+`-c` 选项：表示显示字符数 
+`-f` 选项：表示本地文件的字节数 
+`-r` 选项：表示显示远程文件的字节数
 
 ## 示例
 
@@ -1535,11 +1590,9 @@ $ wc [-l] [-w] [-c] filepath [;]
 
 ## 选项
 
-```shell
--l 选项表示行数 
--w 选项表示字符数 
--c 选项表示字节数 
-```
+`-l` 选项：表示行数 
+`-w` 选项：表示字符数 
+`-c` 选项：表示字节数 
 
 
 
@@ -1592,20 +1645,18 @@ $ grep string
 
 ## 选项
 
-```shell
--i 选项表示忽略字符大小写 
--v 选项表示不包括字符串参数 
-```
+`-i` 选项：表示忽略字符大小写 
+`-v` 选项：表示不包括字符串参数 
 
 ## 示例
 
 ```shell
-$ cat $temp/greptest.txt | grep -i test | wc -l
+$ cat $TMPDIR/greptest.txt | grep -i test | wc -l
 ```
 
 
 
-# executeos
+# os
 
 执行本地操作系统命令
 
@@ -1626,7 +1677,7 @@ $ os ipconfig /all
 
 
 
-# executefile
+# execute file
 
 执行脚本文件，使用 `nohup` 命令实现并行执行脚本文件。
 
@@ -1673,7 +1724,7 @@ $ daemon 文件名或文件路径 [;]
 
 
 
-# declareprogress
+# declare progress
 
 进度输出
 
@@ -1721,7 +1772,7 @@ end loop
 
 
 
-# declarehandler
+# declare handler
 
 异常处理逻辑
 
@@ -1733,17 +1784,19 @@ $ declare (exit | continue) handler for ( exception | exitcode != 0 | sqlstate =
 
 ## 保留变量
 
-```shell
-{21} 当脚本引擎发生异常时,      {21} 表示异常详细信息
-{22} 当脚本引擎发生数据库错误时, {22} 表示数据库厂商提供的错误码
-{23} 当脚本引擎发生数据库错误时, {23} 表示数据库厂商提供的SQL状态
-{24} 当脚本引擎发生异常错误时,   {24} 表示发生错误的脚本语句
-{25} 当脚本引擎执行语句完毕时,   {25} 表示语句执行的返回值, 一般来讲返回0表示正确 非0表示错误
-```
+在 `begin` 与 `end` 区块中，脚本引擎会提供一组内置变量，用于获取异常或语句执行的相关信息：
+
+| 变量   | 说明                                                         |
+| ------ | ------------------------------------------------------------ |
+| `{21}` | 当脚本引擎触发异常时，表示异常的完整描述信息。               |
+| `{22}` | 当发生数据库错误时，表示数据库厂商提供的错误码（Vendor Error Code）。 |
+| `{23}` | 当发生数据库错误时，表示数据库厂商提供的 SQL 状态码（SQLSTATE）。 |
+| `{24}` | 当发生异常时，表示引发错误的脚本语句内容。                   |
+| `{25}` | 表示当前语句的执行返回值。一般 0 表示成功，非 0 表示失败。   |
 
 
 
-# undeclarehandler
+# undeclare handler
 
 删除异常处理逻辑
 
@@ -1802,7 +1855,7 @@ $ undeclare global command callback for echo
 
 
 
-# declarestatement
+# declare statement
 
 数据库批处理
 
@@ -1902,21 +1955,21 @@ $ wait pid=进程编号 1{day|h|m|s|millis} [;]
 
 ## 时间单位
 
-```properties
-day       表示天 
-millis    表示毫秒
-seconds   表示秒
-second    表示秒
-sec       表示秒
-s         表示秒
-minutes   表示分钟
-minute    表示分钟
-min       表示分钟
-m         表示分钟 
-hour      表示小时
-hou       表示小时
-h         表示小时
-```
+|         |          |
+| ------- | -------- |
+| day     | 表示天   |
+| millis  | 表示毫秒 |
+| seconds | 表示秒   |
+| second  | 表示秒   |
+| sec     | 表示秒   |
+| s       | 表示秒   |
+| minutes | 表示分钟 |
+| minute  | 表示分钟 |
+| min     | 表示分钟 |
+| m       | 表示分钟 |
+| hour    | 表示小时 |
+| hou     | 表示小时 |
+| h       | 表示小时 |
 
 
 
@@ -1950,21 +2003,21 @@ $ sleep 1 {day|h|m|s|millis}[;]
 
 ## 时间单位
 
-```properties
-day       表示天 
-millis    表示毫秒
-seconds   表示秒
-second    表示秒
-sec       表示秒
-s         表示秒
-minutes   表示分钟
-minute    表示分钟
-min       表示分钟
-m         表示分钟 
-hour      表示小时
-hou       表示小时
-h         表示小时
-```
+|         |          |
+| ------- | -------- |
+| day     | 表示天   |
+| millis  | 表示毫秒 |
+| seconds | 表示秒   |
+| second  | 表示秒   |
+| sec     | 表示秒   |
+| s       | 表示秒   |
+| minutes | 表示分钟 |
+| minute  | 表示分钟 |
+| min     | 表示分钟 |
+| m       | 表示分钟 |
+| hour    | 表示小时 |
+| hou     | 表示小时 |
+| h       | 表示小时 |
 
 
 
@@ -2074,16 +2127,14 @@ $ find -n string [-r] [-h] [-e charsetName] [-o logfilepath] [-s delimiter] [-d]
 
 ## 选项
 
-```properties
--n 搜索内容（可以是正则表达式）  
--R 只遍历当前目录  
--h 查找隐藏文件  
--e 被搜索文件的字符集  
--o 输出文件  
--s 输出信息的分隔符   
--d 去掉重复记录  
--p 显示字符串所在位置的详细信息 
-```
+`-n` 选项：搜索内容（可以是正则表达式） 
+`-R` 选项：只遍历当前目录
+`-h` 选项：查找隐藏文件
+`-e` 选项：被搜索文件的字符集
+`-o` 选项：输出文件
+`-s` 选项：输出信息的分隔符 
+`-d` 选项：去掉重复记录 
+`-p` 选项：显示字符串所在位置的详细信息 
 
 
 
@@ -2101,6 +2152,30 @@ $ java JavaClassName [参数]... [;]
 
 ```shell
 $ java cn.test.JavaCommandTest 10 -c 20200101
+```
+
+
+
+# wget
+
+从网络下载文件
+
+## 语法
+
+```shell
+$ wget -PO: -n URL
+```
+
+`-P` 选项：文件保存的目录
+
+`-O` 选项：文件保存的名字
+
+`-n` 选项：只打印从服务器端得到的文件名
+
+## 示例
+
+```shell
+$ wget -P ${project.basedir}/.cache https://mirrors.huaweicloud.com/openjdk-25.tar.gz
 ```
 
 
@@ -2139,9 +2214,22 @@ $ md5sum 字符内容
 ## 语法
 
 ```shell
-$ tar -zcvf 文件名或绝对路径 
-$ tar -xvf 文件名或绝对路径
+$ tar -tzxcvfC 文件名或绝对路径
 ```
+
+`-t` 选项：只打印不解压
+
+`-z` 选项：gzip 解压/压缩文件
+
+`-x` 选项：解压文件
+
+`-c` 选项：压缩文件
+
+`-v` 选项：打印解压缩文件日志
+
+`-f` 选项：解压/压缩文件的绝对路径
+
+`-C` 选项：文件解压到的目录
 
 ## 示例
 
@@ -2166,7 +2254,7 @@ $ tar -xvf 文件名或绝对路径
 ## 语法
 
 ```shell
-$ gzip 文件名或绝对路径
+$ gzip 文件路径
 ```
 
 
@@ -2178,7 +2266,7 @@ $ gzip 文件名或绝对路径
 ## 语法
 
 ```shell
-$ gunzip 文件名或绝对路径
+$ gunzip 文件路径
 ```
 
 
@@ -2190,8 +2278,14 @@ $ gunzip 文件名或绝对路径
 ## 语法
 
 ```shell
-$ zip 文件名或绝对路径
+$ zip [压缩文件路径] 被压缩文件路径
 ```
+
+`-r` 选项：使用递归压缩目录
+
+`-m` 选项：使用移动模式（压缩后删除源文件）
+
+`-v` 选项：打印日志
 
 
 
@@ -2202,8 +2296,10 @@ $ zip 文件名或绝对路径
 ## 语法
 
 ```shell
-$ unrar 文件名或绝对路径
+$ unrar 压缩文件路径 [解压文件的目录]
 ```
+
+`-v` 选项：打印日志
 
 
 
@@ -2214,8 +2310,10 @@ $ unrar 文件名或绝对路径
 ## 语法
 
 ```shell
-$ unzip 文件名或绝对路径
+$ unzip 压缩文件路径
 ```
+
+`-d` 选项：设置解压文件的目录
 
 
 

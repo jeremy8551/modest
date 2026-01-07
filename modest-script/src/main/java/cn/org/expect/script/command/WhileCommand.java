@@ -18,13 +18,16 @@ import cn.org.expect.script.session.ScriptMainProcess;
  * <p>
  * while .. loop ... end loop
  */
-public class WhileCommand extends AbstractCommand implements WithBodyCommandSupported {
+public class WhileCommand extends AbstractCommand implements WithBodyCommandSupported, LoopCommandKind {
 
     /** while 语句中执行代码块 */
     protected CommandList body;
 
     /** 正在运行的脚本命令 */
-    protected UniversalScriptCommand command;
+    protected volatile UniversalScriptCommand command;
+
+    /** 种类编号 */
+    protected int type;
 
     public WhileCommand(UniversalCommandCompiler compiler, String command, CommandList body) {
         super(compiler, command);
@@ -54,16 +57,17 @@ public class WhileCommand extends AbstractCommand implements WithBodyCommandSupp
 
                     if (command instanceof LoopCommandKind) {
                         LoopCommandKind cmd = (LoopCommandKind) command;
+                        this.type = cmd.kind();
                         int type = cmd.kind();
-                        if (type == BreakCommand.KIND) { // break
+                        if (type == LoopCommandKind.BREAK_COMMAND) { // break
                             isbreak = true;
                             break;
-                        } else if (type == ContinueCommand.KIND) { // continue
+                        } else if (type == LoopCommandKind.CONTINUE_COMMAND) { // continue
                             iscontinue = true;
                             break;
-                        } else if (type == ExitCommand.KIND) { // Exit script
+                        } else if (type == LoopCommandKind.EXIT_COMMAND) { // Exit script
                             return exitcode;
-                        } else if (type == ReturnCommand.KIND) { // Exit the result set loop
+                        } else if (type == LoopCommandKind.RETURN_COMMAND) { // Exit the result set loop
                             return exitcode;
                         }
                     }
@@ -93,5 +97,9 @@ public class WhileCommand extends AbstractCommand implements WithBodyCommandSupp
         if (this.command != null) {
             this.command.terminate();
         }
+    }
+
+    public int kind() {
+        return this.type;
     }
 }

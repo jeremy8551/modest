@@ -14,6 +14,7 @@ import cn.org.expect.script.session.ScriptMainProcess;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.ResourcesUtils;
+import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.UniqueSequenceGenerator;
 
 /**
@@ -21,7 +22,7 @@ import cn.org.expect.util.UniqueSequenceGenerator;
  * <br>
  * 脚本引擎使用说明详见 help 命令: <br>
  * <b> ScriptEngineManager manager = new ScriptEngineManager(); </b> <br>
- * <b> ScriptEngine engine = manager.getEngineByExtension("etl"); </b> <br>
+ * <b> ScriptEngine engine = manager.getEngineByExtension("usl"); </b> <br>
  * <b> engine.eval("help"); </b> <br>
  * <b> engine.eval("exit 0"); </b> <br>
  *
@@ -31,7 +32,7 @@ import cn.org.expect.util.UniqueSequenceGenerator;
 public class UniversalScriptEngine implements Closeable {
 
     /** 脚本引擎的序号生成器 */
-    protected final static UniqueSequenceGenerator UNIQUE = new UniqueSequenceGenerator("engine{timestamp}{}", 1);
+    protected final static UniqueSequenceGenerator UNIQUE = new UniqueSequenceGenerator("{timestamp}{}", 1);
 
     /** 唯一编号 */
     private final String id;
@@ -84,7 +85,8 @@ public class UniversalScriptEngine implements Closeable {
         this.stderr = new ScriptStderr(null, formatter);
         this.steper = new ScriptSteper(null, formatter);
 
-        this.context = new UniversalScriptContext(this); // 最后初始化上下文信息
+        // 最后初始化上下文信息
+        this.context = new UniversalScriptContext(this);
     }
 
     /**
@@ -156,10 +158,39 @@ public class UniversalScriptEngine implements Closeable {
     }
 
     /**
+     * 执行脚本文件
+     *
+     * @param type  脚本文件所在的包
+     * @param array 环境变量，第一个元素是变量名，第二个元素是变量值，第三个元素是变量名 ..
+     * @param <E>   计算结果的类信息
+     * @return 计算结果
+     */
+    public <E> E executeScriptFile(Class<?> type, Object... array) {
+        String scriptFilename = StringUtils.firstCharToLower(type.getSimpleName());
+        return this.executeScriptFile(scriptFilename, type, array);
+    }
+
+    /**
+     * 执行脚本文件
+     *
+     * @param scriptFilename 脚本文件名
+     * @param type           脚本文件所在的包
+     * @param array          环境变量，第一个元素是变量名，第二个元素是变量值，第三个元素是变量名 ..
+     * @param <E>            计算结果的类信息
+     * @return 计算结果
+     */
+    public <E> E executeScriptFile(String scriptFilename, Class<?> type, Object... array) {
+        String parent = type.getPackage().getName().replace('.', '/');
+        String executeScriptFile = StringUtils.replaceEmptyHolder(". classpath:/{}/{}.usl", parent, scriptFilename);
+        return this.evaluate(executeScriptFile, array);
+    }
+
+    /**
      * 执行脚本语句
      *
      * @param script 脚本语句
      * @param array  环境变量，第一个元素是变量名，第二个元素是变量值，第三个元素是变量名 ..
+     * @param <E>    计算结果的类信息
      * @return 计算结果
      */
     public <E> E evaluate(String script, Object... array) {
@@ -175,6 +206,7 @@ public class UniversalScriptEngine implements Closeable {
      *
      * @param in      脚本语句输入流
      * @param context 脚本引擎上下文信息
+     * @param <E>     计算结果的类信息
      * @return 计算结果
      */
     public <E> E evaluate(Reader in, UniversalScriptContext context) {

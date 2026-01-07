@@ -4,11 +4,11 @@ import java.util.Comparator;
 import java.util.List;
 
 import cn.org.expect.concurrent.ThreadSource;
+import cn.org.expect.increment.sort.TableFileSortContext;
 import cn.org.expect.io.TableColumnComparator;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileWriter;
 import cn.org.expect.printer.Progress;
-import cn.org.expect.sort.TableFileSortContext;
 import cn.org.expect.util.Ensure;
 
 /**

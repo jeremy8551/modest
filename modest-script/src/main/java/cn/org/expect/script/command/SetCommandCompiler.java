@@ -3,7 +3,7 @@ package cn.org.expect.script.command;
 import java.io.IOException;
 
 import cn.org.expect.expression.CommandExpression;
-import cn.org.expect.os.linux.Linuxs;
+import cn.org.expect.expression.Expression;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptException;
@@ -23,7 +23,10 @@ public class SetCommandCompiler extends AbstractGlobalCommandCompiler {
             return in.readSinglelineScript();
         } else if (analysis.indexOf(line, "select", index, 1, 0) != -1) { // 表示数据库查询赋值语句
             return in.readMultilineScript();
-        } else {// 赋值语句
+        } else if (analysis.startsWith(line, Expression.STRING_BLOCK, index + 1, true)) { // 赋值语句
+            int strBlockBegin = line.indexOf(Expression.STRING_BLOCK, index + 1);
+            return in.readStrBlockScript(strBlockBegin);
+        } else {
             return in.readSinglelineScript();
         }
     }
@@ -43,7 +46,8 @@ public class SetCommandCompiler extends AbstractGlobalCommandCompiler {
             return new SetCommand(this, command, null, null, expr.containsOption("-e") ? 4 : 5);
         }
 
-        String str = expr.getParameter(); // name=value or name=SQL
+        // name=value or name=SQL
+        String str = expr.getParameter();
         int index = str.indexOf('=');
         if (index == -1) {
             throw new UniversalScriptException("script.stderr.message109", command);
@@ -51,19 +55,25 @@ public class SetCommandCompiler extends AbstractGlobalCommandCompiler {
 
         // name=value
         String name = StringUtils.trimBlank(str.substring(0, index)); // 截取变量名
-        if (!context.getEngine().getChecker().isVariableName(name) || name.startsWith("$")) {
+        if (!context.getEngine().getChecker().checkVariableName(name) || name.startsWith("$")) {
             throw new UniversalScriptException("script.stderr.message069", command, name);
         }
 
         // 变量值
-        String value = StringUtils.trimBlank(Linuxs.removeShellNote(str.substring(index + 1), null));
+        String value = StringUtils.trimBlank(analysis.removeComment(str.substring(index + 1), null));
 
-        // set name select * from table 表示查询SQL语句
-        if (analysis.indexOf(value, "select", 0, 1, 0) != -1) {
+        // set name=select * from table 表示查询SQL语句
+        if (analysis.startsWith(value, "select", 0, true) //
+            || analysis.startsWith(value, "update", 0, true) //
+            || analysis.startsWith(value, "insert", 0, true) //
+            || analysis.startsWith(value, "delete", 0, true) //
+            || analysis.startsWith(value, "merge", 0, true) //
+            || analysis.startsWith(value, "/*", 0, true) // SQL注释
+        ) {
             return new SetCommand(this, command, name, value, 1);
         }
 
-        // set name= 表示删除变量
+        // 删除变量 set name=
         if (value.length() == 0) {
             return new SetCommand(this, command, name, value, 3);
         }

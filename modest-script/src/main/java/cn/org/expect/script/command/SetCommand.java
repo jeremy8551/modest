@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import cn.org.expect.database.JdbcDao;
+import cn.org.expect.database.SQL;
 import cn.org.expect.script.UniversalCommandCompiler;
 import cn.org.expect.script.UniversalScriptCommand;
 import cn.org.expect.script.UniversalScriptContext;
@@ -16,6 +17,7 @@ import cn.org.expect.script.internal.ScriptDataSource;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringComparator;
+import cn.org.expect.util.StringUtils;
 
 /**
  * 设置变量
@@ -151,8 +153,10 @@ public class SetCommand extends AbstractGlobalCommand {
         }
 
         // 执行查询并将结果集保存到变量域
-        Object value = dao.queryFirstRowFirstCol(sql);
-        Object newValue = context.getEngine().getFormatter().formatJdbcParameter(session, context, value);
+        String str = SQL.removeAnnotation(sql, null, null);
+        boolean selectSQL = session.getAnalysis().startsWith(str, "select", 0, true);
+        Object value = selectSQL ? dao.queryFirstRowFirstCol(str) : dao.executeUpdate(str);
+        Object newValue = selectSQL ? context.getEngine().getFormatter().formatJdbcParameter(session, context, value) : value;
 
         if (log.isTraceEnabled()) {
             log.trace("script.stdout.message049", this.isGlobal() ? "global" : "local", this.name, sql, newValue);
@@ -175,12 +179,12 @@ public class SetCommand extends AbstractGlobalCommand {
      * @param stderr  错误信息输出接口
      */
     protected void printVariable(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr) {
-        List<String> list = new ArrayList<String>(context.getVariableNames());
+        List<String> list = new ArrayList<String>(context.getVariableNames(session));
         Collections.sort(list, new StringComparator());
         StringBuilder buf = new StringBuilder(list.size() * 20);
         for (String name : list) {
-            Object variable = context.getVariable(name);
-            buf.append(name).append('=').append(variable);
+            Object variable = context.getVariable(session, name);
+            buf.append(name).append('=').append(StringUtils.escapeLineSeparator(variable.toString()));
             buf.append(Settings.getLineSeparator());
         }
         stdout.println(buf);

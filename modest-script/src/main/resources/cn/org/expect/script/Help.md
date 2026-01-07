@@ -1,17 +1,17 @@
 # 功能介绍
 
-通用脚本引擎（以下简称脚本引擎）基于 **Java** 语言实现，具备以下核心功能：
+通用脚本引擎（以下简称脚本引擎）基于 **Java** 语言实现，具备以下功能：
 
-- 支持通过实现自定义 **命令编译器** 扩展业务指令；
-- 支持通过定义自定义 **变量方法** 扩展变量解析和处理能力；
-- 支持执行 **SQL DML（数据操作语言）** 与 **DDL（数据定义语言）** 语句，操作关系型数据库；
-- 支持将**数据文件解析并装载至数据库表**；
-- 支持从**数据库表导出数据至文件**；
-- 支持**文件剥离增量处理机制**，并可按需实现自定义文件格式解析器；
-- 支持**远程主机连接**，在远程服务器上执行 **Shell 命令**；
-- 支持**多线程并发执行任务**；
+- 支持执行 SQL 语句，操作关系型数据库；
+- 支持将数据文件解析并装载至数据库表；
+- 支持从数据库表导出数据至文件；
+- 支持文件剥离增量处理机制，并可按需实现自定义文件格式解析器；
+- 支持远程主机连接，在远程服务器上执行 Shell 命令；
+- 支持多线程并发执行任务；
+- 支持自定义扩展脚本引擎的命令；
+- 支持自定义扩展脚本引擎的变量方法；
 - 兼容 **JDK5** 及以上版本；
-- 提供对 **JSR 223: Scripting for the Java Platform** 标准接口 `javax.script.ScriptEngineManager` 与 `javax.script.ScriptEngine` 的实现，支持通过标准化方式集成脚本引擎。
+- 提供对 **JSR 223: Scripting for the Java Platform** 标准接口的实现，支持通过标准化方式集成脚本引擎；
 
 
 
@@ -22,7 +22,7 @@
 
 ## 引入依赖
 
-**JDK5** 环境下，在项目的 `pom.xml` 文件中添加以下依赖：
+**JDK5** 环境添加依赖：
 
 ```xml
 <dependency>
@@ -32,7 +32,7 @@
 </dependency>
 ```
 
-**JDK6** 环境下，在项目的 `pom.xml` 文件中添加以下依赖：
+**JDK6** 及更高版的 JDK 添加依赖：
 
 ```xml
 <dependency>
@@ -42,288 +42,68 @@
 </dependency>
 ```
 
-
-
-## 运行示例
-
-基于 **JDK6**（**JSR-223**）脚本引擎标准**API**的调用：
-
-
-```java
-public class Main {
-    public static void main(String[] args) throws ScriptException {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
-        engine.eval("echo hello world!");
-    }
-}
-```
-
-基于工厂模式的脚本引擎实例化与执行：
-
-
-```java
-public class Main {
-    public static void main(String[] args) {
-        EasyContext context = new EasyBeanContext();
-        UniversalScriptEngineFactory factory = new UniversalScriptEngineFactory(context);
-        UniversalScriptEngine engine = factory.getScriptEngine();
-        engine.eval("echo hello world!");
-    }
-}
-```
-
-
-
-##  SpringBoot场景启动器
-
-脚本引擎可作为 **Spring Boot Starter** 自动装配模块集成至项目中，随着 **Spring Boot 应用上下文** 启动自动初始化，引擎实例可通过依赖注入获取，进一步简化创建与使用流程。
-
-
-
-### 引入依赖
-
-在 **Spring Boot 项目** 的 **pom.xml** 文件中配置如下依赖项：
+**Spring Boot 项目**添加依赖：
 
 ```xml
 <dependency>
     <groupId>{0}</groupId>
-    <artifactId>{3}-spring-boot-starter</artifactId>
+    <artifactId>{3}</artifactId>
     <version>{2}</version>
 </dependency>
 ```
 
-上述 **Starter 模块** 内部已集成脚本引擎的配置与生命周期管理，开发者无需手动初始化，依赖注入后即可直接使用。
 
 
+## Hello World
 
-### 场景示例
+**JDK6**（**JSR-223**）脚本引擎标准**API**：
 
-基于 **Spring MVC** 构建接口服务，通过注入脚本引擎实例动态执行脚本：
 
 ```java
-@Controller
-public class HelloController {
+{46}
+```
 
-    @Autowired
-    private ScriptEngine engine;
-  
-    @Autowired
-    private EasyContext context;
+脚本引擎实例化与执行：
 
-    @RequestMapping("/help")
-    @ResponseBody
-    public String help() throws ScriptException, IOException {
-      engine.eval("echo hello world!");
-      return "success";
-    }
-}
+
+```java
+{45}
+```
+
+在 **Spring Boot** 项目注入脚本引擎实例并执行脚本：
+
+```java
+{47}
 ```
 
 
 
-### 属性
-
-在编写脚本时，脚本引擎支持读取 **Spring Boot 配置文件**（如 `application.properties` 和 `application.yaml`），包括按环境分隔的配置。
-
-
-
-### 线程池复用机制
-
-为避免脚本执行过程中线程资源的无序扩张，脚本引擎支持与 **Spring 容器** 线程池资源共享：
-
-脚本引擎复用 **Spring** 容器线程池的机制：
-
-- 优先查找 **Spring 容器** 中名称为 `taskExecutor` 的线程池；
-- 若未找到，查找类型为 `ThreadPoolTaskExecutor` 的线程池实例；
-- 若仍未找到，则尝试获取实现了 `ExecutorService` 接口的线程池实例；
-
-
-
-### 启动流程与 Bean 生命周期管理
-
-在 **Spring Boot 项目启动阶段**，脚本引擎容器与实例的初始化流程如下：
-
-应用启动时，初始化 **脚本引擎容器组件**，负责维护脚本运行环境及组件信息；
-
-初始化完成后，将该 **容器组件** 交由 **Spring 容器** 进行统一管理；
-
-开发者可通过 **Spring 依赖注入机制** 获取以下两个核心对象：
-
-脚本引擎容器 `{28}`：单例作用域（`@Scope("singleton")`），负责全局脚本环境管理；
-
-脚本引擎实例 `{91}`：请求作用域（`@Scope("request")`），每次请求生成一个新的引擎实例。
-
-
-
-## ETL示例
-
-在 `resources` 目录下新建脚本文件 `script/test_etl.sql`
+## ETL脚本示例
 
 ```sql
-# 设置变量值
-set databaseDriverName="com.ibm.db2.jcc.DB2Driver"
-set databaseUrl="jdbc:db2://127.0.0.1:50000/sample"
-set username="db2inst1"
-set password="db2inst1"
-
-# 打印所有内置变量
-set
-
-# 建立数据库连接信息
-declare DBID catalog configuration use driver $databaseDriverName url "${databaseUrl}" username ${username} password $password
-
-# 连接数据库
-db connect to DBID
-
-# quiet命令会忽略DROP语句的错误
-quiet drop table v_test_tab;
-
-# 建表
-CREATE TABLE v_test_tab (
-    ORGCODE CHAR(20),
-    task_name CHAR(60) NOT NULL,
-    task_file_path VARCHAR(512),
-    file_data DATE NOT NULL,
-    CREATE_DATE TIMESTAMP,
-    FINISH_DATE TIMESTAMP,
-    status CHAR(1),
-    step_id VARCHAR(4000),
-    error_time TIMESTAMP,
-    error_log CLOB,
-    oper_id CHAR(20),
-    oper_name VARCHAR(60),
-    PRIMARY KEY (task_name,file_data)
-);
-commit;
-
-INSERT INTO v_test_tab
-(ORGCODE, TASK_NAME, TASK_FILE_PATH, FILE_DATA, CREATE_DATE, FINISH_DATE, STATUS, STEP_ID, ERROR_TIME, ERROR_LOG, OPER_ID, OPER_NAME)
-VALUES('0', '1', '/was/sql', '2021-02-03', '2021-08-09 23:54:26.928000', NULL, '1', '使用sftp登录测试系统服务器', '2021-08-09 23:47:02.197000', '设置脚本引擎异常处理逻辑', '', '');
-
-INSERT INTO v_test_tab
-(ORGCODE, TASK_NAME, TASK_FILE_PATH, FILE_DATA, CREATE_DATE, FINISH_DATE, STATUS, STEP_ID, ERROR_TIME, ERROR_LOG, OPER_ID, OPER_NAME)
-VALUES('1', '2', '/was/test', '2021-02-03', '2021-08-09 23:54:26.928000', NULL, '1', '使用sftp登录测试系统服务器', '2021-08-09 23:47:02.197000', '使用sftp登录测试系统服务器', '', '');
-commit;
-
-# 创建索引
-quiet drop index vtesttabidx01;
-create index vtesttabidx01 on v_test_tab(ORGCODE,error_time);
-commit;
-
-# 将表中数据卸载到文件中
-db export to $temp/v_test_tab.del of del select * from v_test_tab;
-
-# 将数据文件装载到指定数据库表中
-db load from $temp/v_test_tab.del of del replace into v_test_tab;
-
-# 返回0表示脚本执行成功
-exit 0
+{48}
 ```
 
-运行脚本文件：
+在 `resources` 目录下新建脚本文件：
 
 ```JAVA
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-public class ScriptEngineTest {
-
-    @Test
-    public void test() throws ScriptException {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
-        engine.eval(". classpath:/script/test_etl.sql");
-    }
-}
+{49}
 ```
 
 
 
 ## 存储过程示例
 
-可以作为存储过程使用，首先建立脚本文件 `/script/test_procedure.sql`，内容如下所示： 
+可以作为存储过程使用
 
 ```sql
-# 设置变量值
-set databaseDriverName="com.ibm.db2.jcc.DB2Driver"
-set databaseUrl="jdbc:db2://127.0.0.1:50000/sample"
-set username="db2inst1"
-set password="db2inst1"
-
-# 打印所有内置变量
-set
-
-# 建立数据库连接信息
-declare DBID catalog configuration use driver $databaseDriverName url "${databaseUrl}" username ${username} password $password
-
-# 连接数据库
-db connect to DBID
-
-# 建立异常捕获逻辑
-declare continue global handler for errorcode == -601 begin
-  echo 执行命令 ${errorscript} 发生错误, 对象已存在不能重复建立 ${errorcode} ..
-end
-
-# 打印所有异常捕获逻辑
-handler
-
-# 创建数据库表
-CREATE TABLE SMP_TEST (
-    ORGCODE CHAR(20),
-    task_name CHAR(60) NOT NULL,
-    task_file_path VARCHAR(512),
-    file_data DATE NOT NULL,
-    CREATE_DATE TIMESTAMP,
-    FINISH_DATE TIMESTAMP,
-    status CHAR(1),
-    step_id VARCHAR(4000),
-    error_time TIMESTAMP,
-    error_log CLOB,
-    oper_id CHAR(20),
-    oper_name VARCHAR(60),
-    PRIMARY KEY (task_name,file_data)
-);
-
-COMMENT ON TABLE SMP_TEST IS '接口文件记导入录表';
-COMMENT ON COLUMN SMP_TEST.ORGCODE IS '归属机构号';
-COMMENT ON COLUMN SMP_TEST.task_name IS '任务名';
-COMMENT ON COLUMN SMP_TEST.task_file_path IS '数据文件所在绝对路径';
-COMMENT ON COLUMN SMP_TEST.file_data IS '归属数据日期';
-COMMENT ON COLUMN SMP_TEST.CREATE_DATE IS '运行起始时间';
-COMMENT ON COLUMN SMP_TEST.FINISH_DATE IS '运行终止时间';
-COMMENT ON COLUMN SMP_TEST.status IS '加载状态';
-COMMENT ON COLUMN SMP_TEST.step_id IS '报错步骤编号';
-COMMENT ON COLUMN SMP_TEST.error_time IS '报错时间';
-COMMENT ON COLUMN SMP_TEST.error_log IS '报错日志';
-COMMENT ON COLUMN SMP_TEST.oper_id IS '操作员id';
-COMMENT ON COLUMN SMP_TEST.oper_name IS '操作员名';
-
-commit;
-exit 0
+{60}
 ```
 
-运行脚本文件：
+在 `resources` 目录下新建脚本文件：
 
 ```java
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-
-import org.junit.Assert;
-import org.junit.Test;
-
-public class ScriptEngineTest {
-
-    @Test
-    public void test() throws ScriptException {
-        ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
-        engine.eval(". classpath:/script/test_produce.sql");
-    }
-}
+{61}
 ```
 
 
@@ -331,68 +111,13 @@ public class ScriptEngineTest {
 ## 脚本示例
 
 ```sql
-# 设置变量值
-set databaseDriverName="com.ibm.db2.jcc.DB2Driver"
-set databaseUrl="jdbc:db2://127.0.0.1:50000/sample"
-set username="db2inst1"
-set password="db2inst1"
+{62}
+```
 
-# 打印所有内置变量
-set
+在 `resources` 目录下新建脚本文件：
 
-# 建立数据库连接信息
-declare DBID catalog configuration use driver $databaseDriverName url "${databaseUrl}" username ${username} password $password
-
-# 连接数据库
-db connect to DBID
-
-# 重新建表
-quiet drop table v_test_tmp;
-create table v_test_tmp (
-	branch_id char(6) not null, -- 机构编号
-	branch_name varchar(150), -- 机构名称
-	branch_type char(18), -- 机构类型
-	branch_no char(12), -- 机构序号
-	status char(1), -- 状态
-	primary key(branch_id)
-);
-commit;
-
-# 设置总记录数
-set v_test_tmp_records=10123
-
-# 批量插入
-DECLARE s1 Statement WITH insert into v_test_tmp (branch_id, branch_name, branch_type, branch_no, status) values (?, ?, ?, ?, ?) ;
-
-# 建立进度输出
-declare progress use out print '插入数据库记录 ${process}%, 一共${totalRecord}笔记录 ${leftTime}' total ${v_test_tmp_records} times
-
-# 逐条插入数据
-set i=1
-while $i <= $v_test_tmp_records loop
-  set c1 = "$i"
-  set c2 = "机构$i"
-  set c3 = "机构类型$i"
-  set c4 = "编号$i"
-  set c5 = "0"
-
-  # 设置SQL参数
-  FETCH c1, c2, c3, c4, c5 insert s1;
-
-  # 进度输出
-  progress
-
-  # 自动加一
-  set i = $i + 1
-end loop
-
-# 提交事物
-commit;
-
-# 关闭批量插入
-undeclare s1 Statement
-
-exit 0
+```
+{63}
 ```
 
 
@@ -400,12 +125,7 @@ exit 0
 ## shell示例
 
 ```shell
-$ ssh ${admin}@${host}:22?password=${adminPw} \
-&& export LANG=zh_CN.GBK \
-&& db2 connect to ${databaseName} user ${username} using ${password} \
-&& db2 "load client from /dev/null of del replace into v10_test_tmp " \
-&& db2 "load client from `pwd`/v_test_tmp.del of del replace into v_test_tmp " \
-&& db2 connect reset;
+{64}
 ```
 
 
@@ -413,22 +133,7 @@ $ ssh ${admin}@${host}:22?password=${adminPw} \
 ## sftp示例
 
 ```shell
-sftp ${ftpuser}@${ftphost}:22?password=${ftppass}
-  set ftphome=`pwd`
-  ls ${ftphome}
-  set remotetestdir="${ftphome}/test"
-  rm ${remotetestdir}
-  mkdir ${remotetestdir}
-  cd ${remotetestdir}
-  put `pwd -l`/test.sql
-  ls
-  exists ${remotetestdir}/test.sql
-  isfile ${remotetestdir}/test.sql
-  mkdir ${ftphome}/test
-  rm ${ftphome}/test
-  get ${remotetestdir}/test.sql ${temp}
-  exists -l ${temp}/test.sql
-bye
+{65}
 ```
 
 
@@ -436,40 +141,28 @@ bye
 ## ftp示例
 
 ```shell
-ftp ${ftpuser}@${ftphost}:21?password=${ftppass}
-  set ftphome=`pwd`
-  set remotetestdir="${ftphome}/rpt"
-  pwd
-  rm ${remotetestdir}
-  mkdir ${remotetestdir}
-  exists ${remotetestdir}/
-  ls ${remotetestdir}
-  cd ${remotetestdir}
-  put $temp/test.sql ${remotetestdir}
-  ls ${remotetestdir}
-  exists ${remotetestdir}/test.sql
-  isfile ${remotetestdir}/test.sql
-  mkdir ${ftphome}/test
-  isDirectory ${ftphome}/test
-  rm ${ftphome}/test
-  get ${remotetestdir}/test.sql ${temp}
-  exists -l ${temp}/test.sql
-bye
+{66}
 ```
 
 
 
 # 编译方法
 
-将工程根目录下的 `toolchains.xml` 文件复制到本地 Maven 仓库的根目录下（通常是 `~/.m2` 目录）。
+在 MacOS 下执行命令：
 
-然后编辑 `toolchains.xml` 文件，将其中的 `jdkHome` 路径修改为实际安装的 JDK 目录。
+```shell
+git clone git@github.com:jeremy8551/modest.git && cd modest && ./build.sh
+```
 
-执行 `mvn install`
+自动下载项目、JDK、Maven、生成 `toolchains-modest.xml` 文件、编译项目。
+
+> 其他操作系统需要手动安装 JDK，并将 `.mvn/toolchains-modest.xml` 复制到用户根目录中的 `.m2` 目录下，并修改配置文件中的 JDK 的安装目录。
 
 
 
 # 脚本命令
+
+
 
 ## 内置命令概览
 
@@ -480,6 +173,8 @@ bye
 所有命令可与变量、函数、组件等结合，实现复杂业务逻辑编排与自动化处理能力。
 
 按功能类别划分如下：
+
+
 
 ### 基础命令类
 
@@ -520,7 +215,7 @@ bye
 - **delete**：执行数据库删除操作。
 - **update**：执行数据库更新操作。
 - **merge**：执行数据库合并操作。
-- **db**：配置或切换数据库连接。
+- **db**：配置或连接数据库、卸载与装载数据文件、查看数据库元信息。
 
 
 
@@ -529,6 +224,7 @@ bye
 - **os**：远程操作系统命令执行。
 - **ftp**：FTP 文件传输。
 - **sftp**：SFTP 文件安全传输。
+- **wget**：下载网络文件
 
 
 
@@ -630,8 +326,9 @@ bye
 
 ```javascript
 set str = "12345 ";
-set strtrim = str.trim();
-echo "字符串内容是 $strtrim .."
+set str1 = """12345\n678\n9\n0""";
+set str2 = str.trim();
+echo "字符串内容是 $str2 .."
 ```
 
 上述例子中，`str.trim()` 便是变量方法的调用，它调用了 `String` 类的 `trim()` 方法，对变量 `str` 的值去除首尾空白符。
@@ -648,25 +345,15 @@ echo "字符串内容是 $strtrim .."
 
 脚本引擎内置了一批系统级变量，可在脚本执行过程中直接访问：
 
-| 变量标识 | 描述                                                      |
-| -------- | --------------------------------------------------------- |
-| `{21}`   | 当前脚本引擎实例对象。                                    |
-| `{4}`    | 当前执行目录的绝对路径。                                  |
-| `{41}`   | 当前用户的根目录路径。                                    |
-| `{5}`    | 当前正在执行的脚本文件名。                                |
-| `{6}`    | 当前脚本文件的字符集编码。                                |
-| `{8}`    | 脚本文件的行间分隔符，变量值为 `{9}`。                    |
-| `{10}`   | 最近一次异常的堆栈信息。                                  |
-| `{11}`   | 最近一次异常发生时的脚本语句。                            |
-| `{12}`   | 数据库厂商定义的异常错误码。                              |
-| `{13}`   | 数据库厂商定义的 SQL 状态码。                             |
-| `{14}`   | 最近一次执行脚本的状态码。                                |
-| `{15}`   | 最近一次 SQL 语句影响的数据记录数。                       |
-| `{16}`   | 当前是否处于 `jump` 语句执行过程中，`true` 表示正在执行。 |
-| `{17}`   | 上一个 `step` 命令的参数值。                              |
-| `{18}`   | 系统临时文件目录路径。                                    |
-| `{19}`   | 当前执行脚本的绝对路径。                                  |
-| `{20}`   | 最近一次使用的数据库编目名。                              |
+| 变量标识 | 描述                       |
+| -------- | -------------------------- |
+| `{8}`    | 当前脚本引擎实例对象。     |
+| `{9}`    | 操作系统当前用户的根目录。 |
+| `{10}`   | 系统临时文件目录路径。     |
+| `{11}`   | 当前执行脚本的绝对路径。   |
+| `{12}`   | 当前目录的绝对路径。       |
+| `{13}`   | 上一次所在的目录。         |
+| `{14}`   | 当前脚本文件的字符集编码。 |
 
 
 
@@ -760,6 +447,46 @@ public class JsonFunction {
 
 
 # 内部设计
+
+
+
+##  Spring Boot 场景启动器
+
+脚本引擎可作为 **Spring Boot Starter** 自动装配模块集成至项目中，随着 **Spring Boot 应用上下文** 启动自动初始化，引擎实例可通过依赖注入获取，进一步简化创建与使用流程。
+
+
+
+### 属性
+
+在编写脚本时，支持使用 **Spring Boot 配置文件**（如 `application.properties` 和 `application.yaml`）中设置的属性。
+
+
+
+### 线程池复用机制
+
+为避免脚本执行过程中线程资源的无序扩张，脚本引擎支持与 **Spring 容器** 线程池资源共享：
+
+脚本引擎复用 **Spring** 容器线程池的机制：
+
+- 优先查找 **Spring 容器** 中名称为 `taskExecutor` 的线程池；
+- 若未找到，查找类型为 `ThreadPoolTaskExecutor` 的线程池实例；
+- 若仍未找到，则尝试获取实现了 `ExecutorService` 接口的线程池实例；
+
+
+
+### 启动流程与 Bean 生命周期管理
+
+在 **Spring Boot 项目启动阶段**，脚本引擎容器与实例的初始化流程如下：
+
+应用启动时，初始化 **脚本引擎容器组件**，负责维护脚本运行环境及组件信息；
+
+初始化完成后，将该 **容器组件** 交由 **Spring 容器** 进行统一管理；
+
+开发者可通过 **Spring 依赖注入机制** 获取以下两个核心对象：
+
+脚本引擎容器 `{28}`：单例作用域（`@Scope("singleton")`），负责全局脚本环境管理；
+
+脚本引擎实例 `{91}`：请求作用域（`@Scope("request")`），每次请求生成一个新的引擎实例。
 
 
 
@@ -941,7 +668,7 @@ ResourcesUtils.getMessage("date.stdout.message003")
 
 支持在 `set`，`if`，`while` 等命令中使用表达式进行计算。
 
-开发人员可以使用类 `{63}` 完成如下表达式运算：
+开发人员可以使用类 `{41}` 完成如下表达式运算：
 
 算数运算 `() +`(正)`-`(负) `*`(乘) `/`(除) `%`(取余) `+`(加) `-`(减) 
 

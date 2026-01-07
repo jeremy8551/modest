@@ -34,8 +34,7 @@ public class ErrorCommand extends AbstractTraceCommand implements UniversalScrip
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         UniversalScriptAnalysis analysis = session.getAnalysis();
-        String str = analysis.unQuotation(analysis.replaceShellVariable(session, context, this.message, true, true));
-        stderr.println(str);
+        stderr.println(analysis.replaceShellVariable(session, context, analysis.unQuotation(this.message), true, !analysis.containsQuotation(this.message)));
         return 0;
     }
 

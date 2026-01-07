@@ -18,8 +18,7 @@ import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.JumpCommandSupported;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.internal.FtpList;
-import cn.org.expect.script.io.ScriptFile;
-import cn.org.expect.util.FileUtils;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
 
@@ -58,31 +57,32 @@ public class RmCommand extends AbstractFileCommand implements UniversalScriptInp
         OSFtpCommand ftp = FtpList.get(context).getFTPClient();
         boolean print = session.isEchoEnable() || forceStdout;
         if (this.localhost || ftp == null) {
-            ScriptFile file = new ScriptFile(session, context, this.filepath);
+            PathExpression file = new PathExpression(session, context, this.filepath);
+            boolean success = file.deleteFiles();
 
             if (this.reverse) {
                 if (print) {
                     stdout.println("!rm " + file.getAbsolutePath());
                 }
-                return FileUtils.delete(file) ? UniversalScriptCommand.COMMAND_ERROR : 0;
+                return success ? UniversalScriptCommand.COMMAND_ERROR : 0;
             } else {
                 if (print) {
                     stdout.println("rm " + file.getAbsolutePath());
                 }
-                return FileUtils.delete(file) ? 0 : UniversalScriptCommand.COMMAND_ERROR;
+                return success ? 0 : UniversalScriptCommand.COMMAND_ERROR;
             }
         } else {
-            String filepath = ScriptFile.replaceFilepath(session, context, this.filepath, false);
+            String filepath = PathExpression.resolve(session, context, this.filepath, false);
             if (this.reverse) {
                 if (print) {
                     stdout.println("!rm " + filepath);
                 }
-                return ftp.rm(filepath) ? UniversalScriptCommand.COMMAND_ERROR : 0;
+                return !ftp.exists(filepath) || ftp.rm(filepath) ? UniversalScriptCommand.COMMAND_ERROR : 0;
             } else {
                 if (print) {
                     stdout.println("rm " + filepath);
                 }
-                return ftp.rm(filepath) ? 0 : UniversalScriptCommand.COMMAND_ERROR;
+                return !ftp.exists(filepath) || ftp.rm(filepath) ? 0 : UniversalScriptCommand.COMMAND_ERROR;
             }
         }
     }

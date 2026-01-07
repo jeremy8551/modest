@@ -1,12 +1,22 @@
-echo 当前目录 `pwd`, 当前时间 `date`
+echo currentdir: `pwd`, currentdate: `date`
+
+# 设置变量值
+set properties=this.getContext().getContainer().getClassLoader().loadProperties("db2.properties", "active.test.env")
+set databaseDriverName=properties.getProperty("databaseDriverName")
+set databaseUrl=properties.getProperty("databaseUrl")
+set username=properties.getProperty("username")
+set password=properties.getProperty("password")
+set databaseHost=properties.getProperty("databaseHost")
+set databaseSSHUser=properties.getProperty("databaseSSHUser")
+set databaseSSHUserPw=properties.getProperty("databaseSSHUserPw")
 
 set
 
 # 复制文件
-set delfilepath="$temp/bhc/bhc_finish.del"
+set delfilepath="$TMPDIR/bhc/bhc_finish.del"
 rm ${delfilepath}
-mkdir $temp/bhc
-cp classpath:/bhc_finish.del $temp/bhc
+mkdir $TMPDIR/bhc
+cp classpath:/bhc_finish.del $TMPDIR/bhc
 
 declare global test0001 catalog configuration use host ${databaseHost} driver $databaseDriverName url "${databaseUrl}" username ${username} password $password ssh.username ${databaseSSHUser} ssh.password ${databaseSSHUserPw} ssh.port 22
 db connect to test0001
@@ -31,7 +41,7 @@ CREATE TABLE bhcp_finish (
 commit;
 quiet drop index bhcpfinishidx01 on bhcp_finish;
 create index bhcpfinishidx01 on bhcp_finish(ORGCODE,error_time);
-drop index bhcpfinishidx01 on bhcp_finish;
+drop index bhcpfinishidx01;
 create index bhcpfinishidx01 on bhcp_finish(ORGCODE,error_time);
 commit;
 
@@ -51,7 +61,7 @@ commit;
 db load from ${delfilepath} of del method p(1,2,3,4,5,6,7,8,9,10,11,12) insert into bhcp_finish(orgcode,task_name,task_file_path,file_data,create_date,finish_date,status,step_id,ERROR_TIME,ERROR_LOG,OPER_ID,OPER_NAME) for exception bhcp_finish_error indexing mode incremental statistics use profile;
 
 
-echo 测试导出数据文件功能
+echo "Test export data file functionality"
 quiet "drop table v12_test_tmp";
 create table v12_test_tmp (
 	branch_id char(6) not null,
@@ -66,13 +76,13 @@ ddl V12_TEST_TMP;
 
 
 DECLARE sname Statement WITH insert into v12_test_tmp (branch_id, branch_name, branch_type, branch_no, status) values (?, ?, ?, ?, ?) ;
-declare progress use out print '插入数据库记录 ${process}%, 一共${totalRecord}笔记录 ${leftTime}' total 100000 times
+declare progress use out print 'insert into ${process}%, total ${totalRecord} records ${leftTime}' total 100000 times
 set tcount=1
 while $tcount <= 100123 loop
   set c1 = "$tcount"
-  set c2 = "机构$tcount"
-  set c3 = "机构类型$tcount"
-  set c4 = "编号$tcount"
+  set c2 = "orgCode$tcount"
+  set c3 = "orgType$tcount"
+  set c4 = "ID$tcount"
   set c5 = "0"
 
   FETCH c1, c2, c3, c4, c5 insert sname;
@@ -84,14 +94,14 @@ undeclare sname Statement
 commit
 
 set count = select count(*) from v12_test_tmp ;
-echo 笔数 $count
+echo records $count
 
-rm $temp/v12_test_tmp.del
-rm $temp/v12_test_tmp.txt
+rm $TMPDIR/v12_test_tmp.del
+rm $TMPDIR/v12_test_tmp.txt
 
-declare exportTaskId progress use out print "${taskId} 正在执行 ${process}%, 总共${totalRecord}个记录${leftTime}" total $count times
+declare exportTaskId progress use out print "${taskId} execute ${process}%, total ${totalRecord} records ${leftTime}" total $count times
 
-db export to $temp\v12_test_tmp{}.del of del modified by progress=exportTaskId chardel=* charhide=0 escapes=1 writebuf=200 maxrows=30041 title message=$temp/v12_test_tmp.txt select * from v12_test_tmp ;
+db export to $TMPDIR\v12_test_tmp{}.del of del modified by progress=exportTaskId chardel=* charhide=0 escapes=1 writebuf=200 maxrows=30041 title message=$TMPDIR/v12_test_tmp.txt select * from v12_test_tmp ;
 
 echo ""
 echo ""
@@ -127,7 +137,7 @@ while read line do
        set tlen=array[1].trim().int()
     else
     fi
-done < $temp/v12_test_tmp.del
+done < $TMPDIR/v12_test_tmp.del
 
 if $trows != $count || $tlen != $bytes then
    echo "$trows != $count || $tlen != $bytes"
@@ -136,12 +146,12 @@ fi
 
 
 container to execute tasks in parallel using thread=2 begin
-  db export to $temp/v12_test_tmp_t1.del of del modified by sleep=1000 select * from v12_test_tmp ;
-  db export to $temp/v12_test_tmp_t2.del of del modified by sleep=2000 select * from v12_test_tmp ;
-  db export to $temp/v12_test_tmp_t3.del of del modified by sleep=3000 select * from v12_test_tmp ;
-  db export to $temp/v12_test_tmp_t4.del of del modified by sleep=4000 select * from v12_test_tmp ;
-  db export to $temp/v12_test_tmp_t5.del of del modified by sleep=2000 select * from v12_test_tmp ;
-  db export to $temp/v12_test_tmp_t6.del of del modified by sleep=1000 select * from v12_test_tmp ;
+  db export to $TMPDIR/v12_test_tmp_t1.del of del modified by sleep=1000 select * from v12_test_tmp ;
+  db export to $TMPDIR/v12_test_tmp_t2.del of del modified by sleep=2000 select * from v12_test_tmp ;
+  db export to $TMPDIR/v12_test_tmp_t3.del of del modified by sleep=3000 select * from v12_test_tmp ;
+  db export to $TMPDIR/v12_test_tmp_t4.del of del modified by sleep=4000 select * from v12_test_tmp ;
+  db export to $TMPDIR/v12_test_tmp_t5.del of del modified by sleep=2000 select * from v12_test_tmp ;
+  db export to $TMPDIR/v12_test_tmp_t6.del of del modified by sleep=1000 select * from v12_test_tmp ;
 end
 echo $?
 

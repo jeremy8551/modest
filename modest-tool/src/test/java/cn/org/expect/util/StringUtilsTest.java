@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -1330,13 +1332,13 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void testToStringObject() {
+    public void testToStringObject() throws ParseException {
         Assert.assertEquals("null", StringUtils.toString((Object) null));
         Assert.assertEquals("", StringUtils.toString(""));
         Assert.assertEquals("String[1, 2, 3]", StringUtils.toString(CollectionUtils.toArray(ArrayUtils.asList("1", "2", "3"))));
 
-        Assert.assertEquals("2017-01-23", StringUtils.toString(Dates.parse("2017-01-23")));
-        Assert.assertEquals("2017-01-23 12:34:56", StringUtils.toString(Dates.parse("2017-01-23 12:34:56")));
+        Assert.assertEquals("2017-01-23", StringUtils.toString(new SimpleDateFormat("yyyy-MM-dd").parse("2017-01-23")));
+        Assert.assertEquals("2017-01-23 12:34:56", StringUtils.toString(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2017-01-23 12:34:56")));
 
         Assert.assertEquals("2017-01-23 12:34", StringUtils.toString("2017-01-23 12:34"));
 
@@ -1833,25 +1835,6 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void testSplitXmlPropertys() {
-        List<Property> list = XMLUtils.splitProperty(" value='' v1=\"1\" v2=  v3= 3 v4 = 4 v5 =5 ");
-        Assert.assertTrue(list.get(0).getValue().equals("") && list.get(0).getKey().equals("value"));
-        Assert.assertTrue(list.get(1).getValue().equals("1") && list.get(1).getKey().equals("v1"));
-        Assert.assertTrue(list.get(2).getValue() == null && list.get(2).getKey().equals("v2"));
-        Assert.assertTrue(list.get(3).getValue().equals(" 3") && list.get(3).getKey().equals("v3"));
-        Assert.assertTrue(list.get(4).getValue().equals(" 4") && list.get(4).getKey().equals("v4"));
-        Assert.assertTrue(list.get(5).getValue().equals("5") && list.get(5).getKey().equals("v5"));
-        Assert.assertEquals("", XMLUtils.splitProperty(" value='' ").get(0).getValue());
-        Assert.assertEquals("v1", XMLUtils.splitProperty(" value='' v1 = \"test\" ").get(1).getKey());
-        Assert.assertEquals("test", XMLUtils.splitProperty(" value='' v1 = \"test\" ").get(1).getValue());
-
-        String s1 = " value='' v1 = \"test\" v2 v3 ";
-        Assert.assertEquals("test", XMLUtils.splitProperty(s1).get(1).getValue());
-        Assert.assertEquals("v2", XMLUtils.splitProperty(s1).get(2).getKey());
-        Assert.assertEquals("v3", XMLUtils.splitProperty(s1).get(3).getKey());
-    }
-
-    @Test
     public void testremoveStringIntegerInteger() {
         Assert.assertNull(StringUtils.remove(null, 0, 0));
         Assert.assertEquals("", StringUtils.remove("", 0, 0));
@@ -1865,20 +1848,6 @@ public class StringUtilsTest {
         Assert.assertEquals(1, StringUtils.indexOfNotBlank(" 123456789", 0, -1));
         Assert.assertEquals(8, StringUtils.indexOfNotBlank("        8 ", 0, -1));
         Assert.assertEquals(9, StringUtils.indexOfNotBlank("         9 ", 0, -1));
-    }
-
-    @Test
-    public void testparseContentTypeCharset() {
-        Assert.assertEquals("gbk", NetUtils.parseContentTypeCharset("application/soap+xml; charset=gbk"));
-        Assert.assertEquals("gbk", NetUtils.parseContentTypeCharset("application/soap+xml; charset= gbk"));
-        Assert.assertEquals("gbk", NetUtils.parseContentTypeCharset("application/soap+xml; charset = gbk"));
-        Assert.assertEquals("gbk", NetUtils.parseContentTypeCharset("application/soap+xml; charset = gbk "));
-        Assert.assertEquals("gbk", NetUtils.parseContentTypeCharset("application/soap+xml; charset =  gbk "));
-        Assert.assertEquals("gbk", NetUtils.parseContentTypeCharset("application/soap+xml; charset =  gbk"));
-        Assert.assertNull(NetUtils.parseContentTypeCharset("application/soap+xml; charset =   "));
-        Assert.assertNull(NetUtils.parseContentTypeCharset("application/soap+xml;  =   "));
-        Assert.assertNull(NetUtils.parseContentTypeCharset("application/soap+xml;  charset  "));
-        Assert.assertNull(NetUtils.parseContentTypeCharset("application/soap+xml;  charset gbk "));
     }
 
     /**

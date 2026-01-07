@@ -13,7 +13,7 @@ import cn.org.expect.ioc.EasyBeanAware;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.EasyResourceAnnotation;
 import cn.org.expect.ioc.IocException;
-import cn.org.expect.jdk.JavaDialectFactory;
+import cn.org.expect.util.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.ClassUtils;
@@ -215,8 +215,8 @@ public class BeanBuilder {
 
         // 优先使用参数匹配的构造方法
         if (constructors.getMatchConstructor() != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("ioc.stdout.message001", type.getName(), constructors.getMatchConstructor().toGenericString());
+            if (log.isTraceEnabled()) {
+                log.trace("ioc.stdout.message001", type.getName(), constructors.getMatchConstructor().toGenericString());
             }
 
             Object[] args = argument.getArgs();
@@ -235,8 +235,8 @@ public class BeanBuilder {
 
         // 使用无参构造方法
         if (constructors.getBaseConstructor() != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("ioc.stdout.message001", type.getName(), constructors.getBaseConstructor().toGenericString());
+            if (log.isTraceEnabled()) {
+                log.trace("ioc.stdout.message001", type.getName(), constructors.getBaseConstructor().toGenericString());
             }
 
             try {
@@ -255,8 +255,8 @@ public class BeanBuilder {
         // 使用其他构造方法
         List<Constructor<?>> others = constructors.getConstructors();
         for (Constructor<?> constructor : others) {
-            if (log.isDebugEnabled()) {
-                log.debug("ioc.stdout.message001", type.getName(), constructor.toGenericString());
+            if (log.isTraceEnabled()) {
+                log.trace("ioc.stdout.message001", type.getName(), constructor.toGenericString());
             }
 
             Object[] args = toParameters(constructor.getParameterTypes());

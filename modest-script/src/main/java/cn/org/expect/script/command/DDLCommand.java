@@ -20,7 +20,7 @@ public class DDLCommand extends AbstractTraceCommand implements NohupCommandSupp
 
     private String schema;
 
-    private JdbcDao dao;
+    private volatile JdbcDao dao;
 
     public DDLCommand(UniversalCommandCompiler compiler, String command, String tableName, String schema) {
         super(compiler, command);
@@ -36,8 +36,8 @@ public class DDLCommand extends AbstractTraceCommand implements NohupCommandSupp
 
         this.dao = ScriptDataSource.get(context).getDao();
         String catalog = this.dao.getCatalog();
-        String schema = analysis.unQuotation(analysis.replaceShellVariable(session, context, this.schema, true, true));
-        String tableName = analysis.unQuotation(analysis.replaceShellVariable(session, context, this.tableName, true, true));
+        String schema = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.schema), true, !analysis.containsQuotation(this.schema));
+        String tableName = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.tableName), true, !analysis.containsQuotation(this.tableName));
 
         if (StringUtils.isBlank(schema)) {
             schema = this.dao.getSchema();

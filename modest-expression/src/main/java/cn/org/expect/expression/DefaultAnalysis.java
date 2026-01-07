@@ -118,6 +118,12 @@ public class DefaultAnalysis extends BaseAnalysis {
         for (int i = from; i < str.length(); i++) {
             char c = str.charAt(i);
 
+            // 转义字符
+            if (this.escape && c == this.escapeChar) {
+                i++;
+                continue;
+            }
+
             // 忽略单引号字符串
             if (c == '\'') {
                 int end = this.indexOfQuotation(str, i);
@@ -196,7 +202,7 @@ public class DefaultAnalysis extends BaseAnalysis {
             if (c == '(') {
                 int end = this.indexOfParenthes(str, i);
                 if (end == -1) {
-                    throw new ExpressionException("expression.stdout.message057", str, ")");
+                    throw new ExpressionException("expression.stdout.message025", str, i, "(", ")");
                 }
                 i = end;
                 continue;

@@ -15,9 +15,10 @@ import cn.org.expect.script.UniversalScriptParser;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
+import cn.org.expect.script.UniversalScriptVariable;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.internal.FtpList;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
 
@@ -45,15 +46,30 @@ public class CdCommand extends AbstractFileCommand implements UniversalScriptInp
         boolean print = session.isEchoEnable() || forceStdout;
         OSFtpCommand ftp = FtpList.get(context).getFTPClient();
         if (this.localhost || ftp == null) {
-            ScriptFile file = new ScriptFile(session, context, this.filepath);
-            if (print) {
-                stdout.println("cd " + file.getAbsolutePath());
+
+            // cd - 返回到上个目录
+            String parameter = session.getAnalysis().replaceShellVariable(session, context, this.filepath, true, true);
+            if ("-".equals(parameter)) {
+                File oldPwd = session.getVariable(UniversalScriptVariable.SESSION_VARNAME_OLDPWD);
+                if (oldPwd == null) {
+                    oldPwd = session.getVariable(UniversalScriptVariable.SESSION_VARNAME_PWD);
+                }
+
+                if (print) {
+                    stdout.println(oldPwd.getAbsolutePath());
+                }
+
+                session.setDirectory(oldPwd);
+                session.setValue(oldPwd);
+                return 0;
             }
+
+            File file = PathExpression.toFile(session, context, this.filepath);
             session.setDirectory(file);
-            session.putValue(file);
+            session.setValue(file);
             return 0;
         } else {
-            String filepath = ScriptFile.replaceFilepath(session, context, this.filepath, false);
+            String filepath = PathExpression.resolve(session, context, this.filepath, false);
             if (print) {
                 stdout.println("cd " + filepath);
             }

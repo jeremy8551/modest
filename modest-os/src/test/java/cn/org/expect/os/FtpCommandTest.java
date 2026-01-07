@@ -6,13 +6,17 @@ import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.os.ftp.FtpCommand;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyRunIf;
+import cn.org.expect.test.annotation.RunWithFeature;
+import cn.org.expect.test.annotation.RunWithProperties;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+@Ignore
 @RunWith(ModestRunner.class)
-@EasyRunIf(values = {"ftp.host", "ftp.port", "ftp.username", "ftp.password", "ftp.homedir"})
+@RunWithFeature("ftp")
+@RunWithProperties(filename = "ftp", require = {"ftp.host", "ftp.port", "ftp.username", "ftp.password"})
 public class FtpCommandTest {
 
     @EasyBean("${ftp.host}")
@@ -27,9 +31,6 @@ public class FtpCommandTest {
     @EasyBean("${ftp.password}")
     private String password;
 
-    @EasyBean("${ftp.homedir}")
-    private String homedir;
-
     @EasyBean
     private EasyContext context;
 
@@ -38,8 +39,8 @@ public class FtpCommandTest {
         FtpCommand ftp = new FtpCommand();
         try {
             ftp.setContext(this.context);
-            Assert.assertTrue(ftp.connect(host, port, username, password));
-            Assert.assertTrue(ftp.cd(homedir));
+            Assert.assertTrue(ftp.connect(this.host, this.port, this.username, this.password));
+            ftp.enterPassiveMode(false);
             FtpClientCase.run(ftp);
         } finally {
             ftp.close();

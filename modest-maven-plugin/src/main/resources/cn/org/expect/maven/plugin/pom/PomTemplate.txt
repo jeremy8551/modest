@@ -1,0 +1,36 @@
+package ${packageName};
+
+import cn.org.expect.maven.plugin.pom.MavenPom;
+
+/**
+ * 当前项目的POM信息
+ */
+public class ${className} implements MavenPom {
+
+    /**
+     * 返回构件的 groupId
+     *
+     * @return groupId
+     */
+    public String getGroupID() {
+        return "${groupId}";
+    }
+
+    /**
+     * 返回构件的 artifactId
+     *
+     * @return artifactId
+     */
+    public String getArtifactID() {
+        return "${artifactId}";
+    }
+
+    /**
+     * 返回构件的 version
+     *
+     * @return version
+     */
+    public String getVersion() {
+        return "${version}";
+    }
+}

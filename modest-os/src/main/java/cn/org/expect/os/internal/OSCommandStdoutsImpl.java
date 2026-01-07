@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.org.expect.os.OSCommandStdouts;
+import cn.org.expect.util.StringUtils;
 
 public class OSCommandStdoutsImpl implements OSCommandStdouts {
 
@@ -25,5 +26,9 @@ public class OSCommandStdoutsImpl implements OSCommandStdouts {
 
     public Set<String> keys() {
         return this.map.keySet();
+    }
+
+    public String toString() {
+        return StringUtils.toString(this.map);
     }
 }

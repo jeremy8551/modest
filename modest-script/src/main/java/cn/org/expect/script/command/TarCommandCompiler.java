@@ -18,9 +18,7 @@ public class TarCommandCompiler extends AbstractFileCommandCompiler {
     }
 
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
-        CommandExpression expr = new CommandExpression(analysis, "tar -zcvfx {0-1}", command);
-        String filepath = expr.getParameter();
-        boolean compress = expr.containsOption("-z", "-c", "-v", "-f") && !expr.containsOption("-x");
-        return new TarCommand(this, orginalScript, filepath, compress);
+        CommandExpression expr = new CommandExpression(analysis, "tar [-x|-c|-t] -zv -f: -C:", command);
+        return new TarCommand(this, orginalScript, expr.getOptionValue("-f"), expr.containsOption("-c"), expr.containsOption("-x"), expr.containsOption("-z"), expr.containsOption("-t"), expr.getOptionValue("-C"), expr.containsOption("-v"));
     }
 }

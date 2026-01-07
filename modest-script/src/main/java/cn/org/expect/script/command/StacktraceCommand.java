@@ -26,7 +26,7 @@ public class StacktraceCommand extends AbstractTraceCommand implements NohupComm
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         if (session.isEchoEnable() || forceStdout) {
-            UniversalScriptException exp = session.getVariable(UniversalScriptVariable.SESSION_VARNAME_LASTEXCEPTION);
+            UniversalScriptException exp = session.getSystemVariable(UniversalScriptVariable.SYSTEM_LASTEXCEPTION);
             if (exp != null) {
                 StringBuilder buf = new StringBuilder();
 

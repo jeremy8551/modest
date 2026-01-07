@@ -11,7 +11,7 @@ import cn.org.expect.concurrent.ThreadSource;
 import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.internal.ScanPatternList;
-import cn.org.expect.springboot.starter.ProjectPom;
+import cn.org.expect.maven.plugin.pom.MavenPomFactory;
 import cn.org.expect.springboot.starter.script.SpringArgument;
 import cn.org.expect.springboot.starter.script.SpringContainer;
 import cn.org.expect.springboot.starter.script.SpringContainerDefine;
@@ -42,9 +42,9 @@ public class EasyContextFactory {
      * @param springContext Spring容器上下文信息
      * @return 脚本引擎容器实例
      */
-    public static EasyContext create(SpringArgument argument, ApplicationContext springContext) {
+    public static EasyContext newInstance(SpringArgument argument, ApplicationContext springContext) {
         long start = System.currentTimeMillis();
-        String starterName = ProjectPom.getArtifactID(); // 场景启动器名
+        String starterName = MavenPomFactory.newInstance(ClassUtils.getPackageName(EasyContextFactory.class, 5)).getArtifactID(); // 场景启动器名
         log.info("{} starting ..", starterName);
         log.info("{} slf4j Logger is {}", starterName, log.getClass().getName()); // 打印日志接口的实现类
 

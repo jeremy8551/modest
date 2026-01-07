@@ -25,7 +25,7 @@ public class QuickTest {
     public void test() throws Exception {
         File logfile = FileUtils.createTempFile(QuickTest.class.getSimpleName() + ".log");
         System.setProperty("QuickTestLogfile", logfile.getAbsolutePath());
-        log.info("将日志输出到 file://{}", logfile);
+        log.info("test.concurrent.stdout.message001", logfile);
         LogFactory.load(">>${QuickTestLogfile}+,sout-,debug");
         for (int i = 0; i < 30; i++) {
             this.run();
@@ -70,7 +70,7 @@ public class QuickTest {
                 i += 3;
             }
 
-            log.info(this.getName() + " " + " over!");
+            log.info(this.getName() + " over!");
             return 0;
         }
 

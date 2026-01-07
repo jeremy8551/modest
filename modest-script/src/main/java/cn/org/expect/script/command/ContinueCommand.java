@@ -16,8 +16,6 @@ import cn.org.expect.util.ResourcesUtils;
  */
 public class ContinueCommand extends AbstractSlaveCommand implements LoopCommandKind {
 
-    public final static int KIND = 30;
-
     public ContinueCommand(UniversalCommandCompiler compiler, String command) {
         super(compiler, command);
     }
@@ -32,6 +30,6 @@ public class ContinueCommand extends AbstractSlaveCommand implements LoopCommand
     }
 
     public int kind() {
-        return ContinueCommand.KIND;
+        return LoopCommandKind.CONTINUE_COMMAND;
     }
 }

@@ -12,7 +12,7 @@ import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.internal.FtpList;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;
 
@@ -36,8 +36,8 @@ public class GetCommand extends AbstractFileCommand implements NohupCommandSuppo
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         UniversalScriptAnalysis analysis = session.getAnalysis();
-        String localfilepath = ScriptFile.replaceFilepath(session, context, this.localfile, true);
-        String remotefilepath = ScriptFile.replaceFilepath(session, context, this.remotefile, false);
+        String localfilepath = PathExpression.resolve(session, context, this.localfile, true);
+        String remotefilepath = PathExpression.resolve(session, context, this.remotefile, false);
 
         if (session.isEchoEnable() || forceStdout) {
             if (StringUtils.isBlank(localfilepath)) {
@@ -55,16 +55,16 @@ public class GetCommand extends AbstractFileCommand implements NohupCommandSuppo
             }
 
             if (analysis.isBlank(localfilepath)) {
-                localfilepath = session.getDirectory();
+                localfilepath = session.getDirectory().getAbsolutePath();
             }
 
-            File file = new ScriptFile(session, context, localfilepath);
+            File file = PathExpression.toFile(session, context, localfilepath);
             if (!file.exists()) {
                 stderr.println(ResourcesUtils.getMessage("script.stderr.message033", this.command, localfilepath));
                 return UniversalScriptCommand.COMMAND_ERROR;
             }
 
-            this.ftp.download(remotefilepath, new ScriptFile(session, context, localfilepath));
+            this.ftp.download(remotefilepath, PathExpression.toFile(session, context, localfilepath));
             return 0;
         } finally {
             this.ftp = null;

@@ -20,7 +20,7 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
 
@@ -71,7 +71,7 @@ public class WcCommand extends AbstractFileCommand implements UniversalScriptInp
     public void read(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, Reader in) throws IOException {
         this.pipe = analysis.isBlank(this.filepath);
         if (this.pipe) {
-            this.pipeInput = StringUtils.trimBlank(IO.read(in, new StringBuilder()));
+            this.pipeInput = IO.read(in, new StringBuilder()).toString();
         } else {
             throw new UniversalScriptException("script.stderr.message012", this.command, "wc", this.filepath);
         }
@@ -109,7 +109,7 @@ public class WcCommand extends AbstractFileCommand implements UniversalScriptInp
                 bytes = StringUtils.length(this.pipeInput, charsetName);
             }
         } else {
-            File file = new ScriptFile(session, context, this.filepath);
+            File file = PathExpression.toFile(session, context, this.filepath);
 
             // 统计字节个数
             if (this.bytes) {
@@ -137,17 +137,17 @@ public class WcCommand extends AbstractFileCommand implements UniversalScriptInp
         StringBuilder buf = new StringBuilder(50);
         if (this.lines) {
             buf.append(StringUtils.right(rows, 10, ' '));
-            session.putValue(rows);
+            session.setValue(rows);
         }
 
         if (this.words) {
             buf.append(StringUtils.right(words, 10, ' '));
-            session.putValue(words);
+            session.setValue(words);
         }
 
         if (this.bytes) {
             buf.append(StringUtils.right(bytes, 10, ' '));
-            session.putValue(bytes);
+            session.setValue(bytes);
         }
 
         if (filepath.length() > 0) {

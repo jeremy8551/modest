@@ -26,7 +26,7 @@ public class FqcnTest {
         Appender appender = new LogBuilderAppender(LogFactory.SOUT_PLUS_PATTERN).setup(context);
 
         Log log = LogFactory.getLog(context, DefaultLogTest.class);
-        LogFactory.setFQCN(log, "^" + LevelLogger.class.getName());
+        LogFactory.setFQCN(log, "^" + AbstractResourceLog.class.getName());
 
         LogProxy target = new LogProxy(context, log);
         target.info("a.b");
@@ -56,7 +56,7 @@ public class FqcnTest {
         Assert.assertEquals("test.no.key", arrayList.get(8));
     }
 
-    private static class LogProxy extends AbstractLogger {
+    private static class LogProxy extends AbstractFqcnLog {
 
         // 目标对象
         private final Log target;

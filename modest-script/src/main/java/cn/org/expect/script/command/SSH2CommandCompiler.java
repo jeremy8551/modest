@@ -21,13 +21,13 @@ public class SSH2CommandCompiler extends AbstractTraceCommandCompiler {
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
         WordIterator it = analysis.parse(command);
         String login = it.readUntil("&&"); // ssh username@host:port?password=
-        String oscommand = it.readOther();
+        String osCommand = it.readOther();
 
-        LoginExpression expr = new LoginExpression(analysis, login);
+        LoginExpression expr = new LoginExpression(analysis, session.getAnalysis().replaceShellVariable(session, context, login, true, true));
         String host = expr.getLoginHost();
         String port = expr.getLoginPort();
         String username = expr.getLoginUsername();
         String password = expr.getLoginPassword();
-        return new SSH2Command(this, orginalScript, host, port, username, password, oscommand);
+        return new SSH2Command(this, orginalScript, host, port, username, password, osCommand);
     }
 }

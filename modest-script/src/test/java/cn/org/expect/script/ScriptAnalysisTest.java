@@ -97,7 +97,7 @@ public class ScriptAnalysisTest {
     public void testReplaceShellFunctionVariable() {
         ScriptAnalysis obj = new ScriptAnalysis();
 
-        UniversalScriptSession session = new ScriptSession("engine001", new SessionFactory()) {
+        UniversalScriptSession session = new ScriptSession(new UniversalScriptEngineFactory(), "engine001", new SessionFactory()) {
 
             public String getId() {
                 return "sessionid";
@@ -119,7 +119,7 @@ public class ScriptAnalysisTest {
         String str = "$1 is equals $2 [$3$ $4 $d";
         Assert.assertEquals("1 is equals 2 [3$ $4 $d", obj.replaceShellSpecialVariable(session, str, true));
 
-        session = new ScriptSession("engine001", new SessionFactory()) {
+        session = new ScriptSession(new UniversalScriptEngineFactory(), "engine001", new SessionFactory()) {
 
             public String getId() {
                 return "sessionid";
@@ -140,7 +140,7 @@ public class ScriptAnalysisTest {
         };
         Assert.assertEquals("call TESTADM.PROC_QYZX_SBC_BAOHANS('2017-07-31', ?); 1 funcs", obj.replaceShellSpecialVariable(session, "call TESTADM.$1('2017-07-31', ?); $# $0", false));
 
-        session = new ScriptSession("engine001", new SessionFactory()) {
+        session = new ScriptSession(new UniversalScriptEngineFactory(), "engine001", new SessionFactory()) {
 
             public String getId() {
                 return "sessionid";
@@ -161,7 +161,7 @@ public class ScriptAnalysisTest {
         };
         Assert.assertEquals("call TESTADM.PROC_QYZX_SBC_BAOHANS('2017-07-31', ?); 1 funcs -1", obj.replaceShellSpecialVariable(session, "call TESTADM.$1('2017-07-31', ?); $# $0 $?", true));
 
-        session = new ScriptSession("engine001", new SessionFactory()) {
+        session = new ScriptSession(new UniversalScriptEngineFactory(), "engine001", new SessionFactory()) {
 
             public String getId() {
                 return "sessionid";
@@ -182,7 +182,7 @@ public class ScriptAnalysisTest {
         };
         Assert.assertEquals("call 'TESTADM.$1(2017-07-31, ?)'; 1 funcs -1", obj.replaceShellSpecialVariable(session, "call 'TESTADM.$1(2017-07-31, ?)'; $# $0 $?", true));
 
-        session = new ScriptSession("engine001", new SessionFactory()) {
+        session = new ScriptSession(new UniversalScriptEngineFactory(), "engine001", new SessionFactory()) {
 
             public String getId() {
                 return "sessionid";

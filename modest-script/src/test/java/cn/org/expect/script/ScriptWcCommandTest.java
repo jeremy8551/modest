@@ -12,7 +12,7 @@ import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyLog;
+import cn.org.expect.test.annotation.RunWithLogSettings;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
@@ -20,8 +20,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@EasyLog("sout+:info")
 @RunWith(ModestRunner.class)
+@RunWithLogSettings("sout+:info")
 public class ScriptWcCommandTest {
     private final static Log log = LogFactory.getLog(ScriptWcCommandTest.class);
 
@@ -32,7 +32,7 @@ public class ScriptWcCommandTest {
      * 测试 wc 命令
      */
     @Test
-    public void test1() throws IOException {
+    public void test() throws IOException {
         File tempDir = FileUtils.getTempDir(this.getClass().getSimpleName());
         FileUtils.deleteDirectory(tempDir);
         FileUtils.createDirectory(tempDir);
@@ -72,7 +72,7 @@ public class ScriptWcCommandTest {
             UniversalScriptEngine engine;
             try {
                 engine = factory.getScriptEngine();
-                engine.evaluate("wc -l " + tmpfile.getAbsolutePath() + " > /dev/null");
+                engine.evaluate("wc -l " + tmpfile.getAbsolutePath());
             } catch (Exception e) {
                 log.error(e.getLocalizedMessage(), e);
                 Assert.fail();

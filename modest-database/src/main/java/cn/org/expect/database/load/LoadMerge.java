@@ -100,7 +100,7 @@ public class LoadMerge {
      */
     public void removeTempTable() throws SQLException {
         DatabaseDialect dialect = this.dao.getDialect();
-        DatabaseDDL ddl = dialect.toDDL(this.dao.getConnection(), this.index, false);
+        DatabaseDDL ddl = dialect.generateDDL(this.dao.getConnection(), this.index, false);
         this.dao.execute(ddl);
 
         // 重组索引
@@ -127,7 +127,7 @@ public class LoadMerge {
 
         StandardDatabaseTable newtable = new StandardDatabaseTable(this.target.getTable());
         newtable.setName(newTableName);
-        newtable.setFullName(this.dao.getDialect().toTableName(newtable.getCatalog(), newtable.getSchema(), newTableName));
+        newtable.setFullName(this.dao.getDialect().generateTableName(newtable.getCatalog(), newtable.getSchema(), newTableName));
 
         String tableDDL = this.target.getTableDDL().getTable();
         DefaultAnalysis analysis = new DefaultAnalysis();
@@ -172,8 +172,8 @@ public class LoadMerge {
         index.setTableSchema(this.tempTable.getSchema());
         index.setTableName(this.tempTable.getName());
         index.setUnique(false);
-        index.setTableFullName(dialect.toTableName(index.getTableCatalog(), index.getTableSchema(), index.getTableName()));
-        index.setFullName(dialect.toIndexName(index.getTableCatalog(), index.getSchema(), index.getName()));
+        index.setTableFullName(dialect.generateTableName(index.getTableCatalog(), index.getTableSchema(), index.getTableName()));
+        index.setFullName(dialect.generateIndexName(index.getTableCatalog(), index.getSchema(), index.getName()));
         index.setColumnNames(this.indexColumn);
         index.setPositions(positions);
         index.setSort(sorts);

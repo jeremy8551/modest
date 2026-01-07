@@ -11,14 +11,9 @@
 
     <artifactId>modest-database</artifactId>
     <name>${project.artifactId}</name>
-    <description>数据库工具</description>
+    <description>Database utilities</description>
 
     <dependencies>
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-jdk</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-compress</artifactId>
@@ -47,8 +42,8 @@
         </dependency>
 
         <dependency>
-            <groupId>com.ibm.db2.jcc</groupId>
-            <artifactId>db2jcc</artifactId>
+            <groupId>com.ibm.db2</groupId>
+            <artifactId>jcc</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -66,4 +61,13 @@
             <optional>true</optional>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

@@ -18,7 +18,7 @@ import cn.org.expect.os.OSProcess;
 import cn.org.expect.os.OSUser;
 import cn.org.expect.os.OSUserGroup;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyRunIf;
+import cn.org.expect.test.annotation.RunWithProperties;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.TimeWatch;
@@ -29,7 +29,7 @@ import org.junit.runner.RunWith;
  * 测试远程连接Linux与DB2和WAS探测 TODO
  */
 @RunWith(ModestRunner.class)
-@EasyRunIf(values = {"db2.host", "db2.ssh.port", "db2.ssh.username", "db2.ssh.password"})
+@RunWithProperties(filename = "db2", require = {"db2.host", "db2.ssh.port", "db2.ssh.username", "db2.ssh.password"})
 public class DB2InstanceDetectTest {
     private final static Log log = LogFactory.getLog(DB2InstanceDetectTest.class);
 

@@ -221,7 +221,7 @@ public class DatabaseReader implements ExtractReader {
         String source = context.getSource();
         String target = context.getTarget();
 
-        String[] titles = StringUtils.split(ResourcesUtils.getMessage("extract.stdout.message004"), ',');
+        String[] titles = ResourcesUtils.getMessageArray("extract.stdout.message004");
         CharTable table = new CharTable();
         table.addTitle(titles[0], CharTable.ALIGN_RIGHT);
         table.addTitle(titles[1], CharTable.ALIGN_LEFT);

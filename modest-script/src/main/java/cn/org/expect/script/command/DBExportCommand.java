@@ -23,7 +23,7 @@ import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.internal.ProgressMap;
 import cn.org.expect.script.internal.ScriptDataSource;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.ResourcesUtils;
@@ -73,7 +73,7 @@ import cn.org.expect.util.StringUtils;
 public class DBExportCommand extends AbstractTraceCommand implements UniversalScriptJob, NohupCommandSupported {
 
     /** 任务信息 */
-    private ExportEngine engine;
+    private volatile ExportEngine engine;
 
     /** 数据文件 */
     private String dataTarget;
@@ -100,8 +100,7 @@ public class DBExportCommand extends AbstractTraceCommand implements UniversalSc
             if (session.isEchoEnable() || forceStdout) {
                 String newTarget = FileUtils.replaceFolderSeparator(this.dataTarget);
                 String newCommand = StringUtils.replace(this.command, this.dataTarget, newTarget);
-                UniversalScriptAnalysis analysis = session.getAnalysis();
-                stdout.println(analysis.replaceSQLVariable(session, context, newCommand));
+                stdout.println(session.getAnalysis().replaceSQLVariable(session, context, newCommand));
             }
 
             int value = this.engine.execute();
@@ -123,7 +122,7 @@ public class DBExportCommand extends AbstractTraceCommand implements UniversalSc
             this.engine = new ExportEngine(context.getContainer());
 
             UniversalScriptAnalysis analysis = session.getAnalysis();
-            String newTarget = ScriptFile.replaceFilepath(session, context, this.dataTarget, true);
+            String newTarget = PathExpression.resolve(session, context, this.dataTarget, true);
             String dataType = analysis.replaceShellVariable(session, context, this.dataType, true, true);
             String dataSource = analysis.replaceSQLVariable(session, context, this.dataSource);
             CommandAttribute attribute = this.attrs.clone(session, context);

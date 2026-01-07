@@ -38,7 +38,7 @@ public class BufferedLineReader extends Reader implements TextFileReader, Iterat
     protected Reader in;
 
     /** 缓冲区 */
-    protected char buffer[];
+    protected char[] buffer;
 
     /** 缓冲区有效的长度 */
     protected int count;
@@ -76,7 +76,7 @@ public class BufferedLineReader extends Reader implements TextFileReader, Iterat
     protected int expectedLineLength;
 
     /** 越过指定字符个数时所使用的缓冲区 */
-    protected char skipBuffer[] = null;
+    protected char[] skipBuffer = null;
 
     /** 迭代器模式使用的缓存 */
     protected volatile String nextline;

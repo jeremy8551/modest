@@ -14,7 +14,7 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
@@ -40,14 +40,14 @@ public class CatCommand extends AbstractFileCommand implements UniversalScriptIn
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
-        ScriptFile file = new ScriptFile(session, context, this.filepath);
+        File file = PathExpression.toFile(session, context, this.filepath);
         String content = FileUtils.readline(file, StringUtils.coalesce(this.charsetName, context.getCharsetName()), 0);
 
         if (session.isEchoEnable() || forceStdout) {
             stdout.println(content);
         }
 
-        session.putValue(content);
+        session.setValue(content);
         return 0;
     }
 

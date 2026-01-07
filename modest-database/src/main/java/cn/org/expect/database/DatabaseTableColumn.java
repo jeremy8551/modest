@@ -1,7 +1,5 @@
 package cn.org.expect.database;
 
-import java.io.IOException;
-
 /**
  * 表示数据库表中某列的配置信息
  *
@@ -17,11 +15,25 @@ public interface DatabaseTableColumn extends Cloneable {
     String getTableName();
 
     /**
+     * 表名称
+     *
+     * @param tableName 表名称
+     */
+    void setTableName(String tableName);
+
+    /**
      * 表模式（可为 null）
      *
      * @return 表模式
      */
     String getTableSchema();
+
+    /**
+     * 表模式（可为 null）
+     *
+     * @param tableSchema 表模式
+     */
+    void setTableSchema(String tableSchema);
 
     /**
      * 编目信息（可为 null）
@@ -38,6 +50,27 @@ public interface DatabaseTableColumn extends Cloneable {
     String getTableFullName();
 
     /**
+     * 设置表全名
+     *
+     * @param tableName 表全名
+     */
+    void setTableFullName(String tableName);
+
+    /**
+     * 编目（可为 null）
+     *
+     * @param tableCatalog 编目
+     */
+    void setTableCatalog(String tableCatalog);
+
+    /**
+     * 列名称
+     *
+     * @param name 列名称
+     */
+    void setName(String name);
+
+    /**
      * 列名称
      *
      * @return 列名称
@@ -52,11 +85,25 @@ public interface DatabaseTableColumn extends Cloneable {
     String getNullAble();
 
     /**
+     * "NO" 表示明确不允许列使用 NULL 值，"YES" 表示可能允许列使用 NULL 值。空字符串表示没人知道是否允许使用 null 值。
+     *
+     * @param str 字符串
+     */
+    void setNullAble(String str);
+
+    /**
      * 来自 java.sql.Types 的 SQL 类型
      *
      * @return 来自 java.sql.Types 的 SQL 类型
      */
     int getSqlType();
+
+    /**
+     * 来自 {@linkplain java.sql.Types} 的 SQL 类型
+     *
+     * @param sqlType {@linkplain java.sql.Types}
+     */
+    void setSqlType(int sqlType);
 
     /**
      * 数据源依赖的类型名称，对于 UDT，该类型名称是完全限定的；如：char varchar int decimal 等
@@ -66,11 +113,11 @@ public interface DatabaseTableColumn extends Cloneable {
     String getFieldType();
 
     /**
-     * 数据源中字段的类型全名，如：char(20), decimal(20,3)
+     * 数据源依赖的类型名称，对于 UDT，该类型名称是完全限定的
      *
-     * @return 字段类型全名
+     * @param typeName 类型名称
      */
-    String getFieldName();
+    void setFieldType(String typeName);
 
     /**
      * 列的长度。对于 char 或 date 类型，列的大小是最大字符数，对于 numeric 和 decimal 类型，列的大小就是精度。
@@ -85,6 +132,20 @@ public interface DatabaseTableColumn extends Cloneable {
      * @return 列的注释
      */
     String getRemark();
+
+    /**
+     * 描述列的注释（可为 null）
+     *
+     * @param remarks 注释
+     */
+    void setRemark(String remarks);
+
+    /**
+     * 设置字段的默认值（可为 null）
+     *
+     * @param defaultValue 字段的默认值
+     */
+    void setDefault(String defaultValue);
 
     /**
      * 返回字段的默认值（可为 null），引号扩起来时表示字符串
@@ -108,6 +169,13 @@ public interface DatabaseTableColumn extends Cloneable {
     int getMaxLength();
 
     /**
+     * CHAR_OCTET_LENGTH 对于 char 类型，该长度是列中的最大字节数
+     *
+     * @param length 最大字节数
+     */
+    void setMaxLength(int length);
+
+    /**
      * 表中的列的位置信息
      *
      * @return 位置信息，从1开始
@@ -115,11 +183,25 @@ public interface DatabaseTableColumn extends Cloneable {
     int getPosition();
 
     /**
+     * 表中的列的索引（从 1 开始）
+     *
+     * @param position 索引信息
+     */
+    void setPosition(int position);
+
+    /**
      * 小数部分的位数
      *
      * @return 小数部分的位数
      */
     int getDigit();
+
+    /**
+     * 小数部分的位数
+     *
+     * @param n 小数部分的位数
+     */
+    void setDigit(int n);
 
     /**
      * 基数（通常为 10 或 2）
@@ -137,16 +219,27 @@ public interface DatabaseTableColumn extends Cloneable {
     int compareTo(DatabaseTableColumn column);
 
     /**
-     * 扩展字段长度 <br>
-     * 如果 value 参数超出了 col 字段类型长度, 则扩展字段信息中的字段长度并返回 true <br>
-     * 如果 value 参数未超出 col 字段类型长度, 则不对字段信息做任何操作并返回 false <br>
+     * 列的大小。对于 char 或 date 类型，列的大小是最大字符数，对于 numeric 和 decimal 类型，列的大小就是精度。
      *
-     * @param value       实际值
-     * @param charsetName 字符集
-     * @return true表示扩展字段
-     * @throws IOException 扩展字段错误
+     * @param length 列的大小
      */
-    boolean expandLength(String value, String charsetName) throws IOException;
+    void setLength(int length);
+
+    /**
+     * 基数（通常为 10 或 2）
+     *
+     * @param n 基数
+     */
+    void setRadix(int n);
+
+    /**
+     * YES---如果列是自动递增的 <br>
+     * NO ---如果列未自动递增 <br>
+     * 空字符串---如果无法确定列是否自动递增 <br>
+     *
+     * @param incr 是否是自增字段
+     */
+    void setIncrement(String incr);
 
     /**
      * YES---如果列是自动递增的 <br>

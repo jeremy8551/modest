@@ -11,12 +11,40 @@
 
     <artifactId>modest-crypto</artifactId>
     <name>${project.artifactId}</name>
-    <description>加密工具</description>
+    <description>Encryption utilities</description>
 
     <dependencies>
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-tool</artifactId>
+            <artifactId>modest-core</artifactId>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>compile</id>
+                        <goals>
+                            <goal>rm</goal>
+                            <goal>format</goal>
+                            <goal>lastupdated</goal>
+                        </goals>
+                        <configuration>
+                            <rmBasedir>${project.parent.basedir}/</rmBasedir>
+                            <rmfile>\.DS_Store</rmfile>
+                            <formatBasedir>
+                                <basedir>${project.parent.basedir}/modest-tool</basedir>
+                                <basedir>${project.parent.basedir}/modest-core</basedir>
+                                <basedir>${project.parent.basedir}/modest-maven-plugin</basedir>
+                            </formatBasedir>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

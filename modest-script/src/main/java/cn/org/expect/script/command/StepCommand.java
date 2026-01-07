@@ -11,7 +11,6 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.UniversalScriptSteper;
-import cn.org.expect.script.UniversalScriptVariable;
 import cn.org.expect.script.command.feature.CallbackCommandSupported;
 import cn.org.expect.script.command.feature.LoopCommandSupported;
 import cn.org.expect.script.session.ScriptStep;
@@ -32,7 +31,7 @@ public class StepCommand extends AbstractTraceCommand implements CallbackCommand
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         UniversalScriptAnalysis analysis = session.getAnalysis();
-        String message = analysis.unQuotation(analysis.replaceShellVariable(session, context, this.message, true, false));
+        String message = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.message), true, !analysis.containsQuotation(this.message));
         boolean print = session.isEchoEnable() || forceStdout;
         ScriptStep obj = ScriptStep.get(context, true);
 
@@ -43,7 +42,7 @@ public class StepCommand extends AbstractTraceCommand implements CallbackCommand
         }
 
         // 打印上一个步骤信息
-        else if (analysis.isBlank(message)) {
+        if (analysis.isBlank(message)) {
             if (print) {
                 stdout.println(obj.getStep());
             }
@@ -51,22 +50,20 @@ public class StepCommand extends AbstractTraceCommand implements CallbackCommand
         }
 
         // 判断 step 命令是否重复
-        else if (obj.containsStep(message)) {
+        if (obj.containsStep(message)) {
             stderr.println(ResourcesUtils.getMessage("script.stderr.message023", this.command, message));
             return UniversalScriptCommand.COMMAND_ERROR;
         }
 
         // 表示正在执行 jump 命令
-        else if (obj.containsTarget()) {
-            session.addVariable(UniversalScriptVariable.SESSION_VARNAME_STEP, message);
+        if (obj.isJumping()) {
             if (message.equals(obj.getTarget())) { // 找到了 jump 命令对应的 step 命令
                 UniversalScriptListenerList set = context.getListenerList();
                 set.remove(JumpCommand.JumpListener.class);
                 obj.removeTarget();
-                context.addGlobalVariable(UniversalScriptVariable.SESSION_VARNAME_JUMP, "false"); // 移除标示变量
                 obj.addStep(message);
                 if (print) {
-                    stdout.println(ResourcesUtils.getMessage("script.stdout.message034", message));
+                    stdout.println(ResourcesUtils.getMessage("script.stdout.message033", message));
                 }
                 return this.execute(session, context, stdout, stderr, forceStdout, context.getEngine().getSteper(), message);
             } else { // 未找到对应的 step 命令
@@ -78,11 +75,8 @@ public class StepCommand extends AbstractTraceCommand implements CallbackCommand
         }
 
         // 成功添加一个步骤信息
-        else {
-            session.addVariable(UniversalScriptVariable.SESSION_VARNAME_STEP, message);
-            obj.addStep(message);
-            return this.execute(session, context, stdout, stderr, forceStdout, context.getEngine().getSteper(), message);
-        }
+        obj.addStep(message);
+        return this.execute(session, context, stdout, stderr, forceStdout, context.getEngine().getSteper(), message);
     }
 
     /**

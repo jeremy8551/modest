@@ -30,16 +30,16 @@ public class PwdCommand extends AbstractFileCommand implements NohupCommandSuppo
         OSFtpCommand ftp = FtpList.get(context).getFTPClient();
         if (this.localhost || ftp == null) {
             if (print) {
-                String pwd = session.getDirectory();
-                stdout.println(pwd);
-                session.putValue(pwd);
+                File dir = session.getDirectory();
+                stdout.println(dir.getAbsolutePath());
+                session.setValue(dir);
             }
             return 0;
         } else {
             if (print) {
                 String pwd = ftp.pwd();
                 stdout.println(pwd);
-                session.putValue(pwd);
+                session.setValue(pwd);
             }
             return 0;
         }

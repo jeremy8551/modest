@@ -567,14 +567,14 @@ public class JdbcDaoTest {
             idx.setTableCatalog(null);
             idx.setTableSchema(schema);
             idx.setTableName(TABLE_NAME);
-            idx.setTableFullName(dao.getDialect().toTableName(idx.getTableCatalog(), idx.getTableSchema(), idx.getTableName()));
+            idx.setTableFullName(dao.getDialect().generateTableName(idx.getTableCatalog(), idx.getTableSchema(), idx.getTableName()));
             idx.setSchema(schema);
             idx.setName("idxnametest");
-            idx.setFullName(dao.getDialect().toTableName(null, idx.getSchema(), idx.getName()));
+            idx.setFullName(dao.getDialect().generateTableName(null, idx.getSchema(), idx.getName()));
             idx.setColumnNames(ArrayUtils.asList("id"));
             idx.setSort(ArrayUtils.asList(DatabaseIndex.INDEX_ASC));
 
-            DatabaseDDL ddl = dao.getDialect().toDDL(dao.getConnection(), idx, false);
+            DatabaseDDL ddl = dao.getDialect().generateDDL(dao.getConnection(), idx, false);
             dao.execute(ddl);
             dao.commit();
         } catch (Exception e) {
@@ -596,14 +596,14 @@ public class JdbcDaoTest {
             index.setTableCatalog(null);
             index.setTableSchema(schema);
             index.setTableName(TABLE_NAME);
-            index.setTableFullName(dao.getDialect().toTableName(index.getTableCatalog(), index.getTableSchema(), index.getTableName()));
+            index.setTableFullName(dao.getDialect().generateTableName(index.getTableCatalog(), index.getTableSchema(), index.getTableName()));
             index.setName("idxnametest");
             index.setSchema(schema);
-            index.setFullName(dao.getDialect().toIndexName(null, index.getSchema(), index.getName()));
+            index.setFullName(dao.getDialect().generateIndexName(null, index.getSchema(), index.getName()));
             index.setColumnNames(ArrayUtils.asList("id"));
             index.setSort(ArrayUtils.asList(DatabaseIndex.INDEX_ASC));
 
-            DatabaseDDL ddl = dao.getDialect().toDDL(dao.getConnection(), index, false);
+            DatabaseDDL ddl = dao.getDialect().generateDDL(dao.getConnection(), index, false);
             dao.execute(ddl);
             dao.commit();
         } catch (Exception e) {

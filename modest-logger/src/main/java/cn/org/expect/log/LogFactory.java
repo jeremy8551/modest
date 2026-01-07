@@ -14,9 +14,6 @@ import cn.org.expect.util.Settings;
  */
 public class LogFactory {
 
-    /** JVM参数名，日志级别，详见 {@linkplain LogLevel} */
-    public final static String PROPERTY_LOGGER = Settings.getPropertyName("log");
-
     /** JVM参数名，控制台输出日志, 参数值就是日志格式，详见{@linkplain LogPattern} */
     public final static String PROPERTY_LOG_SOUT = Settings.getPropertyName("log.sout");
 
@@ -116,6 +113,10 @@ public class LogFactory {
      * @return 返回参数数组中与日志配置无关的配置信息
      */
     public static synchronized String[] load(String... args) {
-        return new LogSettings(LogFactory.getContext()).load(args);
+        LogSettings logSettings = new LogSettings(LogFactory.getContext());
+        String[] load = logSettings.load(args);
+        String str = System.getProperty(Log.PROPERTY_LOGGER, "") + ":" + System.getProperty(LogFactory.PROPERTY_LOG_SOUT, "");
+        logSettings.readOne(str);
+        return load;
     }
 }

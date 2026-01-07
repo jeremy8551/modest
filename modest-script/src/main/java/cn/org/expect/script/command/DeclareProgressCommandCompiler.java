@@ -41,7 +41,7 @@ public class DeclareProgressCommandCompiler extends AbstractGlobalCommandCompile
         it.assertNext("use");
         String type = it.next();
         it.assertNext("print");
-        String message = analysis.unQuotation(it.readUntil("total"));
+        String message = it.readUntil("total");
         String number = it.next();
         it.assertNext("times");
         it.assertOver();

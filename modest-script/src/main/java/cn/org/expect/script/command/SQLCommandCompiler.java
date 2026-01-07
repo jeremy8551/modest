@@ -8,11 +8,10 @@ import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptParser;
 import cn.org.expect.script.UniversalScriptReader;
 import cn.org.expect.script.UniversalScriptSession;
-import cn.org.expect.script.UniversalScriptVariable;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.script.command.feature.DefaultCommandSupported;
 
-@EasyCommandCompiler(name = {"select", "insert", "update", "delete", "alter", "drop", "create", "merge", "sql", "/*", "/**", "--"}, keywords = {UniversalScriptVariable.VARNAME_UPDATEROWS})
+@EasyCommandCompiler(name = {"select", "insert", "update", "delete", "alter", "drop", "create", "merge", "sql", "/*", "/**", "--"})
 public class SQLCommandCompiler extends AbstractCommandCompiler implements DefaultCommandSupported {
 
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
@@ -25,6 +24,6 @@ public class SQLCommandCompiler extends AbstractCommandCompiler implements Defau
             sql = sql.substring("sql".length());
         }
 
-        return new SQLCommand(this, command, analysis.unQuotation(sql));
+        return new SQLCommand(this, command, sql);
     }
 }

@@ -2,10 +2,11 @@ package cn.org.expect.sort;
 
 import cn.org.expect.expression.Analysis;
 import cn.org.expect.expression.DefaultAnalysis;
+import cn.org.expect.increment.sort.OrderByExpression;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyLog;
+import cn.org.expect.test.annotation.RunWithLogSettings;
 import cn.org.expect.util.StrAsIntComparator;
 import cn.org.expect.util.StrAsNumberComparator;
 import cn.org.expect.util.StringComparator;
@@ -13,8 +14,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@EasyLog("sout+:info")
 @RunWith(ModestRunner.class)
+@RunWithLogSettings("sout+:info")
 public class OrderByExpressionTest {
 
     @EasyBean

@@ -13,7 +13,7 @@ import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyRunIf;
+import cn.org.expect.test.annotation.RunWithFeature;
 import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
@@ -25,14 +25,14 @@ import org.junit.runner.RunWith;
  * 测试 DB2 数据库存储过程 TODO
  */
 @RunWith(ModestRunner.class)
-@EasyRunIf(values = {"db2.url", "db2.username", "db2.password"})
+@RunWithFeature("db2")
 public class DB2ProcedureTest {
     private final static Log log = LogFactory.getLog(DB2ProcedureTest.class);
 
     @EasyBean
     private EasyContext context;
 
-    @EasyBean
+    @EasyBean("db2")
     private Connection connection;
 
     @Before
@@ -42,8 +42,8 @@ public class DB2ProcedureTest {
             dao.executeQuietly("drop PROCEDURE TEST_PROC ");
 
             String sql = "";
-            sql += "CREATE PROCEDURE TEST_PROC            " + Settings.getLineSeparator();
-            sql += " (OUT FLAG INTEGER                          " + Settings.getLineSeparator();
+            sql += "CREATE PROCEDURE TEST_PROC                    " + Settings.getLineSeparator();
+            sql += " (OUT FLAG INTEGER                            " + Settings.getLineSeparator();
             sql += " )                                            " + Settings.getLineSeparator();
             sql += "  LANGUAGE SQL                                " + Settings.getLineSeparator();
             sql += "  NOT DETERMINISTIC                           " + Settings.getLineSeparator();

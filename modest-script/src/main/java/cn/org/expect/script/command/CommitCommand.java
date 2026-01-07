@@ -27,10 +27,6 @@ public class CommitCommand extends AbstractTraceCommand implements JumpCommandSu
         ScriptDataSource dataSource = ScriptDataSource.get(context);
         JdbcDao dao = dataSource.getDao();
         if (dao.isConnected()) {
-            if (session.isEchoEnable() || forceStdout) {
-                stdout.println(this.command);
-            }
-
             dao.commit();
             return 0;
         } else {

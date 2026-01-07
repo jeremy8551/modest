@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -312,7 +313,7 @@ public class JdbcDao implements OSConnectCommand {
         DatabaseDialect dialect = this.getDialect();
         if (dialect == null) {
             try {
-                this.queryFirstRowFirstCol("select 1 from " + SQL.toTableName(schema, tableName));
+                this.queryFirstRowFirstCol("select 1 from " + dialect.generateTableName(catalog, schema, tableName));
                 return true;
             } catch (Throwable e) {
                 return false;
@@ -333,26 +334,45 @@ public class JdbcDao implements OSConnectCommand {
      */
     public DatabaseTable getTable(String catalog, String schema, String tableName) throws SQLException {
         List<DatabaseTable> list = this.getDialect().getTable(this.getConnection(), catalog, schema, tableName);
-        if (list.size() == 1) {
-            return list.get(0);
-        } else {
-            if (schema == null) {
+        if (list.isEmpty()) {
+            if (StringUtils.isBlank(schema)) {
                 schema = this.getSchema();
-            }
-
-            for (DatabaseTable table : list) {
-                if (table.getSchema().equals(schema)) {
-                    return table;
-                }
-            }
-
-            for (DatabaseTable table : list) {
-                if (table.getSchema().equalsIgnoreCase(schema)) {
-                    return table;
+                if (StringUtils.isNotBlank(schema)) {
+                    return this.getTable(catalog, schema, tableName);
                 }
             }
             return null;
         }
+
+        if (list.size() == 1) {
+            return list.get(0);
+        }
+
+        if (schema == null) {
+            schema = this.getSchema();
+        }
+
+        for (DatabaseTable table : list) {
+            if (table.getSchema().equals(schema)) {
+                return table;
+            }
+        }
+
+        for (DatabaseTable table : list) {
+            if (table.getSchema().equalsIgnoreCase(schema)) {
+                return table;
+            }
+        }
+
+        StringBuilder buf = new StringBuilder();
+        for (int i = 0; i < list.size(); ) {
+            DatabaseTable table = list.get(i);
+            buf.append(table.getFullName());
+            if (++i < list.size()) {
+                buf.append(", ");
+            }
+        }
+        throw new DatabaseException("database.stdout.message035", catalog, schema, tableName, buf.toString());
     }
 
     /**
@@ -494,7 +514,7 @@ public class JdbcDao implements OSConnectCommand {
      */
     public String deleteTableQuickly(String catalog, String schema, String tableName) {
         // 快速清空表的语句
-        String sql = this.getDialect().toDeleteQuicklySQL(this.getConnection(), catalog, schema, tableName);
+        String sql = this.getDialect().generateDeleteQuicklySQL(this.getConnection(), catalog, schema, tableName);
 
         boolean fail = true;
         int count = 0;
@@ -514,7 +534,7 @@ public class JdbcDao implements OSConnectCommand {
         }
 
         if (fail) {
-            sql = "delete from " + this.getDialect().toTableName(catalog, schema, tableName);
+            sql = "delete from " + this.getDialect().generateTableName(catalog, schema, tableName);
             this.executeQuietly(sql);
         }
         return sql;
@@ -836,7 +856,7 @@ public class JdbcDao implements OSConnectCommand {
      * @param c SQL语句集合
      * @throws SQLException 数据库错误
      */
-    public void execute(java.util.Collection<String> c) throws SQLException {
+    public void execute(Collection<String> c) throws SQLException {
         for (String sql : c) {
             this.execute(sql);
         }
@@ -1022,7 +1042,7 @@ public class JdbcDao implements OSConnectCommand {
      */
     public void dropPrimaryKey(DatabaseIndex index) throws SQLException {
         Ensure.notNull(index);
-        String sql = this.getDialect().toDropPrimaryDDL(index);
+        String sql = this.getDialect().generateDropPrimaryDDL(index);
         if (!this.tryExecute(sql, 10, 200)) {
             throw new SQLException(sql);
         }
@@ -1036,7 +1056,7 @@ public class JdbcDao implements OSConnectCommand {
      */
     public void dropIndex(DatabaseIndex index) throws SQLException {
         Ensure.notNull(index);
-        String sql = this.getDialect().toDropIndexDDL(index);
+        String sql = this.getDialect().generateDropIndexDDL(index);
         if (!this.tryExecute(sql, 10, 200)) {
             throw new SQLException(sql);
         }
@@ -1050,7 +1070,7 @@ public class JdbcDao implements OSConnectCommand {
      */
     public void dropTable(DatabaseTable table) throws SQLException {
         Ensure.notNull(table);
-        String sql = this.getDialect().toDropTable(table);
+        String sql = this.getDialect().generateDropTable(table);
         if (!this.tryExecute(sql, 10, 200)) {
             throw new SQLException(sql);
         }
@@ -1196,7 +1216,7 @@ public class JdbcDao implements OSConnectCommand {
      * @throws SQLException 数据库错误
      */
     public DatabaseTableDDL toDDL(DatabaseTable table) throws SQLException {
-        return this.getDialect().toDDL(this.getConnection(), table);
+        return this.getDialect().generateDDL(this.getConnection(), table);
     }
 
     /**
@@ -1208,7 +1228,7 @@ public class JdbcDao implements OSConnectCommand {
      * @throws SQLException 数据库错误
      */
     public DatabaseDDL toDDL(DatabaseIndex index, boolean primary) throws SQLException {
-        return this.getDialect().toDDL(this.getConnection(), index, primary);
+        return this.getDialect().generateDDL(this.getConnection(), index, primary);
     }
 
     /**
@@ -1219,17 +1239,17 @@ public class JdbcDao implements OSConnectCommand {
      * @throws SQLException 数据库错误
      */
     public DatabaseDDL toDDL(DatabaseProcedure procedure) throws SQLException {
-        return this.getDialect().toDDL(this.getConnection(), procedure);
+        return this.getDialect().generateDDL(this.getConnection(), procedure);
     }
 
     /**
      * 打开数据库表的数据装载模式
      *
-     * @param fullname 数据库表全名
+     * @param fullTablename 数据库表全名
      * @throws SQLException 数据库错误
      */
-    public void openLoadMode(String fullname) throws SQLException {
-        this.getDialect().openLoadMode(this, fullname);
+    public void openLoadMode(String fullTablename) throws SQLException {
+        this.getDialect().openLoadMode(this, fullTablename);
     }
 
     /**

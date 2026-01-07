@@ -3,6 +3,8 @@ package cn.org.expect.script.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.script.UniversalCommandCompiler;
 import cn.org.expect.script.UniversalCommandResultSet;
 import cn.org.expect.script.UniversalScriptCommand;
@@ -22,6 +24,7 @@ import cn.org.expect.util.StringUtils;
  * if .. then .. elseif .. then .. else .. fi
  */
 public class IfCommand extends AbstractCommand implements LoopCommandKind, WithBodyCommandSupported {
+    protected final static Log log = LogFactory.getLog(IfCommand.class);
 
     /** if 语句的执行条件 */
     protected String ifCondition;
@@ -42,7 +45,7 @@ public class IfCommand extends AbstractCommand implements LoopCommandKind, WithB
     protected ArrayList<UniversalScriptCommand> elseCmds;
 
     /** 正在运行的命令 */
-    protected UniversalScriptCommand command;
+    protected volatile UniversalScriptCommand command;
 
     /** 种类编号 */
     protected int type;
@@ -113,7 +116,14 @@ public class IfCommand extends AbstractCommand implements LoopCommandKind, WithB
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
         ScriptMainProcess process = session.getMainProcess();
         this.type = 0;
-        if (new UniversalScriptExpression(session, context, stdout, stderr, this.ifCondition).booleanValue()) {
+
+        UniversalScriptExpression expression = new UniversalScriptExpression(session, context, stdout, stderr, this.ifCondition);
+        boolean booleanValue = expression.booleanValue();
+        if (log.isDebugEnabled()) {
+            log.debug("script.stdout.message031", "if", this.ifCondition, booleanValue);
+        }
+
+        if (booleanValue) {
             for (UniversalScriptCommand command : this.ifCmds) {
                 if (session.isTerminate()) {
                     return UniversalScriptCommand.TERMINATE;
@@ -130,7 +140,7 @@ public class IfCommand extends AbstractCommand implements LoopCommandKind, WithB
                 if (command instanceof LoopCommandKind) {
                     LoopCommandKind cmd = (LoopCommandKind) command;
                     this.type = cmd.kind();
-                    return exitcode;
+                    // return exitcode;
                 }
             }
             return 0;
@@ -138,7 +148,14 @@ public class IfCommand extends AbstractCommand implements LoopCommandKind, WithB
             // elseif ... then
             List<String> elseIfCondition = this.elseIfCondition;
             for (int i = 0; i < elseIfCondition.size(); i++) {
-                if (new UniversalScriptExpression(session, context, stdout, stderr, elseIfCondition.get(i)).booleanValue()) {
+                 String elseifCondition = elseIfCondition.get(i);
+                Boolean booleanValue1 = new UniversalScriptExpression(session, context, stdout, stderr, elseifCondition).booleanValue();
+
+                if (log.isDebugEnabled()) {
+                    log.debug("script.stdout.message031", "elseif", elseifCondition, booleanValue1);
+                }
+
+                if (booleanValue1) {
                     List<UniversalScriptCommand> list = this.elseIfCmds.get(i);
                     for (UniversalScriptCommand command : list) {
                         if (session.isTerminate()) {
@@ -156,7 +173,7 @@ public class IfCommand extends AbstractCommand implements LoopCommandKind, WithB
                         if (command instanceof LoopCommandKind) {
                             LoopCommandKind cmd = (LoopCommandKind) command;
                             this.type = cmd.kind();
-                            return exitcode;
+                            // return exitcode;
                         }
                     }
                     return 0;
@@ -180,7 +197,7 @@ public class IfCommand extends AbstractCommand implements LoopCommandKind, WithB
                 if (command instanceof LoopCommandKind) {
                     LoopCommandKind cmd = (LoopCommandKind) command;
                     this.type = cmd.kind();
-                    return exitcode;
+                    // return exitcode;
                 }
             }
 

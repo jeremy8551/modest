@@ -8,6 +8,7 @@ import cn.org.expect.database.DatabaseDDL;
 import cn.org.expect.database.DatabaseIndex;
 import cn.org.expect.database.DatabaseProcedure;
 import cn.org.expect.database.DatabaseTableColumn;
+import cn.org.expect.database.DatabaseTableColumnList;
 import cn.org.expect.database.DatabaseURL;
 import cn.org.expect.database.JdbcConverterMapper;
 import cn.org.expect.database.JdbcDao;
@@ -26,7 +27,7 @@ public class StandardDatabaseDialect extends AbstractDialect {
         throw new UnsupportedOperationException();
     }
 
-    public List<DatabaseProcedure> getProcedure(Connection connection, String catalog, String schema, String procedureName) {
+    public List<DatabaseProcedure> getProcedures(Connection connection, String catalog, String schema, String procedureName) {
         throw new UnsupportedOperationException();
     }
 
@@ -54,13 +55,20 @@ public class StandardDatabaseDialect extends AbstractDialect {
         throw new UnsupportedOperationException();
     }
 
-    public void openLoadMode(JdbcDao conn, String fullname) throws SQLException {
+    public void openLoadMode(JdbcDao conn, String fullTableName) throws SQLException {
     }
 
-    public void closeLoadMode(JdbcDao conn, String fullname) throws SQLException {
+    public void closeLoadMode(JdbcDao conn, String fullTableName) throws SQLException {
     }
 
-    public void commitLoadData(JdbcDao conn, String fullname) throws SQLException {
+    public void commitLoadData(JdbcDao conn, String fullTableName) throws SQLException {
+    }
+
+    public boolean expandLength(final DatabaseTableColumn column, final String value, final String charsetName) {
+        return false;
+    }
+
+    public void expandLength(final Connection conn, final DatabaseTableColumnList oldTableColumnList, final List<DatabaseTableColumn> newTableColumnList) throws SQLException {
     }
 
     public JdbcConverterMapper getStringConverters() {
@@ -71,7 +79,7 @@ public class StandardDatabaseDialect extends AbstractDialect {
         return null;
     }
 
-    public DatabaseDDL toDDL(Connection connection, DatabaseProcedure procedure) {
+    public DatabaseDDL generateDDL(Connection connection, DatabaseProcedure procedure) {
         throw new UnsupportedOperationException();
     }
 
@@ -83,7 +91,7 @@ public class StandardDatabaseDialect extends AbstractDialect {
         return false;
     }
 
-    public String toMergeStatement(String tableName, List<DatabaseTableColumn> columns, List<String> mergeColumn) {
+    public String generateMergeStatement(String tableName, List<DatabaseTableColumn> columns, List<String> mergeColumn) {
         throw new UnsupportedOperationException();
     }
 }

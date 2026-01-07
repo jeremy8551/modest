@@ -67,9 +67,7 @@ public class ScriptExpressionParser extends Parser {
         return super.calc(data, operations);
     }
 
-    public int parse(String str, int start, boolean isData, List<Parameter> data, List<Operator> operation) throws ExpressionException {
-        boolean reverse = false; // true 表示布尔值取反
-        int reverseIndex = -1;
+    public int parse(String str, int start, boolean isData, List<Parameter> datas, List<Operator> operation) throws ExpressionException {
         for (int i = start; i < str.length(); i++) {
             char c = str.charAt(i);
 
@@ -79,41 +77,26 @@ public class ScriptExpressionParser extends Parser {
                     throw new UniversalScriptException("script.stderr.message127", str, i + 1);
                 }
 
-                // 不支持在命令替换符前面使用取反符!
-                if (reverse) {
-                    throw new UniversalScriptException("script.stderr.message131", str, reverseIndex);
-                }
-
                 int index = this.analysis.indexOfAccent(str, i);
                 if (index == -1) {
-                    throw new UniversalScriptException("script.stderr.message058", str);
+                    throw new UniversalScriptException("script.stderr.message131", str);
                 }
 
                 String command = str.substring(i + 1, index);
                 ScriptStdbuf cache = new ScriptStdbuf(this.stdout);
                 int exitcode = this.context.getEngine().evaluate(this.session, this.context, cache, this.stderr, command);
                 if (exitcode == 0) {
-                    data.add(this.parseStr(StringUtils.rtrim(cache.toString(), '\r', '\n')));
+                    datas.add(this.parseStr(StringUtils.rtrim(cache.toString(), '\r', '\n')));
                     return index;
                 } else {
                     throw new UniversalScriptException("script.stderr.message052", command);
                 }
             }
 
-            // 布尔表达式取反操作： !variableName.isfile()
-            if (c == '!') {
-                reverse = true;
-                reverseIndex = i;
-                continue;
-            }
-
             // 替换变量 $? $# $0 $1 ... $name ${name}
             if (c == '$') {
                 if (isData) {
                     throw new UniversalScriptException("script.stderr.message127", str, i + 1);
-                }
-                if (reverse) { // 不支持取反操作符!
-                    throw new UniversalScriptException("script.stderr.message131", str, reverseIndex);
                 }
 
                 // exists next character
@@ -125,7 +108,7 @@ public class ScriptExpressionParser extends Parser {
                 // variable name
                 char nc = str.charAt(next);
                 if (nc == '?') { // $?
-                    data.add(new ExpressionParameter(Parameter.LONG, (long) this.session.getMainProcess().getExitcode()));
+                    datas.add(new ExpressionParameter(Parameter.LONG, (long) this.session.getMainProcess().getExitcode()));
                     return next;
                 } else if (nc == '#') { // $#
                     String[] args = this.session.getFunctionParameter();
@@ -133,7 +116,7 @@ public class ScriptExpressionParser extends Parser {
                         args = this.session.getScriptParameters();
                     }
 
-                    data.add(new ExpressionParameter(Parameter.LONG, (long) (args.length >= 1 ? args.length - 1 : 0)));
+                    datas.add(new ExpressionParameter(Parameter.LONG, (long) (args.length >= 1 ? args.length - 1 : 0)));
                     return next;
                 } else if (StringUtils.isNumber(nc)) { // $0 $1 ...
                     String[] args = this.session.getFunctionParameter();
@@ -144,7 +127,7 @@ public class ScriptExpressionParser extends Parser {
                     int end = this.analysis.indexOfInteger(str, next);
                     int index = Integer.parseInt(str.substring(next, end));
                     if (index < args.length) {
-                        data.add(this.parseStr(args[index]));
+                        datas.add(this.parseStr(args[index]));
                     } else {
                         throw new UniversalScriptException("script.stderr.message130", str, i + 1, "$" + index);
                     }
@@ -158,7 +141,7 @@ public class ScriptExpressionParser extends Parser {
                     String variableName = str.substring(next + 1, end);
                     if (this.containsVariable(variableName)) {
                         Object value = this.getVariable(variableName);
-                        data.add(ExpressionParameter.valueOf(value));
+                        datas.add(ExpressionParameter.valueOf(value));
                         return end;
                     } else {
                         throw new UniversalScriptException("script.stderr.message083", str, variableName);
@@ -169,7 +152,7 @@ public class ScriptExpressionParser extends Parser {
 
                     if (this.containsVariable(variableName)) {
                         Object value = this.getVariable(variableName);
-                        data.add(ExpressionParameter.valueOf(value));
+                        datas.add(ExpressionParameter.valueOf(value));
                         return end - 1;
                     } else {
                         throw new UniversalScriptException("script.stderr.message083", str, variableName);
@@ -194,14 +177,7 @@ public class ScriptExpressionParser extends Parser {
                 // 打印变量值
                 if (next >= str.length()) {
                     Object value = this.getVariable(variableName);
-                    if (reverse) {
-                        if (value instanceof Boolean) {
-                            value = !((Boolean) value);
-                        } else {
-                            throw new UniversalScriptException("script.stderr.message131", str, reverseIndex);
-                        }
-                    }
-                    data.add(ExpressionParameter.valueOf(value));
+                    this.addNegationParameter(datas, ExpressionParameter.valueOf(value));
                     return next - 1;
                 }
 
@@ -211,8 +187,8 @@ public class ScriptExpressionParser extends Parser {
                 if (nc == '.') {
                     int end = this.analysis.indexOfVariableMethod(str, next);
                     String methodName = str.substring(next + 1, end); // substr(1, 2).length()
-                    Object value = this.executeMethod(this.session, this.analysis, variableName, methodName, reverse);
-                    data.add(ExpressionParameter.valueOf(value));
+                    Object value = this.executeMethod(this.session, this.analysis, variableName, methodName);
+                    this.addNegationParameter(datas, ExpressionParameter.valueOf(value));
                     return end - 1;
                 }
 
@@ -220,29 +196,17 @@ public class ScriptExpressionParser extends Parser {
                 else if (nc == '[') {
                     int end = this.analysis.indexOfVariableMethod(str, i);
                     String methodName = str.substring(next, end); // [index]
-                    Object value = this.executeMethod(this.session, this.analysis, variableName, methodName, reverse);
-                    data.add(ExpressionParameter.valueOf(value));
+                    Object value = this.executeMethod(this.session, this.analysis, variableName, methodName);
+                    this.addNegationParameter(datas, ExpressionParameter.valueOf(value));
                     return end - 1;
                 }
 
                 // 打印变量值
                 else {
                     Object value = this.getVariable(variableName);
-                    if (reverse) {
-                        if (value instanceof Boolean) {
-                            value = !((Boolean) value);
-                        } else {
-                            throw new UniversalScriptException("script.stderr.message131", str, reverseIndex);
-                        }
-                    }
-                    data.add(ExpressionParameter.valueOf(value));
+                    this.addNegationParameter(datas, ExpressionParameter.valueOf(value));
                     return next - 1;
                 }
-            }
-
-            // 取反操作
-            if (reverse) {
-                throw new UniversalScriptException("script.stderr.message131", str, reverseIndex);
             }
 
             // 非法字符
@@ -269,23 +233,11 @@ public class ScriptExpressionParser extends Parser {
      * @return 变量值6
      */
     public Object getVariable(String name) {
-        if (this.context.containsLocalVariable(name)) {
-            return this.context.getLocalVariable(name);
-        }
-
-        if (this.context.containsGlobalVariable(name)) {
-            return this.context.getGlobalVariable(name);
-        }
-
         if (this.session.containsVariable(name)) {
             return this.session.getVariable(name);
         }
 
-        if (this.context.containsEnvironmentVariable(name)) {
-            return this.context.getEnvironmentVariable(name);
-        }
-
-        return null;
+        return this.context.getVariable(name);
     }
 
     /**
@@ -295,16 +247,15 @@ public class ScriptExpressionParser extends Parser {
      * @param analysis     语句分析器
      * @param variableName 变量名
      * @param methodName   变量方法名, 如: substr(1, 2).length(), [0]
-     * @param reverse      true表示布尔值取反
      * @return 变量方法的返回值
      */
-    protected Object executeMethod(UniversalScriptSession session, UniversalScriptAnalysis analysis, String variableName, String methodName, boolean reverse) {
+    protected Object executeMethod(UniversalScriptSession session, UniversalScriptAnalysis analysis, String variableName, String methodName) {
         UniversalScriptCompiler compiler = session.getCompiler();
         UniversalCommandRepository repository = compiler.getRepository(); // 命令编译器集合
         VariableMethodCommandCompiler commandCompiler = repository.get(VariableMethodCommandCompiler.class);
 
         int value;
-        VariableMethodCommand command = commandCompiler.compile(analysis, variableName, methodName, reverse);
+        VariableMethodCommand command = commandCompiler.compile(analysis, variableName, methodName);
         try {
             value = command.execute(this.session, this.context, this.stdout, this.stderr, false, null, null);
         } catch (Throwable e) {

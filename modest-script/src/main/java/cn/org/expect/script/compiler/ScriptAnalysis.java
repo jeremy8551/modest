@@ -374,11 +374,7 @@ public class ScriptAnalysis extends DefaultAnalysis implements UniversalScriptAn
             return null;
         }
 
-//        UniversalScriptStdout stdout = context.getEngine().getStdout();
-//        UniversalScriptStderr stderr = context.getEngine().getStderr();
         UniversalScriptFormatter format = context.getEngine().getFormatter();
-
-//        sql = this.replaceSubCommand(session, context, stdout, stderr, sql, false);
         sql = this.replaceShellSpecialVariable(session, sql, false);
         sql = this.replaceShellVariable(sql, new ScriptVariableMap(session, context), format, false, true);
         return this.unescapeSQL(sql);
@@ -626,7 +622,7 @@ public class ScriptAnalysis extends DefaultAnalysis implements UniversalScriptAn
                             }
 
                             str = str.substring(0, i) + valStr + str.substring(end + 1);
-                            i--; // 替换字符串之后继续从原 $ 字符所在位置开始搜索
+                            i = i - 1 + valStr.length(); // 替换字符串之后继续从原 $ 字符所在位置开始搜索
                             continue;
                         }
 
@@ -656,7 +652,7 @@ public class ScriptAnalysis extends DefaultAnalysis implements UniversalScriptAn
                         }
 
                         str = str.substring(0, i) + valStr + str.substring(end);
-                        i--;
+                        i = i - 1 + valStr.length();
                         continue;
                     }
 

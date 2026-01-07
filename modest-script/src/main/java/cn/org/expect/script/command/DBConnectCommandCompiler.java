@@ -11,12 +11,11 @@ import cn.org.expect.script.UniversalScriptException;
 import cn.org.expect.script.UniversalScriptParser;
 import cn.org.expect.script.UniversalScriptReader;
 import cn.org.expect.script.UniversalScriptSession;
-import cn.org.expect.script.UniversalScriptVariable;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.StringUtils;
 
-@EasyCommandCompiler(name = "db", keywords = {"db", UniversalScriptVariable.VARNAME_CATALOG})
+@EasyCommandCompiler(name = "db")
 public class DBConnectCommandCompiler extends AbstractTraceCommandCompiler {
 
     public final static String REGEX = "^(?i)\\s*db\\s+connect\\s+([^\\;]+)\\s*[\\;]*.*";
@@ -32,7 +31,7 @@ public class DBConnectCommandCompiler extends AbstractTraceCommandCompiler {
     }
 
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
-        WordIterator it = analysis.parse(analysis.replaceShellVariable(session, context, command, true, true));
+        WordIterator it = analysis.parse(command);
         it.assertNext("db");
         it.assertNext("connect");
 
@@ -44,9 +43,9 @@ public class DBConnectCommandCompiler extends AbstractTraceCommandCompiler {
 
         if (it.isNext("reset")) {
             String next = it.readOther();
-            return new DBConnectCommand(this, orginalScript, next);
+            return new DBConnectCommand(this, orginalScript, analysis.replaceShellVariable(session, context, next, true, true));
+        } else {
+            throw new UniversalScriptException("script.stderr.message132", orginalScript, "db connect", StringUtils.join(ArrayUtils.as("to", "reset"), " || "));
         }
-
-        throw new UniversalScriptException("script.stderr.message132", orginalScript, "db connect", StringUtils.join(ArrayUtils.as("to", "reset"), " || "));
     }
 }

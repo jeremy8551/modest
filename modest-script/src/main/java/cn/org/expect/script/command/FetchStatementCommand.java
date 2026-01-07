@@ -21,10 +21,10 @@ import cn.org.expect.util.ResourcesUtils;
 public class FetchStatementCommand extends AbstractCommand implements JumpCommandSupported {
 
     /** 批处理名 */
-    private final String name;
+    private String name;
 
     /** 变量名数组 */
-    private final List<String> variableNames;
+    private List<String> variableNames;
 
     public FetchStatementCommand(UniversalCommandCompiler compiler, String command, String name, List<String> variableNames) {
         super(compiler, command);

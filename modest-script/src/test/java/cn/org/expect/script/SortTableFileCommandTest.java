@@ -10,7 +10,7 @@ import cn.org.expect.io.TextTableLine;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyLog;
+import cn.org.expect.test.annotation.RunWithLogSettings;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
@@ -21,8 +21,8 @@ import org.junit.runner.RunWith;
 /**
  * 测试文件倒序排序
  */
-@EasyLog("sout+:debug")
 @RunWith(ModestRunner.class)
+@RunWithLogSettings("sout+:debug")
 public class SortTableFileCommandTest {
 
     @EasyBean

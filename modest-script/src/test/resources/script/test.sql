@@ -1,4 +1,4 @@
-echo 当前目录 `pwd`, 当前时间 `date`
+echo currentdir: `pwd`, currentdate: `date`
 
 echo $host $admin $adminPw $jdbcfilepath
 
@@ -6,10 +6,10 @@ echo $host $admin $adminPw $jdbcfilepath
 cd $curr_dir_path
 
 # 复制文件
-set delfilepath="$temp/bhc/bhc_finish.del"
+set delfilepath="$TMPDIR/bhc/bhc_finish.del"
 rm ${delfilepath}
-mkdir $temp/bhc
-cp classpath:/bhc_finish.del $temp/bhc
+mkdir $TMPDIR/bhc
+cp classpath:/bhc_finish.del $TMPDIR/bhc
 
 set test1=1
 if ${test1} in (1, 2, 3,5) then
@@ -27,7 +27,7 @@ fi
 
 # 测试for循环语句
 for i in (1,2,3,4, 'test') loop
-  echo 遍历for循环中元素 $i
+  echo "Iterate over elements in a for loop $i"
   
   if $i not in (1,2,3,4, "test" ) then
     echo $i not in (1,2,3,4, 'test' )
@@ -37,7 +37,7 @@ for i in (1,2,3,4, 'test') loop
 end loop
 
 for i in (1 2 3 4 'test') loop
-  echo 遍历for循环中元素 $i
+  echo "Iterate over elements in a for loop $i"
   
   if $i not in (1,2,3,4, "test" ) then
     echo $i not in (1,2,3,4, 'test' )
@@ -48,7 +48,7 @@ end loop
 
 set col = "1 2 3 4 'test'"
 for i in `echo $col` loop
-  echo 遍历for循环中元素 $i
+  echo "Iterate over elements in a for loop $i"
   
   if $i not in (1,2,3,4, "test" ) then
     echo $i not in (1,2,3,4, 'test' )
@@ -109,22 +109,22 @@ while 1==2 loop while 3==4 loop end loop end loop
 while 1==2 loop while 3==4 loop while 1==2 loop end loop end loop end loop
 
 
-while 3==5 loop end loop ; echo 测试 loop 语法1;
-while 3==71 loop end loop ; echo 测试 loop 语法2;
-while 3==72 loop end loop;echo 测试 loop 语法3;
-while 3==73 loop end loop; echo 测试 loop 语法4;
+while 3==5 loop end loop ; echo test loop syntax1;
+while 3==71 loop end loop ; echo test loop syntax2;
+while 3==72 loop end loop;echo test loop syntax3;
+while 3==73 loop end loop; echo test loop syntax4;
 
-while 1==2 loop end loop;echo 测试 loop 语法5;
+while 1==2 loop end loop;echo test loop syntax5;
 while 1==2 loop end loop;
 
 
 # 测试子脚本继承父脚本的handler 是否正确
 declare global continue handler for exitcode != 0 begin
-  echo 测试子脚本继承父脚本的handler 是否正确 exitcode != 0 ..	
+  echo Testing whether the child script correctly inherits the parent script’s handler exitcode != 0 ..
 end
 
 declare  global  continue  handler for exception begin
-  echo 测试子脚本继承父脚本的handler 是否正确 exception ..	
+  echo Testing whether the child script correctly inherits the parent script’s handler exception ..
 end
 
 . testDeclareHandler.sql
@@ -133,25 +133,25 @@ undeclare global handler for exitcode != 0
 undeclare global handler for exception
 
 
-echo 测试grep 命令
-echo "1 2 3 4 5" > $temp/greptest.txt
-echo "" >> $temp/greptest.txt
-echo "grep test" >> $temp/greptest.txt
-echo "Test1" >> $temp/greptest.txt
-echo "" >> $temp/greptest.txt
-echo "" >> $temp/greptest.txt
-echo "" >> $temp/greptest.txt
+echo test grep command
+echo "1 2 3 4 5" > $TMPDIR/greptest.txt
+echo "" >> $TMPDIR/greptest.txt
+echo "grep test" >> $TMPDIR/greptest.txt
+echo "Test1" >> $TMPDIR/greptest.txt
+echo "" >> $TMPDIR/greptest.txt
+echo "" >> $TMPDIR/greptest.txt
+echo "" >> $TMPDIR/greptest.txt
 
-if `cat $temp/greptest.txt|grep -i test|wc -l` != 2 then
-	echo `cat $temp/greptest.txt|grep -i test` != 2
+if `cat $TMPDIR/greptest.txt|grep -i test|wc -l` != 2 then
+	echo `cat $TMPDIR/greptest.txt|grep -i test` != 2
 fi
 
-if `cat $temp/greptest.txt|grep test|wc -l` != 1 then
-	echo `cat $temp/greptest.txt|grep test|wc -l` != 1
+if `cat $TMPDIR/greptest.txt|grep test|wc -l` != 1 then
+	echo `cat $TMPDIR/greptest.txt|grep test|wc -l` != 1
 fi
 
-if `cat $temp/greptest.txt|grep -v grep|grep -i test|wc -l` != 1 then
-	echo `cat $temp/greptest.txt|grep -v grep|grep -i test|wc -l` != 1
+if `cat $TMPDIR/greptest.txt|grep -v grep|grep -i test|wc -l` != 1 then
+	echo `cat $TMPDIR/greptest.txt|grep -v grep|grep -i test|wc -l` != 1
 fi
 
 
@@ -166,25 +166,25 @@ fi
    # 测试注释
 
 
-echo "1" > $temp/headtest.log
-echo "2" >> $temp/headtest.log
-echo "3" >> $temp/headtest.log
-echo "4" >> $temp/headtest.log
-echo "5" >> $temp/headtest.log
+echo "1" > $TMPDIR/headtest.log
+echo "2" >> $TMPDIR/headtest.log
+echo "3" >> $TMPDIR/headtest.log
+echo "4" >> $TMPDIR/headtest.log
+echo "5" >> $TMPDIR/headtest.log
 
-!mkdir $temp/headtest.log
-!isfile $temp
-!isdirectory $temp/headtest.log
+!mkdir $TMPDIR/headtest.log
+!isfile $TMPDIR
+!isdirectory $TMPDIR/headtest.log
 
-if `cat $temp/headtest.log | tail -n 1` != 5 then
+if `cat $TMPDIR/headtest.log | tail -n 1` != 5 then
   exit 1
 fi
 
-if `cat $temp/headtest.log | head -n 1` != 1 then
+if `cat $TMPDIR/headtest.log | head -n 1` != 1 then
   exit 1
 fi
 
-set testline=`wc -l $temp/headtest.log`
+set testline=`wc -l $TMPDIR/headtest.log`
 set testline=testline.split()[0]
 if $testline != '5' then
   echo $testline != 5
@@ -192,8 +192,8 @@ if $testline != '5' then
 fi
 
 
-rm $temp/headtest.log
-!exists $temp/headtest.log
+rm $TMPDIR/headtest.log
+!exists $TMPDIR/headtest.log
 
 function testreverse() {
   return 1
@@ -201,7 +201,7 @@ function testreverse() {
 
 !testreverse
 
-set logfilepath="$temp/headtest.log"
+set logfilepath="$TMPDIR/headtest.log"
 !logfilepath.isdirectory()
 logfilepath.isfile()
 
@@ -372,7 +372,7 @@ echo ""
 echo ""
 
 
-echo 测试 if 语句
+echo test if 语句
 if " " == '' then set testIfVar='1'; else set testIfVar='2'; fi
 if "$testIfVar" != "2" then
   echo "$testIfVar" != "2"
@@ -390,7 +390,7 @@ echo ""
 echo ""
 
 
-echo 测试日期命令 ..
+echo "Test date command .."
 if "" + `date -d 20200103` != '2020-01-03 00:00:00' then 
   echo `date -d 20200103` != '2020-01-03 00:00:00'
   exit 120
@@ -483,13 +483,13 @@ ps
 
 echo 启动 db2 数据库
 declare continue handler for exitcode != 0 begin
-  echo db2数据库已启动 ..	
+  echo db2 start ..
 end
 ssh $admin@${host}:22?password=${adminPw} && db2start
 undeclare handler for exitcode != 0
 
 declare continue handler for exitcode != 0 begin
-  echo vsftp已启动 ..	
+  echo vsftp start ..
 end
 ssh $sshusername@${sshhost}:22?password=${sshpassword} && 'vsftpd /etc/vsftpd/vsftpd.conf'
 undeclare handler for exitcode != 0
@@ -504,18 +504,18 @@ set dbusername="${username}"
 set dbpassword="${password}"
 
 
-echo "driverClassName=$dbdirverclass" > $temp/jdbcConfig.properties
-echo "url=$dburl" >> $temp/jdbcConfig.properties
-echo "username=$dbusername" >> $temp/jdbcConfig.properties
-echo "password=$dbpassword" >> $temp/jdbcConfig.properties
-echo jdbc properties file $temp/jdbcConfig.properties
-export set jdbcfilepath='$temp/jdbcConfig.properties'
+echo "driverClassName=$dbdirverclass" > $TMPDIR/jdbcConfig.properties
+echo "url=$dburl" >> $TMPDIR/jdbcConfig.properties
+echo "username=$dbusername" >> $TMPDIR/jdbcConfig.properties
+echo "password=$dbpassword" >> $TMPDIR/jdbcConfig.properties
+echo jdbc properties file $TMPDIR/jdbcConfig.properties
+export set jdbcfilepath='$TMPDIR/jdbcConfig.properties'
 
-echo 测试 declare jdbc 命令 ..
+echo test declare jdbc command ..
 declare global test0001 catalog configuration use host ${databaseHost} driver $dbdirverclass url "${dburl}" username ${dbusername} password $dbpassword ssh.username ${databaseSSHUser} ssh.password ${databaseSSHUserPw} ssh.port 22
 db connect to test0001
 
-echo 测试导出数据文件功能
+echo "Test export data file functionality"
 quiet "drop table v12_test_tmp";
 create table v12_test_tmp (
 	branch_id char(6) not null, 
@@ -531,13 +531,13 @@ echo $pidddd
 quiet wait pid=$pidddd 1s;
 
 DECLARE sname Statement WITH insert into v12_test_tmp (branch_id, branch_name, branch_type, branch_no, status) values (?, ?, ?, ?, ?) ;
-declare progress use out print '插入数据库记录 ${process}%, 一共${totalRecord}笔记录 ${leftTime}' total 100000 times
+declare progress use out print 'insert into ${process}%, total ${totalRecord} records ${leftTime}' total 100000 times
 set tcount=1
 while $tcount <= 100123 loop
   set c1 = "$tcount"
-  set c2 = "机构$tcount"
-  set c3 = "机构类型$tcount"
-  set c4 = "编号$tcount"
+  set c2 = "orgCode$tcount"
+  set c3 = "orgType$tcount"
+  set c4 = "ID$tcount"
   set c5 = "0"
   
   FETCH c1, c2, c3, c4, c5 insert sname;
@@ -549,15 +549,15 @@ undeclare sname Statement
 commit
 
 set count = select count(*) from v12_test_tmp ;
-echo 笔数 $count
+echo records $count
 
-rm $temp/v12_test_tmp.txt
+rm $TMPDIR/v12_test_tmp.txt
 
-declare exportTaskId progress use out print "${taskId} 正在执行 ${process}%, 总共${totalRecord}个记录${leftTime}" total $count times
+declare exportTaskId progress use out print "${taskId} execute ${process}%, total ${totalRecord} records ${leftTime}" total $count times
 
-db export to $temp/v12_test_tmp{}.del of del modified by progress=exportTaskId chardel=* charhide=0 escapes=1 writebuf=200 maxrows=30041 title message=$temp/v12_test_tmp.txt select * from v12_test_tmp ;
+db export to $TMPDIR/v12_test_tmp{}.del of del modified by progress=exportTaskId chardel=* charhide=0 escapes=1 writebuf=200 maxrows=30041 title message=$TMPDIR/v12_test_tmp.txt select * from v12_test_tmp ;
 
-cat $temp/v12_test_tmp.txt
+cat $TMPDIR/v12_test_tmp.txt
 echo ""
 echo ""
 
@@ -593,7 +593,7 @@ while read line do
        set tlen=array[1].trim().int()
     else
     fi
-done < $temp/v12_test_tmp.txt
+done < $TMPDIR/v12_test_tmp.txt
 
 if $trows != $count || $tlen != $bytes then
    echo "$trows != $count || $tlen != $bytes"
@@ -602,12 +602,12 @@ fi
 
 
 container to execute tasks in parallel using thread=2 begin 
-  db export to $temp/v12_test_tmp_t1.del of del modified by sleep=1000 select * from v12_test_tmp ;
-  db export to $temp/v12_test_tmp_t2.del of del modified by sleep=2000 select * from v12_test_tmp ;
-  db export to $temp/v12_test_tmp_t3.del of del modified by sleep=3000 select * from v12_test_tmp ;
-  db export to $temp/v12_test_tmp_t4.del of del modified by sleep=4000 select * from v12_test_tmp ;
-  db export to $temp/v12_test_tmp_t5.del of del modified by sleep=2000 select * from v12_test_tmp ;
-  db export to $temp/v12_test_tmp_t6.del of del modified by sleep=1000 select * from v12_test_tmp ;
+  db export to $TMPDIR/v12_test_tmp_t1.del of del modified by sleep=1000 select * from v12_test_tmp ;
+  db export to $TMPDIR/v12_test_tmp_t2.del of del modified by sleep=2000 select * from v12_test_tmp ;
+  db export to $TMPDIR/v12_test_tmp_t3.del of del modified by sleep=3000 select * from v12_test_tmp ;
+  db export to $TMPDIR/v12_test_tmp_t4.del of del modified by sleep=4000 select * from v12_test_tmp ;
+  db export to $TMPDIR/v12_test_tmp_t5.del of del modified by sleep=2000 select * from v12_test_tmp ;
+  db export to $TMPDIR/v12_test_tmp_t6.del of del modified by sleep=1000 select * from v12_test_tmp ;
 end
 
 -- 测试数据装载功能
@@ -646,11 +646,11 @@ db connect to test00021
 db connect reset
 undeclare global test00021  catalog configuration
 
-declare test0003 catalog configuration use file $temp/jdbcConfig.properties
+declare test0003 catalog configuration use file $TMPDIR/jdbcConfig.properties
 db connect to test0003
 db connect reset
 
-declare global test0004  catalog configuration use file $temp/jdbcConfig.properties ; 
+declare global test0004  catalog configuration use file $TMPDIR/jdbcConfig.properties ;
 db connect to test0004
 db connect reset
 
@@ -660,13 +660,13 @@ echo ""
 echo ""
 
 
-echo 测试 while read 命令
-rm $temp/setlist.log
+echo "Test while read command"
+rm $TMPDIR/setlist.log
 set setcount=0
-echo temp is $temp
+echo temp is $TMPDIR
 while read line do
    set setcount = setcount + 1
-   echo "variable $line"  >> $temp/setlist.log
+   echo "variable $line"  >> $TMPDIR/setlist.log
 done < set
 
 set name="variable"
@@ -688,16 +688,16 @@ while read line do
      echo split $line error!
      exit 111
    fi
-done < $temp/setlist.log
+done < $TMPDIR/setlist.log
 
 
 set line=
-rm $temp/setlist.log
+rm $TMPDIR/setlist.log
 set setcount=0
-echo temp is $temp
+echo temp is $TMPDIR
 while read line do
    set setcount = setcount + 1
-   echo "variable $line"  >> $temp/setlist.log
+   echo "variable $line"  >> $TMPDIR/setlist.log
 done <   `set`    
 
 set name="variable"
@@ -717,7 +717,7 @@ while read line do
      echo split $line error!
      exit 111
    fi
-done < $temp/setlist.log
+done < $TMPDIR/setlist.log
 
 
 echo ""
@@ -728,31 +728,31 @@ echo ""
 
 
 
-echo 使用 set 命令输出所有变量值
-echo $temp/setcommandlist.log
-echo `set` > $temp/setcommandlist.log
+echo "Output all variable values using the set command"
+echo $TMPDIR/setcommandlist.log
+echo `set` > $TMPDIR/setcommandlist.log
 while read line do
   echo $line
-done < $temp/setcommandlist.log
+done < $TMPDIR/setcommandlist.log
 
 
 
-echo 测试 sleep 等待命令
+echo "test sleep"
 set curdate=`date`
 set sleeptime=4
 set dstdate=`date -d "${curdate}" + ${sleeptime}second`
-echo 睡眠退出时间： $dstdate
+echo Sleep exit time： $dstdate
 sleep ${sleeptime}sec
 set testdate=`date`
 if "$testdate" != "$dstdate" then
   echo "$testdate" != "$dstdate"
   exit 1111
 fi
-echo 睡眠测试成功
+echo Sleep test succeeded
 
 
 
-echo 测试变量方法 ..
+echo test variable method ..
 var testname=123456
 if "$testname" != "123456" then
   echo "$testname" != "123456"
@@ -888,9 +888,9 @@ if "$nvar" != "" then
   exit 111
 fi
 
-echo "test" > ${temp}/test.bak.log
+echo "test" > ${TMPDIR}/test.bak.log
 
-set filename="${temp}/test.bak.log"
+set filename="${TMPDIR}/test.bak.log"
 set t1=filename.getfilename();
 echo filename is $t1
 if "$t1" != "test.bak.log" then
@@ -928,8 +928,8 @@ fi
 
 set t6=filename.getParent();
 echo filename dir is $t6
-if "$t6" != "${temp}" then
-echo "$t6" != "${temp}"
+if "$t6" != "${TMPDIR}" then
+echo "$t6" != "${TMPDIR}"
 exit 123
 fi
 
@@ -951,7 +951,7 @@ echo "$t7" != "false"
 exit 123
 fi
 
-set filedir="${temp}/testsdfsdfsdf"
+set filedir="${TMPDIR}/testsdfsdfsdf"
 set t7=filedir.mkdir();
 if "$t7" != "true" then
 echo "$t7" != "true"
@@ -1031,7 +1031,7 @@ echo ""
 echo ""
 
 
-echo 测试 set 和 export 命令 ..
+echo test set and export command ..
 set test0001="test"
 if "$test0001" != "test" then
    echo "$test0001" != "test"
@@ -1082,7 +1082,7 @@ if "$t5" != "n3 is good name!" then
   exit 110
 fi
 
-set ttttname="$temp/testsetsetset.txt"
+set ttttname="$TMPDIR/testsetsetset.txt"
 ttttname.deletefile();
 
 if !ttttname.isfile() then
@@ -1122,7 +1122,7 @@ echo ""
 echo ""
 
 
-echo 测试export 与 set 语句跨脚本是否正确 ..
+echo "Testing whether export and set statements work correctly across script .."
 set testvarkjb=1
 export set testvarkjb=2
 if $testvarkjb != 2 then
@@ -1139,7 +1139,7 @@ echo ""
 
 
 
-echo 测试异常处理 ..
+echo Testing exception handling ..
 declare continue handler for exception begin
   echo deal exception ${exception}
 end
@@ -1154,25 +1154,25 @@ echo ""
 
 
 # 测试输出信息到日志
-echo -n "test 123" 1> ${temp}/test111.log
+echo -n "test 123" 1> ${TMPDIR}/test111.log
 while read line do 
   if "$line" != "test 123" then
      echo "$line" != "test 123"
      exit 10
   fi
-done < ${temp}/test111.log
-echo -n "4" >> ${temp}/test111.log
+done < ${TMPDIR}/test111.log
+echo -n "4" >> ${TMPDIR}/test111.log
 while read line do 
   if "$line" != "test 1234" then
      echo "$line" != "test 1234"
      exit 10
   fi
-done < ${temp}/test111.log
+done < ${TMPDIR}/test111.log
 
 
 
 set totalLoops = 100000
-declare progress use out print "测试进度输出已执行 ${process}%, 总共${totalRecord}个记录${leftTime}" total $totalLoops times
+declare progress use out print "test progress output ${process}%, total ${totalRecord} records ${leftTime}" total $totalLoops times
 set counter=1
 while $counter <= $totalLoops loop
   progress
@@ -1182,7 +1182,7 @@ end loop
 
 
 
-echo ${temp}/testerrlog.err
+echo ${TMPDIR}/testerrlog.err
 # 测试错误信息输出
 declare continue handler for exitcode != 0 begin 
   while read line do
@@ -1191,12 +1191,12 @@ declare continue handler for exitcode != 0 begin
        echo "$line"
        exit 120
     fi
-  done < ${temp}/testerrlog.err
+  done < ${TMPDIR}/testerrlog.err
 end
 
-undeclare nonamecur cursor 1>${temp}/testerrlog.log 2> ${temp}/testerrlog.err
-rm ${temp}/testerrlog.err 2>&1
-undeclare nonamecur cursor > ${temp}/testerrlog.err 2>&1
+undeclare nonamecur cursor 1>${TMPDIR}/testerrlog.log 2> ${TMPDIR}/testerrlog.err
+rm ${TMPDIR}/testerrlog.err 2>&1
+undeclare nonamecur cursor > ${TMPDIR}/testerrlog.err 2>&1
 undeclare handler for exitcode != 0;
 
 
@@ -1210,12 +1210,12 @@ if "$deamonvartest" != "true" || "$deamonvartest0" != "true" then
 fi
 
 
-echo 使用 set 命令输出所有变量值
+echo "Output all variable values using the set command"
 set
 
 
 function test111() {
-echo 测试跨脚本的方法
+echo Test methods across scripts
 }
 
 export function test111
@@ -1225,15 +1225,15 @@ export function test111
 
 
 
-echo $temp/nohuptest2.log
-echo $temp/nohuptest2.err
+echo $TMPDIR/nohuptest2.log
+echo $TMPDIR/nohuptest2.err
 set currentdir=`pwd`
 export set totalLoops = 10000000
-declare global progress use err print "测试并行脚本输出已执行 ${process}%, 总共${totalRecord}个记录${leftTime}" total $totalLoops times
+declare global progress use err print "parallel script executed ${process}%, total ${totalRecord} records ${leftTime}" total $totalLoops times
 set pid1=`nohup . $currentdir/nohuptest1.sql & | tail -n 1`
 echo pid1 is $pid1
 
-set pid2=`nohup . $currentdir/nohuptest2.sql > $temp/nohuptest2.log 2>&1 | tail -n 1`
+set pid2=`nohup . $currentdir/nohuptest2.sql > $TMPDIR/nohuptest2.log 2>&1 | tail -n 1`
 echo pid2 is $pid2
 
 wait pid=${pid1}
@@ -1289,13 +1289,13 @@ echo ""
 echo ""
 
 
-echo 测试 ssh 端口转发功能 ..
+echo test ssh port ..
 declare test SSH tunnel use proxy ${proxyuser}@${proxyhost}:22?password=${proxypass} connect to  0:${sshhost}:22
 undeclare name ssh  tunnel
 
 declare test SSH tunnel use proxy ${proxyuser}@${proxyhost}:22?password=${proxypass} connect to  testlocalport:${sshhost}:22
 if "$testlocalport" == "" then
-  echo 本地转发端口号 $testlocalport
+  echo Local forwarded port number $testlocalport
   exit 2
 fi
 undeclare name ssh  tunnel
@@ -1304,7 +1304,7 @@ declare test ssh client for connect to ${sshusername}@${sshhost}:22?password=${s
 undeclare test ssh client
 
 set localport=`declare test ssh tunnel use proxy ${proxyuser}@${proxyhost}:22?password=${proxypass} connect to 0:${sshhost}:22 | tail -n 1`
-echo 本地ssh转发隧道端口 $localport
+echo Local SSH tunnel port $localport
 undeclare test ssh tunnel;
 echo ""
 echo ""
@@ -1315,7 +1315,7 @@ handler
 
 
 
-echo 测试 jdbc 命令 ..
+echo Testing JDBC commands ..
 declare global uddb11  catalog configuration use driver ${databaseDriverName} url '${databaseUrl}' username ${username} password ${password}
 db connect to uddb11;
 db connect reset;
@@ -1351,14 +1351,14 @@ commit;
     */select * from v2_test;
 
 # 先删除日志文件
-rm $temp/pks.log
+rm $TMPDIR/pks.log
 
-echo 日志文件 $temp/pks.log
+echo logfile: $TMPDIR/pks.log
 
 # 测试主键冲突发生异常的处理逻辑是否正确
 declare continue handler for errorcode == -803 begin
-	echo 日志文件路径: $temp/pks.log
-    echo "测试数据库主键冲突异常处理逻辑是否正确" > $temp/pks.log
+	echo logfile: $TMPDIR/pks.log
+    echo "Testing whether the database primary key conflict exception handling logic works correctly." > $TMPDIR/pks.log
 end
 
 # 插入记录
@@ -1366,15 +1366,15 @@ insert into v2_test (f1, f2) values ('&ads;{}', '');
 commit;
 
 # 判断日志文件是否存在
-exists $temp/pks.log
+exists $TMPDIR/pks.log
 
 # 判断日志文件内容是否正确
 while read line do
- if "$line" != "测试数据库主键冲突异常处理逻辑是否正确" then
-   echo "$line" != "测试数据库主键冲突异常处理逻辑是否正确"
+ if "$line" != "Testing whether the database primary key conflict exception handling logic works correctly." then
+   echo "$line" != "Testing whether the database primary key conflict exception handling logic works correctly."
    exit 190
  fi
-done < $temp/pks.log
+done < $TMPDIR/pks.log
 
 # 删除异常处理逻辑
 undeclare handler for errorcode == -803;
@@ -1404,9 +1404,9 @@ DECLARE sname Statement by 1 batch WITH insert into v10_test_tmp (branch_id, bra
 set tcount=1
 while $tcount <= 100 loop
   set c1 = "$tcount"
-  set c2 = "机构$tcount"
-  set c3 = "机构类型$tcount"
-  set c4 = "编号$tcount"
+  set c2 = "orgCode$tcount"
+  set c3 = "orgType$tcount"
+  set c4 = "ID$tcount"
   set c5 = "0"
   
   echo "$c1, $c2, $c3, $c4, $c5"
@@ -1423,14 +1423,14 @@ commit;
 
 DECLARE sname Statement WITH insert into v10_test_tmp (branch_id, branch_name, branch_type, branch_no, status) values (?, ?, ?, ?, ?) ;
 
-declare progress use out print '插入数据库记录 ${process}%, 一共${totalRecord}笔记录 ${leftTime}' total 100000 times
+declare progress use out print 'insert into ${process}%, total ${totalRecord} records ${leftTime}' total 100000 times
 
 set tcount=1
 while $tcount <= 100000 loop
   set c1 = "$tcount"
-  set c2 = "机构$tcount"
-  set c3 = "机构类型$tcount"
-  set c4 = "编号$tcount"
+  set c2 = "orgCode$tcount"
+  set c3 = "orgType$tcount"
+  set c4 = "ID$tcount"
   set c5 = "0"
   
   FETCH c1, c2, c3, c4, c5 insert sname;
@@ -1441,14 +1441,14 @@ end loop
 
 undeclare sname Statement
 
-echo 测试中断 sql 功能是否可用
+echo "Testing whether the SQL interrupt function is available"
 declare continue handler for exitcode == -3 begin 
   if $exitcode != -3 then
     exit 999
   fi
   echo wait result value $exitcode must equals -3 ..
 end
-set pidd=`nohup . $pwd/executesql.sql | tail -n 1`
+set pidd=`nohup . $PWD/executesql.sql | tail -n 1`
 wait pid=$pidd 1sec
 undeclare handler for exitcode == -3;
 
@@ -1459,7 +1459,7 @@ echo ""
 echo ""
 
 
-echo 测试使用 ssh 命令远程杀掉进程 ..
+echo "testing remote process termination using the ssh command .."
 ssh ${sshusername}@${sshhost}:22?password=${sshpassword} && echo LANG is $LANG ;
 # 防止下一个命令报错
 DECLARE continue handler for exitcode != 0 begin echo $exitcode end
@@ -1479,7 +1479,7 @@ echo ""
 
 
 
-echo 测试执行远程命令卸载数据文件 ..
+echo "Testing execution of remote command to uninstall data file .."
 DECLARE continue handler for exitcode == 2 begin echo "exitcode is $exitcode"; end
 ssh ${admin}@${host}:22?password=${adminPw} && ls -la && pwd && touch dmd_bank_info1.del && rm dmd_bank_info1.del && export LANG=zh_CN.GBK && db2 connect to ${databaseName} user ${username} using ${password} \
 && ( db2 "export to dmd_bank_info1.del of del select * from v10_test_tmp " ) \
@@ -1494,10 +1494,10 @@ echo ""
 
 
 
-echo 测试 sftp 命令下载数据文件 ..
+echo "Testing sftp command to download data files…"
 sftp ${sshusername}@${sshhost}:22?password=${sshpassword}
-get dmd_bank_info1.del $temp
-echo $temp/dmd_bank_info1.del
+get dmd_bank_info1.del $TMPDIR
+echo $TMPDIR/dmd_bank_info1.del
 bye
 echo ""
 echo ""
@@ -1507,7 +1507,7 @@ echo ""
 
 
 
-echo 测试远程执行db2数据库 load 命令 ..
+echo "Testing remote execution of DB2 database load command…"
 ssh ${admin}@${host}:22?password=${adminPw} && export LANG=zh_CN.GBK && db2 connect to ${databaseName} user ${username} using ${password} \
 && db2 "load client from /dev/null of del replace into v10_test_tmp " \
 && db2 "load client from `pwd`/dmd_bank_info1.del of del replace into v10_test_tmp " \
@@ -1521,7 +1521,7 @@ echo ""
 
 
 
-echo 测试 sftp 相关命令 ..
+echo "Testing SFTP-related commands .."
 sftp ${ftpuser}@${ftphost}:22?password=${ftppass}
 set ftphome=`pwd`
 echo 远程sftp命令所在目录: $ftphome
@@ -1536,8 +1536,8 @@ exists ${remotetestdir}/test.sql
 isfile ${remotetestdir}/test.sql
 mkdir ${ftphome}/test
 rm ${ftphome}/test
-get ${remotetestdir}/test.sql ${temp}
-exists -l ${temp}\test.sql
+get ${remotetestdir}/test.sql ${TMPDIR}
+exists -l ${TMPDIR}\test.sql
 bye
 echo ""
 echo ""
@@ -1545,27 +1545,27 @@ echo ""
 echo ""
 
 
-echo 测试本地文件系统相关命令 ..
-isfile -l ${temp}\test.sql
-isfile  ${temp}\test.sql
-md5sum ${temp}\test.sql
-zip ${temp}\test.sql
-unzip ${temp}\test.zip
-tar -zcvf ${temp}\test.sql
-tar -xvf ${temp}\test.tar
-gzip ${temp}\test.sql
-gunzip ${temp}\test.gz
-rm ${temp}\test.sql
+echo "Testing local file system related commands .."
+isfile -l ${TMPDIR}\test.sql
+isfile  ${TMPDIR}\test.sql
+md5sum ${TMPDIR}\test.sql
+zip ${TMPDIR}\test.sql
+unzip ${TMPDIR}\test.zip
+tar -zcvf ${TMPDIR}\test.sql
+tar -xvf ${TMPDIR}\test.tar
+gzip ${TMPDIR}\test.sql
+gunzip ${TMPDIR}\test.gz
+rm ${TMPDIR}\test.sql
 echo ""
 echo ""
 echo ""
 echo ""
 
 
-echo 测试 ftp 命令 ..
+echo "Testing FTP commands .."
 function testFtpCommands() {
-echo test >> $temp/test.sql
-ls -l $temp/test.sql
+echo test >> $TMPDIR/test.sql
+ls -l $TMPDIR/test.sql
 ftp ${ftpuser}@${ftphost}:21?password=${ftppass}
 set ftphome=`pwd`
 set remotetestdir="${ftphome}/rpt1"
@@ -1575,18 +1575,18 @@ mkdir ${remotetestdir}
 exists ${remotetestdir}/
 ls ${remotetestdir}
 cd ${remotetestdir}
-put $temp/test.sql ${remotetestdir}
+put $TMPDIR/test.sql ${remotetestdir}
 ls ${remotetestdir}
 exists ${remotetestdir}/test.sql
 isfile ${remotetestdir}/test.sql
 mkdir ${ftphome}/test
 isDirectory ${ftphome}/test
 rm ${ftphome}/test
-get ${remotetestdir}/test.sql ${temp}
-exists -l ${temp}\test.sql
+get ${remotetestdir}/test.sql ${TMPDIR}
+exists -l ${TMPDIR}\test.sql
 bye
 ls -l `pwd`
-rm -l ${temp}\test.sql
+rm -l ${TMPDIR}\test.sql
 }
 testFtpCommands
 echo ""
@@ -1761,12 +1761,12 @@ if $_t_test_2 != 8 then
 	exit 10
 fi
 
-step 第一步
+step PartOne1
 
 declare global testdb  catalog configuration use file ${jdbcfilepath}
 
-echo . ${pwd}/test2.sql
-. ${pwd}/test2.sql
+echo . ${PWD}/test2.sql
+. ${PWD}/test2.sql
 
 declare  global testdb1  catalog configuration use driver $databaseDriverName url '${databaseUrl}' username ${username} password $password
 
@@ -1800,9 +1800,8 @@ declare exit handler for exitcode == 0 begin
   db connect reset
 end
 
-step 第二部
-step 第3部
-
+step PartTwo
+step Part3
 
 set KSC_NAME='script name is '
 export set KSC_INT=0
@@ -1855,7 +1854,7 @@ end loop
 undeclare s1 statement
 
 function error() {
-echo 输出错误信息: $1
+echo Output error message: $1
 echo ""
 echo ""
 }
@@ -1949,13 +1948,13 @@ DECLARE cno1 CURSOR WITH RETURN FOR select * from v1_test ;
       set _tvl = 0;
       while ${_tvl} < 3 loop
       
-        echo "loop${_tvl}" > ${temp}/testloop${_tvl}.log
+        echo "loop${_tvl}" > ${TMPDIR}/testloop${_tvl}.log
         while read line do
         	if "${line}" != "loop${_tvl}" then
         	   echo "${line}" != "loop${_tvl}"
         	   exit 111
         	fi
-        done < ${temp}/testloop${_tvl}.log
+        done < ${TMPDIR}/testloop${_tvl}.log
       	
       	set _tvl = $_tvl + 1
       end loop
@@ -1973,20 +1972,20 @@ fi
 
 java  cn.org.expect.script.command.JavaCommandTest1
 
-echo nohup . ${pwd}/test1.sql &
-set ppid=`nohup . ${pwd}/test1.sql & | tail -n 1`
+echo nohup . ${PWD}/test1.sql &
+set ppid=`nohup . ${PWD}/test1.sql & | tail -n 1`
 
 set testvalue000="1000"
 
-echo 打印脚本引擎中所有用户会话
+echo Print all user sessions in the script engine
 ps -s
 
-echo 打印用户会话中所有后台进程
+echo "Print all background processes in user sessions"
 ps 
 
 echo wait pid=$ppid 10sec
 wait pid=$ppid 10sec
 
 
-echo wait 命令错误, 正常情况下不会执行到这 .
+echo wait command error; under normal circumstances, this should not be executed.
 exit 1

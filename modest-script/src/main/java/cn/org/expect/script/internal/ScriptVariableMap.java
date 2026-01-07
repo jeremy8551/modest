@@ -25,22 +25,10 @@ public class ScriptVariableMap extends HashMap<String, Object> {
     public Object get(Object key) {
         String name = (String) key;
 
-        if (this.context.containsLocalVariable(name)) {
-            return this.context.getLocalVariable(name);
-        }
-
-        if (this.context.containsGlobalVariable(name)) {
-            return this.context.getGlobalVariable(name);
-        }
-
         if (this.session.containsVariable(name)) {
             return this.session.getVariable(name);
         }
 
-        if (this.context.containsEnvironmentVariable(name)) {
-            return this.context.getEnvironmentVariable(name);
-        }
-
-        return null;
+        return this.context.getVariable(name);
     }
 }

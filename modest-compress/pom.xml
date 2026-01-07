@@ -11,7 +11,7 @@
 
     <artifactId>modest-compress</artifactId>
     <name>${project.artifactId}</name>
-    <description>文件解压缩工具</description>
+    <description>File compression and decompression utilities</description>
 
     <dependencies>
         <dependency>
@@ -26,6 +26,11 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
+            <artifactId>modest-expression</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
             <artifactId>modest-ioc</artifactId>
         </dependency>
 
@@ -34,5 +39,35 @@
             <artifactId>modest-ioc-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-crypto</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- slf4j日志门面 -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.9</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.9</version> <!-- 根据你的slf4j-api版本匹配 -->
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

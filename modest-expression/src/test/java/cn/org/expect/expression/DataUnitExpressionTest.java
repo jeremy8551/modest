@@ -12,11 +12,21 @@ import org.junit.Test;
 public class DataUnitExpressionTest {
 
     @Test
+    public void test1() {
+        Assert.assertEquals("444B", DataUnitExpression.toString(new BigDecimal("444"), false));
+        Assert.assertEquals("1.06KB", DataUnitExpression.toString(new BigDecimal("1056"), false));
+        Assert.assertEquals("663.04MB", DataUnitExpression.toString(new BigDecimal("663040000"), false));
+        Assert.assertEquals("678.95GB", DataUnitExpression.toString(new BigDecimal("678952960000"), false));
+        Assert.assertEquals("695.25TB", DataUnitExpression.toString(new BigDecimal("695247831040000"), false));
+    }
+
+    @Test
     public void test2() {
-        Assert.assertEquals("1.03 KB", DataUnitExpression.toString(new BigDecimal("1056")));
-        Assert.assertEquals("632.32 MB", DataUnitExpression.toString(new BigDecimal("663040000")));
-        Assert.assertEquals("632.32 GB", DataUnitExpression.toString(new BigDecimal("678952960000")));
-        Assert.assertEquals("632.32 TB", DataUnitExpression.toString(new BigDecimal("695247831040000")));
+        Assert.assertEquals("444B", DataUnitExpression.toString(new BigDecimal("444"), true));
+        Assert.assertEquals("1.03KiB", DataUnitExpression.toString(new BigDecimal("1056"), true));
+        Assert.assertEquals("632.32MiB", DataUnitExpression.toString(new BigDecimal("663040000"), true));
+        Assert.assertEquals("632.32GiB", DataUnitExpression.toString(new BigDecimal("678952960000"), true));
+        Assert.assertEquals("632.32TiB", DataUnitExpression.toString(new BigDecimal("695247831040000"), true));
     }
 
     @Test

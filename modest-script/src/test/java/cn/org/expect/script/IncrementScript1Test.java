@@ -11,7 +11,7 @@ import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyLog;
+import cn.org.expect.test.annotation.RunWithLogSettings;
 import cn.org.expect.util.CharsetUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
@@ -24,8 +24,8 @@ import org.junit.runner.RunWith;
 /**
  * 增量剥离测试：第一个与最后一个字段作为联合唯一索引, 测试有重复数据时测试是否能正确抛出异常
  */
-@EasyLog("sout+:info")
 @RunWith(ModestRunner.class)
+@RunWithLogSettings("sout+:info")
 public class IncrementScript1Test {
     private final static Log log = LogFactory.getLog(IncrementScript1Test.class);
 
@@ -45,11 +45,11 @@ public class IncrementScript1Test {
         txt.setAbsolutePath(tmpfile.getAbsolutePath());
 
         Random random = new Random();
-        int line = random.nextInt(500);
+        int line = Math.max(random.nextInt(500), 1);
         int next = 40000 + random.nextInt(9000);
         String copy = null;
 
-        log.info("复制文件 {} 中第 {} 行到第 {} 行", tmpfile.getAbsoluteFile(), line, next);
+        log.info("Copy line {} to {} from file {}", tmpfile.getAbsoluteFile(), line, next);
 
         TextTableFileWriter out = txt.getWriter(false, IO.getCharArrayLength());
         for (int i = 1; i <= 50000; i++) {
@@ -79,11 +79,11 @@ public class IncrementScript1Test {
         out.close();
 
         log.info("");
-        log.info("第 {} 行: {}", line, FileUtils.readline(tmpfile, CharsetUtils.get(), line));
-        log.info("第 {} 行: {}", next, FileUtils.readline(tmpfile, CharsetUtils.get(), next));
+        log.info("Line {}: {}", line, FileUtils.readline(tmpfile, CharsetUtils.get(), line));
+        log.info("Line {}: {}", next, FileUtils.readline(tmpfile, CharsetUtils.get(), next));
 
         log.info("");
-        log.info("创建临时文件 {} 用时: {}", tmpfile.getAbsolutePath(), watch.useTime());
+        log.info("create temp file {}, use time: {}", tmpfile.getAbsolutePath(), watch.useTime());
 
         // ---------------------------------------------------------------------------------------------------------------------------------------------------------
         //
@@ -107,10 +107,10 @@ public class IncrementScript1Test {
         log.info(FileUtils.readline(newfile, CharsetUtils.get(), 1));
         log.info(FileUtils.readline(oldfile, CharsetUtils.get(), 1));
         log.info("");
-        log.info("新文件: " + newfile);
-        log.info("旧文件: " + oldfile);
-        log.info("增量文件: " + incfile.getAbsolutePath());
-        log.info("日志文件: " + logfile.getAbsolutePath());
+        log.info("new file: " + newfile);
+        log.info("old file: " + oldfile);
+        log.info("inc file: " + incfile.getAbsolutePath());
+        log.info("log file: " + logfile.getAbsolutePath());
         log.info("");
 
         UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);

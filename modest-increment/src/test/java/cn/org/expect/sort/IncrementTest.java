@@ -9,6 +9,7 @@ import cn.org.expect.increment.IncrementContext;
 import cn.org.expect.increment.IncrementJob;
 import cn.org.expect.increment.IncrementListenerImpl;
 import cn.org.expect.increment.IncrementPositionImpl;
+import cn.org.expect.increment.sort.TableFileSortContext;
 import cn.org.expect.io.BufferedWriter;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileWriter;
@@ -54,9 +55,9 @@ public class IncrementTest {
             for (int i = 1; i <= rows; i++) {
                 buf.setLength(0);
                 buf.append("Line").append(i).append(coldel);
-                buf.append("姓名").append(coldel);
-                buf.append("身份证号").append(coldel);
-                buf.append("手机号").append(coldel);
+                buf.append("name").append(coldel);
+                buf.append("id_card").append(coldel);
+                buf.append("phone").append(coldel);
                 buf.append(Dates.format19(start)).append(coldel);
                 buf.append(Dates.format19(end)).append(coldel);
                 for (int j = 1; j <= 20; j++) {
@@ -81,9 +82,9 @@ public class IncrementTest {
 
                 buf.setLength(0);
                 buf.append("Line").append(i).append(coldel);
-                buf.append("姓名").append(coldel);
-                buf.append("身份证号").append(coldel);
-                buf.append("手机号").append(coldel);
+                buf.append("name").append(coldel);
+                buf.append("id_card").append(coldel);
+                buf.append("phone").append(coldel);
 
                 if (i == 1000 || i == 2002 || i == 4003) {
                     buf.append(coldel);
@@ -116,9 +117,9 @@ public class IncrementTest {
             // 写入一行新增数据
             buf.setLength(0);
             buf.append("M1").append(coldel);
-            buf.append("姓名").append(coldel);
-            buf.append("身份证号").append(coldel);
-            buf.append("手机号").append(coldel);
+            buf.append("name").append(coldel);
+            buf.append("id_card").append(coldel);
+            buf.append("phone").append(coldel);
             buf.append(Dates.format19(new Date())).append(coldel);
             buf.append(Dates.format19(new Date())).append(coldel);
             for (int j = 1; j <= 20; j++) {
@@ -157,11 +158,11 @@ public class IncrementTest {
         log.info("");
 
         // 当前目录
-        log.info("新文件: " + newfile);
-        log.info("旧文件: " + oldfile);
-        log.info("增量文件: " + incfile.getAbsolutePath());
-        log.info("日志文件: " + logfile.getAbsolutePath());
-        log.info("正确文件: " + resultfile.getAbsolutePath());
+        log.info("new file: " + newfile);
+        log.info("old file: " + oldfile);
+        log.info("inc file: " + incfile.getAbsolutePath());
+        log.info("log file: " + logfile.getAbsolutePath());
+        log.info("result file: " + resultfile.getAbsolutePath());
         log.info("");
 
         // 读取文件类型
@@ -212,7 +213,7 @@ public class IncrementTest {
         // 判断剥离增量结果文件与正确文件是否相等
         long n = FileUtils.equalsIgnoreLineSeparator(incfile, CharsetUtils.get(), resultfile, CharsetUtils.get(), 0);
         if (n != 0) {
-            String msg = "第 " + n + " 行不同!" + Settings.getLineSeparator();
+            String msg = "Line " + n + " is different!" + Settings.getLineSeparator();
             msg += FileUtils.readline(incfile, CharsetUtils.get(), n) + Settings.getLineSeparator(); // 读取文件中的指定行内容
             msg += FileUtils.readline(resultfile, CharsetUtils.get(), n); // 读取文件中的指定行内容
             log.error(msg);
@@ -221,7 +222,7 @@ public class IncrementTest {
 
         // 输出增量日志
         log.info("");
-        log.info("增量日志内容如下: ");
+        log.info("Incremental content: ");
         log.info(FileUtils.readline(logfile, CharsetUtils.get(), 0));
     }
 

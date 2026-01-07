@@ -12,10 +12,10 @@ import cn.org.expect.expression.operation.GreaterOperator;
 import cn.org.expect.expression.operation.InOperator;
 import cn.org.expect.expression.operation.LessEqualsOperator;
 import cn.org.expect.expression.operation.LessOperator;
+import cn.org.expect.expression.operation.LikeOperator;
 import cn.org.expect.expression.operation.ModOperator;
 import cn.org.expect.expression.operation.MupliOperator;
-import cn.org.expect.expression.operation.NotEqualsOperator;
-import cn.org.expect.expression.operation.NotInOperator;
+import cn.org.expect.expression.operation.NotOperator;
 import cn.org.expect.expression.operation.Operator;
 import cn.org.expect.expression.operation.OrOperator;
 import cn.org.expect.expression.operation.PlusOperator;
@@ -25,6 +25,7 @@ import cn.org.expect.expression.parameter.ArrayParameter;
 import cn.org.expect.expression.parameter.ComplexParameter;
 import cn.org.expect.expression.parameter.DateUnitParameter;
 import cn.org.expect.expression.parameter.ExpressionParameter;
+import cn.org.expect.expression.parameter.NegationParameter;
 import cn.org.expect.expression.parameter.Parameter;
 import cn.org.expect.expression.parameter.TwoParameter;
 import cn.org.expect.util.StringUtils;
@@ -37,10 +38,11 @@ import cn.org.expect.util.StringUtils;
  */
 public abstract class Parser {
 
-    /**
-     * 默认解析器
-     */
-    private static Parser defaultFormat;
+    /** 默认解析器 */
+    private static volatile Parser singleton;
+
+    /** 单例工厂使用的锁 */
+    private final static Object lock = new Object();
 
     /**
      * 默认解析器
@@ -48,15 +50,18 @@ public abstract class Parser {
      * @return 解析器
      */
     public static Parser getFormat() {
-        if (defaultFormat == null) {
-            defaultFormat = new Parser(new BaseAnalysis()) {
-
-                public int parse(String array, int start, boolean isData, List<Parameter> datas, List<Operator> operation) throws ExpressionException {
-                    throw new ExpressionException("expression.stdout.message024", String.valueOf(array), start + 1);
+        if (singleton == null) {
+            synchronized (lock) {
+                if (singleton == null) {
+                    singleton = new Parser(new BaseAnalysis()) {
+                        public int parse(String array, int start, boolean isData, List<Parameter> datas, List<Operator> operation) throws ExpressionException {
+                            throw new ExpressionException("expression.stdout.message024", String.valueOf(array), start + 1);
+                        }
+                    };
                 }
-            };
+            }
         }
-        return defaultFormat;
+        return singleton;
     }
 
     /**
@@ -65,7 +70,7 @@ public abstract class Parser {
      * @param format 解析器
      */
     public static void setFormat(Parser format) {
-        Parser.defaultFormat = format;
+        Parser.singleton = format;
     }
 
     /** 分析器 */
@@ -279,7 +284,8 @@ public abstract class Parser {
                     throw new ExpressionException("expression.stdout.message026", str, next);
                 }
 
-                operations.add(new NotEqualsOperator());
+                NotOperator operator = new NotOperator(new EqualsOperator());
+                operations.add(operator);
                 i = next;
                 isData = false;
                 continue;
@@ -287,14 +293,18 @@ public abstract class Parser {
 
             // 解析括号
             if (c == '(') {
-                int index = this.analysis.indexOfParenthes(str, i);
-                if (index == -1) {
+                if (isData) {
+                    throw new ExpressionException("expression.stdout.message032", str, i);
+                }
+                int end = this.analysis.indexOfParenthes(str, i);
+                if (end == -1) {
                     throw new ExpressionException("expression.stdout.message030", str, next);
                 }
 
                 // 如果上一个是 in 操作符
-                else if (!isData && !operations.isEmpty() && (operations.get(operations.size() - 1) instanceof InOperator)) {
-                    String content = StringUtils.trimBlank(str.substring(next, index));
+                Operator lastOper;
+                if (!operations.isEmpty() && ((lastOper = operations.get(operations.size() - 1)) instanceof InOperator || (lastOper instanceof NotOperator && ((NotOperator) lastOper).getOperator() instanceof InOperator))) {
+                    String content = StringUtils.trimBlank(str.substring(next, end));
                     List<String> list = new ArrayList<String>();
                     this.analysis.split(content, list, this.analysis.getSegment());
                     ArrayParameter parameter = new ArrayParameter();
@@ -304,11 +314,11 @@ public abstract class Parser {
                     }
                     datas.add(parameter);
                 } else { // 正常括号
-                    String content = str.substring(next, index);
+                    String content = str.substring(next, end);
                     datas.add(new ComplexParameter(content));
                 }
 
-                i = index;
+                i = end;
                 isData = true;
                 continue;
             }
@@ -325,7 +335,7 @@ public abstract class Parser {
                 }
                 int index = this.analysis.indexOfQuotation(str, i);
                 if (index == -1) {
-                    throw new ExpressionException("expression.stdout.message025", str, next);
+                    throw new ExpressionException("expression.stdout.message025", str, i, '\'', '\'');
                 }
 
                 String content = this.unescapeString(true, str.substring(next, index));
@@ -336,18 +346,33 @@ public abstract class Parser {
             }
 
             // 字符变量
-            if (c == '\"') {
+            if (c == '"') {
                 if (isData) {
                     throw new ExpressionException("expression.stdout.message032", str, next);
                 }
-                int index = this.analysis.indexOfDoubleQuotation(str, i);
-                if (index == -1) {
-                    throw new ExpressionException("expression.stdout.message025", str, next);
+
+                int oneAfterNext = next + 1;
+                if (oneAfterNext < str.length() && str.charAt(next) == '"' && str.charAt(oneAfterNext) == '"') {
+                    int strBlockBegin = oneAfterNext + 1;
+                    int strBlockEnd = this.analysis.indexOfStrBlock(str, strBlockBegin);
+                    if (strBlockEnd == -1) {
+                        throw new ExpressionException("expression.stdout.message025", str, i, Expression.STRING_BLOCK, Expression.STRING_BLOCK);
+                    }
+
+                    String content = this.unescapeString(false, str.substring(strBlockBegin, strBlockEnd - 2));
+                    datas.add(new ExpressionParameter(Parameter.STRING, content));
+                    i = strBlockEnd;
+                } else {
+                    int index = this.analysis.indexOfDoubleQuotation(str, i);
+                    if (index == -1) {
+                        throw new ExpressionException("expression.stdout.message025", str, i, Expression.STRING_BLOCK, Expression.STRING_BLOCK);
+                    }
+
+                    String content = this.unescapeString(false, str.substring(next, index));
+                    datas.add(new ExpressionParameter(Parameter.STRING, content));
+                    i = index;
                 }
 
-                String content = this.unescapeString(false, str.substring(next, index));
-                datas.add(new ExpressionParameter(Parameter.STRING, content));
-                i = index;
                 isData = true;
                 continue;
             }
@@ -414,43 +439,92 @@ public abstract class Parser {
                 continue;
             }
 
-            // 空指针 null
+            // null
             if ((c == 'n' || c == 'N') && this.analysis.indexOf(str, "null", i, 1, 1) == i) {
                 if (isData) {
                     throw new ExpressionException("expression.stdout.message032", str, next);
                 }
 
                 datas.add(new ExpressionParameter(Parameter.NULL, null));
-                i = i + "null".length() - 1;
+                i += "null".length() - 1;
                 isData = true;
                 continue;
             }
 
-            // 解析布尔值 true
+            // in
+            if ((c == 'i' || c == 'I') && this.analysis.indexOf(str, "in", i, 0, 1) == i) {
+                if (!isData || next >= length) {
+                    throw new ExpressionException("expression.stdout.message026", str, next);
+                }
+
+                InOperator oper = new InOperator();
+                this.addNotOperator(operations, oper);
+                i = next;
+                isData = false;
+                continue;
+            }
+
+            // like
+            if ((c == 'l' || c == 'L') && this.analysis.indexOf(str, "like", i, 0, 0) == i) {
+                if (!isData || next >= length) {
+                    throw new ExpressionException("expression.stdout.message026", str, next);
+                }
+
+                LikeOperator oper = new LikeOperator();
+                this.addNotOperator(operations, oper);
+                i += "like".length() - 1;
+                isData = false;
+                continue;
+            }
+
+            // not in, not like
+            if ((c == 'n' || c == 'N') && this.analysis.indexOf(str, "not", i, 1, 0) == i) {
+                if (!isData) {
+                    throw new ExpressionException("expression.stdout.message026", str, i);
+                }
+
+                NotOperator operator = new NotOperator(str, i);
+                operations.add(operator);
+                i += "not".length() - 1;
+                continue;
+            }
+
+            // !variableName.isfile()
+            if (c == '!') {
+                if (isData) {
+                    throw new ExpressionException("expression.stdout.message032", str, i);
+                }
+
+                NegationParameter parameter = new NegationParameter(str, next);
+                datas.add(parameter);
+                continue;
+            }
+
+            // true
             if ((c == 't' || c == 'T') && this.analysis.indexOf(str, "true", i, 1, 1) == i) {
                 if (isData) {
                     throw new ExpressionException("expression.stdout.message032", str, next);
                 }
 
-                datas.add(new ExpressionParameter(Parameter.BOOLEAN, Boolean.TRUE));
-                i = i + "true".length() - 1;
+                this.addNegationParameter(datas, new ExpressionParameter(Parameter.BOOLEAN, Boolean.TRUE));
+                i += "true".length() - 1;
                 isData = true;
                 continue;
             }
 
-            // 解析布尔值 false
+            // false
             if ((c == 'f' || c == 'F') && this.analysis.indexOf(str, "false", i, 1, 1) == i) {
                 if (isData) {
                     throw new ExpressionException("expression.stdout.message032", str, next);
                 }
 
-                datas.add(new ExpressionParameter(Parameter.BOOLEAN, Boolean.FALSE));
-                i = i + "false".length() - 1;
+                this.addNegationParameter(datas, new ExpressionParameter(Parameter.BOOLEAN, Boolean.FALSE));
+                i += "false".length() - 1;
                 isData = true;
                 continue;
             }
 
-            // 三目运算符 boolean ? value1 : value2
+            // boolean ? value1 : value2
             if (c == '?') {
                 if (datas.isEmpty()) { // 如果是三目操作则只能有一个操作符
                     throw new ExpressionException("expression.stdout.message033", str);
@@ -476,49 +550,14 @@ public abstract class Parser {
                 continue;
             }
 
-            // 在范围内 in
-            if ((c == 'i' || c == 'I') && this.analysis.indexOf(str, "in", i, 0, 1) == i) {
-                if (!isData || next >= length) {
-                    throw new ExpressionException("expression.stdout.message026", str, next);
-                }
-
-                InOperator oper = new InOperator();
-                operations.add(oper);
-                i = next;
-                isData = false;
-                continue;
-            }
-
-            // 不在范围内 not in
-            if ((c == 'n' || c == 'N') && this.analysis.indexOf(str, "not", i, 1, 0) == i && this.analysis.startsWith(str, "in", i + 3, true)) {
-                int index = str.indexOf("in", i + 3); // 查找 not in 语句中 in 关键字的位置
-                if (index == -1) {
-                    throw new ExpressionException("expression.stdout.message007", str, i + 4);
-                }
-                index += "in".length(); // in 关键字的结束位置
-                if (!isData || index >= str.length() || !this.analysis.charAt(str, index, 1)) {
-                    throw new ExpressionException("expression.stdout.message026", str, index);
-                }
-
-                NotInOperator oper = new NotInOperator();
-                operations.add(oper);
-                i = index - 1;
-                isData = false;
-                continue;
-            }
-
             // 日 day
             if ((c == 'd' || c == 'D') && this.analysis.indexOf(str, "day", i, 2, 1) == i) {
                 if (!isData) {
                     throw new ExpressionException("expression.stdout.message026", str, next);
                 }
-                int index = datas.size() - 1;
-                if (index < 0) {
-                    throw new ExpressionException("expression.stdout.message006", str, next);
-                }
 
-                datas.set(index, new DateUnitParameter(datas.get(index), Calendar.DAY_OF_MONTH));
-                i = i + "day".length() - 1;
+                this.addDateUnitParameter(datas, Calendar.DAY_OF_MONTH, str, next);
+                i += "day".length() - 1;
                 continue;
             }
 
@@ -527,13 +566,9 @@ public abstract class Parser {
                 if (!isData) {
                     throw new ExpressionException("expression.stdout.message026", str, next);
                 }
-                int index = datas.size() - 1;
-                if (index < 0) {
-                    throw new ExpressionException("expression.stdout.message006", str, next);
-                }
 
-                datas.set(index, new DateUnitParameter(datas.get(index), Calendar.MONTH));
-                i = i + "month".length() - 1;
+                this.addDateUnitParameter(datas, Calendar.MONTH, str, next);
+                i += "month".length() - 1;
                 continue;
             }
 
@@ -542,13 +577,9 @@ public abstract class Parser {
                 if (!isData) {
                     throw new ExpressionException("expression.stdout.message026", str, next);
                 }
-                int index = datas.size() - 1;
-                if (index < 0) {
-                    throw new ExpressionException("expression.stdout.message006", str, next);
-                }
 
-                datas.set(index, new DateUnitParameter(datas.get(index), Calendar.YEAR));
-                i = i + "year".length() - 1;
+                this.addDateUnitParameter(datas, Calendar.YEAR, str, next);
+                i += "year".length() - 1;
                 continue;
             }
 
@@ -557,13 +588,9 @@ public abstract class Parser {
                 if (!isData) {
                     throw new ExpressionException("expression.stdout.message026", str, next);
                 }
-                int index = datas.size() - 1;
-                if (index < 0) {
-                    throw new ExpressionException("expression.stdout.message006", str, next);
-                }
 
-                datas.set(index, new DateUnitParameter(datas.get(index), Calendar.HOUR));
-                i = i + "hour".length() - 1;
+                this.addDateUnitParameter(datas, Calendar.HOUR, str, next);
+                i += "hour".length() - 1;
                 continue;
             }
 
@@ -572,13 +599,9 @@ public abstract class Parser {
                 if (!isData) {
                     throw new ExpressionException("expression.stdout.message026", str, next);
                 }
-                int index = datas.size() - 1;
-                if (index < 0) {
-                    throw new ExpressionException("expression.stdout.message006", str, next);
-                }
 
-                datas.set(index, new DateUnitParameter(datas.get(index), Calendar.MINUTE));
-                i = i + "minute".length() - 1;
+                this.addDateUnitParameter(datas, Calendar.MINUTE, str, next);
+                i += "minute".length() - 1;
                 continue;
             }
 
@@ -587,13 +610,9 @@ public abstract class Parser {
                 if (!isData) {
                     throw new ExpressionException("expression.stdout.message026", str, next);
                 }
-                int index = datas.size() - 1;
-                if (index < 0) {
-                    throw new ExpressionException("expression.stdout.message006", str, next);
-                }
 
-                datas.set(index, new DateUnitParameter(datas.get(index), Calendar.SECOND));
-                i = i + "second".length() - 1;
+                this.addDateUnitParameter(datas, Calendar.SECOND, str, next);
+                i += "second".length() - 1;
                 continue;
             }
 
@@ -602,13 +621,9 @@ public abstract class Parser {
                 if (!isData) {
                     throw new ExpressionException("expression.stdout.message026", str, next);
                 }
-                int index = datas.size() - 1;
-                if (index < 0) {
-                    throw new ExpressionException("expression.stdout.message006", str, next);
-                }
 
-                datas.set(index, new DateUnitParameter(datas.get(index), Calendar.MILLISECOND));
-                i = i + "millis".length() - 1;
+                this.addDateUnitParameter(datas, Calendar.MILLISECOND, str, next);
+                i += "millis".length() - 1;
                 continue;
             }
 
@@ -627,6 +642,46 @@ public abstract class Parser {
 
         // 生成运算公式
         return this.calc(datas, operations);
+    }
+
+    protected void addDateUnitParameter(List<Parameter> datas, int unit, String str, int index) {
+        int last = datas.size() - 1;
+        if (last < 0) {
+            throw new ExpressionException("expression.stdout.message006", str, index);
+        }
+
+        DateUnitParameter parameter = new DateUnitParameter(datas.get(last), unit);
+        datas.set(last, parameter);
+    }
+
+    /**
+     * 添加取反符号
+     *
+     * @param datas     参数集合
+     * @param parameter 参数
+     */
+    protected void addNegationParameter(List<Parameter> datas, Parameter parameter) {
+        Parameter last = datas.isEmpty() ? null : datas.get(datas.size() - 1);
+        if (parameter.getType() == Parameter.BOOLEAN && (last instanceof NegationParameter) && ((NegationParameter) last).getParameter() == null) {
+            ((NegationParameter) last).setParameter(parameter);
+        } else {
+            datas.add(parameter);
+        }
+    }
+
+    /**
+     * 添加取反符号
+     *
+     * @param operators 参数集合
+     * @param operator  参数
+     */
+    protected void addNotOperator(List<Operator> operators, Operator operator) {
+        Operator last = operators.isEmpty() ? null : operators.get(operators.size() - 1);
+        if (last instanceof NotOperator) {
+            ((NotOperator) last).setOperator(operator);
+        } else {
+            operators.add(operator);
+        }
     }
 
     /**

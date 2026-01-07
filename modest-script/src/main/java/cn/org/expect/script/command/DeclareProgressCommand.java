@@ -43,29 +43,34 @@ public class DeclareProgressCommand extends AbstractGlobalCommand {
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
-        if (!StringUtils.isInt(this.number)) {
-            stderr.println(ResourcesUtils.getMessage("script.stderr.message093", this.command, this.number));
+        String name = session.getAnalysis().replaceShellVariable(session, context, this.name, true, true);
+        String type = session.getAnalysis().replaceShellVariable(session, context, this.type, true, true);
+        String message = session.getAnalysis().replaceShellVariable(session, context, session.getAnalysis().unQuotation(this.message), true, !session.getAnalysis().containsQuotation(this.message));
+        String number = session.getAnalysis().replaceShellVariable(session, context, this.number, true, true);
+
+        if (!StringUtils.isInt(number)) {
+            stderr.println(ResourcesUtils.getMessage("script.stderr.message093", this.command, number));
             return UniversalScriptCommand.COMMAND_ERROR;
         }
 
         Printer out;
-        if ("out".equalsIgnoreCase(this.type)) {
+        if ("out".equalsIgnoreCase(type)) {
             out = stdout;
-        } else if ("err".equalsIgnoreCase(this.type)) {
+        } else if ("err".equalsIgnoreCase(type)) {
             out = stderr;
-        } else if ("step".equalsIgnoreCase(this.type)) {
+        } else if ("step".equalsIgnoreCase(type)) {
             out = context.getEngine().getSteper();
         } else {
-            stderr.println(ResourcesUtils.getMessage("script.stderr.message094", this.command, this.type, "out, err, step"));
+            stderr.println(ResourcesUtils.getMessage("script.stderr.message094", this.command, type, "out, err, step"));
             return UniversalScriptCommand.COMMAND_ERROR;
         }
 
-        int total = Integer.parseInt(this.number);
+        int total = Integer.parseInt(number);
         ScriptProgress progress;
-        if (session.getAnalysis().isBlank(this.name)) {
-            progress = new ScriptProgress(out, this.message, total);
+        if (session.getAnalysis().isBlank(name)) {
+            progress = new ScriptProgress(out, message, total);
         } else {
-            progress = new ScriptProgress(this.name, out, this.message, total);
+            progress = new ScriptProgress(name, out, message, total);
         }
 
         if (session.isEchoEnable() || forceStdout) {

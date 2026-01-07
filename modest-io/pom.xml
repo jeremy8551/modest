@@ -11,7 +11,7 @@
 
     <artifactId>modest-io</artifactId>
     <name>${project.artifactId}</name>
-    <description>IO流工具</description>
+    <description>IO stream utilities</description>
 
     <dependencies>
         <dependency>
@@ -36,4 +36,13 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

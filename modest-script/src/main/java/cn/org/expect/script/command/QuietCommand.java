@@ -31,7 +31,7 @@ public class QuietCommand extends AbstractTraceCommand implements UniversalScrip
     private final static Log log = LogFactory.getLog(QuietCommand.class);
 
     /** 子命令 */
-    private UniversalScriptCommand subcommand;
+    private volatile UniversalScriptCommand subcommand;
 
     public QuietCommand(UniversalCommandCompiler compiler, String command, UniversalScriptCommand subcommand) {
         super(compiler, command);
@@ -68,7 +68,7 @@ public class QuietCommand extends AbstractTraceCommand implements UniversalScrip
             }
         }
 
-        session.putValue(value);
+        session.setValue(value);
         return 0;
     }
 
@@ -80,14 +80,14 @@ public class QuietCommand extends AbstractTraceCommand implements UniversalScrip
     }
 
     public boolean enableNohup() {
-        return this.subcommand == null ? false : (this.subcommand instanceof NohupCommandSupported) && ((NohupCommandSupported) this.subcommand).enableNohup();
+        return this.subcommand != null && (this.subcommand instanceof NohupCommandSupported) && ((NohupCommandSupported) this.subcommand).enableNohup();
     }
 
     public boolean enableJump() {
-        return this.subcommand == null ? false : (this.subcommand instanceof JumpCommandSupported) && ((JumpCommandSupported) this.subcommand).enableJump();
+        return this.subcommand != null && (this.subcommand instanceof JumpCommandSupported) && ((JumpCommandSupported) this.subcommand).enableJump();
     }
 
     public boolean enableLoop() {
-        return this.subcommand == null ? false : (this.subcommand instanceof LoopCommandSupported) && ((LoopCommandSupported) this.subcommand).enableLoop();
+        return this.subcommand != null && (this.subcommand instanceof LoopCommandSupported) && ((LoopCommandSupported) this.subcommand).enableLoop();
     }
 }

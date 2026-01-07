@@ -55,9 +55,9 @@ public class DateCommand extends AbstractTraceCommand implements UniversalScript
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         UniversalScriptAnalysis analysis = session.getAnalysis();
-        Date date = this.dateStr != null ? Dates.parse(analysis.unQuotation(analysis.replaceShellVariable(session, context, this.dateStr, true, true))) : new Date();
+        Date date = this.dateStr != null ? Dates.parse(analysis.replaceShellVariable(session, context, analysis.unQuotation(this.dateStr), true, !analysis.containsQuotation(this.dateStr))) : new Date();
         String formula = analysis.replaceShellVariable(session, context, this.formula, true, true);
-        String pattern = analysis.unQuotation(analysis.replaceShellVariable(session, context, this.pattern, true, true));
+        String pattern = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.pattern), true, !analysis.containsQuotation(this.pattern));
 
         if (!analysis.isBlank(formula)) { // 执行日期运算
             // 转为日期计算的表达式: '2020-01-01 00:00:00:000'+1day-1month
@@ -69,7 +69,7 @@ public class DateCommand extends AbstractTraceCommand implements UniversalScript
             stdout.println(pattern == null ? Dates.format19(date) : Dates.format(date, pattern));
         }
 
-        session.putValue(date);
+        session.setValue(date);
         return 0;
     }
 

@@ -21,8 +21,7 @@ public class EchoLFCommand extends EchoCommand {
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         if (session.isEchoEnable() || forceStdout) {
             UniversalScriptAnalysis analysis = session.getAnalysis();
-            String message = analysis.replaceShellVariable(session, context, this.message, true, true);
-            stdout.println(analysis.unescapeString(analysis.unQuotation(message))); // 最后执行转义
+            stdout.println(analysis.unescapeString(analysis.replaceShellVariable(session, context, analysis.unQuotation(this.message), true, !analysis.containsQuotation(this.message)))); // 最后执行转义
         }
         return 0;
     }

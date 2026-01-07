@@ -39,9 +39,6 @@ public class VariableMethodCommand extends AbstractTraceCommand implements Nohup
     /** 变量方法执行结果 */
     private Object value;
 
-    /** true表示布尔值取反 */
-    private final boolean reverse;
-
     /** 变量方法集合 */
     private final VariableMethodRepository repository;
 
@@ -57,40 +54,22 @@ public class VariableMethodCommand extends AbstractTraceCommand implements Nohup
      * @param methodExpression 变量方法表达式，如：<br>
      *                         substr(1, 2) <br>
      *                         substr(1, 2).length() <br>
-     * @param reverse          true表示取反
      */
-    public VariableMethodCommand(UniversalCommandCompiler compiler, String command, VariableMethodRepository repository, String variableName, String methodExpression, boolean reverse) {
+    public VariableMethodCommand(UniversalCommandCompiler compiler, String command, VariableMethodRepository repository, String variableName, String methodExpression) {
         super(compiler, command);
         this.parameters = new MethodParameters();
         this.repository = repository;
         this.variableName = variableName;
         this.methodExpression = methodExpression;
-        this.reverse = reverse;
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         this.value = null;
         UniversalScriptAnalysis analysis = session.getAnalysis();
         String variableName = analysis.replaceShellVariable(session, context, this.variableName, true, false);
-        Object variable = context.getVariable(variableName);
+        Object variable = context.getVariable(session, variableName);
         String methodExpression = analysis.trim(analysis.replaceShellVariable(session, context, this.methodExpression, true, false), 0, 0);
-        int exitcode = this.executeMethod(session, context, stdout, stderr, analysis, variable, methodExpression); // 执行变量方法
-        if (exitcode != 0) {
-            return exitcode;
-        }
-
-        // 对结果取反
-        if (this.reverse) {
-            if (this.value instanceof Boolean) {
-                boolean value = (Boolean) this.value;
-                this.value = !value;
-                return 0;
-            } else {
-                stderr.println(ResourcesUtils.getMessage("script.stderr.message059", this.getScript()));
-                return UniversalScriptCommand.VARIABLE_METHOD_ERROR;
-            }
-        }
-        return 0;
+        return this.executeMethod(session, context, stdout, stderr, analysis, variableName, variable, methodExpression); // 执行变量方法
     }
 
     /**
@@ -101,6 +80,7 @@ public class VariableMethodCommand extends AbstractTraceCommand implements Nohup
      * @param stdout           标准信息输出流
      * @param stderr           错误信息输出流
      * @param analysis         语句分析器
+     * @param variableName     变量名
      * @param variable         变量
      * @param methodExpression 变量方法表达式，如：<br>
      *                         substr(1, 2) <br>
@@ -109,10 +89,10 @@ public class VariableMethodCommand extends AbstractTraceCommand implements Nohup
      * @return 返回值，0表示变量方法执行正确 非0表示发生错误
      * @throws Exception 发生错误
      */
-    protected int executeMethod(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, UniversalScriptAnalysis analysis, Object variable, String methodExpression) throws Exception {
+    protected int executeMethod(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, UniversalScriptAnalysis analysis, String variableName, Object variable, String methodExpression) throws Exception {
         // 变量值
         if (variable == null) {
-            stderr.println(ResourcesUtils.getMessage("script.stderr.message092", methodExpression));
+            stderr.println(ResourcesUtils.getMessage("script.stderr.message092", variableName, methodExpression));
             return UniversalScriptCommand.VARIABLE_METHOD_ERROR;
         }
 
@@ -172,13 +152,13 @@ public class VariableMethodCommand extends AbstractTraceCommand implements Nohup
             }
 
             // 执行变量方法
-            boolean needReturn = entry.canGetMethod();
-            UniversalScriptVariableMethod method = needReturn ? entry.getVariableMethod() : (UniversalScriptVariableMethod) context.getContainer().newInstance(entry.getMethodClass());
+            boolean release = entry.isAvailable();
+            UniversalScriptVariableMethod method = release ? entry.getVariableMethod() : (UniversalScriptVariableMethod) context.getContainer().newInstance(entry.getMethodClass());
             try {
                 value = method.execute(session, context, stdout, stderr, analysis, variable, this.parameters);
             } finally {
-                if (needReturn) {
-                    entry.returnMethod(method);
+                if (release) {
+                    entry.release(method);
                 }
             }
         }
@@ -196,7 +176,7 @@ public class VariableMethodCommand extends AbstractTraceCommand implements Nohup
 
             // 读取下一个变量方法
             String nextMethodExpression = methodExpression.substring(nextMethodBegin + 1);
-            return this.executeMethod(session, context, stdout, stderr, analysis, value, nextMethodExpression);
+            return this.executeMethod(session, context, stdout, stderr, analysis, variableName, value, nextMethodExpression);
         }
 
         // 下一个变量方法是索引操作
@@ -209,7 +189,7 @@ public class VariableMethodCommand extends AbstractTraceCommand implements Nohup
 
             // 读取下一个变量方法
             String nextMethodExpression = methodExpression.substring(nextMethodBegin);
-            return this.executeMethod(session, context, stdout, stderr, analysis, value, nextMethodExpression);
+            return this.executeMethod(session, context, stdout, stderr, analysis, variableName, value, nextMethodExpression);
         }
 
         // 变量方法右侧没有其他内容，直接返回结果

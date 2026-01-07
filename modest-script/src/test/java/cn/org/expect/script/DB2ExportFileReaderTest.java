@@ -10,15 +10,14 @@ import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyLog;
-import cn.org.expect.util.FileUtils;
+import cn.org.expect.test.annotation.RunWithLogSettings;
 import cn.org.expect.util.IO;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@EasyLog("sout+:info")
 @RunWith(ModestRunner.class)
+@RunWithLogSettings("sout+:info")
 public class DB2ExportFileReaderTest {
     private final static Log log = LogFactory.getLog(DB2ExportFileReaderTest.class);
 
@@ -29,13 +28,14 @@ public class DB2ExportFileReaderTest {
     public void test() throws IOException {
         UniversalScriptEngineFactory manager = new UniversalScriptEngineFactory(this.context);
         UniversalScriptEngine engine = manager.getScriptEngine();
-        File tempfile = FileUtils.createTempFile(".del");
-        engine.evaluate("cp classpath:/bhc_finish.del " + tempfile.getAbsolutePath());
-        DB2ExportFile file = new DB2ExportFile(tempfile);
+        File destFile = engine.evaluate("cp classpath:/bhc_finish.del $tmpdir");
+        DB2ExportFile file = new DB2ExportFile(destFile);
         TextTableFileReader in = file.getReader(IO.getCharArrayLength());
         while (in.readLine() != null) {
+            String path = destFile.getAbsolutePath();
+            Assert.assertNotNull(path);
         }
-        log.info("文件 {} 已读取 {} 行数据!", tempfile, in.getLineNumber());
+        log.info("“File {} has read {} lines of data!”", destFile, in.getLineNumber());
         Assert.assertEquals(2733, in.getLineNumber());
         in.close();
     }

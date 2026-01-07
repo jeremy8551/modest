@@ -11,10 +11,6 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.UniversalScriptVariable;
-import cn.org.expect.script.command.BreakCommand;
-import cn.org.expect.script.command.ContinueCommand;
-import cn.org.expect.script.command.ExitCommand;
-import cn.org.expect.script.command.ReturnCommand;
 import cn.org.expect.script.command.feature.LoopCommandKind;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.ResourcesUtils;
@@ -248,13 +244,13 @@ public class ScriptHandler {
                 if (command instanceof LoopCommandKind) {
                     LoopCommandKind cmd = (LoopCommandKind) command;
                     int type = cmd.kind();
-                    if (type == ExitCommand.KIND) { // Exit script
+                    if (type == LoopCommandKind.EXIT_COMMAND) { // Exit script
                         return exitcode;
-                    } else if (type == ReturnCommand.KIND) { // Exit method
+                    } else if (type == LoopCommandKind.RETURN_COMMAND) { // Exit method
                         return exitcode;
-                    } else if (type == BreakCommand.KIND) { // break
+                    } else if (type == LoopCommandKind.BREAK_COMMAND) { // break
                         throw new UnsupportedOperationException(ResourcesUtils.getMessage("script.stderr.message028", this.script));
-                    } else if (type == ContinueCommand.KIND) { // continue
+                    } else if (type == LoopCommandKind.CONTINUE_COMMAND) { // continue
                         throw new UnsupportedOperationException(ResourcesUtils.getMessage("script.stderr.message029", this.script));
                     }
                 }

@@ -91,6 +91,12 @@ public class BaseAnalysis implements Analysis {
         for (int i = from; i < str.length(); i++) {
             char c = str.charAt(i);
 
+            // 转义字符
+            if (this.escape && c == this.escapeChar) {
+                i++;
+                continue;
+            }
+
             // 忽略单引号字符串
             if (c == '\'') {
                 int end = this.indexOfQuotation(str, i);
@@ -103,7 +109,7 @@ public class BaseAnalysis implements Analysis {
             }
 
             // 忽略双引号字符串
-            if (c == '\"') {
+            if (c == '"') {
                 int end = this.indexOfDoubleQuotation(str, i);
                 if (end == -1) {
                     return -1;
@@ -171,6 +177,12 @@ public class BaseAnalysis implements Analysis {
         for (int i = from + 1; i < str.length(); i++) {
             char c = str.charAt(i);
 
+            // 转义字符
+            if (this.escape && c == this.escapeChar) {
+                i++;
+                continue;
+            }
+
             // 忽略括号中的空白字符
             if (c == '(') {
                 int end = this.indexOfParenthes(str, i);
@@ -194,7 +206,7 @@ public class BaseAnalysis implements Analysis {
             }
 
             // 忽略字符串变量
-            if (c == '\"') {
+            if (c == '"') {
                 int end = this.indexOfDoubleQuotation(str, i);
                 if (end == -1) {
                     return -1;
@@ -252,6 +264,13 @@ public class BaseAnalysis implements Analysis {
     public int indexOfSemicolon(CharSequence str, int from) {
         for (int i = from + 1, count = 1; i < str.length(); i++) {
             char c = str.charAt(i);
+
+            // 转义字符
+            if (this.escape && c == this.escapeChar) {
+                i++;
+                continue;
+            }
+
             if (c == '\'') {
                 int end = StringUtils.indexOfQuotation(str, i, this.escape);
                 if (end == -1) {
@@ -262,7 +281,7 @@ public class BaseAnalysis implements Analysis {
                 }
             }
 
-            if (c == '\"') {
+            if (c == '"') {
                 int end = StringUtils.indexOfDoubleQuotation(str, i, this.escape);
                 if (end == -1) {
                     return -1;
@@ -297,6 +316,12 @@ public class BaseAnalysis implements Analysis {
         for (int i = from + 1, count = 1; i < str.length(); i++) {
             char c = str.charAt(i);
 
+            // 转义字符
+            if (this.escape && c == this.escapeChar) {
+                i++;
+                continue;
+            }
+
             if (c == '\'') {
                 int end = this.indexOfQuotation(str, i);
                 if (end == -1) {
@@ -307,7 +332,7 @@ public class BaseAnalysis implements Analysis {
                 }
             }
 
-            if (c == '\"') {
+            if (c == '"') {
                 int end = this.indexOfDoubleQuotation(str, i);
                 if (end == -1) {
                     return -1;
@@ -342,6 +367,12 @@ public class BaseAnalysis implements Analysis {
         for (int i = from + 1, count = 1; i < str.length(); i++) {
             char c = str.charAt(i);
 
+            // 转义字符
+            if (this.escape && c == this.escapeChar) {
+                i++;
+                continue;
+            }
+
             // 忽略字符常量中的空白
             if (c == '\'') {
                 int end = this.indexOfQuotation(str, i);
@@ -354,7 +385,7 @@ public class BaseAnalysis implements Analysis {
             }
 
             // 忽略双引号中的字符串常量
-            if (c == '\"') {
+            if (c == '"') {
                 int end = this.indexOfDoubleQuotation(str, i);
                 if (end == -1) {
                     return -1;
@@ -389,6 +420,13 @@ public class BaseAnalysis implements Analysis {
 
         for (int i = from + 1, count = 1; i < str.length(); i++) {
             char c = str.charAt(i);
+
+            // 转义字符
+            if (this.escape && c == this.escapeChar) {
+                i++;
+                continue;
+            }
+
             if (c == '\'') {
                 int end = this.indexOfQuotation(str, i);
                 if (end == -1) {
@@ -399,7 +437,7 @@ public class BaseAnalysis implements Analysis {
                 }
             }
 
-            if (c == '\"') {
+            if (c == '"') {
                 int end = this.indexOfDoubleQuotation(str, i);
                 if (end == -1) {
                     return -1;
@@ -481,8 +519,30 @@ public class BaseAnalysis implements Analysis {
                 continue;
             }
 
-            if (c == '\"') {
+            if (c == '"') {
                 return i;
+            }
+        }
+        return -1;
+    }
+
+    public int indexOfStrBlock(CharSequence str, int from) {
+        for (int i = from; i < str.length(); i++) {
+            char c = str.charAt(i);
+
+            // 转义字符
+            if (this.escape && c == this.escapeChar) {
+                i++;
+                continue;
+            }
+
+            // 字符串变量
+            if (c == '"') {
+                int next = i + 1;
+                int oneAfterNext = next + 1;
+                if (oneAfterNext < str.length() && str.charAt(next) == '"' && str.charAt(oneAfterNext) == '"') {
+                    return oneAfterNext;
+                }
             }
         }
         return -1;
@@ -491,6 +551,12 @@ public class BaseAnalysis implements Analysis {
     public int indexOfWhitespace(CharSequence str, int from) {
         for (int i = from; i < str.length(); i++) {
             char c = str.charAt(i);
+
+            // 转义字符
+            if (this.escape && c == this.escapeChar) {
+                i++;
+                continue;
+            }
 
             // 忽略括号中的空白字符
             if (c == '(') {
@@ -546,6 +612,91 @@ public class BaseAnalysis implements Analysis {
         return -1;
     }
 
+    public String removeComment(String str, List<String> list) {
+        if (str == null) {
+            return null;
+        }
+
+        for (int i = 0; i < str.length(); i++) {
+            char c = str.charAt(i);
+
+            // 忽略括号中的空白字符
+            if (c == '(') {
+                int j = this.indexOfParenthes(str, i);
+                if (j != -1) {
+                    i = j;
+                    continue;
+                } else {
+                    throw new ExpressionException("expression.stdout.message025", str, i, "(", ")");
+                }
+            }
+
+            // { .. }
+            if (c == '{') {
+                int j = this.indexOfBrace(str, i);
+                if (j != -1) {
+                    i = j;
+                    continue;
+                } else {
+                    throw new ExpressionException("expression.stdout.message025", str, i, "{", "}");
+                }
+            }
+
+            // [ .. ]
+            if (c == '[') {
+                int j = this.indexOfBracket(str, i);
+                if (j != -1) {
+                    i = j;
+                    continue;
+                } else {
+                    throw new ExpressionException("expression.stdout.message025", str, i, "[", "]");
+                }
+            }
+
+            // 忽略字符常量中的空白
+            if (c == '\'') {
+                int j = this.indexOfQuotation(str, i);
+                if (j != -1) {
+                    i = j;
+                    continue;
+                } else {
+                    throw new ExpressionException("expression.stdout.message025", str, i, "'", "'");
+                }
+            }
+
+            // 忽略双引号中的字符串常量
+            if (c == '"') {
+                int next = i + 1;
+                int oneAfterNext = next + 1;
+                if (next < str.length() && oneAfterNext < str.length() && str.charAt(next) == '"' && str.charAt(oneAfterNext) == '"') {
+                    int j = this.indexOfStrBlock(str, oneAfterNext + 1);
+                    if (j != -1) {
+                        i = j;
+                        continue;
+                    } else {
+                        throw new ExpressionException("expression.stdout.message025", str, i, Expression.STRING_BLOCK, Expression.STRING_BLOCK);
+                    }
+                }
+
+                int j = this.indexOfDoubleQuotation(str, i);
+                if (j != -1) {
+                    i = j;
+                    continue;
+                } else {
+                    throw new ExpressionException("expression.stdout.message025", str, i, "\"", "\"");
+                }
+            }
+
+            if (c == '#') {
+                if (list != null) {
+                    list.add(str.subSequence(i, str.length()).toString());
+                }
+                return str.substring(0, i);
+            }
+        }
+        return str;
+    }
+
     public boolean startsWith(CharSequence str, CharSequence prefix, int from, boolean ignoreBlank) {
         if (str == null) {
             return false;
@@ -592,6 +743,12 @@ public class BaseAnalysis implements Analysis {
         int begin = 0;
         for (int i = 0; i < str.length(); i++) {
             char c = str.charAt(i);
+
+            // 转义字符
+            if (this.escape && c == this.escapeChar) {
+                i++;
+                continue;
+            }
 
             // 忽略括号中的空白字符
             if (c == '(') {

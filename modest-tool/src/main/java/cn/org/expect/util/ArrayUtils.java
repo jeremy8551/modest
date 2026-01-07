@@ -425,7 +425,7 @@ public class ArrayUtils {
         } else if (e1 || e2) {
             return false;
         } else if (a1.length != a2.length) {
-            return true;
+            return false;
         } else {
             for (int i = 0; i < a1.length; i++) {
                 E o1 = a1[i];

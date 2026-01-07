@@ -12,7 +12,7 @@ import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyLog;
+import cn.org.expect.test.annotation.RunWithLogSettings;
 import cn.org.expect.util.CharsetUtils;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.FileUtils;
@@ -22,8 +22,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@EasyLog("sout+:info")
 @RunWith(ModestRunner.class)
+@RunWithLogSettings("sout+:info")
 public class IncrementScriptTest {
     private final static Log log = LogFactory.getLog(IncrementScriptTest.class);
 
@@ -53,10 +53,10 @@ public class IncrementScriptTest {
             StringBuilder buf = new StringBuilder(500);
             for (int i = 1; i <= rows; i++) {
                 buf.setLength(0);
-                buf.append("姓名").append(coldel);
+                buf.append("name").append(coldel);
                 buf.append("Line").append(i).append(coldel);
-                buf.append("身份证号").append(coldel);
-                buf.append("手机号").append(coldel);
+                buf.append("id_card").append(coldel);
+                buf.append("phone").append(coldel);
                 buf.append(Dates.format19(start)).append(coldel);
                 buf.append(Dates.format19(end)).append(coldel);
                 for (int j = 1; j <= 20; j++) {
@@ -80,10 +80,10 @@ public class IncrementScriptTest {
                 boolean m = false;
 
                 buf.setLength(0);
-                buf.append("姓名").append(coldel);
+                buf.append("name").append(coldel);
                 buf.append("Line").append(i).append(coldel);
-                buf.append("身份证号").append(coldel);
-                buf.append("手机号").append(coldel);
+                buf.append("id_card").append(coldel);
+                buf.append("phone").append(coldel);
 
                 if (i == 1000 || i == 2002 || i == 4003) {
                     buf.append(coldel);
@@ -144,16 +144,16 @@ public class IncrementScriptTest {
         log.info(FileUtils.readline(newfile, CharsetUtils.get(), 1));
 
         // 当前目录
-        log.info("新文件: {}", newfile);
-        log.info("旧文件: {}", oldfile);
-        log.info("增量文件: {}", incfile);
-        log.info("日志文件: {}", logfile);
-        log.info("正确文件: {}", resultfile);
+        log.info("new file: {}", newfile);
+        log.info("old file: {}", oldfile);
+        log.info("inc file: {}", incfile);
+        log.info("log file: {}", logfile);
+        log.info("result file: {}", resultfile);
 
         UniversalScriptEngineFactory factory = new UniversalScriptEngineFactory(this.context);
         UniversalScriptEngine engine = factory.getScriptEngine();
         try {
-            engine.evaluate("echo 脚本引擎初始化完毕，执行增量剥离任务!");
+            engine.evaluate("echo Script engine initialization complete, executing incremental extraction task!");
 
             // 设置命令中使用的文件路径与索引字段位置信息
             engine.evaluate("set newfile='" + newfile.getAbsolutePath() + "'");
@@ -178,7 +178,7 @@ public class IncrementScriptTest {
         // 判断剥离增量结果文件与正确文件是否相等
         long n = FileUtils.equalsIgnoreLineSeparator(incfile, CharsetUtils.get(), resultfile, CharsetUtils.get(), 0);
         if (n != 0) {
-            String msg = "第 " + n + " 行不同!" + Settings.getLineSeparator();
+            String msg = "line " + n + " is different!" + Settings.getLineSeparator();
             msg += FileUtils.readline(incfile, CharsetUtils.get(), n) + Settings.getLineSeparator(); // 读取文件中的指定行内容
             msg += FileUtils.readline(resultfile, CharsetUtils.get(), n); // 读取文件中的指定行内容
             log.error(msg);
@@ -247,7 +247,7 @@ public class IncrementScriptTest {
             // 判断剥离增量结果文件与正确文件是否相等
             long n = FileUtils.equalsIgnoreLineSeparator(incfile, CharsetUtils.get(), resultfile, CharsetUtils.get(), 0);
             if (n != 0) {
-                String msg = "第 " + n + " 行不同!" + Settings.getLineSeparator();
+                String msg = "line " + n + " is difference!" + Settings.getLineSeparator();
                 msg += FileUtils.readline(incfile, CharsetUtils.get(), n) + Settings.getLineSeparator(); // 读取文件中的指定行内容
                 msg += FileUtils.readline(resultfile, CharsetUtils.get(), n); // 读取文件中的指定行内容
                 log.error(msg);

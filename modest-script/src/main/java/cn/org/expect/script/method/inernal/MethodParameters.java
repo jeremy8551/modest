@@ -35,7 +35,7 @@ public class MethodParameters implements UniversalScriptVariableMethodParameters
             analysis.split(expression, this.list, analysis.getSegment());
             for (int i = 0; i < this.list.size(); i++) {
                 String str = this.list.get(i);
-                String value = analysis.replaceShellVariable(session, context, str, true, false);
+                String value = analysis.replaceShellVariable(session, context, str, true, true);
                 this.list.set(i, value);
             }
         }
@@ -87,7 +87,7 @@ public class MethodParameters implements UniversalScriptVariableMethodParameters
 
         // 字符串两端有引号
         if (this.analysis.containsQuotation(value)) {
-            return this.analysis.unQuotation(value);
+            return this.analysis.unescapeString(this.analysis.unQuotation(value));
         }
 
         // 字符串变量

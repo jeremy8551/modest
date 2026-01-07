@@ -11,14 +11,9 @@
 
     <artifactId>modest-ioc</artifactId>
     <name>${project.artifactId}</name>
-    <description>IOC容器</description>
+    <description>IOC container</description>
 
     <dependencies>
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-jdk</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-concurrent</artifactId>
@@ -45,13 +40,6 @@
             <plugin>
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>pom</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

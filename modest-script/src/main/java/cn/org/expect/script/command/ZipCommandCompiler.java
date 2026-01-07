@@ -18,8 +18,9 @@ public class ZipCommandCompiler extends AbstractFileCommandCompiler {
     }
 
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
-        CommandExpression expr = new CommandExpression(analysis, "zip {0-1}", command);
-        String filepath = expr.getParameter();
-        return new ZipCommand(this, orginalScript, filepath);
+        CommandExpression expr = new CommandExpression(analysis, "zip -rvm {1-2}", command);
+        String zipFile = expr.getParameters().size() == 1 ? null : expr.getParameter(1);
+        String filepath = expr.getParameters().size() == 1 ? expr.getParameter(1) : expr.getParameter(2);
+        return new ZipCommand(this, orginalScript, zipFile, filepath, expr.containsOption("-r"), expr.containsOption("-v"), expr.containsOption("-m"));
     }
 }

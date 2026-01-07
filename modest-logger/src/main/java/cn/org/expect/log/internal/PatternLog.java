@@ -2,10 +2,10 @@ package cn.org.expect.log.internal;
 
 import java.util.List;
 
-import cn.org.expect.log.AbstractLogger;
+import cn.org.expect.log.AbstractFqcnLog;
+import cn.org.expect.log.AbstractResourceLog;
 import cn.org.expect.log.Appender;
 import cn.org.expect.log.FQCNAware;
-import cn.org.expect.log.LevelLogger;
 import cn.org.expect.log.LogContext;
 import cn.org.expect.log.LogEvent;
 import cn.org.expect.log.LogLevel;
@@ -16,10 +16,10 @@ import cn.org.expect.log.LogLevel;
  * @author jeremy8551@gmail.com
  * @createtime 2012-06-28
  */
-public class PatternLog extends AbstractLogger implements FQCNAware {
+public class PatternLog extends AbstractFqcnLog implements FQCNAware {
 
     /** 用于定位输出日志的代码位置信息的标识符 */
-    public static String FQCN = LevelLogger.class.getName();
+    public static String FQCN = AbstractResourceLog.class.getName();
 
     /** 日志事件 */
     private final LogEventImpl template;

@@ -50,8 +50,8 @@ public class CommandRepositoryScanner {
             Class<? extends UniversalCommandCompiler> type = entry.getType();
             try {
                 if (this.load(context, type)) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("script.stdout.message045", type.getName());
+                    if (log.isTraceEnabled()) {
+                        log.trace("script.stdout.message045", type.getName());
                     }
                 }
             } catch (Throwable e) {
@@ -90,7 +90,7 @@ public class CommandRepositoryScanner {
                 compiler = context.getContainer().newInstance(type);
             } catch (Exception e) {
                 if (log.isWarnEnabled()) {
-                    log.warn("class.stdout.message003", type.getName(), e);
+                    log.warn("class.stdout.message020", type.getName(), e);
                 }
                 return false;
             }

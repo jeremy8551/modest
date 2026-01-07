@@ -17,8 +17,11 @@ import cn.org.expect.io.BufferedLineReader;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.EasyContextAware;
 import cn.org.expect.ioc.annotation.EasyBean;
+import cn.org.expect.log.Log;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.os.OS;
 import cn.org.expect.os.OSCommand;
+import cn.org.expect.os.OSCommandException;
 import cn.org.expect.os.OSCommandStdouts;
 import cn.org.expect.os.OSCpu;
 import cn.org.expect.os.OSDateCommand;
@@ -54,6 +57,7 @@ import cn.org.expect.util.StringUtils;
  */
 @EasyBean(value = "linux")
 public class LinuxRemoteOS implements OS, OSFileCommand, OSDateCommand, OSNetwork, EasyContextAware {
+    private final static Log log = LogFactory.getLog(LinuxRemoteOS.class);
 
     protected OSSecureShellCommand cmd;
 
@@ -148,50 +152,55 @@ public class LinuxRemoteOS implements OS, OSFileCommand, OSDateCommand, OSNetwor
             "os-release", "cat /etc/*-release" // 发行版本号
         );
 
-        String username = OSCommandUtils.join(stdouts.get("whoami"));
-        String[] unames = StringUtils.splitByBlank(StringUtils.trimBlank(OSCommandUtils.join(stdouts.get("uname"))));
-        this.name = unames[0]; // 操作系统名
-        this.kernel = unames[2]; // 内核版本
-        this.users.addAll(Linuxs.parseEtcPasswd(stdouts.get("/etc/passwd"))); // 用户信息
-        this.groups.addAll(Linuxs.parseEtcGroup(stdouts.get("/etc/group"))); // 用户组
-        this.release = Linuxs.parseEtcRelease(stdouts.get("os-release")); // 发行版本号
-        this.currentUser = this.getUser(username); // 当前登录用户信息
-        Ensure.notNull(this.currentUser);
+        try {
+            String username = OSCommandUtils.join(stdouts.get("whoami"));
+            String[] unames = StringUtils.splitByBlank(StringUtils.trimBlank(OSCommandUtils.join(stdouts.get("uname"))));
+            this.name = unames[0]; // 操作系统名
+            this.kernel = unames[2]; // 内核版本
+            this.users.addAll(Linuxs.parseEtcPasswd(stdouts.get("/etc/passwd"))); // 用户信息
+            this.groups.addAll(Linuxs.parseEtcGroup(stdouts.get("/etc/group"))); // 用户组
+            this.release = Linuxs.parseEtcRelease(stdouts.get("os-release")); // 发行版本号
+            this.currentUser = this.getUser(username); // 当前登录用户信息
+            Ensure.notNull(this.currentUser);
 
-        this.currentUser.setPassword(this.password); // 保存密码
-        this.currentUser.setProfiles((List<String>) this.cmd.getAttribute("profile"));
+            this.currentUser.setPassword(this.password); // 保存密码
+            this.currentUser.setProfiles((List<String>) this.cmd.getAttribute("profile"));
 
-        if (this.currentUser.isRoot()) {
-            // 查询用户环境变量
-            List<String> commandList = new ArrayList<String>();
-            List<LinuxUser> users = new ArrayList<LinuxUser>();
-            for (LinuxUser user : this.users) {
-                if (!user.getName().equals(this.currentUser.getName())) { // 当前用户不需要查询环境
-                    commandList.add(user.getName());
-                    commandList.add("ls -a " + user.getHome() + " | grep bash ; ls -a " + user.getHome() + " | grep profile");
-                    users.add(user);
-                }
-            }
-
-            // 查看用户环境文件
-            OSCommandStdouts lsmap = this.cmd.execute(commandList);
-            for (LinuxUser user : users) {
-                ArrayList<String> list = new ArrayList<String>();
-                List<String> files = lsmap.get(user.getName());
-                for (String line : files) {
-                    String filename = StringUtils.trimBlank(line);
-                    if (filename.equals(".bash_profile")) {
-                        list.add(NetUtils.joinUri(user.getHome(), "/" + filename));
-                    } else if (filename.equals(".bashrc")) {
-                        list.add(NetUtils.joinUri(user.getHome(), "/" + filename));
-                    } else if (filename.equals(".bash_login")) {
-                        list.add(NetUtils.joinUri(user.getHome(), "/" + filename));
-                    } else if (filename.equals(".profile")) {
-                        list.add(NetUtils.joinUri(user.getHome(), "/" + filename));
+            if (this.currentUser.isRoot()) {
+                // 查询用户环境变量
+                List<String> commandList = new ArrayList<String>();
+                List<LinuxUser> users = new ArrayList<LinuxUser>();
+                for (LinuxUser user : this.users) {
+                    if (!user.getName().equals(this.currentUser.getName())) { // 当前用户不需要查询环境
+                        commandList.add(user.getName());
+                        commandList.add("ls -a " + user.getHome() + " | grep bash ; ls -a " + user.getHome() + " | grep profile");
+                        users.add(user);
                     }
                 }
-                user.setProfiles(list);
+
+                // 查看用户环境文件
+                OSCommandStdouts lsmap = this.cmd.execute(commandList);
+                for (LinuxUser user : users) {
+                    ArrayList<String> list = new ArrayList<String>();
+                    List<String> files = lsmap.get(user.getName());
+                    for (String line : files) {
+                        String filename = StringUtils.trimBlank(line);
+                        if (filename.equals(".bash_profile")) {
+                            list.add(NetUtils.joinUri(user.getHome(), "/" + filename));
+                        } else if (filename.equals(".bashrc")) {
+                            list.add(NetUtils.joinUri(user.getHome(), "/" + filename));
+                        } else if (filename.equals(".bash_login")) {
+                            list.add(NetUtils.joinUri(user.getHome(), "/" + filename));
+                        } else if (filename.equals(".profile")) {
+                            list.add(NetUtils.joinUri(user.getHome(), "/" + filename));
+                        }
+                    }
+                    user.setProfiles(list);
+                }
             }
+        } catch (OSCommandException e) {
+            log.error(stdouts.toString(), e);
+            throw e;
         }
     }
 
@@ -839,10 +848,10 @@ public class LinuxRemoteOS implements OS, OSFileCommand, OSDateCommand, OSNetwor
                         obj.setId(map.get("processor"));
                         obj.setModeName(map.get("model name"));
                         obj.setCoreId(map.get("core id"));
-                        obj.setCacheSize(DataUnitExpression.parse(StringUtils.coalesce(map.get("cache size"), "0")));
+                        // obj.setCacheSize(DataUnitExpression.parse(StringUtils.coalesce(map.get("cache size"), "0")));
                         obj.setCores(StringUtils.parseInt(map.get("cpu cores"), 0));
-                        obj.setPhysicalId(map.get("physical id"));
-                        obj.setSiblings(StringUtils.parseInt(map.get("siblings"), 0));
+                        // obj.setPhysicalId(map.get("physical id"));
+                        // obj.setSiblings(StringUtils.parseInt(map.get("siblings"), 0));
                         list.add(obj);
                     }
                 }

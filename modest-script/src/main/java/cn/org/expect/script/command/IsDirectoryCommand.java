@@ -17,7 +17,7 @@ import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.internal.FtpList;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
@@ -55,7 +55,7 @@ public class IsDirectoryCommand extends AbstractFileCommand implements Universal
         OSFtpCommand ftp = FtpList.get(context).getFTPClient();
         boolean print = session.isEchoEnable() || forceStdout;
         if (this.localhost || ftp == null) {
-            ScriptFile file = new ScriptFile(session, context, this.filepath);
+            File file = PathExpression.toFile(session, context, this.filepath);
 
             if (this.reverse) {
                 if (print) {
@@ -69,7 +69,7 @@ public class IsDirectoryCommand extends AbstractFileCommand implements Universal
                 return FileUtils.isDirectory(file) ? 0 : UniversalScriptCommand.COMMAND_ERROR;
             }
         } else {
-            String filepath = ScriptFile.replaceFilepath(session, context, this.filepath, false);
+            String filepath = PathExpression.resolve(session, context, this.filepath, false);
             if (this.reverse) {
                 if (print) {
                     stdout.println("!isDirectory " + filepath);

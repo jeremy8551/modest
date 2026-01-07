@@ -40,19 +40,19 @@ public class CommandExpression {
      * 初始化
      *
      * @param analysis 语句分析器
-     * @param pattern  命令规则, 详见: {@linkplain #parse(String)}
+     * @param pattern  命令规则, 详见: {@linkplain #parsePattern(String)}
      * @param command  命令语句
      */
     public CommandExpression(Analysis analysis, String pattern, String command) {
         this.prepared(analysis);
-        this.parse(pattern);
-        this.setValue(command);
+        this.parsePattern(pattern);
+        this.parseValue(command);
     }
 
     /**
      * 初始化
      *
-     * @param pattern 命令规则, 详见: {@linkplain #parse(String)}
+     * @param pattern 命令规则, 详见: {@linkplain #parsePattern(String)}
      * @param command 命令语句
      */
     public CommandExpression(String pattern, String command) {
@@ -100,7 +100,7 @@ public class CommandExpression {
      *                <br>
      *                如: !isDate|date -c -ivf [-s:date] [-d:'\\d+{8}'] --prefix: --name [-x|-v|-f] {0-2|5|6}
      */
-    protected void parse(String pattern) {
+    protected void parsePattern(String pattern) {
         this.clear();
 
         this.pattern = pattern;
@@ -114,7 +114,7 @@ public class CommandExpression {
         this.analysis.split(pattern, list);
         for (String str : list) {
             // 解析选项相关表达式
-            if (this.option.match(str)) {
+            if (this.option.isOptionRule(str)) {
                 this.option.parse(str);
             }
 
@@ -137,7 +137,7 @@ public class CommandExpression {
      *
      * @param command 命令表达式
      */
-    protected void setValue(String command) {
+    protected void parseValue(String command) {
         this.command = Ensure.notNull(command);
         for (int i = 0, count = 0; i < command.length(); i++) {
             char c = command.charAt(i);
@@ -199,7 +199,7 @@ public class CommandExpression {
                     if (optionValue == null) {
                         Word next = this.readNextWord(str, end);
                         if (next != null) {
-                            if (!this.option.match(next.getContent())) {
+                            if (!this.option.isOptionRule(next.getContent())) {
                                 this.option.addOption(new CommandOptionValue(optionName, next.getContent(), true));
                                 return next.getEnd() - 1;
                             } else {
@@ -223,10 +223,25 @@ public class CommandExpression {
                     }
                 }
             } else { // 解析短选项
-                if (word.length() > 2) { // 解析复合选项: -xvf 复合选项不能有选项值
+                if (word.length() > 2) { // 解析复合选项: -xvf
+                    boolean supportValue = false;
                     for (int i = 1; i < word.length(); i++) {
                         String optionName = String.valueOf(word.charAt(i));
                         if (this.option.supportName(optionName)) {
+                            if (supportValue) { // -xvf 复合选项只能有一个选项能有选项值
+                                throw new ExpressionException("expression.stdout.message063", this.command, word);
+                            }
+
+                            supportValue = this.option.supportValue(optionName);
+                            if (supportValue) {
+                                Word next = this.readNextWord(str, end);
+                                if (next != null && !this.option.isOptionRule(next.getContent())) {
+                                    this.option.addOption(new CommandOptionValue(optionName, next.getContent(), false));
+                                    end = next.getEnd();
+                                    continue;
+                                }
+                            }
+
                             this.option.addOption(new CommandOptionValue(optionName, null, false));
                         } else {
                             throw new ExpressionException("expression.stdout.message047", this.command, "-" + optionName);
@@ -242,7 +257,7 @@ public class CommandExpression {
                     // 如果选项可以有值
                     if (this.option.supportValue(optionName)) {
                         Word next = this.readNextWord(str, end);
-                        if (next != null && !this.option.match(next.getContent())) {
+                        if (next != null && !this.option.isOptionRule(next.getContent())) {
                             this.option.addOption(new CommandOptionValue(optionName, next.getContent(), false));
                             return next.getEnd() - 1;
                         }
