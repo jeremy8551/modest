@@ -16,7 +16,7 @@ public class JavaCommandTest2 extends AbstractJavaCommand {
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, String[] args) throws Exception {
-        throw new Exception("测试脚本引擎处理异常错误!");
+        throw new Exception("Testing the script engine’s exception/error handling!");
     }
 
     public boolean enableJump() {

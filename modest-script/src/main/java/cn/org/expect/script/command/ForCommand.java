@@ -44,7 +44,7 @@ import cn.org.expect.util.StringUtils;
  *
  * @author jeremy8551@gmail.com
  */
-public class ForCommand extends AbstractCommand implements WithBodyCommandSupported {
+public class ForCommand extends AbstractCommand implements WithBodyCommandSupported, LoopCommandKind {
 
     /** 变量名 */
     protected String name;
@@ -56,7 +56,10 @@ public class ForCommand extends AbstractCommand implements WithBodyCommandSuppor
     protected CommandList body;
 
     /** 正在运行的脚本命令 */
-    protected UniversalScriptCommand command;
+    protected volatile UniversalScriptCommand command;
+
+    /** 种类编号 */
+    protected int type;
 
     public ForCommand(UniversalCommandCompiler compiler, String command, String name, String collection, CommandList body) {
         super(compiler, command);
@@ -97,15 +100,16 @@ public class ForCommand extends AbstractCommand implements WithBodyCommandSuppor
                     if (command instanceof LoopCommandKind) {
                         LoopCommandKind cmd = (LoopCommandKind) command;
                         int type = cmd.kind();
-                        if (type == BreakCommand.KIND) { // break
+                        this.type = cmd.kind();
+                        if (type == LoopCommandKind.BREAK_COMMAND) { // break
                             isbreak = true;
                             break;
-                        } else if (type == ContinueCommand.KIND) { // continue
+                        } else if (type == LoopCommandKind.CONTINUE_COMMAND) { // continue
                             iscontinue = true;
                             break;
-                        } else if (type == ExitCommand.KIND) { // Exit script
+                        } else if (type == LoopCommandKind.EXIT_COMMAND) { // Exit script
                             return value;
-                        } else if (type == ReturnCommand.KIND) { // Exit the result set loop
+                        } else if (type == LoopCommandKind.RETURN_COMMAND) { // Exit the result set loop
                             return value;
                         }
                     }
@@ -193,5 +197,9 @@ public class ForCommand extends AbstractCommand implements WithBodyCommandSuppor
         if (this.command != null) {
             this.command.terminate();
         }
+    }
+
+    public int kind() {
+        return this.type;
     }
 }

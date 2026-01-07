@@ -1,10 +1,6 @@
 package cn.org.expect.database.internal;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
 import cn.org.expect.database.DatabaseType;
-import cn.org.expect.database.Jdbc;
 
 public class StandardDatabaseType implements DatabaseType {
 
@@ -24,8 +20,6 @@ public class StandardDatabaseType implements DatabaseType {
 
     private Integer nullAble;
 
-    private Integer caseSesitive;
-
     private Integer maximumScale;
 
     private Integer minimumScale;
@@ -38,11 +32,16 @@ public class StandardDatabaseType implements DatabaseType {
 
     private Integer autoIncrement;
 
+    private Integer caseSesitive;
+
     private Integer unsignedAttribute;
 
     private Integer sqlDateTimeSub;
 
     private String localTypeName;
+
+    public StandardDatabaseType() {
+    }
 
     /**
      * 初始化
@@ -57,8 +56,8 @@ public class StandardDatabaseType implements DatabaseType {
         this.literalPrefix = obj.literalPrefix;
         this.literalSuffix = obj.literalSuffix;
         this.createParams = obj.createParams;
-        this.nullAble = obj.nullAble;
         this.caseSesitive = obj.caseSesitive;
+        this.nullAble = obj.nullAble;
         this.maximumScale = obj.maximumScale;
         this.minimumScale = obj.minimumScale;
         this.numberPrecRadix = obj.numberPrecRadix;
@@ -68,33 +67,6 @@ public class StandardDatabaseType implements DatabaseType {
         this.unsignedAttribute = obj.unsignedAttribute;
         this.sqlDateTimeSub = obj.sqlDateTimeSub;
         this.localTypeName = obj.localTypeName;
-    }
-
-    /**
-     * 初始化
-     *
-     * @param resultSet 查询结果集
-     * @throws SQLException 数据库错误
-     */
-    public StandardDatabaseType(ResultSet resultSet) throws SQLException {
-        this.name = resultSet.getString("TYPE_NAME");
-        this.sqlType = Jdbc.getInt(resultSet, "DATA_TYPE");
-        this.precision = Jdbc.getInt(resultSet, "PRECISION");
-        this.literalPrefix = Jdbc.getString(resultSet, "LITERAL_PREFIX");
-        this.literalSuffix = Jdbc.getString(resultSet, "LITERAL_SUFFIX");
-        this.createParams = Jdbc.getString(resultSet, "CREATE_PARAMS");
-        this.nullAble = Jdbc.getInt(resultSet, "NULLABLE");
-        this.caseSesitive = Jdbc.getInt(resultSet, "CASE_SENSITIVE");
-        this.searchable = Jdbc.getInt(resultSet, "SEARCHABLE");
-        this.unsignedAttribute = Jdbc.getInt(resultSet, "UNSIGNED_ATTRIBUTE");
-        this.fixedPrecScale = Jdbc.getInt(resultSet, "FIXED_PREC_SCALE");
-        this.autoIncrement = Jdbc.getInt(resultSet, "AUTO_INCREMENT");
-        this.localTypeName = Jdbc.getString(resultSet, "LOCAL_TYPE_NAME");
-        this.minimumScale = Jdbc.getInt(resultSet, "MINIMUM_SCALE");
-        this.maximumScale = Jdbc.getInt(resultSet, "MAXIMUM_SCALE");
-        this.numberPrecRadix = Jdbc.getInt(resultSet, "NUM_PREC_RADIX");
-        this.sqlDataType = Jdbc.getInt(resultSet, "SQL_DATA_TYPE");
-        this.sqlDateTimeSub = Jdbc.getInt(resultSet, "SQL_DATETIME_SUB");
     }
 
     public StandardDatabaseType clone() {
@@ -137,10 +109,6 @@ public class StandardDatabaseType implements DatabaseType {
         return nullAble;
     }
 
-    public Integer getCaseSesitive() {
-        return caseSesitive;
-    }
-
     public Integer getMaxScale() {
         return maximumScale;
     }
@@ -149,7 +117,7 @@ public class StandardDatabaseType implements DatabaseType {
         return minimumScale;
     }
 
-    public Integer getScale() {
+    public Integer getFixedPrecScale() {
         return fixedPrecScale;
     }
 
@@ -173,7 +141,83 @@ public class StandardDatabaseType implements DatabaseType {
         return localTypeName;
     }
 
-//	public Integer getSqlDataType() {
+    public void setName(final String name) {
+        this.name = name;
+    }
+
+    public void setSqlType(final Integer sqlType) {
+        this.sqlType = sqlType;
+    }
+
+    public void setSqlDataType(final Integer sqlDataType) {
+        this.sqlDataType = sqlDataType;
+    }
+
+    public void setPrecision(final Integer precision) {
+        this.precision = precision;
+    }
+
+    public void setLiteralPrefix(final String literalPrefix) {
+        this.literalPrefix = literalPrefix;
+    }
+
+    public void setLiteralSuffix(final String literalSuffix) {
+        this.literalSuffix = literalSuffix;
+    }
+
+    public void setCreateParams(final String createParams) {
+        this.createParams = createParams;
+    }
+
+    public void setNullAble(final Integer nullAble) {
+        this.nullAble = nullAble;
+    }
+
+    public void setMaximumScale(final Integer maximumScale) {
+        this.maximumScale = maximumScale;
+    }
+
+    public void setMinimumScale(final Integer minimumScale) {
+        this.minimumScale = minimumScale;
+    }
+
+    public void setNumberPrecRadix(final Integer numberPrecRadix) {
+        this.numberPrecRadix = numberPrecRadix;
+    }
+
+    public void setFixedPrecScale(final Integer fixedPrecScale) {
+        this.fixedPrecScale = fixedPrecScale;
+    }
+
+    public void setSearchable(final Integer searchable) {
+        this.searchable = searchable;
+    }
+
+    public void setAutoIncrement(final Integer autoIncrement) {
+        this.autoIncrement = autoIncrement;
+    }
+
+    public void setUnsignedAttribute(final Integer unsignedAttribute) {
+        this.unsignedAttribute = unsignedAttribute;
+    }
+
+    public void setSqlDateTimeSub(final Integer sqlDateTimeSub) {
+        this.sqlDateTimeSub = sqlDateTimeSub;
+    }
+
+    public void setLocalTypeName(final String localTypeName) {
+        this.localTypeName = localTypeName;
+    }
+
+    public Integer getCaseSesitive() {
+        return caseSesitive;
+    }
+
+    public void setCaseSesitive(final Integer caseSesitive) {
+        this.caseSesitive = caseSesitive;
+    }
+
+    //	public Integer getSqlDataType() {
 //		return sqlDataType;
 //	}
 //
@@ -182,6 +226,6 @@ public class StandardDatabaseType implements DatabaseType {
 //	}
 
     public String toString() {
-        return "StandardDatabaseType [name=" + name + ", sqlType=" + sqlType + ", sqlDataType=" + sqlDataType + ", precision=" + precision + ", literalPrefix=" + literalPrefix + ", literalSuffix=" + literalSuffix + ", createParams=" + createParams + ", nullAble=" + nullAble + ", caseSesitive=" + caseSesitive + ", maximumScale=" + maximumScale + ", minimumScale=" + minimumScale + ", numberPrecRadix=" + numberPrecRadix + ", fixedPrecScale=" + fixedPrecScale + ", searchable=" + searchable + ", autoIncrement=" + autoIncrement + ", unsignedAttribute=" + unsignedAttribute + ", sqlDateTimeSub=" + sqlDateTimeSub + ", localTypeName=" + localTypeName + "]";
+        return "StandardDatabaseType [name=" + name + ", sqlType=" + sqlType + ", sqlDataType=" + sqlDataType + ", precision=" + precision + ", literalPrefix=" + literalPrefix + ", literalSuffix=" + literalSuffix + ", createParams=" + createParams + ", caseSesitive=" + caseSesitive + ", nullAble=" + nullAble + ", maximumScale=" + maximumScale + ", minimumScale=" + minimumScale + ", numberPrecRadix=" + numberPrecRadix + ", fixedPrecScale=" + fixedPrecScale + ", searchable=" + searchable + ", autoIncrement=" + autoIncrement + ", unsignedAttribute=" + unsignedAttribute + ", sqlDateTimeSub=" + sqlDateTimeSub + ", localTypeName=" + localTypeName + "]";
     }
 }

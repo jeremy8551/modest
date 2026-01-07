@@ -17,7 +17,7 @@ import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.script.io.ScriptNullStdout;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
@@ -77,7 +77,7 @@ public class FindCommand extends AbstractTraceCommand {
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         UniversalScriptAnalysis analysis = session.getAnalysis();
-        String name = analysis.unQuotation(analysis.replaceShellVariable(session, context, this.name, true, false));
+        String name = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.name), true, !analysis.containsQuotation(this.name));
 
         if (analysis.isBlank(this.outputFile)) {
             if (session.isEchoEnable() || forceStdout) {
@@ -86,12 +86,12 @@ public class FindCommand extends AbstractTraceCommand {
                 this.out = new OutputStreamPrinter(new ScriptNullStdout(stdout), this.encoding);
             }
         } else {
-            File logfile = new ScriptFile(session, context, this.outputFile);
+            File logfile = PathExpression.toFile(session, context, this.outputFile);
             FileUtils.assertCreateFile(logfile);
             this.out = new FileOutputStream(logfile);
         }
 
-        File file = new ScriptFile(session, context, this.filepath);
+        File file = PathExpression.toFile(session, context, this.filepath);
         this.search(session, file, name);
         return 0;
     }

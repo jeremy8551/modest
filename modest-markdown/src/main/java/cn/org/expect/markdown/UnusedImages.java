@@ -31,7 +31,7 @@ public class UnusedImages {
     }
 
     private void delFile(File file) throws IOException {
-        Utils.deleteTempfile(file);
+        MarkdownUtils.deleteTempfile(file);
 
         // 读取文件内容
         String ext = FileUtils.getFilenameExt(file.getName());
@@ -50,7 +50,7 @@ public class UnusedImages {
                         String hexName = StringUtils.encodeJvmUtf8HexString(name);
                         String hexName1 = StringUtils.replaceAll(hexName, " ", "%20");
                         if (!content.contains(name) && StringUtils.indexOf(content, hexName, 0, true) == -1 && StringUtils.indexOf(content, hexName1, 0, true) == -1) {
-                            log.info("删除 " + file.getAbsolutePath() + " 中没有用到图片 " + imgfile.getAbsolutePath() + " " + (FileUtils.deleteFile(imgfile) ? "[success]" : "[fail]"));
+                            log.info("markdown.stdout.message008", file.getAbsolutePath(), imgfile.getAbsolutePath(), (FileUtils.deleteFile(imgfile) ? "[success]" : "[fail]"));
                             continue;
                         }
                     }

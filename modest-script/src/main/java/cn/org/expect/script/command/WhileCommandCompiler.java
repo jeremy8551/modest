@@ -42,12 +42,12 @@ public class WhileCommandCompiler extends AbstractCommandCompiler {
         it.assertLast("loop");
         it.assertLast("end");
         if (log.isDebugEnabled()) {
-            log.debug("script.stdout.message030", "while", condition);
+             log.debug("script.stdout.message029", "while", condition);
         }
 
         String body = it.readOther();
         if (log.isDebugEnabled()) {
-            log.debug("script.stdout.message031", "while", body);
+            log.debug("script.stdout.message030", "while", body);
         }
 
         List<UniversalScriptCommand> commands = parser.read(body);

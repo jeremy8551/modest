@@ -24,8 +24,6 @@ import cn.org.expect.util.StringUtils;
  */
 public class ExitCommand extends AbstractTraceCommand implements UniversalScriptInputStream, LoopCommandKind {
 
-    public final static int KIND = 10;
-
     /** 返回值 */
     private String exitValue;
 
@@ -44,7 +42,7 @@ public class ExitCommand extends AbstractTraceCommand implements UniversalScript
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         session.getCompiler().terminate();
-        String exitValue = session.getAnalysis().replaceShellVariable(session, context, this.exitValue, true, false);
+        String exitValue = session.getAnalysis().replaceShellVariable(session, context, this.exitValue, true, true);
 
         if (session.isEchoEnable() || forceStdout) {
             stdout.println("exit " + exitValue);
@@ -57,21 +55,21 @@ public class ExitCommand extends AbstractTraceCommand implements UniversalScript
 
         // 空指针
         if ("null".equalsIgnoreCase(exitValue)) {
-            session.putValue(null);
+            session.setValue(null);
             return 0;
         }
 
         // 返回值
         if (StringUtils.isInt(exitValue)) {
             int value = Integer.parseInt(exitValue);
-            session.putValue(value);
+            session.setValue(value);
             return value;
         }
 
         // 返回变量
         if (context.containsVariable(exitValue)) {
             Object variable = context.getVariable(exitValue);
-            session.putValue(variable);
+            session.setValue(variable);
             return 0;
         }
 
@@ -87,6 +85,6 @@ public class ExitCommand extends AbstractTraceCommand implements UniversalScript
     }
 
     public int kind() {
-        return ExitCommand.KIND;
+        return LoopCommandKind.EXIT_COMMAND;
     }
 }

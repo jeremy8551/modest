@@ -12,6 +12,7 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.test.ModestRunner;
 import cn.org.expect.util.ClassUtils;
+import cn.org.expect.util.IO;
 import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
@@ -38,7 +39,7 @@ public class DatabaseDialectTest {
             String tableName = packageName.replace('.', '_') + "_TEST_TEMP".toUpperCase();
             tableName = tableName.toUpperCase();
 
-            String fullName = dao.getDialect().toTableName(catalog, schema, tableName);
+            String fullName = dao.getDialect().generateTableName(catalog, schema, tableName);
             DatabaseTable table = dao.getTable(catalog, schema, tableName);
             if (table != null) {
                 dao.dropTable(table);
@@ -188,5 +189,25 @@ public class DatabaseDialectTest {
     public void test2() throws SQLException {
         StandardDatabaseDialect dialect = new StandardDatabaseDialect();
         Assert.assertTrue(StringUtils.isNotBlank(dialect.getSchema(this.connection)));
+    }
+
+    /**
+     * 打印数据库中字段类型
+     */
+    @Test
+    public void test3() {
+        Connection conn = this.connection;
+        try {
+            StandardDatabaseDialect dialect = new StandardDatabaseDialect();
+            DatabaseTypeSet typeInfo = dialect.getFieldInformation(conn);
+            log.info(typeInfo.toString());
+            Jdbc.rollback(conn);
+        } catch (Exception e) {
+            Jdbc.rollback(conn);
+            log.error(e.getLocalizedMessage(), e);
+            Assert.fail();
+        } finally {
+            IO.closeQuietly(conn);
+        }
     }
 }

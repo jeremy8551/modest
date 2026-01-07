@@ -222,7 +222,7 @@ public class Progress {
                             lefttime = this.lastLeftTime;
                         }
 
-                        str = StringUtils.replaceAll(str, "${leftTime}", ResourcesUtils.getMessage("printer.stdout.message001", StringUtils.removeBlank(Dates.format(lefttime, TimeUnit.SECONDS, false))));
+                        str = StringUtils.replaceAll(str, "${leftTime}", ResourcesUtils.getMessage("printer.stdout.message001", Dates.format(lefttime, TimeUnit.SECONDS, false)));
                         this.lastLeftTime = lefttime;
                     } else {
                         str = StringUtils.replaceAll(str, "${leftTime}", "");

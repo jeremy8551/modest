@@ -14,9 +14,9 @@ import cn.org.expect.database.DatabaseIndex;
 import cn.org.expect.database.DatabaseProcedure;
 import cn.org.expect.database.DatabaseProcedureParameter;
 import cn.org.expect.database.DatabaseTableColumn;
+import cn.org.expect.database.DatabaseTableColumnList;
 import cn.org.expect.database.DatabaseTypeSet;
 import cn.org.expect.database.DatabaseURL;
-import cn.org.expect.database.Jdbc;
 import cn.org.expect.database.JdbcConverterMapper;
 import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.JdbcQueryStatement;
@@ -169,11 +169,11 @@ public class OracleDialect extends AbstractDialect {
         JdbcDao.execute(conn, "alter session set current_schema=" + schema);
     }
 
-    public String toDeleteQuicklySQL(Connection connection, String catalog, String schema, String tableName) {
+    public String generateDeleteQuicklySQL(Connection connection, String catalog, String schema, String tableName) {
         if (StringUtils.isBlank(tableName)) {
             throw new IllegalArgumentException(tableName);
         } else {
-            return "truncate table " + this.toTableName(catalog, schema, tableName);
+            return "truncate table " + this.generateTableName(catalog, schema, tableName);
         }
     }
 
@@ -315,7 +315,7 @@ public class OracleDialect extends AbstractDialect {
         }
     }
 
-    public List<DatabaseProcedure> getProcedure(Connection conn, String catalog, String schema, String procedureName) throws SQLException {
+    public List<DatabaseProcedure> getProcedures(Connection conn, String catalog, String schema, String procedureName) throws SQLException {
         schema = SQL.escapeQuote(schema);
         procedureName = SQL.escapeQuote(procedureName);
         List<DatabaseProcedure> list = new ArrayList<DatabaseProcedure>();
@@ -341,7 +341,7 @@ public class OracleDialect extends AbstractDialect {
             obj.setCatalog(null);
             obj.setSchema(StringUtils.rtrimBlank(resultSet.getString("OWNER")));
             obj.setName(StringUtils.rtrimBlank(resultSet.getString("OBJECT_NAME")));
-            obj.setFullName(this.toTableName(obj.getCatalog(), obj.getSchema(), obj.getName()));
+            obj.setFullName(this.generateTableName(obj.getCatalog(), obj.getSchema(), obj.getName()));
             obj.setCreator(StringUtils.rtrimBlank(resultSet.getString("OWNER")));
             obj.setCreatTime(resultSet.getDate("CREATED"));
             obj.setLanguage("SQL");
@@ -472,7 +472,7 @@ public class OracleDialect extends AbstractDialect {
             return null;
         }
 
-        DatabaseTypeSet map = Jdbc.getTypeInfo(conn);
+        DatabaseTypeSet map = this.getFieldInformation(conn);
         String[][] pms = resolveDatabaseProcedureParam(ddl);
         if (pms == null) {
             return null;
@@ -601,19 +601,26 @@ public class OracleDialect extends AbstractDialect {
         throw new UnsupportedOperationException();
     }
 
-    public void openLoadMode(JdbcDao conn, String fullname) throws SQLException {
+    public void openLoadMode(JdbcDao conn, String fullTableName) throws SQLException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void closeLoadMode(JdbcDao conn, String fullname) throws SQLException {
+    public void closeLoadMode(JdbcDao conn, String fullTableName) throws SQLException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
     }
 
-    public void commitLoadData(JdbcDao conn, String fullname) throws SQLException {
+    public void commitLoadData(JdbcDao conn, String fullTableName) throws SQLException {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException();
+    }
+
+    public boolean expandLength(final DatabaseTableColumn column, final String value, final String charsetName) {
+        return false;
+    }
+
+    public void expandLength(final Connection conn, final DatabaseTableColumnList oldTableColumnList, final List<DatabaseTableColumn> newTableColumnList) throws SQLException {
     }
 
     public JdbcConverterMapper getStringConverters() {
@@ -621,7 +628,7 @@ public class OracleDialect extends AbstractDialect {
         throw new UnsupportedOperationException();
     }
 
-    public DatabaseDDL toDDL(Connection connection, DatabaseProcedure procedure) throws SQLException {
+    public DatabaseDDL generateDDL(Connection connection, DatabaseProcedure procedure) throws SQLException {
         StandardDatabaseDDL ddl = new StandardDatabaseDDL();
         JdbcQueryStatement query = new JdbcQueryStatement(connection, "select dbms_metadata.get_ddl('PROCEDURE', '" + procedure.getName() + "') as TEXT from dual ");
         try {
@@ -640,7 +647,7 @@ public class OracleDialect extends AbstractDialect {
         return true;
     }
 
-    public String toMergeStatement(String tableName, List<DatabaseTableColumn> columns, List<String> mergeColumn) {
+    public String generateMergeStatement(String tableName, List<DatabaseTableColumn> columns, List<String> mergeColumn) {
         String sql = "";
 
         /**

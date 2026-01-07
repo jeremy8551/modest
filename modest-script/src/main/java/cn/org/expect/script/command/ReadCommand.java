@@ -16,7 +16,7 @@ import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.LoopCommandKind;
 import cn.org.expect.script.command.feature.WithBodyCommandSupported;
 import cn.org.expect.script.internal.CommandList;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.script.io.ScriptStdbuf;
 import cn.org.expect.script.session.ScriptMainProcess;
 import cn.org.expect.util.IO;
@@ -24,7 +24,7 @@ import cn.org.expect.util.IO;
 /**
  * {@literal while read line do ... done < filename}
  */
-public class ReadCommand extends AbstractCommand implements WithBodyCommandSupported {
+public class ReadCommand extends AbstractCommand implements WithBodyCommandSupported, LoopCommandKind {
 
     /** while 循环体 */
     private CommandList body;
@@ -33,7 +33,10 @@ public class ReadCommand extends AbstractCommand implements WithBodyCommandSuppo
     private String inputStr;
 
     /** 正在运行的脚本命令 */
-    protected UniversalScriptCommand command;
+    protected volatile UniversalScriptCommand command;
+
+    /** 种类编号 */
+    protected int type;
 
     public ReadCommand(UniversalCommandCompiler compiler, String command, CommandList body, String inputExpr) {
         super(compiler, command);
@@ -43,10 +46,10 @@ public class ReadCommand extends AbstractCommand implements WithBodyCommandSuppo
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
-        File file = new ScriptFile(session, context, this.inputStr);
+        File file = PathExpression.toFile(session, context, this.inputStr);
         UniversalScriptAnalysis analysis = session.getAnalysis();
 
-        BufferedReader in = null;
+        BufferedReader in;
         if (!file.exists()) {
             String command;
             if (session.getAnalysis().startsWith(this.inputStr, "`", 0, false)) {
@@ -98,7 +101,7 @@ public class ReadCommand extends AbstractCommand implements WithBodyCommandSuppo
         try {
             ScriptMainProcess process = session.getMainProcess();
             boolean isbreak = false, iscontinue = false;
-            String line = null;
+            String line;
             while (!session.isTerminate() && (line = in.readLine()) != null) {
                 iscontinue = false;
                 context.addLocalVariable(body.getName(), line);
@@ -118,16 +121,17 @@ public class ReadCommand extends AbstractCommand implements WithBodyCommandSuppo
 
                     if (command instanceof LoopCommandKind) {
                         LoopCommandKind cmd = (LoopCommandKind) command;
+                        this.type = cmd.kind();
                         int type = cmd.kind();
-                        if (type == BreakCommand.KIND) { // break
+                        if (type == LoopCommandKind.BREAK_COMMAND) { // break
                             isbreak = true;
                             break;
-                        } else if (type == ContinueCommand.KIND) { // continue
+                        } else if (type == LoopCommandKind.CONTINUE_COMMAND) { // continue
                             iscontinue = true;
                             break;
-                        } else if (type == ExitCommand.KIND) { // Exit script
+                        } else if (type == LoopCommandKind.EXIT_COMMAND) { // Exit script
                             return value;
-                        } else if (type == ReturnCommand.KIND) { // Exit the result set loop
+                        } else if (type == LoopCommandKind.RETURN_COMMAND) { // Exit the result set loop
                             return value;
                         }
                     }
@@ -157,5 +161,9 @@ public class ReadCommand extends AbstractCommand implements WithBodyCommandSuppo
         if (this.command != null) {
             this.command.terminate();
         }
+    }
+
+    public int kind() {
+        return this.type;
     }
 }

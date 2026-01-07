@@ -37,8 +37,8 @@ public class QueryManagerTest {
             }
 
             JdbcDao.execute(this.connection, "create table " + TABLE_NAME + "  (id int, name char(100)  )");
-            JdbcDao.execute(this.connection, "insert into " + TABLE_NAME + "  (id, name) values (1, '名字1')");
-            JdbcDao.execute(this.connection, "insert into " + TABLE_NAME + "  (id, name) values (2, '名字2')");
+            JdbcDao.execute(this.connection, "insert into " + TABLE_NAME + "  (id, name) values (1, 'name1')");
+            JdbcDao.execute(this.connection, "insert into " + TABLE_NAME + "  (id, name) values (2, 'name2')");
 
             this.connection.commit();
         } catch (Exception e) {

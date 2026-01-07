@@ -6,6 +6,7 @@ import java.io.Reader;
 import cn.org.expect.io.CacheLineReader;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptException;
+import cn.org.expect.script.UniversalScriptExpression;
 import cn.org.expect.script.UniversalScriptReader;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.IO;
@@ -58,15 +59,15 @@ public class ScriptReader extends ScriptAnalysis implements UniversalScriptReade
     /**
      * 将当行号 记录为 命令的起始行号
      */
-    public void recordStartLineNumber() {
+    public void setStartLineNumber() {
         this.startLineNumber = this.getLineNumber();
         this.endLineNumber = this.startLineNumber;
     }
 
     /**
-     * 将当行号 记录为 命令的结束行号
+     * 将当行号记录为命令的结束行号
      */
-    public void recordEndLineNumber() {
+    public void setEndLineNumber() {
         this.endLineNumber = this.getLineNumber();
     }
 
@@ -400,6 +401,57 @@ public class ScriptReader extends ScriptAnalysis implements UniversalScriptReade
             buf.append(this.readMultilineScript(in, line));
         }
         return buf;
+    }
+
+    public synchronized String readStrBlockScript(int strBlockBegin) throws IOException {
+        try {
+            String line = this.previewline();
+            return line == null ? null : StringUtils.rtrimBlank(this.readStrBlockScript(this.in, line, strBlockBegin), this.token);
+        } finally {
+            this.cacheline = null; // 清空 previewline() 方法生成的缓存
+        }
+    }
+
+    /**
+     * 读取一个 SQL 语句
+     *
+     * @param in            输入流
+     * @param currentLine   当前行内容
+     * @param strBlockBegin 多行字符串的起始位置
+     * @return 一个命令语句
+     * @throws IOException 读取命令发生错误
+     */
+    private StringBuilder readStrBlockScript(CacheLineReader in, String currentLine, int strBlockBegin) throws IOException {
+        StringBuilder buf = new StringBuilder();
+
+        int strBlockEnd = this.analysis.indexOfStrBlock(currentLine, strBlockBegin + UniversalScriptExpression.STRING_BLOCK.length());
+        if (strBlockEnd == -1) {
+            buf.append(currentLine).append(in.getLineSeparator()); // 保存换行符
+
+            // 读取下一行直到语句分隔符为止
+            String line;
+            while ((line = in.readLine()) != null) {
+                strBlockEnd = this.analysis.indexOfStrBlock(line, 0);
+                if (strBlockEnd == -1) {
+                    buf.append(line).append(in.getLineSeparator()); // 保存换行符
+                } else {
+                    int next = strBlockEnd + 1;
+                    buf.append(line.substring(0, next));
+                    if (next < line.length()) {
+                        in.setCurrentLine(line.substring(next));
+                    }
+                    break;
+                }
+            }
+            return buf;
+        } else {
+            int next = strBlockEnd + 1;
+            buf.append(currentLine.substring(0, next));
+            if (next < currentLine.length()) {
+                in.setCurrentLine(currentLine.substring(next));
+            }
+            return buf;
+        }
     }
 
     /**

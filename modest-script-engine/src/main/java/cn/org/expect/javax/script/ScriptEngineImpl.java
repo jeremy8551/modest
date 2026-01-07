@@ -50,7 +50,7 @@ public class ScriptEngineImpl implements ScriptEngine {
     }
 
     public void put(String name, Object value) {
-        this.engine.getContext().addVariable(name, value, UniversalScriptContext.ENGINE_SCOPE);
+        this.engine.getContext().addEnvironmentVariable(name, value);
     }
 
     public void setBindings(Bindings bindings, int scope) {

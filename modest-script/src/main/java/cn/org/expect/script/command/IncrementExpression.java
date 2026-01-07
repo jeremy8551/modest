@@ -20,14 +20,14 @@ import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.internal.StandardDatabaseConfiguration;
 import cn.org.expect.expression.WordIterator;
 import cn.org.expect.increment.IncrementReplace;
+import cn.org.expect.increment.sort.TableFileSortContext;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.os.OSConnectCommand;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.internal.ScriptDataSource;
-import cn.org.expect.script.io.ScriptFile;
-import cn.org.expect.sort.TableFileSortContext;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.Attribute;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Ensure;
@@ -312,7 +312,7 @@ public class IncrementExpression implements Attribute<String> {
         // 排序文件使用的临时目录
         String tempDirPath = this.attributes.get("temp");
         if (StringUtils.isNotBlank(tempDirPath)) {
-            context.setTempDir(new ScriptFile(this.session, this.context, tempDirPath));
+            context.setTempDir(PathExpression.toFile(this.session, this.context, tempDirPath));
         }
         return context;
     }

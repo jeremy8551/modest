@@ -6,7 +6,6 @@ import java.io.Reader;
 import java.util.Date;
 import java.util.Map;
 
-import cn.org.expect.script.io.ScriptFileExpression;
 import cn.org.expect.script.session.ScriptMainProcess;
 import cn.org.expect.script.session.ScriptSubProcess;
 import cn.org.expect.util.Terminate;
@@ -25,7 +24,7 @@ public interface UniversalScriptSession extends Terminate {
      *
      * @param value 值
      */
-    void putValue(Object value);
+    void setValue(Object value);
 
     /**
      * 会话的返回值（即 {@linkplain UniversalScriptEngine#evaluate(Reader, UniversalScriptContext)} 方法的返回值）
@@ -58,10 +57,10 @@ public interface UniversalScriptSession extends Terminate {
     /**
      * 设置脚本文件
      *
-     * @param file 脚本文件表达式
+     * @param filepath 脚本文件表达式
      * @throws IOException 访问文件错误
      */
-    void setScriptFile(ScriptFileExpression file) throws IOException;
+    void setScriptFilepath(String filepath) throws IOException;
 
     /**
      * 判断是不是脚本文件
@@ -207,8 +206,9 @@ public interface UniversalScriptSession extends Terminate {
      *
      * @param key   变量名
      * @param value 变量值
+     * @return 与键相关联的先前值，或者如果键没有则返回null。
      */
-    void addVariable(String key, Object value);
+    <E> E addVariable(String key, Object value);
 
     /**
      * 返回变量集合
@@ -224,6 +224,23 @@ public interface UniversalScriptSession extends Terminate {
      * @return 返回true表示存在变量
      */
     boolean containsVariable(String name);
+
+    /**
+     * 返回系统级变量
+     *
+     * @param key 变量名
+     * @param <E> 变量值类型
+     * @return 变量值
+     */
+    <E> E getSystemVariable(String key);
+
+    /**
+     * @param key   变量名
+     * @param value 变量值
+     * @param <E>   变量值类型
+     * @return 旧的变量值
+     */
+    <E> E addSystemVariable(String key, Object value);
 
     /**
      * 移除变量
@@ -245,7 +262,7 @@ public interface UniversalScriptSession extends Terminate {
      *
      * @return 目录
      */
-    String getDirectory();
+    File getDirectory();
 
     /**
      * 是否检查 {@linkplain UniversalScriptEngine#evaluate(UniversalScriptSession, UniversalScriptContext, UniversalScriptStdout, UniversalScriptStderr, boolean, Reader)} 方法的返回值

@@ -1,7 +1,5 @@
 package cn.org.expect.os.internal;
 
-import java.math.BigDecimal;
-
 import cn.org.expect.os.OSCpu;
 
 /**
@@ -16,12 +14,6 @@ public class OSProcessorImpl implements OSCpu {
     private int cores;
 
     private String coreId;
-
-    private int siblings;
-
-    private String physicalId;
-
-    private BigDecimal cacheSize;
 
     public OSProcessorImpl() {
         super();
@@ -55,19 +47,7 @@ public class OSProcessorImpl implements OSCpu {
         this.coreId = coreId;
     }
 
-    public void setSiblings(int siblings) {
-        this.siblings = siblings;
-    }
-
-    public void setPhysicalId(String physicalId) {
-        this.physicalId = physicalId;
-    }
-
-    public void setCacheSize(BigDecimal cacheSize) {
-        this.cacheSize = cacheSize;
-    }
-
     public String toString() {
-        return "OSProcessorImpl [id=" + id + ", modeName=" + modeName + ", cores=" + cores + ", coreId=" + coreId + ", siblings=" + siblings + ", physicalId=" + physicalId + ", cacheSize=" + cacheSize + "]";
+        return "OSProcessorImpl [id=" + id + ", modeName=" + modeName + ", cores=" + cores + ", coreId=" + coreId + "]";
     }
 }

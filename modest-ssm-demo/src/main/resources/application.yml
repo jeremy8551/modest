@@ -10,7 +10,7 @@ spring:
         - target/classes
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:modest-ssm-db;DB_CLOSE_DELAY=-1;INIT=runscript from '~/.modest/modest-ssm/build.sql'
+    url: jdbc:h2:mem:modest-ssm-db;DB_CLOSE_DELAY=-1;INIT=runscript from '~/.modest/modest-ssm-demo/build.sql'
     username: root
     password: 222222
     druid:

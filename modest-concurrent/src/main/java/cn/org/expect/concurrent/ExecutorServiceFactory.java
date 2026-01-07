@@ -19,11 +19,11 @@ public interface ExecutorServiceFactory {
      *
      * @return 线程池
      */
-    ExecutorService create(int corePoolSize, //
-                           int maximumPoolSize, //
-                           long keepAliveTime, //
-                           TimeUnit unit, //
-                           BlockingQueue<Runnable> workQueue, //
-                           ThreadFactory threadFactory, //
-                           RejectedExecutionHandler handler);
+    ExecutorService newInstance(int corePoolSize, //
+                                int maximumPoolSize, //
+                                long keepAliveTime, //
+                                TimeUnit unit, //
+                                BlockingQueue<Runnable> workQueue, //
+                                ThreadFactory threadFactory, //
+                                RejectedExecutionHandler handler);
 }

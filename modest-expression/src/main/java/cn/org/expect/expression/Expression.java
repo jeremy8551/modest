@@ -110,6 +110,9 @@ import cn.org.expect.util.StringUtils;
 public class Expression {
     protected final static Log log = LogFactory.getLog(Expression.class);
 
+    /** 多行字符串 */
+    public final static String STRING_BLOCK = "\"\"\"";
+
     /** 表达式 */
     protected String expression;
 
@@ -136,7 +139,7 @@ public class Expression {
      */
     public Expression(Parser format, String str) {
         if (log.isTraceEnabled()) {
-            log.trace("expression.stdout.message008", str);
+            log.trace("expression.stdout.message060", str);
         }
 
         this.expression = str;

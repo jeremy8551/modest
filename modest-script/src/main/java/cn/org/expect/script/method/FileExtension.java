@@ -3,6 +3,7 @@ package cn.org.expect.script.method;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 
 import cn.org.expect.os.linux.LinuxLocalOS;
 import cn.org.expect.os.linux.Linuxs;
@@ -170,6 +171,49 @@ public class FileExtension {
      */
     public static boolean touch(CharSequence filepath) throws IOException {
         return FileUtils.createFile(new File(FileUtils.replaceFolderSeparator(filepath.toString())));
+    }
+
+    /**
+     * 把文件路径参数 filepath 中的 '/' 和 '\' 字符替换成当前操作系统的路径分隔符
+     *
+     * @param filepath 文件路径
+     * @return 文件路径
+     */
+    public static String replaceFolderSeparator(String filepath) {
+        return FileUtils.replaceFolderSeparator(filepath);
+    }
+
+    /**
+     * 在路径后面拼接一个文件或目录
+     *
+     * @param filepath 文件路径
+     * @param array    文件绝对路径数组
+     * @return 文件路径
+     */
+    public static String joinPath(String filepath, String... array) {
+        return FileUtils.joinPath(filepath, FileUtils.joinPath(array));
+    }
+
+    /**
+     * 加载属性集合
+     *
+     * @param in 属性集合输入流
+     * @return 属性集合
+     */
+    public static Properties loadProperties(InputStream in) {
+        return FileUtils.loadProperties(in);
+    }
+
+    /**
+     * 加载 Properties 文件中的属性
+     *
+     * @param classLoader     类加载器
+     * @param name            资源文件位置
+     * @param envPropertyName 分环境资源文件
+     * @return 属性集合
+     */
+    public static Properties loadProperties(ClassLoader classLoader, String name, String envPropertyName) {
+        return FileUtils.loadProperties(classLoader, name, envPropertyName);
     }
 
     /**

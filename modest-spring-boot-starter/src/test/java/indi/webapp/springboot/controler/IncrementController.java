@@ -45,16 +45,16 @@ public class IncrementController {
         log.info(FileUtils.readline(newfile, CharsetUtils.get(), 1));
 
         // 当前目录
-        log.info("新文件: {}", newfile);
-        log.info("旧文件: {}", oldfile);
-        log.info("增量文件: {}", incfile);
-        log.info("日志文件: {}", logfile);
-        log.info("正确文件: {}", resultfile);
+        log.info("new file: {}", newfile);
+        log.info("old file: {}", oldfile);
+        log.info("inc file: {}", incfile);
+        log.info("log file: {}", logfile);
+        log.info("result file: {}", resultfile);
 
         ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
+        ScriptEngine engine = manager.getEngineByExtension("usl");
         try {
-            engine.eval("echo 脚本引擎初始化完毕，执行增量剥离任务!");
+            engine.eval("echo Script engine initialization complete, executing incremental extraction task!");
 
             // 设置命令中使用的文件路径与索引字段位置信息
             engine.eval("set newfile='" + newfile.getAbsolutePath() + "'");
@@ -74,7 +74,7 @@ public class IncrementController {
             engine.eval(inccmd);
         } catch (Throwable e) {
             log.error(e.getLocalizedMessage(), e);
-            return "发生错误";
+            return "error";
         } finally {
             engine.eval("exit 0");
         }
@@ -82,11 +82,11 @@ public class IncrementController {
         // 判断剥离增量结果文件与正确文件是否相等
         long n = FileUtils.equalsIgnoreLineSeparator(incfile, CharsetUtils.get(), resultfile, CharsetUtils.get(), 0);
         if (n != 0) {
-            String msg = "第 " + n + " 行不同!" + Settings.getLineSeparator();
+            String msg = "Line " + n + " is different!" + Settings.getLineSeparator();
             msg += FileUtils.readline(incfile, CharsetUtils.get(), n) + Settings.getLineSeparator(); // 读取文件中的指定行内容
             msg += FileUtils.readline(resultfile, CharsetUtils.get(), n); // 读取文件中的指定行内容
             log.error(msg);
-            return "发生错误";
+            return "error";
         }
 
         return "0";
@@ -115,10 +115,10 @@ public class IncrementController {
             StringBuilder buf = new StringBuilder(500);
             for (int i = 1; i <= rows; i++) {
                 buf.setLength(0);
-                buf.append("姓名").append(coldel);
+                buf.append("name").append(coldel);
                 buf.append("Line").append(i).append(coldel);
-                buf.append("身份证号").append(coldel);
-                buf.append("手机号").append(coldel);
+                buf.append("id_card").append(coldel);
+                buf.append("phone").append(coldel);
                 buf.append(Dates.format19(start)).append(coldel);
                 buf.append(Dates.format19(end)).append(coldel);
                 for (int j = 1; j <= 20; j++) {
@@ -142,10 +142,10 @@ public class IncrementController {
                 boolean m = false;
 
                 buf.setLength(0);
-                buf.append("姓名").append(coldel);
+                buf.append("name").append(coldel);
                 buf.append("Line").append(i).append(coldel);
-                buf.append("身份证号").append(coldel);
-                buf.append("手机号").append(coldel);
+                buf.append("id_card").append(coldel);
+                buf.append("phone").append(coldel);
 
                 if (i == 1000 || i == 2002 || i == 4003) {
                     buf.append(coldel);

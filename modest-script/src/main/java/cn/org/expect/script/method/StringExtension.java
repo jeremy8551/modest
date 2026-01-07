@@ -327,4 +327,15 @@ public class StringExtension {
     public static String[] split(CharSequence str, String delimiter) {
         return StringUtils.split(str, delimiter);
     }
+
+    /**
+     * 从字符串 str 的最左段移除字符串 prefix
+     *
+     * @param str    字符串
+     * @param prefix 字符串
+     * @return 移除后的字符串
+     */
+    public static String removePrefix(CharSequence str, CharSequence prefix) {
+        return StringUtils.removePrefix(str, prefix);
+    }
 }

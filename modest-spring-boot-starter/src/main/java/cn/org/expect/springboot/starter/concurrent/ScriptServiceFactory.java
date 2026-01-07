@@ -39,7 +39,7 @@ public class ScriptServiceFactory implements ExecutorServiceFactory {
         this.service = Ensure.notNull(service).getThreadPoolExecutor();
     }
 
-    public ExecutorService create(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
+    public ExecutorService newInstance(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
         return this.service;
     }
 }

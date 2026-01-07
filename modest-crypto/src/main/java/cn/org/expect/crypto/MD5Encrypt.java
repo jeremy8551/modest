@@ -2,11 +2,11 @@ package cn.org.expect.crypto;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.MessageDigest;
 
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.IO;
-import cn.org.expect.util.Numbers;
 import cn.org.expect.util.Terminate;
 
 /**
@@ -24,29 +24,12 @@ public class MD5Encrypt {
      * @param obj  终止任务接口，可以为null
      * @return 返回字符串的MD5值
      */
-    public static String encrypt(File file, Terminate obj) {
-        return MD5Encrypt.encrypt(file, 16, obj); // 使用16进制生成文件的md5码值
-    }
-
-    /**
-     * 生成文件的MD5码
-     *
-     * @param file  数据文件
-     * @param radix 转为的进制数,目前可用的参数有: 16 , 32, 128
-     * @param obj   终止任务接口，可以为null
-     * @return 返回字符串的MD5值
-     */
-    public static String encrypt(File file, int radix, Terminate obj) {
-        if (!Numbers.inArray(radix, 16, 32, 128)) {
-            throw new EncryptException("crypto.stdout.message006", radix);
-        }
-
-        FileInputStream in = null;
+    public static String encrypt(File file, Terminate obj) throws IOException {
+        FileInputStream in = new FileInputStream(file); // 从文件中读取二进制字节数组
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.reset();
 
-            in = new FileInputStream(file); // 从文件中读取二进制字节数组
             byte[] array = new byte[1024];
             for (int size; (size = in.read(array)) != -1; ) {
                 if (obj != null && obj.isTerminate()) {

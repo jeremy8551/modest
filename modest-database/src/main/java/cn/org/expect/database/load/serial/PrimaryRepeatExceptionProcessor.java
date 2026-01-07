@@ -7,7 +7,6 @@ import cn.org.expect.database.DatabaseTable;
 import cn.org.expect.database.DatabaseTableColumnList;
 import cn.org.expect.database.DatabaseType;
 import cn.org.expect.database.DatabaseTypeSet;
-import cn.org.expect.database.Jdbc;
 import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.internal.StandardDatabaseTable;
 import cn.org.expect.database.internal.StandardDatabaseTableColumn;
@@ -82,10 +81,10 @@ public class PrimaryRepeatExceptionProcessor {
             table.setSchema(schema);
         }
         table.setName(tableName);
-        table.setFullName(dao.getDialect().toTableName(table.getCatalog(), table.getSchema(), table.getName()));
+        table.setFullName(dao.getDialect().generateTableName(table.getCatalog(), table.getSchema(), table.getName()));
 
         DatabaseTableColumnList columns = table.getColumns();
-        DatabaseTypeSet types = Jdbc.getTypeInfo(dao.getConnection());
+        DatabaseTypeSet types = dao.getDialect().getFieldInformation(dao.getConnection());
         DatabaseType type1 = types.get(Types.TIMESTAMP);
         DatabaseType type2 = types.get(Types.CLOB);
 
@@ -96,7 +95,6 @@ public class PrimaryRepeatExceptionProcessor {
         col1.setTableCatalog(table.getCatalog());
         col1.setTableSchema(table.getSchema());
         col1.setTableName(table.getName());
-        col1.setType(type1);
         col1.setFieldType(type1.getName());
         col1.setLength(type1.getPrecision()); // yyyy-MM-dd hh:mm:ss:SSS
         col1.setMaxLength(type1.getPrecision());
@@ -117,7 +115,6 @@ public class PrimaryRepeatExceptionProcessor {
         col2.setTableCatalog(table.getCatalog());
         col2.setTableSchema(table.getSchema());
         col2.setTableName(table.getName());
-        col2.setType(type2);
         col2.setFieldType(type2.getName());
         col2.setLength(type2.getPrecision());
         col2.setMaxLength(type2.getPrecision());

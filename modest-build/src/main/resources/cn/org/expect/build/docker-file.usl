@@ -1,0 +1,141 @@
+# =============================================================================
+# Author:             吕钊军
+# Created Date:       2025-10-21
+# Last Modified:      2025-10-30
+# Version:            1.0
+# Description:        下载指定版本的 JDK, 生成 JDK 安装配置文件 jdk_setup.xml, 创建 Dockerfile
+# =============================================================================
+
+# 下载 JDK 文件
+function downloadJDK() {
+  set jdkName="$1"
+  set downloadFileURL="$2"
+
+  set downloadFileName=`wget -n "${downloadFileURL}" | tail -n 1`
+  set downloadFilePath="${projectBasedir}/.cache/${downloadFileName}"
+
+  if !downloadFilePath.existsFile() then
+    # cp /Users/user/Library/CloudStorage/SynologyDrive-Jeremy/下载目录/jdk-8u461-macosx-aarch64.tar.gz ${projectBasedir}/.cache
+    wget -P ${projectBasedir}/.cache "${downloadFileURL}"
+  fi
+
+  set verboseLastLine=`tar -tvf ${downloadFilePath} -C ${TMPDIR}/jdks | tail -n 1`
+  set verboseLastLine=verboseLastLine.removePrefix("x ")
+  set verboseLastLine=verboseLastLine.removePrefix(".")
+  set verboseLastLine=verboseLastLine.removePrefix("/")
+  set verboseLastLineArray=verboseLastLine.split("/");
+  set untarDirName=verboseLastLineArray[0]
+  set jdkDir="${TMPDIR}/jdks/${untarDirName}"
+
+  if !jdkDir.isDirectory() then
+    tar -xvf ${downloadFilePath} -C ${TMPDIR}/jdks >> /dev/null 2>&1
+  fi
+
+  set jdkHomeDir=`os "find ${TMPDIR}/jdks/${untarDirName} -type d -name Home | head -n 1" | tail -n 1`
+  set jdkHome=jdkHomeDir.removePrefix("${TMPDIR}/jdks/")
+  echo "jdkHome: ${jdkHome} -> ${jdkHomeDir}"
+
+  jdkNameList.add("${jdkName}")
+  jdkFileNameList.add("${downloadFileName}")
+  jdkHomeList.add("${jdkHome}")
+}
+
+
+# 创建目录
+mkdir ${TMPDIR}/jdks
+mkdir ${projectBasedir}/.cache
+set jdkNameList = this.forName("java.util.ArrayList").newInstance(10)
+set jdkFileNameList = this.forName("java.util.ArrayList").newInstance(10)
+set jdkHomeList = this.forName("java.util.ArrayList").newInstance(10)
+
+
+# 下载JDK
+downloadJDK "25" https://mirrors.huaweicloud.com/openjdk/25/openjdk-25_macos-aarch64_bin.tar.gz
+downloadJDK "17" https://mirrors.huaweicloud.com/openjdk/17.0.2/openjdk-17.0.2_macos-aarch64_bin.tar.gz
+downloadJDK "12" https://mirrors.huaweicloud.com/openjdk/12.0.2/openjdk-12.0.2_osx-x64_bin.tar.gz
+downloadJDK "8"  https://cdn.azul.com/zulu/bin/zulu8.90.0.19-ca-jdk8.0.472-macosx_aarch64.tar.gz
+downloadJDK "7"  https://cdn.azul.com/zulu/bin/zulu8.90.0.19-ca-jdk8.0.472-macosx_aarch64.tar.gz
+downloadJDK "6"  https://cdn.azul.com/zulu/bin/zulu8.90.0.19-ca-jdk8.0.472-macosx_aarch64.tar.gz
+downloadJDK "5"  https://cdn.azul.com/zulu/bin/zulu8.90.0.19-ca-jdk8.0.472-macosx_aarch64.tar.gz
+
+
+# 生成JDK安装配置文件
+set jdkConfigXml="<jdks>\n"
+set index=0
+while index < jdkFileNameList.size() loop
+  set jdkName=jdkNameList.get(index)
+  set jdkFilename=jdkFileNameList.get(index)
+  set jdkHomeDir=jdkHomeList.get(index)
+
+  set jdkConfigXml=jdkConfigXml+"   <jdk>\n"
+  set jdkConfigXml=jdkConfigXml+"       <version>${jdkName}</version>\n"
+  set jdkConfigXml=jdkConfigXml+"       <filename>${jdkFilename}</filename>\n"
+  set jdkConfigXml=jdkConfigXml+"       <home>${jdkHomeDir}</home>\n"
+  set jdkConfigXml=jdkConfigXml+"   </jdk>\n"
+
+  set index=index+1
+end loop
+set jdkConfigXml=jdkConfigXml+"</jdks>"
+echo "Generate ${projectBasedir}/target/jdk_setup.xml"
+echo -n "${jdkConfigXml}" > ${projectBasedir}/target/jdk_setup.xml
+
+
+# 设置 modest-build-*jar 文件名
+set jarFilename=""
+set modestBuildJarFile=projectBasedir.joinPath("target", "modest-build-${revision}.jar")
+if modestBuildJarFile.existsFile() then
+  echo "project modest-build jarfile: ${modestBuildJarFile} exists!"
+  set jarFilename=modestBuildJarFile.getFilename()
+fi
+set modestBuildSnapshotJarFile=projectBasedir.joinPath("target", "modest-build-${revision}-SNAPSHOT.jar")
+if modestBuildSnapshotJarFile.existsFile() then
+  echo "project modest-build jarfile: ${modestBuildSnapshotJarFile} exists!"
+  set jarFilename=modestBuildSnapshotJarFile.getFilename()
+fi
+
+if jarFilename.length() == 0 then
+  echo "jarFilename is empty!"
+  exit 1
+fi
+
+# 生成 Dockerfile
+set dockerfileStr="""
+FROM eclipse-temurin:17-jre
+
+#
+LABEL maintainer="jeremy8551" version="${revision}" description="JDK setup image"
+
+# 安装一些必要的工具
+# 更新镜像和安装必要的软件包
+RUN apt-get update && apt-get install -y \
+    wget \
+    tar \
+    curl \
+    bash \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN useradd -m user && mkdir -p /home/user/setup && mkdir -p /home/user/.m2 && mkdir -p /home/user/.m2/jdks && mkdir -p /home/user/lib
+
+USER user
+WORKDIR /home/user
+
+# 复制文件并归属普通用户
+COPY --chown=user:user .cache/* setup/
+COPY --chown=user:user target/${jarFilename} lib/modest-build.jar
+COPY --chown=user:user target/jdk_setup.xml ./
+COPY --chown=user:user run.usl ./
+
+#
+ENTRYPOINT ["java", "-Dcn.org.expect.log=sout:info", "-jar", "/home/user/lib/modest-build.jar", "/home/user/run.usl"]
+"""
+
+
+# 生成 Dockerfile 文件
+echo "Generate ${projectBasedir}/target/Dockerfile"
+echo "${dockerfileStr}" > ${projectBasedir}/target/Dockerfile
+
+
+# 构建Docker镜像
+#os export TERM=xterm && cd ${projectBasedir} && export revision="${revision}" && ./docker-build.sh
+exit 0
+

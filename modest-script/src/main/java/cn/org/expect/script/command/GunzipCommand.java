@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 
+import cn.org.expect.compress.GzipCompress;
 import cn.org.expect.script.UniversalCommandCompiler;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptCommand;
@@ -16,18 +17,18 @@ import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.JumpCommandSupported;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
+import cn.org.expect.script.io.ScriptOutputWriter;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
-import cn.org.expect.zip.Compress;
 
 public class GunzipCommand extends AbstractFileCommand implements UniversalScriptInputStream, JumpCommandSupported, NohupCommandSupported {
 
     /** 文件绝对路径 */
     private String filepath;
 
-    private Compress compress;
+    private volatile GzipCompress compress;
 
     public GunzipCommand(UniversalCommandCompiler compiler, String command, String filepath) {
         super(compiler, command);
@@ -43,17 +44,19 @@ public class GunzipCommand extends AbstractFileCommand implements UniversalScrip
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
-        ScriptFile file = new ScriptFile(session, context, this.filepath);
         if (session.isEchoEnable() || forceStdout) {
-            stdout.println("gunzip " + file.getAbsolutePath());
+            stdout.println(session.getAnalysis().replaceShellVariable(session, context, this.getScript(), true, true));
         }
 
-        this.compress = context.getContainer().getBean(Compress.class, "gz");
+        File file = PathExpression.toFile(session, context, this.filepath);
+        this.compress = new GzipCompress();
         try {
             this.compress.setFile(file);
+            this.compress.setVerbose(true);
+            this.compress.setLogWriter(new ScriptOutputWriter(stdout, context.getCharsetName()));
             this.compress.extract(file.getParentFile(), Settings.getFileEncoding());
 
-            session.putValue(file);
+            session.setValue(file);
             return this.compress.isTerminate() ? UniversalScriptCommand.TERMINATE : 0;
         } finally {
             this.compress.close();

@@ -2,7 +2,6 @@ package cn.org.expect.ioc.internal;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Properties;
 
@@ -19,27 +18,30 @@ public class PropertiesRepository implements EasyPropertyProvider {
         this.list = new ArrayList<Properties>();
     }
 
-    public synchronized boolean add(Properties properties, Comparator<Properties> comparator) {
+    public boolean hasProperty(String name) {
+        for (int i = 0; i < this.list.size(); i++) {
+            Properties properties = this.list.get(i);
+            if (properties.containsKey(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public synchronized boolean addProperties(Properties properties) {
         if (this.list.contains(properties)) {
             return false;
         }
 
-        if (comparator != null) {
-            this.list.add(properties);
-            Collections.sort(this.list, comparator);
-        } else {
-            this.list.add(0, properties);
-        }
+        this.list.add(0, properties);
         return true;
     }
 
     public String getProperty(String name) {
-        String value;
         for (int i = 0; i < this.list.size(); i++) {
             Properties properties = this.list.get(i);
-            value = properties.getProperty(name);
-            if (value != null) {
-                return value;
+            if (properties.containsKey(name)) {
+                return properties.getProperty(name);
             }
         }
         return null;

@@ -75,7 +75,7 @@ public class IncrementCommand extends AbstractTraceCommand implements UniversalS
     private final IncrementExpression[] writeExpr;
 
     /** 任务信息 */
-    private IncrementJob job;
+    private volatile IncrementJob job;
 
     public IncrementCommand(UniversalCommandCompiler compiler, String command, IncrementExpression newFileExpr, IncrementExpression oldFileExpr, IncrementExpression[] writeExpr) {
         super(compiler, command);
@@ -91,7 +91,7 @@ public class IncrementCommand extends AbstractTraceCommand implements UniversalS
 
         if (session.isEchoEnable() || forceStdout) {
             UniversalScriptAnalysis analysis = session.getAnalysis();
-            stdout.println(analysis.replaceShellVariable(session, context, this.command, false, true));
+            stdout.println(analysis.replaceShellVariable(session, context, this.command, true, true));
         }
 
         int value = this.job.execute();

@@ -13,7 +13,7 @@ import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.JumpCommandSupported;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.internal.FtpList;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;
 
@@ -23,7 +23,7 @@ import cn.org.expect.util.StringUtils;
  */
 public class PutCommand extends AbstractFileCommand implements JumpCommandSupported, NohupCommandSupported {
 
-    private OSFtpCommand ftp;
+    private volatile OSFtpCommand ftp;
 
     /** 本地文件绝对路径 */
     private String localfile;
@@ -39,8 +39,8 @@ public class PutCommand extends AbstractFileCommand implements JumpCommandSuppor
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         UniversalScriptAnalysis analysis = session.getAnalysis();
-        String localfilepath = ScriptFile.replaceFilepath(session, context, this.localfile, true);
-        String remotedir = ScriptFile.replaceFilepath(session, context, this.remotefile, false);
+        String localfilepath = PathExpression.resolve(session, context, this.localfile, true);
+        String remotedir = PathExpression.resolve(session, context, this.remotefile, false);
 
         if (session.isEchoEnable() || forceStdout) {
             if (StringUtils.isBlank(remotedir)) {
@@ -57,7 +57,7 @@ public class PutCommand extends AbstractFileCommand implements JumpCommandSuppor
                 return UniversalScriptCommand.COMMAND_ERROR;
             }
 
-            File localfile = new ScriptFile(session, context, localfilepath);
+            File localfile = PathExpression.toFile(session, context, localfilepath);
             if (!localfile.exists()) {
                 stderr.println(ResourcesUtils.getMessage("script.stderr.message032", this.command, localfilepath));
                 return UniversalScriptCommand.COMMAND_ERROR;

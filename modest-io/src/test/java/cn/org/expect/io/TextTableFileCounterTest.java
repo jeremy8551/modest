@@ -15,7 +15,7 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.printer.Progress;
 import cn.org.expect.printer.StandardPrinter;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyLog;
+import cn.org.expect.test.annotation.RunWithLogSettings;
 import cn.org.expect.util.CharsetUtils;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.FileUtils;
@@ -26,8 +26,8 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-@EasyLog("sout+:debug")
 @RunWith(ModestRunner.class)
+@RunWithLogSettings("sout+:debug")
 public class TextTableFileCounterTest {
     private final static Log log = LogFactory.getLog(TextTableFileCounterTest.class);
 
@@ -121,7 +121,7 @@ public class TextTableFileCounterTest {
         String charsetName = CharsetUtils.get();
         long rows = this.createBigFile(file, charsetName);
         Assert.assertEquals(rows, new TextTableFileCounter(threadSource, 2).execute(file, charsetName));
-        log.info("并行统计完毕, 共计 {} 行!", rows);
+        log.info("Parallel statistics completed, total {} rows!", rows);
     }
 
     /**
@@ -145,15 +145,15 @@ public class TextTableFileCounterTest {
                 file.delete(); // 如果文件不是当前生成的，则删除重建
             } else {
                 long rows = this.countTextFileLines(file, charsetName);
-                log.info("串行统计完毕, 共计 " + rows + " 行!");
+                log.info("serial statistics completed, total: " + rows + " row!");
                 return rows;
             }
         }
-        log.info("数据文件最大值 " + str + ", 最大字节数: " + maxLength);
+        log.info("maximum value: " + str + ", maxLength: " + maxLength);
 
         // 配置进度输出接口
         StandardPrinter printer = new StandardPrinter();
-        Progress process = new Progress(printer, "正在准备 " + str + " 文本文件 ${process}%, ${leftTime}", maxLength);
+        Progress process = new Progress(printer, "preparing " + str + " text file ${process}%, ${leftTime}", maxLength);
 
         Date start = Dates.parse("2000-01-01");
         Date end = new Date();
@@ -248,9 +248,9 @@ public class TextTableFileCounterTest {
             }
             out.flush();
 
-            log.info(file.getAbsolutePath() + " 共写入 " + rows + " 行数据, 共计 " + file.length() + " 字节!");
+            log.info(file.getAbsolutePath() + " total write " + rows + " rows data, total " + file.length() + " bytes!");
             Assert.assertEquals(rows, this.countTextFileLines(file, charsetName));
-            log.info("串行统计完毕 ..");
+            log.info("serial statistics completed ..");
             return rows;
         } finally {
             out.close();

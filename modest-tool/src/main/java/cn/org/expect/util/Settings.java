@@ -21,6 +21,33 @@ public class Settings {
     protected final static Map<String, String> map = new ConcurrentHashMap<String, String>();
 
     /**
+     * 判断是否存在变量
+     *
+     * @param name 变量名
+     * @return 返回true表示存在变量
+     */
+    public static boolean containsVariable(String name) {
+        return System.getenv().containsKey(name) || System.getProperties().containsKey(name);
+    }
+
+    /**
+     * 返回变量值 <br>
+     * 如果在不同的域中存在同名的变量名时，按域的优先级从高到低返回变量值，域的优先级如下：<br>
+     * {@literal 局部变量域 > 全局变量域 > 环境变量域 }
+     */
+    public static String getVariable(String name) {
+        if (System.getenv().containsKey(name)) {
+            return System.getenv(name);
+        }
+
+        if (System.getProperties().containsKey(name)) {
+            return System.getProperty(name);
+        }
+
+        return null;
+    }
+
+    /**
      * 返回属性
      *
      * @param key 属性名
@@ -278,18 +305,22 @@ public class Settings {
      * @return 大版本号 <br>
      * 如: <br>
      * JDK1.4 返回 4 <br>
-     * JDK8 返回 8 <br>
+     * JDK1.8 返回 8 <br>
      * JDK21 返回 21 <br>
      */
-    public static int getJDKVersion() {
+    public static int getJavaVersion() {
         String version = System.getProperty("java.version");
         if (version == null) {
-            throw new NullPointerException("java.version");
+            throw new NullPointerException();
         }
 
         String[] array = version.split("\\.");
-        if (array.length < 3) {
+        if (array.length == 0) {
             throw new UnsupportedOperationException(version);
+        }
+
+        if (array.length == 1) {
+            return Integer.parseInt(version);
         }
 
         return array[0].equals("1") ? Integer.parseInt(array[1]) : Integer.parseInt(array[0]);

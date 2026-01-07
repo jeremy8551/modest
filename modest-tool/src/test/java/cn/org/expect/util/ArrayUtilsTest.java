@@ -1,5 +1,6 @@
 package cn.org.expect.util;
 
+import java.sql.JDBCType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -17,12 +18,12 @@ public class ArrayUtilsTest {
             }
         };
 
-        CharTable jdbc = new CharTable();
-        Object[] array = new Object[]{0, 12.12, "test", jdbc, c};
+        StringBuilder buf = new StringBuilder();
+        Object[] array = new Object[]{0, 12.12, "test", buf, c};
         Assert.assertEquals(ArrayUtils.indexOf(array, Integer.class, 0), new Integer(0));
         Assert.assertEquals(ArrayUtils.indexOf(array, String.class, 0), "test");
         Assert.assertEquals(ArrayUtils.indexOf(array, Comparator.class, 0), c);
-        Assert.assertEquals(ArrayUtils.indexOf(array, CharTable.class, 0), jdbc);
+        Assert.assertEquals(ArrayUtils.indexOf(array, StringBuilder.class, 0), buf);
     }
 
     @Test

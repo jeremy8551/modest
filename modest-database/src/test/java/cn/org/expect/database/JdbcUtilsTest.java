@@ -34,23 +34,7 @@ public class JdbcUtilsTest {
     public Connection connection;
 
     @Test
-    public void testGetTypeInfo() {
-        Connection conn = this.connection;
-        try {
-            DatabaseTypeSet typeInfo = Jdbc.getTypeInfo(conn);
-            log.info(typeInfo.toString());
-            Jdbc.rollback(conn);
-        } catch (Exception e) {
-            Jdbc.rollback(conn);
-            log.error(e.getLocalizedMessage(), e);
-            Assert.fail();
-        } finally {
-            IO.closeQuietly(conn);
-        }
-    }
-
-    @Test
-    public void test51() {
+    public void test1() {
         Connection conn = this.connection;
         try {
             CaseSensitivSet set = Jdbc.getSQLKeywords(conn);
@@ -66,7 +50,7 @@ public class JdbcUtilsTest {
     }
 
     @Test
-    public void test8() throws SQLException {
+    public void test2() throws SQLException {
         String tablename = "";
         JdbcDao dao = new JdbcDao(this.context, this.connection);
         try {
@@ -98,7 +82,7 @@ public class JdbcUtilsTest {
     }
 
     @Test
-    public void test9() {
+    public void test3() {
         String tablename = "";
         JdbcDao dao = new JdbcDao(this.context, this.connection);
         try {
@@ -119,7 +103,7 @@ public class JdbcUtilsTest {
     }
 
     @Test
-    public void test10() throws Exception {
+    public void test4() throws Exception {
         String tablename = "";
         JdbcDao dao = new JdbcDao(this.context, this.connection);
         try {

@@ -8,12 +8,11 @@ import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptParser;
 import cn.org.expect.script.UniversalScriptReader;
 import cn.org.expect.script.UniversalScriptSession;
-import cn.org.expect.script.UniversalScriptVariable;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
-@EasyCommandCompiler(name = "wait", keywords = {"wait", UniversalScriptVariable.VARNAME_PID})
+@EasyCommandCompiler(name = "wait")
 public class WaitCommandCompiler extends AbstractTraceCommandCompiler {
 
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {

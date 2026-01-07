@@ -10,11 +10,10 @@ import cn.org.expect.script.UniversalScriptException;
 import cn.org.expect.script.UniversalScriptParser;
 import cn.org.expect.script.UniversalScriptReader;
 import cn.org.expect.script.UniversalScriptSession;
-import cn.org.expect.script.UniversalScriptVariable;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 
-@EasyCommandCompiler(name = "nohup", keywords = {"nohup", UniversalScriptVariable.VARNAME_PID})
+@EasyCommandCompiler(name = "nohup")
 public class NohupCommandCompiler extends AbstractCommandCompiler {
 
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {

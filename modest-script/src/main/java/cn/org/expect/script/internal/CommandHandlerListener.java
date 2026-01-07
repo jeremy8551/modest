@@ -46,7 +46,7 @@ public class CommandHandlerListener implements UniversalScriptListener {
 
         // 保存最后一个异常错误信息
         UniversalScriptCompiler compiler = session.getCompiler();
-        session.addVariable(UniversalScriptVariable.SESSION_VARNAME_LASTEXCEPTION, new UniversalScriptException(command.getScript(), compiler.getLineNumber(), e));
+        session.addSystemVariable(UniversalScriptVariable.SYSTEM_LASTEXCEPTION, new UniversalScriptException(command.getScript(), compiler.getLineNumber(), e));
 
         ProcessExceptionHandlerMap gm = ProcessExceptionHandlerMap.get(context, true); // 使用全局异常处理逻辑
         ProcessExceptionHandlerMap lm = ProcessExceptionHandlerMap.get(context, false); // 使用局部异常处理逻辑

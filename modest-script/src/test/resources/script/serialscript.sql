@@ -2,13 +2,13 @@
 # 测试跨脚本方法
 test111
 
-echo 串行脚本信息输出
+echo "Serial script information output"
 
 set test=1
 export set test1 = 2
 
 set totalLoops = 100000
-declare progress use out print "串行脚本已执行 ${process}%, 总共${totalRecord}个记录${leftTime}" total $totalLoops times
+declare progress use out print "Serial script executed ${process}%, total ${totalRecord} records, ${leftTime}" total $totalLoops times
 set counter=1
 while $counter <= $totalLoops loop
   progress

@@ -88,6 +88,14 @@ public class FtpCommand implements OSFtpCommand, EasyContextAware {
         }
     }
 
+    public void enterPassiveMode(boolean remotePassive) throws IOException {
+        if (remotePassive) {
+            this.client.enterRemotePassiveMode();
+        } else {
+            this.client.enterLocalPassiveMode();
+        }
+    }
+
     public boolean isConnected() {
         return this.client != null && this.client.isConnected();
     }
@@ -165,6 +173,9 @@ public class FtpCommand implements OSFtpCommand, EasyContextAware {
         String filename = StringUtils.coalesce(FileUtils.getFilename(filepath), ""); // 文件名
         boolean isDir = this.isDir(parent, filepath, filename);
         List<String> lines = this.parse(status);
+        if (lines.isEmpty()) {
+            return null;
+        }
 
         List<OSFile> list = new ArrayList<OSFile>();
         for (int i = 0; i < lines.size(); i++) {
@@ -242,7 +253,7 @@ public class FtpCommand implements OSFtpCommand, EasyContextAware {
                 }
             }
         }
-        throw new OSFileCommandException(status);
+        return false;
     }
 
     protected OSFileImpl toFtpFile(String line, String[] array, String parent) {
@@ -746,9 +757,14 @@ public class FtpCommand implements OSFtpCommand, EasyContextAware {
         if (this.client != null && this.client.isConnected()) {
             try {
                 this.client.logout();
+            } catch (Exception e) {
+                log.error(e.getLocalizedMessage(), e);
+            }
+
+            try {
                 this.client.disconnect();
             } catch (Exception e) {
-                log.error(StringUtils.toString(e));
+                log.error(e.getLocalizedMessage(), e);
             }
         }
     }

@@ -14,14 +14,15 @@ import cn.org.expect.database.DatabaseIndexList;
 import cn.org.expect.database.DatabaseProcedure;
 import cn.org.expect.database.DatabaseTable;
 import cn.org.expect.database.DatabaseTableColumn;
+import cn.org.expect.database.DatabaseTableColumnList;
 import cn.org.expect.database.DatabaseURL;
 import cn.org.expect.database.JdbcConverterMapper;
 import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.JdbcQueryStatement;
 import cn.org.expect.database.SQL;
-import cn.org.expect.database.db2.expconv.ByteArrayConverter;
 import cn.org.expect.database.db2.expconv.StringConverter;
 import cn.org.expect.database.export.converter.AbstractConverter;
+import cn.org.expect.database.export.converter.ByteArrayConverter;
 import cn.org.expect.database.export.converter.DateConverter;
 import cn.org.expect.database.export.converter.FloatConverter;
 import cn.org.expect.database.export.converter.IntegerConverter;
@@ -129,7 +130,7 @@ public class H2Dialect extends AbstractDialect {
         return list;
     }
 
-    public DatabaseDDL toDDL(Connection connection, DatabaseProcedure procedure) throws SQLException {
+    public DatabaseDDL generateDDL(Connection connection, DatabaseProcedure procedure) throws SQLException {
         StandardDatabaseDDL ddl = new StandardDatabaseDDL();
         JdbcQueryStatement dao = new JdbcQueryStatement(connection, "select ROUTINE_DEFINITION from INFORMATION_SCHEMA.ROUTINES where ROUTINE_NAME=? and ROUTINE_SCHEMA=? ");
         try { // 从数据库系统表中查询储存过程的源代码信息
@@ -147,7 +148,7 @@ public class H2Dialect extends AbstractDialect {
         }
     }
 
-    public List<DatabaseProcedure> getProcedure(Connection connection, String catalog, String schema, String procedureName) throws SQLException {
+    public List<DatabaseProcedure> getProcedures(Connection connection, String catalog, String schema, String procedureName) throws SQLException {
         schema = SQL.escapeQuote(schema);
         procedureName = SQL.escapeQuote(procedureName);
 
@@ -172,7 +173,7 @@ public class H2Dialect extends AbstractDialect {
             obj.setCatalog(StringUtils.rtrimBlank(resultSet.getString("ROUTINE_CATALOG")));
             obj.setSchema(StringUtils.rtrimBlank(resultSet.getString("ROUTINE_SCHEMA")));
             obj.setName(StringUtils.rtrimBlank(resultSet.getString("ROUTINE_NAME")));
-            obj.setFullName(this.toTableName(obj.getCatalog(), obj.getSchema(), obj.getName()));
+            obj.setFullName(this.generateTableName(obj.getCatalog(), obj.getSchema(), obj.getName()));
             obj.setId(obj.getFullName());
             obj.setCreator("");
             obj.setCreatTime(null);
@@ -264,24 +265,31 @@ public class H2Dialect extends AbstractDialect {
     public void reorgRunstatsIndexs(Connection connection, List<DatabaseIndex> indexs) throws SQLException {
     }
 
-    public void openLoadMode(JdbcDao dao, String fullname) throws SQLException {
+    public void openLoadMode(JdbcDao dao, String fullTableName) throws SQLException {
     }
 
-    public void closeLoadMode(JdbcDao dao, String fullname) throws SQLException {
+    public void closeLoadMode(JdbcDao dao, String fullTableName) throws SQLException {
     }
 
-    public void commitLoadData(JdbcDao dao, String fullname) throws SQLException {
+    public void commitLoadData(JdbcDao dao, String fullTableName) throws SQLException {
+    }
+
+    public boolean expandLength(DatabaseTableColumn column, String value, String charsetName) {
+        return false;
+    }
+
+    public void expandLength(Connection conn, DatabaseTableColumnList oldTableColumnList, List<DatabaseTableColumn> newTableColumnList) {
     }
 
     public boolean supportedMergeStatement() {
         return false;
     }
 
-    public String toMergeStatement(String tableName, List<DatabaseTableColumn> columns, List<String> mergeColumn) {
+    public String generateMergeStatement(String tableName, List<DatabaseTableColumn> columns, List<String> mergeColumn) {
         throw new UnsupportedOperationException();
     }
 
-    public String toTableName(String catalog, String schema, String tableName) {
+    public String generateTableName(String catalog, String schema, String tableName) {
         return tableName;
     }
 

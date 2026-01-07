@@ -10,7 +10,6 @@ import java.util.Set;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.log.Logger;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
@@ -42,10 +41,7 @@ public class StandardPrinter implements Printer, Closeable {
     protected Format converter;
 
     /** 输出锁 */
-    private final Object printLock = new Object();
-
-    /** 输出锁 */
-    private final Object multipleLock = new Object();
+    private final Object lock = new Object();
 
     /**
      * 初始化
@@ -80,7 +76,7 @@ public class StandardPrinter implements Printer, Closeable {
     }
 
     /**
-     * 使用 {@linkplain Logger#error(Object, Object...)} 输出
+     * 使用 {@linkplain Log#error(Object, Object...)} 输出
      *
      * @param error true表示使用，false表示不使用
      */
@@ -101,27 +97,21 @@ public class StandardPrinter implements Printer, Closeable {
     }
 
     public void print(CharSequence cs) {
-        synchronized (this.printLock) {
+        synchronized (this.lock) {
             this.buffer.append(cs);
+            if (this.writer != null) {
+                this.write();
+            }
         }
     }
 
     public void println(CharSequence msg) {
-        synchronized (this.printLock) {
+        synchronized (this.lock) {
             this.buffer.append(msg);
 
             if (this.writer != null) {
-                try {
-                    this.buffer.append(Settings.getLineSeparator());
-                    IO.write(this.writer, this.buffer);
-                    this.buffer.setLength(0);
-                    this.writer.flush();
-                    return;
-                } catch (Throwable e) {
-                    if (log.isErrorEnabled()) {
-                        log.error(e.getLocalizedMessage(), e);
-                    }
-                }
+                this.buffer.append(Settings.getLineSeparator());
+                this.write();
             } else {
                 String str = this.buffer.toString();
                 this.buffer.setLength(0);
@@ -134,26 +124,37 @@ public class StandardPrinter implements Printer, Closeable {
                         out.info(str);
                     }
                 }
-                return;
+            }
+        }
+    }
+
+    protected void write() {
+        try {
+            IO.write(this.writer, this.buffer);
+            this.buffer.setLength(0);
+            this.writer.flush();
+        } catch (Throwable e) {
+            if (log.isErrorEnabled()) {
+                log.error(e.getLocalizedMessage(), e);
             }
         }
     }
 
     public void println(String id, CharSequence msg) {
-        synchronized (this.multipleLock) {
+        synchronized (this.lock) {
             this.multipleTask.put(id, msg); // 保存某个任务信息
-        }
 
-        Set<String> keys = this.multipleTask.keySet();
-        StringBuilder buf = new StringBuilder(keys.size() * 30);
-        for (Iterator<String> it = keys.iterator(); it.hasNext(); ) { // 保存某个任务信息后，重新生成最新的任务信息
-            String taskId = it.next();
-            buf.append(StringUtils.escapeLineSeparator(this.multipleTask.get(taskId)));
-            if (it.hasNext()) {
-                buf.append(Settings.getLineSeparator());
+            Set<String> keys = this.multipleTask.keySet();
+            StringBuilder buf = new StringBuilder(keys.size() * 30);
+            for (Iterator<String> it = keys.iterator(); it.hasNext(); ) { // 保存某个任务信息后，重新生成最新的任务信息
+                String taskId = it.next();
+                buf.append(StringUtils.escapeLineSeparator(this.multipleTask.get(taskId)));
+                if (it.hasNext()) {
+                    buf.append(Settings.getLineSeparator());
+                }
             }
+            this.println(buf);
         }
-        this.println(buf);
     }
 
     public void println() {
@@ -165,51 +166,55 @@ public class StandardPrinter implements Printer, Closeable {
     }
 
     public void println(CharSequence msg, Throwable e) {
-        StringBuilder buf = new StringBuilder(msg.length() + 100);
-        buf.append(msg);
-        buf.append(Settings.getLineSeparator());
-        buf.append(StringUtils.toString(e));
+        synchronized (this.lock) {
+            StringBuilder buf = new StringBuilder(msg.length() + 100);
+            buf.append(msg);
+            buf.append(Settings.getLineSeparator());
+            buf.append(StringUtils.toString(e));
 
-        if (this.writer != null) {
-            try {
-                buf.append(Settings.getLineSeparator());
-                IO.write(this.writer, buf);
-                this.writer.flush();
-            } catch (IOException e1) {
-                if (log.isErrorEnabled()) {
-                    log.error(e1.getLocalizedMessage(), e1);
-                }
-            }
-        } else {
-            String str = buf.toString();
-            if (this.error) {
-                if (out.isErrorEnabled()) {
-                    out.error(str);
+            if (this.writer != null) {
+                try {
+                    buf.append(Settings.getLineSeparator());
+                    IO.write(this.writer, buf);
+                    this.writer.flush();
+                } catch (IOException e1) {
+                    if (log.isErrorEnabled()) {
+                        log.error(e1.getLocalizedMessage(), e1);
+                    }
                 }
             } else {
-                if (out.isInfoEnabled()) {
-                    out.info(str);
+                String str = buf.toString();
+                if (this.error) {
+                    if (out.isErrorEnabled()) {
+                        out.error(str);
+                    }
+                } else {
+                    if (out.isInfoEnabled()) {
+                        out.info(str);
+                    }
                 }
             }
         }
     }
 
     public void flush() {
-        if (this.writer == null) {
-            return;
-        }
-
-        if (this.buffer.length() > 0) {
-            try {
-                IO.write(this.writer, this.buffer);
-            } catch (IOException e) {
-                if (log.isErrorEnabled()) {
-                    log.error(e.getLocalizedMessage(), e);
-                }
+        synchronized (this.lock) {
+            if (this.writer == null) {
+                return;
             }
-            this.buffer.setLength(0);
+
+            if (this.buffer.length() > 0) {
+                try {
+                    IO.write(this.writer, this.buffer);
+                } catch (IOException e) {
+                    if (log.isErrorEnabled()) {
+                        log.error(e.getLocalizedMessage(), e);
+                    }
+                }
+                this.buffer.setLength(0);
+            }
+            IO.flushQuiet(this.writer);
         }
-        IO.flushQuiet(this.writer);
     }
 
     public void close() {

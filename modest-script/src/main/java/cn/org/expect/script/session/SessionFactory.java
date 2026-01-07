@@ -3,6 +3,7 @@ package cn.org.expect.script.session;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.script.UniversalScriptEngine;
@@ -27,7 +28,7 @@ public class SessionFactory implements UniversalScriptSessionFactory {
     }
 
     public synchronized UniversalScriptSession build(UniversalScriptEngine engine) {
-        ScriptSession session = new ScriptSession(engine.getId(), this);
+        ScriptSession session = new ScriptSession(engine.getFactory(), engine.getId(), this);
         this.map.put(session.getId(), session);
         return session;
     }
@@ -37,8 +38,8 @@ public class SessionFactory implements UniversalScriptSessionFactory {
     }
 
     public synchronized boolean isAlive() {
-        for (String id : this.map.keySet()) {
-            UniversalScriptSession session = this.map.get(id);
+        for (Map.Entry<String, UniversalScriptSession> entry : this.map.entrySet()) {
+            UniversalScriptSession session = entry.getValue();
             if (session != null && session.isAlive()) {
                 return true;
             }
@@ -47,8 +48,8 @@ public class SessionFactory implements UniversalScriptSessionFactory {
     }
 
     public synchronized void terminate() throws Exception {
-        for (String id : this.map.keySet()) { // 遍历脚本引擎中所有用户会话信息
-            UniversalScriptSession session = this.map.get(id);
+        for (Map.Entry<String, UniversalScriptSession> entry : this.map.entrySet()) { // 遍历脚本引擎中所有用户会话信息
+            UniversalScriptSession session = entry.getValue();
             if (session != null) {
                 session.terminate();
             }

@@ -25,16 +25,19 @@ import cn.org.expect.util.ResourcesUtils;
  * <p>
  * CURSOR cno loop ... end loop
  */
-public class CursorCommand extends AbstractCommand implements WithBodyCommandSupported {
+public class CursorCommand extends AbstractCommand implements WithBodyCommandSupported, LoopCommandKind {
 
     /** 游标名 */
-    private final String name;
+    private String name;
 
     /** 遍历游标的循环体 */
-    private final CommandList body;
+    private CommandList body;
 
     /** 正在运行的脚本命令 */
-    protected UniversalScriptCommand command;
+    protected volatile UniversalScriptCommand command;
+
+    /** 种类编号 */
+    protected int type;
 
     public CursorCommand(UniversalCommandCompiler compiler, String command, String name, CommandList body) {
         super(compiler, command);
@@ -45,7 +48,7 @@ public class CursorCommand extends AbstractCommand implements WithBodyCommandSup
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
         UniversalScriptAnalysis analysis = session.getAnalysis();
-        String name = analysis.replaceShellVariable(session, context, this.name, true, false);
+        String name = analysis.replaceShellVariable(session, context, this.name, true, true);
         CursorMap map = CursorMap.get(context);
         if (!map.contains(name)) {
             stderr.println(ResourcesUtils.getMessage("script.stderr.message002", this.command, name));
@@ -91,15 +94,16 @@ public class CursorCommand extends AbstractCommand implements WithBodyCommandSup
                     if (command instanceof LoopCommandKind) {
                         LoopCommandKind cmd = (LoopCommandKind) command;
                         int type = cmd.kind();
-                        if (type == BreakCommand.KIND) { // break
+                        this.type = cmd.kind();
+                        if (type == LoopCommandKind.BREAK_COMMAND) { // break
                             isbreak = true;
                             break;
-                        } else if (type == ContinueCommand.KIND) { // continue
+                        } else if (type == LoopCommandKind.CONTINUE_COMMAND) { // continue
                             iscontinue = true;
                             break;
-                        } else if (type == ExitCommand.KIND) { // Exit script
+                        } else if (type == LoopCommandKind.EXIT_COMMAND) { // Exit script
                             return value;
-                        } else if (type == ReturnCommand.KIND) { // Exit the result set loop
+                        } else if (type == LoopCommandKind.RETURN_COMMAND) { // Exit the result set loop
                             return value;
                         }
                     }
@@ -129,5 +133,9 @@ public class CursorCommand extends AbstractCommand implements WithBodyCommandSup
         if (this.command != null) {
             this.command.terminate();
         }
+    }
+
+    public int kind() {
+        return this.type;
     }
 }

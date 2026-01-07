@@ -26,7 +26,7 @@ public class RenameMarkdown {
         File imageDir = new File(FileUtils.changeFilenameExt(markdownFilepath, "assets"));
         String oldImgName = imageDir.getName();
         String oldDecodeName = encoding(oldImgName); // 对中文进行转码
-        log.info(imageDir.getName() + " 转码为 " + oldDecodeName);
+        log.info("markdown.stdout.message006", imageDir.getName(), oldDecodeName);
         Ensure.isTrue(markdownFile.renameTo(newMarkdownFile));
 
         if (!imageDir.exists()) {
@@ -42,7 +42,7 @@ public class RenameMarkdown {
 
         String searchStr = oldDecodeName + "/"; // 要替换的字符串
         String dest = encoding(newImgDirName) + "/"; // 替换后的字符串
-        log.info(newImgDirName + " 转码为 " + dest);
+        log.info("markdown.stdout.message006", newImgDirName, dest);
         String markdown = FileUtils.readline(newMarkdownFile, "", 0);
 
         // 按中文编译过后的名查找
@@ -105,8 +105,8 @@ public class RenameMarkdown {
         }
 
         if (log.isInfoEnabled()) {
-            log.info("将文件 {} 重命名为 {} ..", markdownFile.getAbsolutePath(), newMarkdownFile.getName());
-            log.info("将目录 {} 重命名为 {} ..", imageDir.getAbsolutePath(), newImgDir.getName());
+            log.info("markdown.stdout.message007", markdownFile.getAbsolutePath(), newMarkdownFile.getName());
+            log.info("markdown.stdout.message007", imageDir.getAbsolutePath(), newImgDir.getName());
         }
 
         FileUtils.write(newMarkdownFile, Settings.getFileEncoding(), false, markdown);

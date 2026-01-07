@@ -33,6 +33,9 @@ public class EasyThreadSource implements ThreadSource, Closeable {
     /** 默认线程池工厂 */
     private volatile ExecutorServiceFactory factory;
 
+    /** 锁 */
+    private final Object factoryLock = new Object();
+
     /** 线程池 */
     private volatile ExecutorService service;
 
@@ -87,7 +90,7 @@ public class EasyThreadSource implements ThreadSource, Closeable {
         }
 
         if (this.factory == null) {
-            synchronized (this) {
+            synchronized (this.factoryLock) {
                 if (this.factory == null) {
                     this.factory = new DefaultServiceFactory();
                 }
@@ -100,7 +103,7 @@ public class EasyThreadSource implements ThreadSource, Closeable {
         if (this.service == null) {
             synchronized (this) {
                 if (this.service == null) {
-                    this.service = this.getExecutorsFactory().create( //
+                    this.service = this.getExecutorsFactory().newInstance( //
                         this.coreSize //
                         , this.maxSize //
                         , this.aliveTime //

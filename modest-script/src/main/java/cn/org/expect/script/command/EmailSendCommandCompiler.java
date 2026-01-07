@@ -32,15 +32,16 @@ public class EmailSendCommandCompiler extends AbstractTraceCommandCompiler {
     }
 
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws Exception {
-        WordIterator it = analysis.parse(analysis.replaceShellVariable(session, context, command, true, true));
+        WordIterator it = analysis.parse(command);
         it.assertNext("email");
         it.assertNext("send");
-        String filepath = it.readUntil("of");
-        String protocal = it.next();
+        String filepathExpr = it.readUntil("of");
+        String filepath = analysis.replaceShellVariable(session, context, analysis.unQuotation(filepathExpr), true, !analysis.containsQuotation(filepathExpr));
+        String protocal = analysis.replaceShellVariable(session, context, it.next(), true, true);
         it.assertNext("modified");
         it.assertNext("by");
 
-        CommandAttribute attrs = new CommandAttribute("ssl", "title:", "attach:", "sender:", "charset:");
+        CommandAttribute attrs = new CommandAttribute(session, context, "ssl", "title:", "attach:", "sender:", "charset:");
         while (!it.isNext("to")) {
             String str = it.next();
             String[] array = StringUtils.splitProperty(str);
@@ -52,9 +53,14 @@ public class EmailSendCommandCompiler extends AbstractTraceCommandCompiler {
         }
 
         it.assertNext("to");
-        String receivers = it.next();
+        String receiversExpr = it.next();
+        String receivers = analysis.replaceShellVariable(session, context, analysis.unQuotation(receiversExpr), true, !analysis.containsQuotation(receiversExpr));
+        List<String> receiverList = new ArrayList<String>(); // 接收地址
+        StringUtils.split(receivers, ',', receiverList);
+
         it.assertNext("by");
-        String expr = it.next();
+        String loginExpr = it.next();
+        String login = analysis.replaceShellVariable(session, context, analysis.unQuotation(loginExpr), true, !analysis.containsQuotation(loginExpr));
         it.assertOver();
 
         boolean ssl = attrs.contains("ssl"); // 是否使用安全连接
@@ -71,17 +77,13 @@ public class EmailSendCommandCompiler extends AbstractTraceCommandCompiler {
             mfs[i] = new MailFile(ioc, new File(attaches[i]));
         }
 
-        // 接收地址
-        List<String> reces = new ArrayList<String>();
-        StringUtils.split(receivers, ',', reces);
-
         // 登陆表达式
-        LoginExpression login = new LoginExpression(analysis, "email " + expr);
-        String username = login.getLoginUsername();
-        String password = login.getLoginPassword();
-        int port = StringUtils.parseInt(login.getLoginPort(), -1); // 默认值 -1
-        String host = login.getLoginHost();
+        LoginExpression loginExpression = new LoginExpression(analysis, "email " + login);
+        String username = loginExpression.getLoginUsername();
+        String password = loginExpression.getLoginPassword();
+        int port = StringUtils.parseInt(loginExpression.getLoginPort(), -1); // 默认值 -1
+        String host = loginExpression.getLoginHost();
 
-        return new EmailSendCommand(this, orginalScript, host, username, password, charsetName, port, protocal, ssl, sender, reces, title, content, mfs);
+        return new EmailSendCommand(this, orginalScript, host, username, password, charsetName, port, protocal, ssl, sender, receiverList, title, content, mfs);
     }
 }

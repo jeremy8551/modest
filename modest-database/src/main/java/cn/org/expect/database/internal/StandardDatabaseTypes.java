@@ -39,30 +39,29 @@ public class StandardDatabaseTypes implements DatabaseTypeSet {
     }
 
     public String toString() {
-        CharTable cb = new CharTable();
-        String title = ResourcesUtils.getMessage("database.stdout.message021");
-        String[] array = StringUtils.split(title, ';');
+        CharTable table = new CharTable();
+        String[] array = ResourcesUtils.getMessageArray("database.stdout.message021");
         for (String str : array) {
-            cb.addTitle(str);
+            table.addTitle(str);
         }
 
         Set<String> keySet = this.map.keySet();
         for (String key : keySet) {
             DatabaseType type = this.map.get(key);
-            cb.addCell(type.getName());
-            cb.addCell(new StringBuilder().append(type.getTextPrefix()).append(type.getTextSuffix()));
-            cb.addCell(type.getExpression());
-            cb.addCell(type.getScale());
-            cb.addCell(type.getMaxScale());
-            cb.addCell(type.getMinScale());
-            cb.addCell(type.getNullAble());
-            cb.addCell(type.getRadix());
-            cb.addCell(type.getPrecision());
-            cb.addCell(type.getSearchable());
-            cb.addCell(type.getUnsigned());
-            cb.addCell(type.getLocalName());
+            table.addCell(type.getName());
+            table.addCell(new StringBuilder().append(type.getTextPrefix()).append(type.getTextSuffix()));
+            table.addCell(type.getExpression());
+            table.addCell(type.getFixedPrecScale());
+            table.addCell(type.getMaxScale());
+            table.addCell(type.getMinScale());
+            table.addCell(type.getNullAble());
+            table.addCell(type.getRadix());
+            table.addCell(type.getPrecision());
+            table.addCell(type.getSearchable());
+            table.addCell(type.getUnsigned());
+            table.addCell(type.getLocalName());
         }
 
-        return cb.toString(CharTable.Style.DB2);
+        return table.toString(CharTable.Style.DB2);
     }
 }

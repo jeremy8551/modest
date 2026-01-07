@@ -23,6 +23,6 @@ public class EasyContextConfiguration {
     @Bean
     @Scope("singleton")
     public synchronized EasyContext getEasyContext(ApplicationContext springContext, SpringArgument argument) {
-        return EasyContextFactory.create(argument, springContext);
+        return EasyContextFactory.newInstance(argument, springContext);
     }
 }

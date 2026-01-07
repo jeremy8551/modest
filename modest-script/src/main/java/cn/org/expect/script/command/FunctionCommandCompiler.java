@@ -34,7 +34,7 @@ public class FunctionCommandCompiler extends AbstractCommandCompiler {
 
         String functionName = name.substring(0, name.length() - 2); // 自定义方法名
         UniversalScriptChecker checker = context.getEngine().getChecker();
-        if (!checker.isVariableName(functionName)) {
+        if (!checker.checkVariableName(functionName)) {
             throw new UniversalScriptException("script.stderr.message066", command, functionName);
         }
 

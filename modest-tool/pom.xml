@@ -12,22 +12,5 @@
     <packaging>jar</packaging>
     <artifactId>modest-tool</artifactId>
     <name>${project.artifactId}</name>
-    <description>工具类</description>
-
-    <dependencies>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-
-        <!-- 自动生成ServiceLoader文件 -->
-        <dependency>
-            <groupId>com.google.auto.service</groupId>
-            <artifactId>auto-service</artifactId>
-            <scope>provided</scope>
-            <optional>true</optional>
-        </dependency>
-    </dependencies>
+    <description>toolkit</description>
 </project>

@@ -1,5 +1,6 @@
 package cn.org.expect.database.load.serial;
 
+import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.load.LoadFileRange;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.util.Ensure;
@@ -12,6 +13,9 @@ import cn.org.expect.util.IO;
  * @createtime 2021-06-09
  */
 public class LoadFileExecutorContext {
+
+    /** 数据库连接 */
+    private JdbcDao dao;
 
     /** 数据文件 */
     private TextTableFile file;
@@ -30,6 +34,14 @@ public class LoadFileExecutorContext {
      */
     public LoadFileExecutorContext() {
         this.readBuffer = IO.getCharArrayLength();
+    }
+
+    public JdbcDao getDao() {
+        return dao;
+    }
+
+    public void setDao(final JdbcDao dao) {
+        this.dao = dao;
     }
 
     /**

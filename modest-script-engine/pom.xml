@@ -11,7 +11,7 @@
 
     <artifactId>modest-script-engine</artifactId>
     <name>${project.artifactId}</name>
-    <description>实现 JSR-223 脚本引擎标准接口</description>
+    <description>Implementation of JSR-223 script engine standard interface</description>
 
     <properties>
         <maven.compiler.source>6</maven.compiler.source>
@@ -41,6 +41,11 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-toolchains-plugin</artifactId>

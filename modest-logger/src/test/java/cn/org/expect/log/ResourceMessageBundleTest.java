@@ -22,7 +22,7 @@ public class ResourceMessageBundleTest {
         Appender appender = new LogBuilderAppender(LogFactory.SOUT_PLUS_PATTERN).setup(context);
 
         Log log = LogFactory.getLog(context, DefaultLogTest.class);
-        LogFactory.setFQCN(log, "^" + LevelLogger.class.getName());
+        LogFactory.setFQCN(log, "^" + AbstractResourceLog.class.getName());
         log.info("a.b");
         log.info("a.b\ncde");
         log.info("a.b.c.d", "1", "2");

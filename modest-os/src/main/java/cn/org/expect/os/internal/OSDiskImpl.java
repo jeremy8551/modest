@@ -75,6 +75,6 @@ public class OSDiskImpl implements OSDisk {
     }
 
     public String toString() {
-        return "OSDiskImpl [id=" + id + ", amount=" + amount + ", type=" + type + ", total=" + DataUnitExpression.toString(total) + ", free=" + DataUnitExpression.toString(free) + ", used=" + DataUnitExpression.toString(used) + "]";
+        return "OSDiskImpl [id=" + id + ", amount=" + amount + ", type=" + type + ", total=" + DataUnitExpression.toString(total, true) + ", free=" + DataUnitExpression.toString(free, true) + ", used=" + DataUnitExpression.toString(used, true) + "]";
     }
 }

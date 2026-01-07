@@ -65,6 +65,15 @@ public interface UniversalScriptReader {
     String readMultilineScript() throws IOException;
 
     /**
+     * 从输入流中当前位置读取一个多行字符串
+     *
+     * @param strBlockBegin 多行字符串的起始位置
+     * @return 多行字符串
+     * @throws IOException 解析命令语句发生错误
+     */
+    String readStrBlockScript(final int strBlockBegin) throws IOException;
+
+    /**
      * 从输入流中当前位置读取一个（可能是）跨越多行的语句 <br>
      * 要求语句中必须要有单词参数 begin 且语句要以单词参数 end 作为结束标志 <br>
      * 起始单词要与结束单词成对出现，且支持单词嵌套

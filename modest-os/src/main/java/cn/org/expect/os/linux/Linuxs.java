@@ -8,7 +8,7 @@ import java.util.Map;
 
 import cn.org.expect.collection.CaseSensitivMap;
 import cn.org.expect.io.BufferedLineReader;
-import cn.org.expect.jdk.JavaDialectFactory;
+import cn.org.expect.util.JavaDialectFactory;
 import cn.org.expect.os.OSNetworkCard;
 import cn.org.expect.os.OSUserGroup;
 import cn.org.expect.os.internal.OSNetworkCardImpl;

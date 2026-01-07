@@ -24,14 +24,12 @@ import javax.sql.DataSource;
 
 import cn.org.expect.collection.CaseSensitivMap;
 import cn.org.expect.collection.CaseSensitivSet;
-import cn.org.expect.database.internal.StandardDatabaseType;
-import cn.org.expect.database.internal.StandardDatabaseTypes;
 import cn.org.expect.database.logger.DataSourceLogger;
 import cn.org.expect.database.logger.DataSourceLoggerProxy;
 import cn.org.expect.database.pool.PoolConnection;
 import cn.org.expect.database.pool.SimpleDatasource;
 import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.jdk.JavaDialectFactory;
+import cn.org.expect.util.JavaDialectFactory;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.ArrayUtils;
@@ -42,6 +40,7 @@ import cn.org.expect.util.Ensure;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.Property;
 import cn.org.expect.util.Settings;
+import cn.org.expect.util.StringComparator;
 import cn.org.expect.util.StringUtils;
 
 /**
@@ -1235,31 +1234,6 @@ public class Jdbc {
     }
 
     /**
-     * 返回数据库中字段类型信息
-     *
-     * @param conn 数据库连接
-     * @return 字段类型集合
-     */
-    public static DatabaseTypeSet getTypeInfo(Connection conn) {
-        StandardDatabaseTypes map = new StandardDatabaseTypes();
-        DatabaseMetaData metaData = null;
-        ResultSet resultSet = null;
-        try {
-            metaData = conn.getMetaData();
-            resultSet = metaData.getTypeInfo();
-            while (resultSet.next()) {
-                StandardDatabaseType type = new StandardDatabaseType(resultSet);
-                map.put(type.getName(), type);
-            }
-            return map;
-        } catch (SQLException e) {
-            throw new DatabaseException("database.stdout.message004", e.getLocalizedMessage(), e);
-        } finally {
-            IO.closeQuietly(resultSet);
-        }
-    }
-
-    /**
      * 查询数据库中关键字集合
      *
      * @param conn 数据库连接
@@ -1326,7 +1300,7 @@ public class Jdbc {
                 List<Integer> pkgSorts = pk.getDirections();
 
                 if (index.getTableName().equals(pk.getTableName()) // 表名相同
-                    && index.getTableSchema().equals(pk.getTableSchema()) // schema相同
+                    && StringComparator.compareTo(index.getTableSchema(), pk.getTableSchema()) == 0 // schema相同
                     && pkgNames.size() == idxNames.size() && pkgSorts.size() == idxSorts.size() // 字段个数相同
                 ) {
                     boolean notequal = false; //

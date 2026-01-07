@@ -31,7 +31,7 @@ public class ScriptEngineTest {
         FileUtils.clearFile(logfile);
 
         ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
+        ScriptEngine engine = manager.getEngineByExtension("usl");
         engine.eval("help >> " + logfile.getAbsolutePath());
         engine.eval("exit 0 >> " + logfile.getAbsolutePath());
     }
@@ -54,7 +54,7 @@ public class ScriptEngineTest {
             new FileAppender(logfile.getAbsolutePath(), Settings.getFileEncoding(), null, true).setup(logContext);
 
             ScriptEngineManager manager = new ScriptEngineManager();
-            ScriptEngine engine = manager.getEngineByExtension("sql");
+            ScriptEngine engine = manager.getEngineByExtension("usl");
             engine.eval("help");
             engine.eval("exit 0");
         } finally {
@@ -65,8 +65,8 @@ public class ScriptEngineTest {
     @Test
     public void test3() throws ScriptException {
         ScriptEngineManager manager = new ScriptEngineManager();
-        ScriptEngine engine = manager.getEngineByExtension("etl");
-        String str = (String) engine.eval("echo 'testvalue' > $temp/test.log; cat $temp/test.log > /dev/null");
+        ScriptEngine engine = manager.getEngineByExtension("usl");
+        String str = (String) engine.eval("echo 'testvalue' > $TMPDIR/test.log; cat $TMPDIR/test.log > /dev/null");
         Assert.assertEquals("testvalue", StringUtils.rtrimBlank(str));
     }
 
@@ -77,14 +77,14 @@ public class ScriptEngineTest {
             ScriptEngineManager manager = new ScriptEngineManager();
             ScriptEngine engine = manager.getEngineByExtension("usl");
 
-            File file = (File) engine.eval("cp classpath:/bhc_finish.del ${temp}");
+            File file = (File) engine.eval("cp classpath:/bhc_finish.del ${TMPDIR}");
             FileUtils.assertFile(file);
 
-            File file2 = (File) engine.eval("mkdir $temp/bhc; cp " + file.getAbsolutePath() + " $temp/bhc");
-            FileUtils.assertFile(file2);
+            File file2 = (File) engine.eval("mkdir $TMPDIR/bhc; cp " + file.getAbsolutePath() + " $TMPDIR/bhc");
+            FileUtils.assertDirectory(file2);
 
-            engine.eval("echo test > $temp/test1/test1.log");
-            engine.eval("echo test > $temp/test1/test2/test2.log");
+            engine.eval("echo test > $TMPDIR/test1/test1.log");
+            engine.eval("echo test > $TMPDIR/test1/test2/test2.log");
 
             String text = FileUtils.readline(file, CharsetName.UTF_8, 0);
             Object str1 = engine.eval("wc -w " + file.getAbsolutePath());

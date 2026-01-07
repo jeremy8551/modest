@@ -16,7 +16,6 @@ import cn.org.expect.script.UniversalScriptParser;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
-import cn.org.expect.script.UniversalScriptVariable;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.internal.ScriptDataSource;
 import cn.org.expect.util.IO;
@@ -79,7 +78,6 @@ public class DBConnectCommand extends AbstractTraceCommand implements UniversalS
         DataSource pool = dataSource.getPool(this.name);
         dao.setConnection(pool.getConnection(), true);
         dataSource.setCatalog(this.name); // 切换当前数据库编目名
-        context.addLocalVariable(UniversalScriptVariable.VARNAME_CATALOG, this.name); // 保存当前数据库编目名
 
         if (print) {
             stdout.println("db connect to " + this.name);

@@ -6,21 +6,21 @@ name: Automatic Deployment
 on:
   workflow_dispatch:
     inputs:
-      skipTest:
-        description: 'SkipTest'
+      snapshot:
+        description: 'Use snapshot version'
         required: true
-        default: 'false'
+        default: ''
         type: choice
         options:
-          - 'false'
-          - 'true'
+          - ''
+          - '-SNAPSHOT'
 
 jobs:
   build:
-
     strategy:
       fail-fast: false
 
+    # 运行的操作系统
     runs-on: ubuntu-latest
 
     # 环境变量
@@ -39,7 +39,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '8'
-          cache: 'maven'
 
       # 安装 JDK17
       - name: Set up JDK 17
@@ -48,7 +47,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: 'maven'
 
       # 安装 GPG
       - name: Install GPG
@@ -72,7 +70,7 @@ jobs:
       - name: Configure Maven Toolchains
         run: |
           mkdir -p ~/.m2
-          cat > ~/.m2/toolchains.xml <<EOF
+          cat > ~/.m2/toolchains-modest.xml <<EOF
           <toolchains>
             <toolchain>
               <type>jdk</type>
@@ -97,10 +95,30 @@ jobs:
             <toolchain>
               <type>jdk</type>
               <provides>
-              <version>8</version>
+                <version>7</version>
               </provides>
               <configuration>
                 <jdkHome>${{ steps.jdk8.outputs.path }}</jdkHome>
+              </configuration>
+            </toolchain>
+          
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>8</version>
+              </provides>
+              <configuration>
+                <jdkHome>${{ steps.jdk8.outputs.path }}</jdkHome>
+              </configuration>
+            </toolchain>
+          
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>12</version>
+              </provides>
+              <configuration>
+                <jdkHome>${{ steps.jdk17.outputs.path }}</jdkHome>
               </configuration>
             </toolchain>
           
@@ -117,9 +135,9 @@ jobs:
           EOF
 
       - name: Verify Toolchains.xml
-        run: cat ~/.m2/toolchains.xml
+        run: cat ~/.m2/toolchains-modest.xml
 
-      # 生成 toolchains.xml 并写入 ~/.m2
+      # 生成 settings.xml 并写入 ~/.m2
       - name: Configure Maven settings.xml
         run: |
           mkdir -p ~/.m2
@@ -189,6 +207,17 @@ jobs:
                   </pluginRepository>
                 </pluginRepositories>
               </profile>
+          
+              <profile>
+                <id>enable-dockerHub-login</id>
+                <activation>
+                    <activeByDefault>true</activeByDefault>
+                </activation>
+                <properties>
+                    <dockerhub.login.username>${{ secrets.DOCKER_HUB_USERNAME }}</dockerhub.login.username>
+                    <dockerhub.login.password>${{ secrets.DOCKER_HUB_PASSWORD }}</dockerhub.login.password>
+                </properties>
+              </profile>
             </profiles>
           </settings>
           EOF
@@ -198,8 +227,37 @@ jobs:
 
       - name: Build with Maven
         run: |
-          echo "mvn clean deploy -Dmaven.test.skip=${{ github.event.inputs.skipTest }} -P enable-deploy,enable-deploy-config"
-          mvn clean deploy -Dmaven.test.skip=${{ github.event.inputs.skipTest }} -P enable-deploy,enable-deploy-config
+          # 保存当前分支名
+          current_branch=$(git rev-parse --abbrev-ref HEAD)
+          echo "当前分支名: ${current_branch}"
+
+          if [[ "$current_branch" == "feature_"* ]]; then
+            branch_name=${current_branch#feature_}
+            branch_version=${branch_name#v}
+          else
+            # 查找最新提交记录中的版本号
+            branch_version=$(git log -1 --pretty=format:"%B" | grep -oE '^v[0-9]+\.[0-9]+\.[0-9]+([[:space:]]|$)')
+          fi
+
+          echo "./mvnw clean deploy -Drevision=${branch_version}${{ github.event.inputs.snapshot }} -Dmaven.test.skip=true -P enable-deploy,enable-deploy-config"
+          ./mvnw clean deploy -Drevision=${branch_version}${{ github.event.inputs.snapshot }} -Dmaven.test.skip=true -P enable-deploy,enable-deploy-config
+
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+
+      - name: Docker build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./modest-build
+          file: ./modest-build/target/Dockerfile
+          push: true
+          tags: |
+            docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/jdksetup:latest
+            docker.io/${{ secrets.DOCKER_HUB_USERNAME }}/jdksetup:${branch_version}
 
       # 成功时发邮件
       - name: Send mail (success)
@@ -215,7 +273,7 @@ jobs:
           from: "GitHub Actions <${{ secrets.GMAIL_USERNAME }}@gmail.com>"
           body: |
             Modest 项目部署成功 ✅
-            mvn clean deploy -Dmaven.test.skip=${{ github.event.inputs.skipTest }} -P enable-deploy,enable-deploy-config
+            ./mvnw clean deploy -Dmaven.test.skip=true -P enable-deploy,enable-deploy-config
             请登录 GitHub Actions 查看详细日志: 
             https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
@@ -233,6 +291,6 @@ jobs:
           from: "GitHub Actions <${{ secrets.GMAIL_USERNAME }}@gmail.com>"
           body: |
             Modest 项目部署失败 ❌
-            mvn clean deploy -Dmaven.test.skip=${{ github.event.inputs.skipTest }} -P enable-deploy,enable-deploy-config
+            ./mvnw clean deploy -Dmaven.test.skip=true -P enable-deploy,enable-deploy-config
             请登录 GitHub Actions 查看详细日志: 
             https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}

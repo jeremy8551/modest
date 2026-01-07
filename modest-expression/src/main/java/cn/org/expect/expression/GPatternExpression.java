@@ -21,11 +21,29 @@ public class GPatternExpression {
      * 判断字符串参数 {@code str} 是否与通配符参数 {@code gpattern} 匹配
      *
      * @param str      字符串
-     * @param gpattern 通配符表达式 {@linkplain #GPatternExpression(Analysis, String)}
+     * @param gPattern 通配符表达式 {@linkplain #GPatternExpression(Analysis, String)}
      * @return 返回true表示字符串与通配符匹配
      */
-    public static boolean match(String str, String gpattern) {
-        return str != null && gpattern != null && (str.equals(gpattern) || new GPatternExpression(gpattern).match(str));
+    public static boolean match(String str, String gPattern) {
+        return str != null && gPattern != null && (str.equals(gPattern) || new GPatternExpression(gPattern).match(str));
+    }
+
+    /**
+     * 判断字符串参数 {@code str} 是否与通配符参数 {@code gpattern} 匹配
+     *
+     * @param str      字符串
+     * @param gPattern 通配符表达式 {@linkplain #GPatternExpression(Analysis, String)}
+     * @return 返回true表示字符串与通配符匹配
+     */
+    public static boolean match(String str, String[] gPattern) {
+        boolean success = false;
+        for (String name : gPattern) {
+            if (GPatternExpression.match(str, name)) {
+                success = true;
+                break;
+            }
+        }
+        return success;
     }
 
     /** 语句分析器 */

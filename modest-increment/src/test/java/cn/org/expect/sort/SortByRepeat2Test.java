@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.Random;
 
 import cn.org.expect.concurrent.ThreadSource;
+import cn.org.expect.increment.sort.TableFileSortContext;
+import cn.org.expect.increment.sort.TableFileSorter;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileWriter;
 import cn.org.expect.ioc.EasyContext;
@@ -12,7 +14,7 @@ import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyLog;
+import cn.org.expect.test.annotation.RunWithLogSettings;
 import cn.org.expect.util.CharsetUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
@@ -25,8 +27,8 @@ import org.junit.runner.RunWith;
 /**
  * 文件中有重复数据，且重复数据所在行号是跨度比较大（需要在merge阶段检查重复数据）
  */
-@EasyLog("sout+:info")
 @RunWith(ModestRunner.class)
+@RunWithLogSettings("sout+:info")
 public class SortByRepeat2Test {
     private final static Log log = LogFactory.getLog(SortByRepeat2Test.class);
 
@@ -36,7 +38,7 @@ public class SortByRepeat2Test {
     @Test
     public void test() throws IOException {
         TimeWatch watch = new TimeWatch();
-        TextTableFile txt = context.getBean(TextTableFile.class, "txt");
+        TextTableFile txt = this.context.getBean(TextTableFile.class, "txt");
 
         File tmpfile = FileUtils.createTempFile(".txt");
         FileUtils.delete(tmpfile);
@@ -52,7 +54,7 @@ public class SortByRepeat2Test {
         int next = 40000 + random.nextInt(9000);
         String copy = null;
 
-        log.info("复制文件 {} 中第 {} 行到第 {} 行", tmpfile.getAbsoluteFile(), line, next);
+        log.info("copy lines {} to {} from file {}", line, next, tmpfile.getAbsoluteFile());
 
         TextTableFileWriter out = txt.getWriter(false, IO.getCharArrayLength());
         for (int i = 1; i <= 50000; i++) {
@@ -81,9 +83,9 @@ public class SortByRepeat2Test {
         out.flush();
         out.close();
 
-        log.info("第 {} 行: {}", line, FileUtils.readline(tmpfile, CharsetUtils.get(), line));
-        log.info("第 {} 行: {}", next, FileUtils.readline(tmpfile, CharsetUtils.get(), next));
-        log.info("创建临时文件 {} 用时: {}", tmpfile.getAbsolutePath(), watch.useTime());
+        log.info("line: {}: {}", line, FileUtils.readline(tmpfile, CharsetUtils.get(), line));
+        log.info("line {}: {}", next, FileUtils.readline(tmpfile, CharsetUtils.get(), next));
+        log.info("create temp file: {}, use time: {}", tmpfile.getAbsolutePath(), watch.useTime());
 
         // ---------------------------------------------------------------------------------------------------------------------------------------------------------
         //
@@ -97,7 +99,7 @@ public class SortByRepeat2Test {
         Assert.assertTrue(FileUtils.copy(txtfile, bakfile));
 
         TableFileSortContext sortContext = new TableFileSortContext();
-        sortContext.setThreadSource(context.getBean(ThreadSource.class));
+        sortContext.setThreadSource(this.context.getBean(ThreadSource.class));
         sortContext.setFileCount(2);
         sortContext.setThreadNumber(2);
         sortContext.setDeleteFile(true);
@@ -111,7 +113,7 @@ public class SortByRepeat2Test {
 
         TableFileSorter sorter = new TableFileSorter(sortContext);
         try {
-            sorter.execute(context, txt, "int(1) desc");
+            sorter.execute(this.context, txt, "int(1) desc");
             Assert.fail();
         } catch (Throwable e) {
             String message = StringUtils.toString(e);

@@ -11,7 +11,7 @@
 
     <artifactId>modest-spring-boot-starter</artifactId>
     <name>${project.artifactId}</name>
-    <description>脚本引擎的 Spring-boot 场景启动器</description>
+    <description>Spring Boot starter for script engine</description>
 
     <properties>
         <maven.compiler.source>6</maven.compiler.source>
@@ -105,9 +105,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <packageName>cn.org.expect.springboot.starter</packageName>
-                </configuration>
             </plugin>
         </plugins>
     </build>

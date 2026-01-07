@@ -21,7 +21,7 @@ import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.internal.FtpList;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.CharTable;
 import cn.org.expect.util.CollectionUtils;
@@ -60,24 +60,23 @@ public class LsCommand extends AbstractFileCommand implements UniversalScriptInp
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         UniversalScriptAnalysis analysis = session.getAnalysis();
-        List<String> filepaths = new ArrayList<String>(this.filepathList.size());
+        List<String> list = new ArrayList<String>(this.filepathList.size());
         for (String filepath : this.filepathList) {
-            filepaths.add(filepath);
+            list.add(analysis.replaceShellVariable(session, context, analysis.unQuotation(filepath), true, !analysis.containsQuotation(filepath)));
         }
-
-        StringBuilder buf = new StringBuilder("ls " + StringUtils.join(filepaths, " ")).append(Settings.getLineSeparator());
 
         CharTable table = new CharTable();
         table.addTitle("filename");
 
+        StringBuilder buf = new StringBuilder("ls " + StringUtils.join(list, " ")).append(Settings.getLineSeparator());
         OSFtpCommand ftp = FtpList.get(context).getFTPClient();
         if (this.localhost || ftp == null) {
-            if (filepaths.isEmpty()) {
-                filepaths = ArrayUtils.asList(session.getDirectory());
+            if (list.isEmpty()) {
+                list = ArrayUtils.asList(session.getDirectory().getAbsolutePath());
             }
 
-            for (String filepath : filepaths) {
-                File file = new ScriptFile(session, context, filepath);
+            for (String filepath : list) {
+                File file = PathExpression.toFile(session, context, filepath);
                 if (LinuxLocalOS.KEY_FILENAMES.contains(file.getName())) {
                     continue;
                 }
@@ -96,21 +95,20 @@ public class LsCommand extends AbstractFileCommand implements UniversalScriptInp
                 }
             }
         } else {
-            if (filepaths.isEmpty()) {
-                filepaths = ArrayUtils.asList(ftp.pwd());
+            if (list.isEmpty()) {
+                list = ArrayUtils.asList(ftp.pwd());
             }
 
-            for (String path : filepaths) {
-                List<OSFile> list = ftp.ls(ScriptFile.replaceFilepath(session, context, path, false));
-                for (OSFile file : list) {
+            for (String filepath : list) {
+                List<OSFile> fileList = ftp.ls(PathExpression.resolve(session, context, filepath, false));
+                for (OSFile file : fileList) {
                     table.addCell(file.getLongname());
                 }
             }
         }
 
-        buf.append(table.toString(CharTable.Style.SIMPLE));
-
         if (session.isEchoEnable() || forceStdout) {
+            buf.append(table.toString(CharTable.Style.SIMPLE));
             stdout.println(buf);
         }
         return 0;

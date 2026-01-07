@@ -22,6 +22,19 @@
     </properties>
 
     <dependencies>
+        <!-- 脚本引擎 -->
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- 测试工具 -->
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-ioc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- slf4j日志门面 -->
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -179,12 +192,6 @@
             <version>1.14.9</version>
         </dependency>
 
-        <!-- 脚本引擎 -->
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-spring-boot-starter</artifactId>
-        </dependency>
-
         <!-- H2数据库 -->
         <dependency>
             <groupId>com.h2database</groupId>
@@ -197,6 +204,11 @@
     <build>
         <finalName>modest-ssm</finalName>
         <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-toolchains-plugin</artifactId>
@@ -269,7 +281,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${user.home}/.modest/modest-ssm</outputDirectory>
+                            <outputDirectory>${user.home}/.modest/modest-ssm-demo</outputDirectory>
                             <resources>
                                 <resource>
                                     <directory>src/test/resources/h2</directory>

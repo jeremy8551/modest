@@ -9,7 +9,7 @@ import cn.org.expect.script.UniversalScriptReader;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 
-@EasyCommandCompiler(name = "step", keywords = {"step"})
+@EasyCommandCompiler(name = "step")
 public class StepCommandCompiler extends AbstractTraceCommandCompiler {
 
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {

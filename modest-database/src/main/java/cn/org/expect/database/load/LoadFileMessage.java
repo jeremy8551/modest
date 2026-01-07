@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import cn.org.expect.concurrent.EasyJobMessage;
+import cn.org.expect.database.DatabaseException;
 import cn.org.expect.database.DatabaseTableColumn;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.util.Attribute;
@@ -284,9 +285,9 @@ public class LoadFileMessage extends EasyJobMessage {
      * @return 装载数据的范围集合
      * @throws IOException 解析表达式错误
      */
-    public List<LoadFileRange> getFileFailRanage() throws IOException {
+    public List<LoadFileRange> getFileRangeList() throws IOException {
         String str = this.getAttribute("fileRange");
-        List<LoadFileRange> list = LoadFileRange.parseString(str);
+        List<LoadFileRange> list = this.parseRange(str);
         List<LoadFileRange> result = new ArrayList<LoadFileRange>();
         for (LoadFileRange obj : list) {
             int status = obj.getStatus();
@@ -295,6 +296,42 @@ public class LoadFileMessage extends EasyJobMessage {
             }
         }
         return result;
+    }
+
+    /**
+     * 将字节出解析为范围集合
+     *
+     * @param str 表达式
+     * @return 范围集合
+     */
+    public List<LoadFileRange> parseRange(String str) {
+        List<LoadFileRange> list = new ArrayList<LoadFileRange>();
+        if (str != null) {
+            String[] array = StringUtils.split(str, ';');
+            for (String range : array) {
+                if (StringUtils.isBlank(range)) {
+                    continue;
+                }
+
+                String[] split = StringUtils.split(range, ',');
+                if (split.length != 3) {
+                    throw new DatabaseException("load.stdout.message002", this.getFile(), "fileRange", range);
+                }
+                if (!StringUtils.isLong(split[0])) {
+                    throw new DatabaseException("load.stdout.message003", this.getFile(), "fileRange", range);
+                }
+                if (!StringUtils.isLong(split[1])) {
+                    throw new DatabaseException("load.stdout.message003", this.getFile(), "fileRange", range);
+                }
+                if (!StringUtils.inArray(split[2], "-1", "0", "1", "2")) {
+                    throw new DatabaseException("load.stdout.message003", this.getFile(), "fileRange", range);
+                }
+
+                LoadFileRange obj = new LoadFileRange(Long.parseLong(split[0]), Long.parseLong(split[1]), Integer.parseInt(split[2]));
+                list.add(obj);
+            }
+        }
+        return list;
     }
 
     /**

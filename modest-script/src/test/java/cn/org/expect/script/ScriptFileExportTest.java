@@ -6,15 +6,15 @@ import java.util.Properties;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyLog;
+import cn.org.expect.test.annotation.RunWithLogSettings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 /**
  * 测试数据装载命令
  */
-@EasyLog("sout+:info")
 @RunWith(ModestRunner.class)
+@RunWithLogSettings("sout+:info")
 public class ScriptFileExportTest {
 
     @EasyBean

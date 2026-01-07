@@ -30,7 +30,7 @@ public class WaitCommand extends AbstractTraceCommand {
     private final String timeout;
 
     /** 后台线程 */
-    private ScriptProcess process;
+    private volatile ScriptProcess process;
 
     public WaitCommand(UniversalCommandCompiler compiler, String command, String id, String timeout) {
         super(compiler, command);
@@ -41,8 +41,8 @@ public class WaitCommand extends AbstractTraceCommand {
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         long compileMillis = session.getCompiler().getCompileMillis();
         UniversalScriptAnalysis analysis = session.getAnalysis();
-        String pid = analysis.replaceShellVariable(session, context, this.id, true, false);
-        String timeoutExpression = analysis.replaceShellVariable(session, context, this.timeout, true, false);
+        String pid = analysis.replaceShellVariable(session, context, this.id, true, true);
+        String timeoutExpression = analysis.replaceShellVariable(session, context, this.timeout, true, true);
         boolean print = session.isEchoEnable() || forceStdout;
 
         ScriptProcess process = session.getSubProcess().get(pid);

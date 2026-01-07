@@ -51,7 +51,7 @@ public class DeclareSSHTunnelCommand extends AbstractCommand {
         String username = expr.getLoginUsername();
         String password = expr.getLoginPassword();
         List<String> portForward = new ArrayList<String>();
-        analysis.split(analysis.replaceShellVariable(session, context, this.remote, true, false), portForward, ':');
+        analysis.split(analysis.replaceShellVariable(session, context, this.remote, true, true), portForward, ':');
 
         // 连接代理服务器
         OSSecureShellCommand client = context.getContainer().getBean(OSSecureShellCommand.class);
@@ -68,7 +68,7 @@ public class DeclareSSHTunnelCommand extends AbstractCommand {
         boolean variableName = false;
         int inputPort;
         UniversalScriptChecker checker = context.getEngine().getChecker();
-        if (checker.isVariableName(localStr)) { // 本地端口位置是变量名
+        if (checker.checkVariableName(localStr)) { // 本地端口位置是变量名
             inputPort = 0; // 随机分配
             variableName = true;
         } else if (StringUtils.isNumber(localStr) && //

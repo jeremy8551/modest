@@ -70,7 +70,7 @@ import cn.org.expect.util.StringUtils;
 public class DBLoadCommand extends AbstractTraceCommand implements UniversalScriptJob, JumpCommandSupported, NohupCommandSupported {
 
     /** 装数引擎 */
-    private LoadEngine engine;
+    private volatile LoadEngine engine;
 
     /** 用于判断是否可以执行装载数据任务 */
     private LoadEngineLaunch launch;
@@ -106,7 +106,7 @@ public class DBLoadCommand extends AbstractTraceCommand implements UniversalScri
             return this.launch.ready(this.engine.getContext());
         } else if (StringUtils.isNotBlank(this.script)) {
             UniversalScriptAnalysis analysis = session.getAnalysis();
-            String script = analysis.unQuotation(analysis.replaceShellVariable(session, context, this.script, true, true));
+            String script = analysis.replaceShellVariable(session, context, analysis.unQuotation(this.script), true, !analysis.containsQuotation(this.script));
             UniversalScriptEngine engine = context.getEngine();
             return engine.evaluate(session, context, stdout, stderr, script) == 0;
         } else {

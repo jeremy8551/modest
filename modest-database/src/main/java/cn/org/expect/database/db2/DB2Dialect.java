@@ -1,6 +1,7 @@
 package cn.org.expect.database.db2;
 
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.sql.Clob;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -28,6 +29,7 @@ import cn.org.expect.database.DatabaseTable;
 import cn.org.expect.database.DatabaseTableColumn;
 import cn.org.expect.database.DatabaseTableColumnList;
 import cn.org.expect.database.DatabaseTableDDL;
+import cn.org.expect.database.DatabaseType;
 import cn.org.expect.database.DatabaseTypeSet;
 import cn.org.expect.database.DatabaseURL;
 import cn.org.expect.database.Jdbc;
@@ -35,11 +37,11 @@ import cn.org.expect.database.JdbcConverterMapper;
 import cn.org.expect.database.JdbcDao;
 import cn.org.expect.database.JdbcQueryStatement;
 import cn.org.expect.database.SQL;
-import cn.org.expect.database.db2.expconv.ByteArrayConverter;
 import cn.org.expect.database.db2.expconv.RealConverter;
 import cn.org.expect.database.db2.expconv.StringConverter;
 import cn.org.expect.database.export.converter.AbstractConverter;
 import cn.org.expect.database.export.converter.BlobConverter;
+import cn.org.expect.database.export.converter.ByteArrayConverter;
 import cn.org.expect.database.export.converter.ClobConverter;
 import cn.org.expect.database.export.converter.DateConverter;
 import cn.org.expect.database.export.converter.IntegerConverter;
@@ -73,6 +75,7 @@ import cn.org.expect.os.OSCommandException;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.IO;
+import cn.org.expect.util.Numbers;
 import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringComparator;
 import cn.org.expect.util.StringUtils;
@@ -457,10 +460,10 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
         this.context = context;
     }
 
-    public DatabaseTableDDL toDDL(Connection connection, DatabaseTable table) throws SQLException {
+    public DatabaseTableDDL generateDDL(Connection connection, DatabaseTable table) throws SQLException {
         String tableDDL = this.extractTableDDL(connection, table);
         if (StringUtils.isBlank(tableDDL)) {
-            tableDDL = super.toDDL(connection, table).getTable();
+            tableDDL = super.generateDDL(connection, table).getTable();
         }
 
         // DDL
@@ -470,13 +473,13 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
         // 索引
         DatabaseIndexList indexs = table.getIndexs();
         for (DatabaseIndex index : indexs) {
-            ddl.getIndex().addAll(this.toDDL(connection, index, false));
+            ddl.getIndex().addAll(this.generateDDL(connection, index, false));
         }
 
         // 主键
         DatabaseIndexList pks = table.getPrimaryIndexs();
         for (DatabaseIndex index : pks) {
-            ddl.getPrimaryKey().addAll(this.toDDL(connection, index, true));
+            ddl.getPrimaryKey().addAll(this.generateDDL(connection, index, true));
         }
 
         // 表说明
@@ -662,7 +665,7 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
         return ddl;
     }
 
-    public DatabaseDDL toDDL(Connection connection, DatabaseProcedure procedure) throws SQLException {
+    public DatabaseDDL generateDDL(Connection connection, DatabaseProcedure procedure) throws SQLException {
         StandardDatabaseDDL ddl = new StandardDatabaseDDL();
         JdbcQueryStatement dao = null;
         try { // 从数据库系统表中查询储存过程的源代码信息
@@ -715,7 +718,7 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
                 }
             }
 
-            index.setFullName(this.toIndexName(null, idx.getSchema(), idx.getName()));
+            index.setFullName(this.generateIndexName(null, idx.getSchema(), idx.getName()));
         }
         dao.close();
     }
@@ -724,29 +727,33 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
         return super.getPrimaryIndex(connection, catalog, schema, table);
     }
 
-    public static String to(String name) {
-        if (name == null) {
-            return name;
+    public String parseIdentifier(String str) {
+        if (str == null) {
+            return str;
         }
 
-        if (name.length() <= 1) {
-            return name.toUpperCase();
+        if (str.length() <= 1) {
+            return str.toUpperCase();
         }
 
-        int last = name.length() - 1;
-        char f = name.charAt(0);
-        char l = name.charAt(last);
+        int last = str.length() - 1;
+        char f = str.charAt(0);
+        char l = str.charAt(last);
         if ((f == '\"' && l == '\"') || (f == '\'' && l == '\'')) {
-            return name.substring(1, last);
+            return str.substring(1, last);
         } else {
-            return name.toUpperCase();
+            return str.toUpperCase();
         }
     }
 
     public List<DatabaseTable> getTable(Connection connection, String catalog, String schema, String tableName) throws SQLException {
-        DatabaseTypeSet types = Jdbc.getTypeInfo(connection);
+        catalog = this.parseIdentifier(catalog);
+        schema = this.parseIdentifier(schema);
+        tableName = this.parseIdentifier(tableName);
+
+        DatabaseTypeSet types = this.getFieldInformation(connection);
         List<DatabaseTable> list = new ArrayList<DatabaseTable>();
-        ResultSet resultSet = connection.getMetaData().getTables(catalog, to(schema), to(tableName), null);
+        ResultSet resultSet = connection.getMetaData().getTables(catalog, schema, tableName, null);
         try {
             while (resultSet.next()) {
                 StandardDatabaseTable table = new StandardDatabaseTable();
@@ -755,7 +762,7 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
                 table.setSchema(StringUtils.trim(resultSet.getString("TABLE_SCHEM")));
                 table.setType(StringUtils.trim(resultSet.getString("TABLE_TYPE")));
                 table.setRemark(StringUtils.trim(resultSet.getString("REMARKS")));
-                table.setFullName(this.toTableName(table.getCatalog(), table.getSchema(), table.getName()));
+                table.setFullName(this.generateTableName(table.getCatalog(), table.getSchema(), table.getName()));
 
                 // 索引信息
                 List<DatabaseIndex> indexs = this.getIndexs(connection, catalog, table.getSchema(), table.getName());
@@ -774,7 +781,7 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
 
                 List<Map<String, String>> list0 = JdbcDao.queryListMaps(connection, "select tabname, tbspace, index_tbspace from syscat.tables a where tabschema='" + table.getSchema() + "' and tabname='" + table.getName() + "'");
                 if (list0.size() != 1) {
-                    String fullTablename = SQL.toTableName(table.getSchema(), table.getName());
+                    String fullTablename = this.generateTableName(table.getCatalog(), table.getSchema(), table.getName());
                     throw new DatabaseException("database.stdout.message034", list0.size(), fullTablename);
                 }
 
@@ -809,18 +816,18 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
         JdbcDao.execute(conn, "set current schema " + schema);
     }
 
-    public String toDeleteQuicklySQL(Connection connection, String catalog, String schema, String tableName) {
+    public String generateDeleteQuicklySQL(Connection connection, String catalog, String schema, String tableName) {
         if (StringUtils.isBlank(tableName)) {
             throw new IllegalArgumentException(tableName);
         } else {
-            return "ALTER TABLE " + this.toTableName(catalog, schema, tableName) + " ACTIVATE NOT LOGGED INITIALLY WITH EMPTY TABLE";
+            return "ALTER TABLE " + this.generateTableName(catalog, schema, tableName) + " ACTIVATE NOT LOGGED INITIALLY WITH EMPTY TABLE";
         }
     }
 
     public List<DatabaseURL> parseJdbcUrl(String url) {
         StandardDatabaseURL obj = new StandardDatabaseURL(url);
 
-        if (url.indexOf("/") == -1) {
+        if (!url.contains("/")) {
             String[] array = StringUtils.split(url, ":");
             Ensure.isTrue(array.length == 3, url);
             obj.setDatabaseName(array[2]);
@@ -883,7 +890,7 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
         return list;
     }
 
-    public List<DatabaseProcedure> getProcedure(Connection connection, String catalog, String schema, String procedureName) throws SQLException {
+    public List<DatabaseProcedure> getProcedures(Connection connection, String catalog, String schema, String procedureName) throws SQLException {
         schema = SQL.escapeQuote(schema);
         procedureName = SQL.escapeQuote(procedureName);
 
@@ -899,7 +906,7 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
             }
         }
 
-        DatabaseTypeSet map = Jdbc.getTypeInfo(connection);
+        DatabaseTypeSet map = this.getFieldInformation(connection);
         List<DatabaseProcedure> list = new ArrayList<DatabaseProcedure>();
         JdbcQueryStatement dao = new JdbcQueryStatement(connection, "select * from syscat.procedures where 1=1 " + where + " with ur");
         ResultSet resultSet = dao.query();
@@ -909,7 +916,7 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
             obj.setCatalog(null);
             obj.setSchema(StringUtils.rtrimBlank(resultSet.getString("PROCSCHEMA")));
             obj.setName(StringUtils.rtrimBlank(resultSet.getString("PROCNAME")));
-            obj.setFullName(this.toTableName(obj.getCatalog(), obj.getSchema(), obj.getName()));
+            obj.setFullName(this.generateTableName(obj.getCatalog(), obj.getSchema(), obj.getName()));
             obj.setCreator(StringUtils.rtrimBlank(resultSet.getString("DEFINER")));
             obj.setCreatTime(resultSet.getDate("CREATE_TIME"));
             obj.setLanguage(StringUtils.rtrimBlank(resultSet.getString("LANGUAGE")));
@@ -1389,7 +1396,7 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
         return true;
     }
 
-    public String toMergeStatement(String tableName, List<DatabaseTableColumn> columns, List<String> mergeColumn) {
+    public String generateMergeStatement(String tableName, List<DatabaseTableColumn> columns, List<String> mergeColumn) {
         String sql = "";
 
         /**
@@ -1462,6 +1469,68 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
         return sql;
     }
 
+    public boolean expandLength(DatabaseTableColumn column, String value, String charsetName) {
+        DatabaseType type = column.getType();
+        String expression = type.getExpression();  // 生成字段类型全名
+        boolean isChar = "LENGTH".equalsIgnoreCase(expression) && StringUtils.isNotBlank(type.getTextPrefix()) && type.getRadix() == null; // true-表示字符型字段（按字节存储）
+        boolean isNchar = isChar && Numbers.inArray(type.getSqlType(), -15, 2011, -9); // // true-表示双字节型字符字段（按字符存储）对应 Types.NCHAR Types.NCLOB Types.NVARCHAR
+        boolean isFloat = "PRECISION,SCALE".equalsIgnoreCase(expression) || "PRECISION".equalsIgnoreCase(expression); // true-表示精度型字段
+
+        // 只有一个参数，存在文本限定符，不存在进制
+        if (isChar) {
+            int size = isNchar ? value.length() : StringUtils.length(value, charsetName);
+            if (size > column.length()) {
+                column.setLength(size);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        if (isFloat) {
+            BigDecimal decimal = new BigDecimal(value);
+            boolean modify = false;
+            int precision = decimal.precision();
+            if (precision > column.length()) {
+                column.setLength(precision);
+                modify = true;
+            }
+
+            int scale = decimal.scale();
+            if (scale > column.getDigit()) {
+                column.setDigit(scale);
+                modify = true;
+            }
+            return modify;
+        } else {
+            return false;
+        }
+    }
+
+    public void expandLength(Connection conn, DatabaseTableColumnList oldTableColumnList, List<DatabaseTableColumn> newTableColumnList) throws SQLException {
+        for (DatabaseTableColumn column : newTableColumnList) {
+            DatabaseTableColumn old = oldTableColumnList.getColumn(column.getPosition());
+            if (!old.equals(column)) {
+                List<String> list = this.alterTableColumn(conn, old, column);
+                if (log.isDebugEnabled()) {
+                    for (String sql : list) {
+                        log.debug(sql);
+                    }
+                }
+            }
+        }
+        conn.commit();
+    }
+
+    /**
+     * 修改数据库表字段信息
+     *
+     * @param connection 数据库连接
+     * @param oc         原有字段信息，为 null 时表示新增字段
+     * @param nc         变更后的字段信息，为 null 时表示删除原有字段
+     * @return 返回数据库修改字段的ddl语句
+     * @throws SQLException 数据库访问错误
+     */
     public List<String> alterTableColumn(Connection connection, DatabaseTableColumn oc, DatabaseTableColumn nc) throws SQLException {
         Ensure.notNull(oc);
         Ensure.notNull(nc);
@@ -1489,12 +1558,12 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
 
             // 字段类型发生变化
             if (StringComparator.compareIgnoreBlank(oc.getFieldType(), nc.getFieldType()) != 0) {
-                list.add("alter table " + nc.getTableFullName() + " alter column " + nc.getName() + " set data type " + nc.getFieldName());
+                list.add("alter table " + nc.getTableFullName() + " alter column " + nc.getName() + " set data type " + this.getFieldName(nc));
             }
 
             // 修改字段类型
             else if (oc.length() != nc.length() || oc.getDigit() != nc.getDigit()) {
-                list.add("alter table " + nc.getTableFullName() + " alter column " + nc.getName() + " set data type " + nc.getFieldName());
+                list.add("alter table " + nc.getTableFullName() + " alter column " + nc.getName() + " set data type " + this.getFieldName(nc));
             }
 
             // 修改字段自增信息
@@ -1531,5 +1600,30 @@ public class DB2Dialect extends AbstractDialect implements DatabaseDialect, Easy
         } finally {
             dao.setConnection(null);
         }
+    }
+
+    /**
+     * 数据源中字段的类型全名，如：char(20), decimal(20,3)
+     *
+     * @param column 数据库字段信息
+     * @return 字段类型全名
+     */
+    public String getFieldName(DatabaseTableColumn column) {
+        String expression = column.getType().getExpression();
+        StringBuilder buf = new StringBuilder(15);
+        buf.append(column.getFieldType());
+        if (StringUtils.isBlank(expression)) {
+        } else if (expression.equalsIgnoreCase("LENGTH")) {
+            buf.append("(").append(column.length()).append(")");
+        } else if (expression.equalsIgnoreCase("PRECISION,SCALE")) {
+            buf.append("(").append(column.length()).append(", ").append(column.getDigit()).append(")");
+        } else if (expression.equalsIgnoreCase("SCALE")) {
+            buf.append("(").append(column.getDigit()).append(")");
+        } else if (expression.equalsIgnoreCase("PRECISION")) {
+            buf.append("(").append(column.length()).append(")");
+        } else {
+            throw new UnsupportedOperationException(column.getName() + ", " + column.getFieldType() + ", " + expression);
+        }
+        return buf.toString();
     }
 }

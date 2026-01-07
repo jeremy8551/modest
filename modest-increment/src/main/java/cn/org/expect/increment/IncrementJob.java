@@ -5,6 +5,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import cn.org.expect.concurrent.AbstractJob;
+import cn.org.expect.increment.sort.OrderByExpression;
+import cn.org.expect.increment.sort.TableFileSortContext;
+import cn.org.expect.increment.sort.TableFileSorter;
 import cn.org.expect.io.CommonTextTableFileReaderListener;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileReader;
@@ -12,9 +15,6 @@ import cn.org.expect.io.TextTableFileWriter;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.printer.Progress;
-import cn.org.expect.sort.OrderByExpression;
-import cn.org.expect.sort.TableFileSortContext;
-import cn.org.expect.sort.TableFileSorter;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 

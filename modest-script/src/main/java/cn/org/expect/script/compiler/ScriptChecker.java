@@ -31,15 +31,18 @@ public class ScriptChecker implements UniversalScriptChecker {
         this.scriptKeyword = set;
     }
 
-    public boolean isVariableName(String name) {
-        if (name.length() == 0) { // 变量名不能为空
+    public boolean checkVariableName(String name) {
+        // 变量名不能为空
+        if (name.length() == 0) {
             return false;
         }
 
+        // 变量名不能是 $ 或 _
         if (StringUtils.isBlank(StringUtils.replaceAll(name, "_", "")) || name.equals("$")) {
             return false;
         }
 
+        //  变量名第一个字符不是：英文 或 _ 或 $
         if (!StringUtils.isLetter(name.charAt(0)) && !StringUtils.inArray(name.charAt(0), '_', '$')) {
             return false;
         }
@@ -54,10 +57,15 @@ public class ScriptChecker implements UniversalScriptChecker {
             }
         }
 
-        return this.scriptKeyword != null && !this.scriptKeyword.contains(name);
+        // 变量名不能是关键字
+        if (this.scriptKeyword != null && !this.scriptKeyword.isEmpty()) {
+            return !this.scriptKeyword.contains(name);
+        }
+
+        return true;
     }
 
-    public boolean isDatabaseKeyword(String name) {
-        return this.databaseKeyword != null && this.databaseKeyword.contains(name);
+    public boolean checkDatabaseKeyword(String name) {
+        return this.databaseKeyword == null || !this.databaseKeyword.contains(name);
     }
 }

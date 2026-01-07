@@ -11,9 +11,14 @@
 
     <artifactId>modest-ioc-test</artifactId>
     <name>${project.artifactId}</name>
-    <description>IOC容器测试工具</description>
+    <description>IOC container testing utilities</description>
 
     <dependencies>
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-ioc</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-launcher</artifactId>
@@ -31,10 +36,14 @@
             <artifactId>junit-vintage-engine</artifactId>
             <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-ioc</artifactId>
-        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

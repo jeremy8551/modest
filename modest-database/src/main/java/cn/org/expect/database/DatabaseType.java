@@ -77,6 +77,14 @@ public interface DatabaseType {
     String getExpression();
 
     /**
+     * 返回 1 表示字段类型区分大小写，返回 0 或 null 表示字段类型不区分大小写 <br>
+     * CASE_SENSITIVE <br>
+     *
+     * @return 返回 1 表示字段类型区分大小写，返回 0 或 null 表示字段类型不区分大小写
+     */
+    Integer getCaseSesitive();
+
+    /**
      * 返回 true 表示字段可以是null <br>
      * NULLABLE <br>
      * {@linkplain DatabaseMetaData#typeNoNulls} 不允许为空 <br>
@@ -86,14 +94,6 @@ public interface DatabaseType {
      * @return 返回 true 表示字段可以是null
      */
     Integer getNullAble();
-
-    /**
-     * 返回 1 表示字段类型区分大小写，返回 0 或 null 表示字段类型不区分大小写 <br>
-     * CASE_SENSITIVE <br>
-     *
-     * @return 返回 1 表示字段类型区分大小写，返回 0 或 null 表示字段类型不区分大小写
-     */
-    Integer getCaseSesitive();
 
     /**
      * 返回字段类型支持支持的最大小数位 <br>
@@ -120,12 +120,12 @@ public interface DatabaseType {
     Integer getRadix();
 
     /**
-     * 返回 1 表示有固定小数位，返回 0 或 null 表示小数位不是固定的 <br>
+     * 返回 1 表示有固定小数位,例如 DECIMAL(10,2); 返回 0 或 null 表示小数位数可变或者没有固定的精度约束（比如 FLOAT、DOUBLE）。 <br>
      * FIXED_PREC_SCALE <br>
      *
      * @return 返回 1 表示有固定小数位，返回 0 或 null 表示小数位不是固定的
      */
-    Integer getScale();
+    Integer getFixedPrecScale();
 
     /**
      * 支出是否可以在where条件句中使用这种类型，有以下的可能值： <br>

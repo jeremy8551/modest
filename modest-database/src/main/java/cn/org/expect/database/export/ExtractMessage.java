@@ -215,7 +215,7 @@ public class ExtractMessage extends EasyJobMessage {
         ct.addTitle("", CharTable.ALIGN_LEFT);
         ct.addTitle("", CharTable.ALIGN_LEFT);
 
-        String[] titles = StringUtils.split(ResourcesUtils.getMessage("extract.stdout.message007"), ',');
+        String[] titles = ResourcesUtils.getMessageArray("extract.stdout.message007");
         String[] values = {this.getStart(), //
             this.getEncoding(), //
             this.getColumn(), //

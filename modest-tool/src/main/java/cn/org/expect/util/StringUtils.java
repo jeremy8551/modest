@@ -4485,6 +4485,20 @@ public class StringUtils {
     }
 
     /**
+     * 判断字符串是否以文件分隔符结束
+     *
+     * @param str 输入字符串
+     * @return 返回true表示是，false表示否
+     */
+    public static boolean endWithFileSeparator(CharSequence str) { // TODO 单元测试
+        if (str != null && str.length() > 0) {
+            char last = str.charAt(str.length() - 1);
+            return last == '/' || last == '\\';
+        }
+        return false;
+    }
+
+    /**
      * 判断字符串是否以换行符开始
      *
      * @param str 字符串

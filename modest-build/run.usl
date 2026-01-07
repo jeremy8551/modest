@@ -1,0 +1,52 @@
+# =============================================================================
+# Author:             吕钊军
+# Created Date:       2025-10-21
+# Last Modified:      2025-10-30
+# Version:            1.0
+# Description:        安装 JDK 与生成 Maven 工具链配置文件
+# =============================================================================
+
+set
+
+# 打印变量方法
+# this.help()
+
+cd ${HOME}
+echo "current dir: ${HOME}"
+echo "operation system: ${os.name}"
+
+mkdir ${HOME}/.m2/jdks
+
+set jdkSetupXml = `cat ${HOME}/jdk_setup.xml`
+set jdkNodeList = jdkSetupXml.newDocument().getChildNodes("jdks").get(0).getChildNodes("jdk")
+set jdkNodeListSize = jdkNodeList.size()
+set index = 0
+set toolchainsXml="<toolchains>\n"
+while index < jdkNodeListSize loop
+    set jdkNode = jdkNodeList.get(index)
+    set jdkVersion = jdkNode.getChildNodes("version").get(0).getText()
+    set jdkFilename = jdkNode.getChildNodes("filename").get(0).getText()
+    set jdkHome = jdkNode.getChildNodes("home").get(0).getText()
+
+    set jdkHomeDir="${HOME}/.m2/jdks/${jdkHome}"
+    if !jdkHomeDir.existsFile() then
+      os "tar -xvf ${HOME}/setup/${jdkFilename} -C ${HOME}/.m2/jdks"
+    fi
+
+    set toolchainsXml=toolchainsXml+"   <toolchain>\n"
+    set toolchainsXml=toolchainsXml+"       <type>jdk</type>\n"
+    set toolchainsXml=toolchainsXml+"       <provides>\n"
+    set toolchainsXml=toolchainsXml+"           <version>${jdkVersion}</version>\n"
+    set toolchainsXml=toolchainsXml+"       </provides>\n"
+    set toolchainsXml=toolchainsXml+"       <configuration>\n"
+    set toolchainsXml=toolchainsXml+"           <jdkHome>${JDK_SETUP_DIR}/${jdkHome}</jdkHome>\n"
+    set toolchainsXml=toolchainsXml+"       </configuration>\n"
+    set toolchainsXml=toolchainsXml+"   </toolchain>\n\n"
+
+    set index = index + 1
+end loop
+
+set toolchainsXml=toolchainsXml.trim() + "\n</toolchains>"
+echo "${toolchainsXml}"
+echo ${toolchainsXml} > ${HOME}/.m2/toolchains-modest.xml
+exit 0

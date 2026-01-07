@@ -8,6 +8,8 @@ import java.util.List;
 
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
+import cn.org.expect.test.ModestRunner;
+import cn.org.expect.test.annotation.RunWithLogSettings;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
@@ -16,11 +18,14 @@ import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 /**
  * @author jeremy8551@gmail.com
  * @createtime 2023/10/2
  */
+@RunWith(ModestRunner.class)
+@RunWithLogSettings("sout:")
 public class ChinaUtilsTest {
     private final static Log log = LogFactory.getLog(ChinaUtilsTest.class);
 

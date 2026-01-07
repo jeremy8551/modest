@@ -301,7 +301,7 @@ public class DestTable {
         } else if (mode == LoadMode.MERGE) {
             DatabaseDialect dialect = dao.getDialect();
             if (dialect.supportedMergeStatement()) {
-                sql = dialect.toMergeStatement(fullTableName, columns, indexColumn);
+                sql = dialect.generateMergeStatement(fullTableName, columns, indexColumn);
             } else {
                 this.merge = new LoadMerge(dao, this, indexColumn, columns);
                 sql = Jdbc.toInsertStatement(this.merge.getTempTable().getFullName(), columns);

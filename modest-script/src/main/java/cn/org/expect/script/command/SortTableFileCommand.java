@@ -3,16 +3,17 @@ package cn.org.expect.script.command;
 import java.io.File;
 
 import cn.org.expect.concurrent.ThreadSource;
+import cn.org.expect.increment.sort.OrderByExpression;
+import cn.org.expect.increment.sort.TableFileSortContext;
+import cn.org.expect.increment.sort.TableFileSorter;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.script.UniversalCommandCompiler;
+import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
-import cn.org.expect.script.io.ScriptFile;
-import cn.org.expect.sort.OrderByExpression;
-import cn.org.expect.sort.TableFileSortContext;
-import cn.org.expect.sort.TableFileSorter;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
@@ -26,7 +27,7 @@ import cn.org.expect.util.StringUtils;
  */
 public class SortTableFileCommand extends AbstractTraceCommand {
 
-    private TableFileSorter tfs;
+    private volatile TableFileSorter tfs;
 
     private String filepath;
 
@@ -45,8 +46,9 @@ public class SortTableFileCommand extends AbstractTraceCommand {
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
+        UniversalScriptAnalysis analysis = session.getAnalysis();
         if (session.isEchoEnable() || forceStdout) {
-            stdout.println(session.getAnalysis().replaceShellVariable(session, context, this.command, true, true));
+            stdout.println(analysis.replaceShellVariable(session, context, this.command, true, true));
         }
 
         TableFileSortContext cxt = new TableFileSortContext();
@@ -79,13 +81,14 @@ public class SortTableFileCommand extends AbstractTraceCommand {
 
         String tempFilepath = this.map.getAttribute("temp");
         if (StringUtils.isNotBlank(tempFilepath)) {
-            String filepath = ScriptFile.replaceFilepath(session, context, tempFilepath, true);
+            String filepath = PathExpression.resolve(session, context, tempFilepath, true);
             cxt.setTempDir(new File(filepath));
         }
 
-        TextTableFile file = context.getContainer().getBean(TextTableFile.class, this.filetype, this.map);
+        String filetype = analysis.replaceShellVariable(session, context, this.filetype, true, true);
+        TextTableFile file = context.getContainer().getBean(TextTableFile.class, filetype, this.map);
         Ensure.notNull(file);
-        file.setAbsolutePath(this.filepath);
+        file.setAbsolutePath(analysis.replaceShellVariable(session, context, analysis.unQuotation(this.filepath), true, !analysis.containsQuotation(this.filepath)));
 
         this.tfs = new TableFileSorter(cxt);
         this.tfs.execute(file, this.orders);

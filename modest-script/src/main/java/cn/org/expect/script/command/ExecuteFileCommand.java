@@ -9,7 +9,7 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
-import cn.org.expect.script.io.ScriptFileExpression;
+import cn.org.expect.script.io.PathExpression;
 
 /**
  * 执行脚本文件
@@ -17,14 +17,18 @@ import cn.org.expect.script.io.ScriptFileExpression;
 public class ExecuteFileCommand extends AbstractTraceCommand implements NohupCommandSupported {
 
     /** 子脚本的会话信息 */
-    private UniversalScriptSession session;
+    private volatile UniversalScriptSession session;
 
-    /** 脚本文件的绝对路径 */
-    protected ScriptFileExpression file;
+    /** 脚本文件 */
+    protected PathExpression file;
 
-    public ExecuteFileCommand(UniversalCommandCompiler compiler, String command, ScriptFileExpression file) {
+    /** 脚本文件的参数 */
+    protected String[] parameters;
+
+    public ExecuteFileCommand(UniversalCommandCompiler compiler, String command, PathExpression file, String[] parameters) {
         super(compiler, command);
         this.file = file;
+        this.parameters = parameters;
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext parent, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
@@ -42,7 +46,7 @@ public class ExecuteFileCommand extends AbstractTraceCommand implements NohupCom
         engine.setStepWriter(parent.getEngine().getStepWriter());
 
         try {
-            return this.execute(session, engine, context, stdout, stderr, forceStdout, this.file, charsetName);
+            return this.execute(session, engine, context, stdout, stderr, forceStdout, this.file, this.parameters, charsetName);
         } finally {
             engine.close();
         }
@@ -57,17 +61,18 @@ public class ExecuteFileCommand extends AbstractTraceCommand implements NohupCom
      * @param stdout      标准信息输出接口
      * @param stderr      错误信息输出接口
      * @param forceStdout true 表示使用标准信息输出接口输出标准信息（忽略 {@linkplain UniversalScriptSession#isEchoEnable()} 返回值）
-     * @param file        脚本文件表达式
+     * @param file        脚本文件
+     * @param parameters  脚本文件的参数
      * @param charsetName 脚本文件字符集
-     * @return 0表示命令执行成功 非0表示命令错误
+     * @return 0表示命令执行成功 非0表示发生错误
      * @throws Exception 脚本命令错误
      */
-    public int execute(UniversalScriptSession session, UniversalScriptEngine engine, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, ScriptFileExpression file, String charsetName) throws Exception {
+    public int execute(UniversalScriptSession session, UniversalScriptEngine engine, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, PathExpression file, String[] parameters, String charsetName) throws Exception {
         this.session = session.subsession();
         try {
-            this.session.setScriptFile(file); // 脚本文件
-            this.session.setScriptParameters(file.getParameters()); // 脚本参数
-            return engine.evaluate(this.session, context, stdout, stderr, forceStdout, file.getReader());
+            this.session.setScriptFilepath(file.getAbsolutePath()); // 脚本文件
+            this.session.setScriptParameters(parameters); // 脚本参数
+            return engine.evaluate(this.session, context, stdout, stderr, forceStdout, file.getReader(context.getCharsetName()));
         } finally {
             try {
                 UniversalScriptContext parent = context.getParent();
@@ -76,7 +81,7 @@ public class ExecuteFileCommand extends AbstractTraceCommand implements NohupCom
                     parent.getGlobalVariable().putAll(engine.getContext().getGlobalVariable());
                 }
             } finally {
-                session.putValue(this.session.getValue());
+                session.setValue(this.session.getValue());
                 this.session.close();
             }
         }

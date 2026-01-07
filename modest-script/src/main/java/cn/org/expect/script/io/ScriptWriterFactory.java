@@ -53,7 +53,7 @@ public class ScriptWriterFactory {
         Ensure.notNull(session);
         Ensure.notNull(context);
 
-        String filepath = ScriptFile.replaceFilepath(session, context, this.filepath, true);
+        String filepath = PathExpression.resolve(session, context, this.filepath, true);
         this.logfile = new File(filepath);
         if ("/dev/null".equals(filepath)) {
             this.out = new NullWriter();

@@ -22,16 +22,17 @@ import cn.org.expect.script.UniversalScriptSession;
 public class ScriptParser implements UniversalScriptParser {
     protected final static Log log = LogFactory.getLog(ScriptParser.class);
 
-    private UniversalScriptContext context;
+    /** 脚本引擎上下文信息 */
+    private final UniversalScriptContext context;
 
     /** 脚本命令工厂 */
-    private UniversalCommandRepository repository;
+    private final UniversalCommandRepository repository;
 
     /** 词法分析器 */
-    private ScriptReader reader;
+    private final ScriptReader reader;
 
     /** 当前用户会话信息 */
-    private UniversalScriptSession session;
+    private final UniversalScriptSession session;
 
     /**
      * 初始化
@@ -64,7 +65,7 @@ public class ScriptParser implements UniversalScriptParser {
         if (line == null) {
             return null;
         } else {
-            in.recordStartLineNumber(); // 命令的起始行
+            in.setStartLineNumber(); // 命令的起始行
             UniversalCommandCompiler compiler = this.repository.get(this.session.getAnalysis(), line);
             if (compiler == null) {
                 throw new UniversalScriptException("script.stderr.message076", line);
@@ -75,7 +76,7 @@ public class ScriptParser implements UniversalScriptParser {
                 log.debug("script.stdout.message026", compiler.getClass().getName(), script);
             }
 
-            in.recordEndLineNumber(); // 命令终止行
+            in.setEndLineNumber(); // 命令终止行
             return compiler.compile(this.session, this.context, this, in, script); // 编译语句
         }
     }

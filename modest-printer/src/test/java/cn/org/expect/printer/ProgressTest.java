@@ -15,7 +15,7 @@ public class ProgressTest {
         StandardPrinter printer = new StandardPrinter();
 
         long count = 100;
-        String str = "测试进度 ${process}%, ${leftTime}";
+        String str = "Test Progress ${process}%, ${leftTime}";
         Progress process = new Progress(printer, str, count);
 
         for (int i = 1; i <= count; i++) {
@@ -42,7 +42,7 @@ public class ProgressTest {
         StandardPrinter printer = new StandardPrinter();
 
         long count = 100;
-        String str = "测试进度 ${process}%, ${leftTime}";
+        String str = "Test Progress ${process}%, ${leftTime}";
         Progress process = new Progress("taskid", printer, str, count);
 
         for (int i = 1; i <= count; i++) {
@@ -55,7 +55,7 @@ public class ProgressTest {
 
         log.info("");
         log.info("");
-        log.info("测试设置进度 ...");
+        log.info("Test set progress ...");
 
         Assert.assertEquals("taskid", process.getTaskId());
         process.reset();

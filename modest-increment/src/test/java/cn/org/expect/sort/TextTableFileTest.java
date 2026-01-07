@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.Date;
 
 import cn.org.expect.concurrent.ThreadSource;
+import cn.org.expect.increment.sort.TableFileSortContext;
+import cn.org.expect.increment.sort.TableFileSorter;
 import cn.org.expect.io.BufferedWriter;
 import cn.org.expect.io.CommonTextTableFile;
 import cn.org.expect.io.CommonTextTableFileReaderListener;
@@ -17,7 +19,7 @@ import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyLog;
+import cn.org.expect.test.annotation.RunWithLogSettings;
 import cn.org.expect.util.CharsetUtils;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
@@ -31,9 +33,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
-@FixMethodOrder(MethodSorters.JVM)
-@EasyLog("sout+:info")
 @RunWith(ModestRunner.class)
+@RunWithLogSettings("sout+:info")
+@FixMethodOrder(MethodSorters.JVM)
 public class TextTableFileTest {
     private final static Log log = LogFactory.getLog(TextTableFileTest.class);
 
@@ -335,7 +337,7 @@ public class TextTableFileTest {
 
         // 向下读取数据文件判断行数是否相等
         TextTableFileReader in = file.getReader(IO.getCharArrayLength());
-        Assert.assertTrue("越过文件 " + f.getAbsolutePath() + " 失败! rows: " + count + ", chars: " + chars, in.skip(chars, count));
+        Assert.assertTrue("Skip file " + f.getAbsolutePath() + " fail! rows: " + count + ", chars: " + chars, in.skip(chars, count));
         try {
             int c = 0;
             while (in.readLine() != null) {
@@ -359,12 +361,12 @@ public class TextTableFileTest {
         int max = 819;
         TextTableFileReader in = file.getReader(stat, max, 100);
         try {
-            log.info("起始起始位置: {}", in.getStartPointer());
+            log.info("Start position: {}", in.getStartPointer());
             int count = 0;
             TextTableLine line;
             while ((line = in.readLine()) != null) {
                 int lineSize = StringUtils.length(line.getContent(), file.getCharsetName()) + StringUtils.length(line.getLineSeparator(), file.getCharsetName());
-                log.info("line: [{}] 实际 {} 个字节长度!", line.getContent(), lineSize);
+                log.info("line: [{}] actual length: {} bytes!", line.getContent(), lineSize);
                 count += lineSize;
                 if (in.getLineNumber() >= 200) {
                     break;
@@ -372,7 +374,7 @@ public class TextTableFileTest {
             }
             Assert.assertEquals(181, in.getStartPointer());
             Assert.assertEquals(count, 905);
-            log.info("最多能读取 {} 个字节! 实际读取个 {} 字节!", max, count);
+            log.info("maximum read {} bytes! actually read {} bytes!", max, count);
         } finally {
             in.close();
         }

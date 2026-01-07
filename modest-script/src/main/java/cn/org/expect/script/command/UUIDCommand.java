@@ -24,7 +24,7 @@ public class UUIDCommand extends AbstractTraceCommand implements NohupCommandSup
             String uuid = StringUtils.toRandomUUID();
             stdout.println(uuid);
 
-            session.putValue(uuid);
+            session.setValue(uuid);
         }
         return 0;
     }

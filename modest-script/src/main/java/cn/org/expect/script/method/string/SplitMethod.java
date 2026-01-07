@@ -17,7 +17,7 @@ import cn.org.expect.util.StringUtils;
 public class SplitMethod implements UniversalScriptVariableMethod {
 
     public Object execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, UniversalScriptAnalysis analysis, Object variable, UniversalScriptVariableMethodParameters parameters) throws Exception {
-        String escape = analysis.unescapeString(parameters.getString(1));
+        String escape = parameters.getString(1);
         if (StringUtils.isBlank(escape) || escape.length() != 1) {
             throw new IllegalArgumentException("escape: " + parameters.getString(1));
         } else {

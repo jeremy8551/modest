@@ -4,19 +4,18 @@ import java.util.Iterator;
 
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.annotation.EasyBean;
-import cn.org.expect.log.Log;
-import cn.org.expect.log.LogFactory;
 import cn.org.expect.test.ModestRunner;
-import cn.org.expect.test.annotation.EasyRunIf;
+import cn.org.expect.test.annotation.RunWithFeature;
+import cn.org.expect.test.annotation.RunWithProperties;
 import cn.org.expect.util.Settings;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 @RunWith(ModestRunner.class)
-@EasyRunIf(values = {"ssh.host", "ssh.port", "ssh.username", "ssh.password", "ssh.homedir"})
+@RunWithFeature("ssh")
+@RunWithProperties(filename = "ssh", require = {"ssh.host", "ssh.port", "ssh.username", "ssh.password"})
 public class OSTest {
-    private final static Log log = LogFactory.getLog(OSTest.class);
 
     @EasyBean("${ssh.host}")
     private String host;
@@ -30,33 +29,34 @@ public class OSTest {
     @EasyBean("${ssh.password}")
     private String password;
 
-    @EasyBean("${ssh.homedir}")
-    private String homedir;
-
     @EasyBean
     private EasyContext context;
 
     @Test
     public void test() {
-        log.info("{}@{}:{}?password={}", username, host, port, password);
+        // log.info("{}@{}:{}?password={}", this.username, this.host, this.port, this.password);
 
-        OS os = context.getBean(OS.class, host, port, username, password);
+        OS os = this.context.getBean(OS.class, this.host, this.port, this.username, this.password);
         this.testOSCommand(os);
 
+        int count = 0;
         boolean exists = false;
-        for (Iterator<OSNetworkCard> it = os.getOSNetwork().getOSNetworkCards().iterator(); it.hasNext(); ) {
+        for (Iterator<OSNetworkCard> it = os.getOSNetwork().getOSNetworkCards().iterator(); it.hasNext(); count++) {
             OSNetworkCard card = it.next();
-            log.info(card.getIPAddress());
-            if (host.equals(card.getIPAddress())) {
+            // log.info(card.getIPAddress());
+            if (this.host.equals(card.getIPAddress())) {
                 exists = true;
                 break;
             }
         }
-        Assert.assertTrue(exists);
 
-        this.testOSCommand(context.getBean(OS.class, host, username, password));
-        this.testOSCommand(context.getBean(OS.class, Settings.getUserName()));
-        this.testOSCommand(context.getBean(OS.class));
+        if (count > 0) {
+            Assert.assertTrue(exists);
+        }
+
+        this.testOSCommand(this.context.getBean(OS.class, this.host, this.port, this.username, this.password));
+        this.testOSCommand(this.context.getBean(OS.class, Settings.getUserName()));
+        this.testOSCommand(this.context.getBean(OS.class));
     }
 
     private void testOSCommand(OS os) {

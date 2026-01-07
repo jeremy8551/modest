@@ -52,7 +52,7 @@ public class DefaultCommand extends AbstractTraceCommand implements UniversalScr
         if (StringUtils.isBlank(script)) { // 打印默认命令
             UniversalCommandCompiler obj = repository.getDefault();
             if (obj != null && print) {
-                stdout.println(ResourcesUtils.getMessage("script.stdout.message029", obj.getClass().getName()));
+                stdout.println(ResourcesUtils.getMessage("script.stdout.message011", obj.getClass().getName()));
             }
             return 0;
         } else { // 设置默认命令
@@ -67,7 +67,7 @@ public class DefaultCommand extends AbstractTraceCommand implements UniversalScr
 
             repository.setDefault(commandCompiler);
             if (print) {
-                stdout.println(ResourcesUtils.getMessage("script.stdout.message029", commandCompiler.getClass().getName()));
+                stdout.println(ResourcesUtils.getMessage("script.stdout.message011", commandCompiler.getClass().getName()));
             }
             return 0;
         }

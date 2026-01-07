@@ -217,6 +217,12 @@ public class CollectionUtils {
             return null;
         }
 
+        // 如果是 List，直接用索引访问
+        if (c instanceof List) {
+            List<E> list = (List<E>) c;
+            return list.get(list.size() - 1);
+        }
+
         E object = null;
         for (E e : c) {
             object = e;

@@ -15,7 +15,7 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
 import cn.org.expect.util.Terminate;
@@ -42,20 +42,18 @@ public class MD5Command extends AbstractFileCommand implements UniversalScriptIn
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
-        String str = ScriptFile.replaceFilepath(session, context, this.filepath, true);
-        ScriptFile file = new ScriptFile(session, context, str);
         boolean print = session.isEchoEnable() || forceStdout;
-        if (file.exists() && file.isFile()) {
-            if (print) {
+        if (print) {
+            File file = PathExpression.toFile(session, context, this.filepath);
+            if (file.exists() && file.isFile()) {
                 String md5 = MD5Encrypt.encrypt(file, this);
                 stdout.println(md5);
-                session.putValue(md5);
-            }
-        } else {
-            if (print) {
-                String md5 = MD5Encrypt.encrypt(str, this);
+                session.setValue(md5);
+            } else {
+                UniversalScriptAnalysis analysis = session.getAnalysis();
+                String md5 = MD5Encrypt.encrypt(analysis.replaceShellVariable(session, context, this.filepath, true, !analysis.containsQuotation(this.filepath)), this);
                 stdout.println(md5);
-                session.putValue(md5);
+                session.setValue(md5);
             }
         }
         return 0;

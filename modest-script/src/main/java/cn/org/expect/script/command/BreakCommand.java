@@ -13,8 +13,6 @@ import cn.org.expect.util.ResourcesUtils;
 
 public class BreakCommand extends AbstractSlaveCommand implements LoopCommandKind {
 
-    public final static int KIND = 40;
-
     public BreakCommand(UniversalCommandCompiler compiler, String command) {
         super(compiler, command);
     }
@@ -29,6 +27,6 @@ public class BreakCommand extends AbstractSlaveCommand implements LoopCommandKin
     }
 
     public int kind() {
-        return BreakCommand.KIND;
+        return LoopCommandKind.BREAK_COMMAND;
     }
 }

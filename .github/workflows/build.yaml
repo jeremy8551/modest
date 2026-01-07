@@ -29,8 +29,159 @@ jobs:
     # 环境变量
     env:
       TZ: Asia/Shanghai   # 设置时区为中国标准时间
+      SSH_USER: easyetl
+      SSH_PASSWORD: dyhjer-hyWgy1-bozwav
+
+    services:
+      mysql:
+        image: mysql:9.5.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testDB
+          MYSQL_USER: testuser
+          MYSQL_PASSWORD: testpass
+        ports:
+          - 3306:3306
+        # 健康检查，确保容器启动完成后再执行测试
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+      db2:
+        image: ibmcom/db2:11.5.8.0
+        ports:
+          - 50000:50000
+        env:
+          LICENSE: accept
+          DB2INST1_PASSWORD: db2inst1
+          DBNAME: testDB
+        options: >-
+          --privileged
+          --shm-size=1g
+          --ulimit memlock=-1
+          --ulimit stack=67108864
+          --health-cmd "su - db2inst1 -c 'db2 connect to testDB' || exit 1"
+          --health-interval=30s
+          --health-timeout=10s
+          --health-retries=10
 
     steps:
+      - name: Wait for MySQL to be ready
+        run: |
+          for i in {1..30}; do
+            if docker exec $(docker ps -qf "ancestor=mysql:9.5.0") \
+              mysqladmin ping -h localhost -uroot -proot --silent; then
+              echo "✅ MySQL is ready!"
+              break
+            fi
+            echo "⏳ Waiting for MySQL to start..."
+            sleep 2
+          done
+
+      - name: Test MySQL connection
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -uroot -proot -e "SHOW DATABASES;"
+
+      - name: Wait for DB2 to be ready
+        run: |
+          echo "Waiting for DB2 service to start..."
+          for i in {1..60}; do
+          if docker inspect --format='{{.State.Health.Status}}' $(docker ps -q -f name=db2) | grep -q healthy; then
+           echo "DB2 is ready!"
+           break
+          fi
+          echo "Still starting... ($i)"
+          sleep 10
+          done
+          docker logs $(docker ps -q -f name=db2)
+
+      - name: Configure DB2 Logs and Performance
+        run: |
+          # 获取 DB2 容器 ID
+          CONTAINER_ID=$(docker ps --filter "ancestor=ibmcom/db2:11.5.8.0" --format "{{.ID}}")
+          echo "DB2 container ID: $CONTAINER_ID"
+
+          docker exec -i $CONTAINER_ID bash -c "
+          su - db2inst1 -c '
+          . ~/sqllib/db2profile;
+          db2 update db cfg for testdb using LOGPRIMARY 100;
+          db2 update db cfg for testdb using LOGSECOND 100;
+          db2 update db cfg for testdb using LOGFILSIZ 1024;
+          db2 update db cfg for testdb using LOCKLIST 8000;
+          db2 update db cfg for testdb using APPLHEAPSZ 128;
+          db2 update db cfg for testDB using NEWLOGPATH /database/logs;
+          db2 update db cfg for testdb using DBHEAP 128;
+          db2 UPDATE DBM CFG USING INTRA_PARALLEL YES;
+          db2stop force;
+          db2start;
+          db2 connect to testDB USER db2inst1 USING db2inst1;
+          '"
+
+      - name: Install SSH Server
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openssh-server
+          which chpasswd || echo "chpasswd not installed"
+          sudo apt-get install -y passwd
+          sudo service ssh start
+          sudo useradd -m -s /bin/bash $SSH_USER
+          echo "$SSH_USER:$SSH_PASSWORD" | sudo chpasswd
+          sudo sed -i 's/^#PasswordAuthentication no/PasswordAuthentication yes/' /etc/ssh/sshd_config
+          sudo service ssh restart
+          echo "SSHD started on localhost"
+          echo "Home directory of $SSH_USER: $(getent passwd $SSH_USER | cut -d: -f6)"
+
+      - name: Install vsftpd
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y vsftpd
+
+      - name: Configure vsftpd
+        run: |
+          sudo systemctl stop vsftpd
+          sudo cp /etc/vsftpd.conf /etc/vsftpd.conf.bak
+          
+          # 重写配置文件
+          sudo bash -c 'cat > /etc/vsftpd.conf <<EOF
+          listen=YES
+          listen_ipv6=NO
+          anonymous_enable=NO
+          local_enable=YES
+          write_enable=YES
+          local_umask=022
+          dirmessage_enable=YES
+          use_localtime=YES
+          xferlog_enable=YES
+          connect_from_port_20=YES
+          secure_chroot_dir=/var/run/vsftpd/empty
+          pam_service_name=vsftpd
+          rsa_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+          rsa_private_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+          pasv_enable=YES
+          pasv_min_port=21100
+          pasv_max_port=21110
+          pasv_address=127.0.0.1
+          EOF'
+          
+          sudo systemctl restart vsftpd
+          sudo systemctl status vsftpd --no-pager
+
+      - name: Create FTP user
+        run: |
+          sudo useradd -m ftpuser
+          echo "ftpuser:ftpuser" | sudo chpasswd
+          sudo mkdir -p /home/ftpuser/ftp
+          sudo chown ftpuser:ftpuser /home/ftpuser/ftp
+
+      - name: Test FTP login
+        run: |
+          sudo apt-get install -y ftp
+          echo "open 127.0.0.1 21
+          user ftpuser ftpuser
+          ls
+          bye" | ftp -n
+
       # 拉取代码
       - name: Git clone
         uses: actions/checkout@v4
@@ -44,7 +195,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '8'
-          cache: 'maven'
 
       # 安装 JDK17
       - name: Set up JDK 17
@@ -53,13 +203,12 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-          cache: 'maven'
 
       # 生成 toolchains.xml 并写入 ~/.m2
       - name: Configure Maven Toolchains
         run: |
           mkdir -p ~/.m2
-          cat > ~/.m2/toolchains.xml <<EOF
+          cat > ~/.m2/toolchains-modest.xml <<EOF
           <toolchains>
             <toolchain>
               <type>jdk</type>
@@ -84,10 +233,30 @@ jobs:
             <toolchain>
               <type>jdk</type>
               <provides>
-              <version>8</version>
+                <version>7</version>
               </provides>
               <configuration>
                 <jdkHome>${{ steps.jdk8.outputs.path }}</jdkHome>
+              </configuration>
+            </toolchain>
+          
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>8</version>
+              </provides>
+              <configuration>
+                <jdkHome>${{ steps.jdk8.outputs.path }}</jdkHome>
+              </configuration>
+            </toolchain>
+            
+            <toolchain>
+              <type>jdk</type>
+              <provides>
+                <version>12</version>
+              </provides>
+              <configuration>
+                <jdkHome>${{ steps.jdk17.outputs.path }}</jdkHome>
               </configuration>
             </toolchain>
           
@@ -104,12 +273,12 @@ jobs:
           EOF
 
       - name: Verify Toolchains.xml
-        run: cat ~/.m2/toolchains.xml
+        run: cat ~/.m2/toolchains-modest.xml
 
       - name: Build with Maven
         run: |
-          echo "mvn clean install -Dmaven.test.skip=${{ github.event.inputs.skipTest }}"
-          mvn clean install -Dmaven.test.skip=${{ github.event.inputs.skipTest }}
+          echo "./mvnw clean install -Dmaven.test.skip=${{ github.event.inputs.skipTest }} -Dactive.test.env=githubAction -Dactive.test.feature=h2,mysql,db2,ssh,ftp,sftp"
+          ./mvnw clean install -Dmaven.test.skip=${{ github.event.inputs.skipTest }} -Dactive.test.env=githubAction -Dactive.test.feature=h2,mysql,db2,ssh,ftp,sftp
 
       # 成功时发邮件
       - name: Send mail (success)
@@ -125,7 +294,7 @@ jobs:
           from: "GitHub Actions <${{ secrets.GMAIL_USERNAME }}@gmail.com>"
           body: |
             Modest 项目构建完成 ✅
-            mvn clean install -Dmaven.test.skip=${{ github.event.inputs.skipTest }}
+            ./mvnw clean install -Dmaven.test.skip=${{ github.event.inputs.skipTest }} -Dactive.test.env=githubAction
             请登录 GitHub Actions 查看详细日志: 
             https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
@@ -143,6 +312,6 @@ jobs:
           from: "GitHub Actions <${{ secrets.GMAIL_USERNAME }}@gmail.com>"
           body: |
             Modest 项目构建失败 ❌
-            mvn clean install -Dmaven.test.skip=${{ github.event.inputs.skipTest }}
+            ./mvnw clean install -Dmaven.test.skip=${{ github.event.inputs.skipTest }} -Dactive.test.env=githubAction
             请登录 GitHub Actions 查看详细日志: 
             https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}

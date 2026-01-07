@@ -16,7 +16,7 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.UniversalScriptStderr;
 import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
-import cn.org.expect.script.io.ScriptFile;
+import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
 
@@ -73,7 +73,7 @@ public class HeadCommand extends AbstractFileCommand implements UniversalScriptI
                 in.close();
             }
         } else {
-            ScriptFile file = new ScriptFile(session, context, this.filepath);
+            File file = PathExpression.toFile(session, context, this.filepath);
             BufferedReader in = IO.getBufferedReader(file, StringUtils.coalesce(this.charsetName, context.getCharsetName()));
             try {
                 String line;

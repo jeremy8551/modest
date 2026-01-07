@@ -1,0 +1,70 @@
+services:
+  ssh:
+    image: rastasheep/ubuntu-sshd:12.04
+    platform: linux/amd64
+    container_name: ssh-server
+    ports:
+      - "22222:22"
+    environment:
+      - ROOT_PASSWORD=root
+    command: >
+      bash -c "
+        # 创建用户
+        useradd -m -s /bin/bash user && echo 'user:user' | chpasswd
+
+        # 确保 SFTP 子系统配置正确
+        if ! grep -q '^Subsystem sftp' /etc/ssh/sshd_config; then
+          echo 'Subsystem sftp internal-sftp' >> /etc/ssh/sshd_config
+        fi
+
+        # 启动 SSH 服务（前台）
+        /usr/sbin/sshd -D
+      "
+
+  #  sftp:
+  #    image: atmoz/sftp:alpine
+  #    platform: linux/amd64
+  #    container_name: sftp-server
+  #    ports:
+  #      - "2222:22"
+  #    command: user:user:1001::upload
+  #    restart: unless-stopped
+
+  ftp:
+    image: stilliard/pure-ftpd:hardened
+    platform: linux/amd64
+    container_name: ftp-server
+    ports:
+      - "2121:21"
+      - "30000-30009:30000-30009"
+    environment:
+      PUBLICHOST: 127.0.0.1
+      FTP_USER_NAME: ftpuser
+      FTP_USER_PASS: ftpuser
+      FTP_USER_HOME: /home/ftpuser
+
+  mysql:
+    image: mysql:9.5.0
+    container_name: mysql-server
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: testDB
+      MYSQL_USER: testuser
+      MYSQL_PASSWORD: testpass
+    volumes:
+      - ${HOME}/mysql/data:/var/lib/mysql
+      - ${HOME}/mysql/conf:/etc/mysql/conf.d
+
+  db2:
+    image: ibmcom/db2:11.5.8.0
+    container_name: db2-server
+    platform: linux/amd64
+    ports:
+      - "50000:50000"
+    environment:
+      LICENSE: accept
+      DB2INST1_PASSWORD: db2inst1
+      DBNAME: testDB
+    privileged: true

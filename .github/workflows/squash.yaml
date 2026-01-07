@@ -31,63 +31,86 @@ jobs:
           # 保存当前分支名
           current_branch=$(git rev-parse --abbrev-ref HEAD)
           if [[ "$current_branch" == "feature_"* ]]; then
-            echo "当前分支名: ${current_branch} "
+            echo "当前分支名: ${current_branch}"
+            version_number="${current_branch#feature_}"
+            echo "提取的版本号: ${version_number}"
           else
             echo "❌ 当前分支 $current_branch 不以 feature_ 为前缀"
             exit 1
           fi
           
-          # 查找最新提交记录中的版本号
-          version_prefix=$(git log -1 --pretty=format:"%B" | grep -oE '^v[0-9]+\.[0-9]+\.[0-9]+([[:space:]]|$)')
-          if [ -z "$version_prefix" ]; then
-            echo "❌ 没有找到 v1.x.x 的版本号"
-            exit 1
+          # 获取默认分支名（尝试 main，如果不存在则尝试 master）
+          default_branch=""
+          if git show-ref --verify --quiet refs/remotes/origin/main; then
+            default_branch="main"
+          elif git show-ref --verify --quiet refs/remotes/origin/master; then
+            default_branch="master"
           else
-            echo "查找最新提交记录中的版本号: $version_prefix"
+            echo "❌ 无法找到默认分支（main 或 master）"
+            exit 2
+          fi
+          echo "默认分支名: ${default_branch}"
+          
+          # 获取默认分支的最新提交 ID
+          default_branch_commit=$(git rev-parse origin/${default_branch})
+          echo "默认分支最新提交 ID: ${default_branch_commit}"
+          
+          # 在当前 feature 分支中查找这个提交 ID（找到分叉点）
+          # 使用 git merge-base 找到两个分支的共同祖先
+          merge_base=$(git merge-base ${current_branch} origin/${default_branch})
+          echo "共同祖先提交 ID: ${merge_base}"
+          
+          # 检查默认分支的最新提交是否在当前 feature 分支的历史中
+          if git merge-base --is-ancestor ${default_branch_commit} ${current_branch}; then
+            # 如果默认分支的最新提交是当前分支的祖先，使用默认分支的最新提交
+            base_commit=${default_branch_commit}
+            echo "使用默认分支最新提交作为基准: ${base_commit}"
+          else
+            # 否则使用共同祖先
+            base_commit=${merge_base}
+            echo "使用共同祖先作为基准: ${base_commit}"
           fi
           
-          # 找到最早以 version_prefix 开头的提交记录的哈希
-          first_commit=
-          mergedMessage="$version_prefix"
-          for commit in $(git rev-list --all); do
-            echo "提交: $commit"
+          # 获取当前分支的最新提交 ID
+          current_head=$(git rev-parse HEAD)
+          echo "当前分支最新提交 ID: ${current_head}"
           
-            # 读取提交信息
-            commitMessage=$(git log -1 --pretty=format:"%s" $commit)
-            if [[ "$commitMessage" == "$version_prefix"* ]]; then
-              echo "匹配提交: $commit "
+          # 如果基准提交和当前 HEAD 相同，说明没有新提交
+          if [ "$base_commit" == "$current_head" ]; then
+            echo "⚠️ 当前分支没有新的提交，无需打平"
+            exit 0
+          fi
           
-              commitMessage=$(git log -1 --pretty=format:"%B" $commit)
-              echo "清理前的日志: $commitMessage "
+          # 收集从基准提交到当前 HEAD 之间的所有提交信息
+          mergedMessage="${version_number}"
+          commit_count=0
+          # 从基准提交的下一个提交开始，到当前 HEAD 结束
+          for commit in $(git rev-list ${base_commit}..${current_head}); do
+            commit_count=$((commit_count + 1))
+            commitMessage=$(git log -1 --pretty=format:"%B" $commit)
+            # 删除commitMessage变量左右的空白字符与换行符
+            commitMessage=$(echo "$commitMessage" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+            echo "提交 ${commit_count}: ${commit}"
+            echo "提交信息: ${commitMessage}"
           
-              # 删除开头的 version_prefix，并去掉前后空格和换行
-              cleanMessage=$(echo "${commitMessage#$version_prefix}" | xargs)
-              echo "清理后的消息: $cleanMessage"
-          
-              mergedMessage="$mergedMessage"$'\n'"$cleanMessage"
-              first_commit=$commit
-            else
-              break
+            if [ -n "$commitMessage" ]; then
+              mergedMessage="$mergedMessage"$'\n'"$commitMessage"
             fi
           done
-
-          if [ -z "$first_commit" ]; then
-            echo "❌ 没有找到以 $version_prefix 开头的提交"
-            exit 2
-          else
-            echo "第一个匹配提交: $first_commit"
-          fi
-
-          # 创建临时分支，切到指定提交的父提交
-          if git rev-parse ${first_commit}^ >/dev/null 2>&1; then
-            git checkout -b squash-temp ${first_commit}^
-          else
-            # 新建一个空分支
-            git checkout --orphan squash-temp
-          fi
           
-          # 把已在 <current_branch> 分支上提交，但在当前分支不存在的所有修改，打平（squash）成一个大改动
-          git merge --squash $current_branch
+          echo "共找到 ${commit_count} 个提交需要打平"
+          
+          # 删除重复行（保持顺序）
+          mergedMessage=$(echo "$mergedMessage" | awk '!seen[$0]++')
+          
+          echo "合并后的提交信息:"
+          echo "$mergedMessage"
+          
+          # 创建临时分支，切到基准提交
+          git checkout -b squash-temp ${base_commit}
+          
+          # 把当前分支的修改打平（squash）成一个大改动
+          git merge --squash ${current_branch}
           
           git config --global user.name "Jeremy"
           git config --global user.email "jeremy8551@gmail.com"
@@ -96,7 +119,7 @@ jobs:
           git commit -m "$mergedMessage"
           
           # 回到原分支，并用 squash 后的分支覆盖
-          git checkout $current_branch
+          git checkout ${current_branch}
           git reset --hard squash-temp
           
           # 删除临时分支
@@ -104,3 +127,37 @@ jobs:
           
           # 强制推送
           git push origin HEAD --force-with-lease
+
+      # 成功时发邮件
+      - name: Send mail (success)
+        if: success()   # 只有成功时才会执行
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_PASSWORD }}
+          subject: "✅ Modest 项目打平合并 ${{ github.ref_name }} 分支完成"
+          to: "jeremy8551@qq.com"
+          from: "GitHub Actions <${{ secrets.GMAIL_USERNAME }}@gmail.com>"
+          body: |
+            Modest 项目打平合并 ${{ github.ref_name }} 分支完成 ✅
+            请登录 GitHub Actions 查看详细日志: 
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+      # 失败时发邮件
+      - name: Send mail (failure)
+        if: failure()   # 只有失败时才会执行
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.GMAIL_USERNAME }}
+          password: ${{ secrets.GMAIL_PASSWORD }}
+          subject: "❌ Modest 项目打平合并 ${{ github.ref_name }} 分支失败"
+          to: "jeremy8551@qq.com"
+          from: "GitHub Actions <${{ secrets.GMAIL_USERNAME }}@gmail.com>"
+          body: |
+            Modest 项目打平合并 ${{ github.ref_name }} 分支失败 ❌
+            请登录 GitHub Actions 查看详细日志: 
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
