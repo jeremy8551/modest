@@ -4,6 +4,9 @@ import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
+/**
+ * {@link CharBuffer} 的单元测试。
+ */
 public class CharBufferTest {
 
     @Test
@@ -57,5 +60,81 @@ public class CharBufferTest {
 
         cb.clear();
 //        assertEquals(cb.append("a 2345   b").trim('a', 'b'), "2345");
+    }
+
+    @Test
+    public void testConstructorBoundaries() {
+        Assert.assertEquals(0, new CharBuffer(0, 1).length());
+        assertIllegalArgument(new Runnable() {
+            public void run() {
+                new CharBuffer(-1, 1);
+            }
+        });
+        assertIllegalArgument(new Runnable() {
+            public void run() {
+                new CharBuffer(0, 0);
+            }
+        });
+    }
+
+    @Test
+    public void testSetLengthBoundariesAndExceptions() {
+        final CharBuffer buffer = new CharBuffer(2, 1).append("ab");
+        buffer.setLength(2);
+        Assert.assertEquals("ab", buffer.toString());
+        buffer.setLength(1);
+        Assert.assertEquals("a", buffer.toString());
+        buffer.setLength(0);
+        Assert.assertTrue(buffer.isEmpty());
+
+        assertIllegalArgument(new Runnable() {
+            public void run() {
+                buffer.setLength(-1);
+            }
+        });
+        assertIllegalArgument(new Runnable() {
+            public void run() {
+                buffer.setLength(1);
+            }
+        });
+    }
+
+    @Test
+    public void testSubstringEmptyAndBounds() {
+        final CharBuffer empty = new CharBuffer(0, 1);
+        Assert.assertEquals("", empty.substring(0, 0));
+
+        final CharBuffer buffer = new CharBuffer(1, 1).append('x');
+        Assert.assertEquals("", buffer.substring(1, 1));
+        assertIllegalArgument(new Runnable() {
+            public void run() {
+                buffer.substring(-1, 0);
+            }
+        });
+        assertIllegalArgument(new Runnable() {
+            public void run() {
+                buffer.substring(0, 2);
+            }
+        });
+    }
+
+    @Test
+    public void testCapacityOverflowIsRejected() {
+        final CharBuffer buffer = new CharBuffer(0, 1);
+        buffer.count = Integer.MAX_VALUE;
+        assertIllegalArgument(new Runnable() {
+            public void run() {
+                buffer.expandCapacity(1);
+            }
+        });
+    }
+
+    private static void assertIllegalArgument(Runnable runnable) {
+        try {
+            runnable.run();
+            Assert.fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+            // expected
+        }
     }
 }

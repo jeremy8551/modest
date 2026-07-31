@@ -22,18 +22,25 @@ import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 封装脚本命令的运行逻辑
+ */
 public class CpCommand extends AbstractFileCommand implements UniversalScriptInputStream, NohupCommandSupported {
 
     private String srcFileExpression;
 
     private String destFileExpression;
 
+    /**
+     * 初始化 CpCommand
+     */
     public CpCommand(UniversalCommandCompiler compiler, String command, String srcFileExpression, String destFileExpression) {
         super(compiler, command);
         this.srcFileExpression = srcFileExpression;
         this.destFileExpression = destFileExpression;
     }
 
+    /** {@inheritDoc} */
     public void read(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, Reader in) throws IOException {
         if (analysis.isBlank(this.srcFileExpression)) {
             this.srcFileExpression = StringUtils.trimBlank(IO.read(in, new StringBuilder()));
@@ -42,6 +49,7 @@ public class CpCommand extends AbstractFileCommand implements UniversalScriptInp
         }
     }
 
+    /** {@inheritDoc} */
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         PathExpression src = new PathExpression(session, context, this.srcFileExpression);
         File destFile = PathExpression.toFile(session, context, this.destFileExpression); // 目标文件/目录
@@ -76,6 +84,7 @@ public class CpCommand extends AbstractFileCommand implements UniversalScriptInp
         }
     }
 
+    /** {@inheritDoc} */
     public boolean enableNohup() {
         return true;
     }

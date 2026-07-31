@@ -12,5 +12,131 @@
     <packaging>jar</packaging>
     <artifactId>modest-tool</artifactId>
     <name>${project.artifactId}</name>
-    <description>toolkit</description>
+    <description>Toolkit, core utilities, encryption and output utilities</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- 自动生成ServiceLoader文件 -->
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- 编译期修改 JDK 方言 class 的接口表 -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>9.7</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-toolchains-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <toolchains>
+                        <jdk>
+                            <version>5</version>
+                        </jdk>
+                    </toolchains>
+                </configuration>
+            </plugin>
+
+            <!-- 复制 JDK 方言模块的 class 文件 -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>copy-java-classes</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.parent.basedir}/modest-java5/target/classes</directory>
+                                    <includes>
+                                        <include>**/*.class</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>${project.parent.basedir}/modest-java6/target/classes</directory>
+                                    <includes>
+                                        <include>**/*.class</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>${project.parent.basedir}/modest-java7/target/classes</directory>
+                                    <includes>
+                                        <include>**/*.class</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>${project.parent.basedir}/modest-java12/target/classes</directory>
+                                    <includes>
+                                        <include>**/*.class</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Java5 方言独立编译后，通过字节码增强实现 tool 模块中的接口 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enhance-java5-dialect</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <java classname="cn.org.expect.util.JavaDialectEnhancer" fork="false" failonerror="true">
+                                    <arg value="${project.build.outputDirectory}/cn/org/expect/util/Java5Dialect.class"/>
+                                    <classpath>
+                                        <pathelement location="${project.build.outputDirectory}"/>
+                                        <path refid="maven.plugin.classpath"/>
+                                    </classpath>
+                                </java>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.ow2.asm</groupId>
+                        <artifactId>asm</artifactId>
+                        <version>9.7</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
 </project>

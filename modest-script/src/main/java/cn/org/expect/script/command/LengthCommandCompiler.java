@@ -10,13 +10,18 @@ import cn.org.expect.script.UniversalScriptReader;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 
+/**
+ * 编译 length 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "length", keywords = {"length"})
 public class LengthCommandCompiler extends AbstractTraceCommandCompiler {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readSinglelineScript();
     }
 
+    /** {@inheritDoc} */
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
         CommandExpression expr = new CommandExpression(analysis, "length (-f|-r|-c|-b|-h) {1}", command);
         char type = expr.getOptionNames()[0].charAt(0);

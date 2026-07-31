@@ -6,8 +6,12 @@ import cn.org.expect.expression.parameter.Parameter;
 import cn.org.expect.expression.parameter.TwoParameter;
 import cn.org.expect.util.ResourcesUtils;
 
+/**
+ * 实现表达式计算所需的运算规则
+ */
 public class TreeOperator implements Operator {
 
+    /** {@inheritDoc} */
     public Parameter execute(Parameter condition, Parameter d2) {
         condition.execute();
         if (condition.getType() != Parameter.BOOLEAN) {
@@ -34,6 +38,7 @@ public class TreeOperator implements Operator {
         return 13;
     }
 
+    /** {@inheritDoc} */
     public String toString() {
         return ResourcesUtils.getMessage("expression.stdout.message019");
     }

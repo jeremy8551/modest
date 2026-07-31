@@ -12,6 +12,9 @@ import cn.org.expect.script.UniversalScriptReader;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 
+/**
+ * 编译 undeclare 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "undeclare", keywords = {"undeclare"})
 public class UndeclareSSHCommandCompiler extends AbstractTraceCommandCompiler {
 
@@ -19,14 +22,17 @@ public class UndeclareSSHCommandCompiler extends AbstractTraceCommandCompiler {
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
+    /** {@inheritDoc} */
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
         return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readSinglelineScript();
     }
 
+    /** {@inheritDoc} */
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
         WordIterator it = analysis.parse(session.getAnalysis().replaceShellVariable(session, context, command, true, true));
         it.assertNext("undeclare");

@@ -2,6 +2,9 @@ package cn.org.expect.database.db2;
 
 import cn.org.expect.ioc.annotation.EasyBean;
 
+/**
+ * 封装脚本命令的运行逻辑
+ */
 @EasyBean(value = "db2")
 public class DB2LinuxCommand implements DB2Command {
 

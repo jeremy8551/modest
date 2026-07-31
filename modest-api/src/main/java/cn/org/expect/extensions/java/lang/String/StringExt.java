@@ -12,6 +12,9 @@ import cn.org.expect.util.StringUtils;
 import manifold.ext.rt.api.Extension;
 import manifold.ext.rt.api.This;
 
+/**
+ * 向脚本运行环境提供扩展方法
+ */
 @Extension
 public final class StringExt {
 

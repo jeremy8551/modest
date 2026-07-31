@@ -11,13 +11,18 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.script.command.feature.DefaultCommandSupported;
 
+/**
+ * 编译 os 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "os")
 public class ExecuteOSCommandCompiler extends AbstractCommandCompiler implements DefaultCommandSupported {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readSinglelineScript();
     }
 
+    /** {@inheritDoc} */
     public UniversalScriptCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String script) throws Exception {
         String oscomand = script.substring("os".length());
         return new ExecuteOSCommand(this, script, oscomand);

@@ -12,13 +12,18 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 编译 ddl 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "ddl")
 public class DDLCommandCompiler extends AbstractTraceCommandCompiler {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readSinglelineScript();
     }
 
+    /** {@inheritDoc} */
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
         String[] array = StringUtils.splitByBlank(StringUtils.trimBlank(command));
         if (array.length > 1) {

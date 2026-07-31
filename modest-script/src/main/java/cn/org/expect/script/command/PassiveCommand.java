@@ -15,10 +15,16 @@ import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.internal.FtpList;
 import cn.org.expect.util.ResourcesUtils;
 
+/**
+ * 封装脚本命令的运行逻辑
+ */
 public class PassiveCommand extends AbstractFileCommand {
 
     private boolean remote;
 
+    /**
+     * 初始化 PassiveCommand
+     */
     public PassiveCommand(UniversalCommandCompiler compiler, String str, boolean remote) {
         super(compiler, str);
         this.remote = remote;

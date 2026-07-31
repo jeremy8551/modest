@@ -10,13 +10,18 @@ import cn.org.expect.script.UniversalScriptReader;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 
+/**
+ * 编译 cp 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "cp")
 public class CpCommandCompiler extends AbstractFileCommandCompiler {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readSinglelineScript();
     }
 
+    /** {@inheritDoc} */
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
         CommandExpression expr = new CommandExpression(analysis, "cp {1-2}", command);
         int size = expr.getParameters().size();

@@ -15,9 +15,17 @@ import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 构建 IoC 容器使用的 Bean 配置信息
+ */
 public class BeanConfigBuilder {
     private final static Log log = LogFactory.getLog(BeanConfigBuilder.class);
 
+    /**
+     * 启动示例或应用
+     *
+     * @param args 命令行参数
+     */
     public static void main(String[] args) throws IOException {
         BeanConfigBuilder.create();
     }

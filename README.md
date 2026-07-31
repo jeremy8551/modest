@@ -28,7 +28,7 @@
 <dependency>
   <groupId>cn.org.expect</groupId>
   <artifactId>modest-script</artifactId>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
 </dependency>
 ```
 
@@ -38,7 +38,7 @@
 <dependency>
   <groupId>cn.org.expect</groupId>
   <artifactId>modest-script-engine</artifactId>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
 </dependency>
 ```
 
@@ -48,7 +48,7 @@
 <dependency>
     <groupId>cn.org.expect</groupId>
     <artifactId>modest-spring-boot-starter</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
 </dependency>
 ```
 
@@ -60,14 +60,22 @@
 
 
 ```java
-package cn.org.expect.javax.script.sample;
+package cn.org.expect.javax.script;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+/**
+ * 演示当前模块的基础调用方式
+ */
 public class ScriptSample {
 
+    /**
+     * 启动示例或应用
+     *
+     * @param args 命令行参数
+     */
     public static void main(String[] args) throws ScriptException {
         ScriptEngineManager manager = new ScriptEngineManager();
         ScriptEngine engine = manager.getEngineByExtension("usl");
@@ -81,15 +89,21 @@ public class ScriptSample {
 
 
 ```java
-package cn.org.expect.script.sample;
+package cn.org.expect.script;
 
 import cn.org.expect.ioc.DefaultEasyContext;
 import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.script.UniversalScriptEngine;
-import cn.org.expect.script.UniversalScriptEngineFactory;
 
+/**
+ * 演示当前模块的基础调用方式
+ */
 public class ScriptSample {
 
+    /**
+     * 启动示例或应用
+     *
+     * @param args 命令行参数
+     */
     public static void main(String[] args) {
         EasyContext context = new DefaultEasyContext();
         UniversalScriptEngineFactory factory = new UniversalScriptEngineFactory(context);
@@ -103,19 +117,20 @@ public class ScriptSample {
 在 **Spring Boot** 项目注入脚本引擎实例并执行脚本：
 
 ```java
-package cn.org.expect.ssm.controller;
+package cn.org.expect.controller;
 
-import java.io.IOException;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
 import cn.org.expect.ioc.EasyContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+/**
+ * 演示当前模块的基础调用方式
+ */
+@RestController
 public class HelloControllerSample {
 
     @Autowired
@@ -125,8 +140,7 @@ public class HelloControllerSample {
     private EasyContext context;
 
     @RequestMapping("/helloWorld")
-    @ResponseBody
-    public String help() throws ScriptException, IOException {
+    public String execute() throws ScriptException {
         this.engine.eval("echo hello world!");
         return "success";
     }
@@ -1320,12 +1334,12 @@ $ db export to 卸载位置 of 文件类型 [ modified by 参数名=参数值 �
 
 #### 卸载位置
 
-| Component Name | Class Name                                                | Description                                                                                                                                                                                                                                                  |
-| -------------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-|    **ftp**     | `cn.org.expect.database.export.inernal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
-|    **http**    | `cn.org.expect.database.export.inernal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
-|   **local**    | `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
-|    **sftp**    | `cn.org.expect.database.export.inernal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
+| Component Name | Class Name                                                 | Description                                                                                                                                                                                                                                                  |
+| -------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+|    **ftp**     | `cn.org.expect.database.export.internal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
+|    **http**    | `cn.org.expect.database.export.internal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
+|   **local**    | `cn.org.expect.database.export.internal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
+|    **sftp**    | `cn.org.expect.database.export.internal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
 
 
 自定义卸载位置格式：`bean://name`，例如：
@@ -5638,13 +5652,15 @@ FileUtils.getTempDir(String[]);
 
 已注册的数据库方言如下所示：
 
-|  Database  | Description |                   Database Dialect Class Name |
-| ---------- | ----------- | --------------------------------------------- |
-|  **db2**   |             |       `cn.org.expect.database.db2.DB2Dialect` |
-|  **db2**   | DB2 11.5    |   `cn.org.expect.database.db2.DB2Dialect11_5` |
-|   **h2**   |             |         `cn.org.expect.database.h2.H2Dialect` |
-| **mysql**  |             |   `cn.org.expect.database.mysql.MysqlDialect` |
-| **oracle** |             | `cn.org.expect.database.oracle.OracleDialect` |
+|   Database    | Description |                       Database Dialect Class Name |
+| ------------- | ----------- | ------------------------------------------------- |
+|    **db2**    |             |           `cn.org.expect.database.db2.DB2Dialect` |
+|    **db2**    | DB2 11.5    |       `cn.org.expect.database.db2.DB2Dialect11_5` |
+|  **gaussdb**  |             |   `cn.org.expect.database.gaussdb.GaussDBDialect` |
+|    **h2**     |             |             `cn.org.expect.database.h2.H2Dialect` |
+|   **mysql**   |             |       `cn.org.expect.database.mysql.MysqlDialect` |
+| **opengauss** |             | `cn.org.expect.database.gaussdb.OpenGaussDialect` |
+|  **oracle**   |             |     `cn.org.expect.database.oracle.OracleDialect` |
 
 
 
@@ -5980,13 +5996,15 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### AbstractDialect
-| Component Class Name                          | Description |
-| --------------------------------------------- | ----------- |
-| `cn.org.expect.database.db2.DB2Dialect`       |             |
-| `cn.org.expect.database.db2.DB2Dialect11_5`   | DB2 11.5    |
-| `cn.org.expect.database.h2.H2Dialect`         |             |
-| `cn.org.expect.database.mysql.MysqlDialect`   |             |
-| `cn.org.expect.database.oracle.OracleDialect` |             |
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.database.db2.DB2Dialect`           |             |
+| `cn.org.expect.database.db2.DB2Dialect11_5`       | DB2 11.5    |
+| `cn.org.expect.database.gaussdb.GaussDBDialect`   |             |
+| `cn.org.expect.database.h2.H2Dialect`             |             |
+| `cn.org.expect.database.mysql.MysqlDialect`       |             |
+| `cn.org.expect.database.gaussdb.OpenGaussDialect` |             |
+| `cn.org.expect.database.oracle.OracleDialect`     |             |
 
 
 
@@ -6139,17 +6157,17 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### AutoCloseable
-| Component Class Name                                      | Description                                                                                                                                                                                                                                                  |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `cn.org.expect.concurrent.EasyThreadSource`               | 线程池                                                                                                                                                                                                                                                       |
-| `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
-| `cn.org.expect.database.export.inernal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
-| `cn.org.expect.compress.GzipCompress`                     |                                                                                                                                                                                                                                                              |
-| `cn.org.expect.database.export.inernal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
-| `cn.org.expect.compress.RarCompress`                      |                                                                                                                                                                                                                                                              |
-| `cn.org.expect.database.export.inernal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
-| `cn.org.expect.compress.TarCompress`                      |                                                                                                                                                                                                                                                              |
-| `cn.org.expect.compress.ZipCompress`                      |                                                                                                                                                                                                                                                              |
+| Component Class Name                                       | Description                                                                                                                                                                                                                                                  |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `cn.org.expect.concurrent.EasyThreadSource`                | 线程池                                                                                                                                                                                                                                                       |
+| `cn.org.expect.database.export.internal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
+| `cn.org.expect.database.export.internal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
+| `cn.org.expect.compress.GzipCompress`                      |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.database.export.internal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
+| `cn.org.expect.compress.RarCompress`                       |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.database.export.internal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
+| `cn.org.expect.compress.TarCompress`                       |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.compress.ZipCompress`                       |                                                                                                                                                                                                                                                              |
 
 
 
@@ -6243,17 +6261,17 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### Closeable
-| Component Class Name                                      | Description                                                                                                                                                                                                                                                  |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `cn.org.expect.concurrent.EasyThreadSource`               | 线程池                                                                                                                                                                                                                                                       |
-| `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
-| `cn.org.expect.database.export.inernal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
-| `cn.org.expect.compress.GzipCompress`                     |                                                                                                                                                                                                                                                              |
-| `cn.org.expect.database.export.inernal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
-| `cn.org.expect.compress.RarCompress`                      |                                                                                                                                                                                                                                                              |
-| `cn.org.expect.database.export.inernal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
-| `cn.org.expect.compress.TarCompress`                      |                                                                                                                                                                                                                                                              |
-| `cn.org.expect.compress.ZipCompress`                      |                                                                                                                                                                                                                                                              |
+| Component Class Name                                       | Description                                                                                                                                                                                                                                                  |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `cn.org.expect.concurrent.EasyThreadSource`                | 线程池                                                                                                                                                                                                                                                       |
+| `cn.org.expect.database.export.internal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
+| `cn.org.expect.database.export.internal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
+| `cn.org.expect.compress.GzipCompress`                      |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.database.export.internal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
+| `cn.org.expect.compress.RarCompress`                       |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.database.export.internal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
+| `cn.org.expect.compress.TarCompress`                       |                                                                                                                                                                                                                                                              |
+| `cn.org.expect.compress.ZipCompress`                       |                                                                                                                                                                                                                                                              |
 
 
 
@@ -6546,7 +6564,7 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 | `cn.org.expect.database.export.ExtractWriterFactory`     |             |
 | `cn.org.expect.increment.IncrementReplaceFactory`        |             |
 | `cn.org.expect.os.OSFactory`                             |             |
-| `cn.org.expect.database.export.inernal.ReaderFactory`    |             |
+| `cn.org.expect.database.export.internal.ReaderFactory`   |             |
 | `cn.org.expect.io.TableLineRulerFactory`                 |             |
 | `cn.org.expect.io.TextTableFileFactory`                  |             |
 | `cn.org.expect.ioc.impl.ThreadSourceFactory`             |             |
@@ -6596,19 +6614,19 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### EasyContextAware
-| Component Class Name                                      | Description                                                                                      |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `cn.org.expect.io.CommonTextTableFile`                    | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                                   |
-| `cn.org.expect.io.CsvFile`                                | CSV格式文件                                                                                      |
-| `cn.org.expect.database.db2.DB2Dialect`                   |                                                                                                  |
-| `cn.org.expect.database.db2.DB2Dialect11_5`               | DB2 11.5                                                                                         |
-| `cn.org.expect.database.db2.DB2ExportFile`                | DB2数据库export命令导出文件格式, 逗号分隔，双引号转义字符，双引号是字符串限定符                  |
-| `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件                                                                               |
-| `cn.org.expect.os.ftp.FtpCommand`                         | FTP协议的实现类                                                                                  |
-| `cn.org.expect.database.export.inernal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径   |
-| `cn.org.expect.os.linux.LinuxRemoteOS`                    |                                                                                                  |
-| `cn.org.expect.database.load.serial.SerialLoadFileEngine` |                                                                                                  |
-| `cn.org.expect.database.export.inernal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径 |
+| Component Class Name                                       | Description                                                                                      |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `cn.org.expect.io.CommonTextTableFile`                     | 文本文件, 逗号分隔，无转义字符，无字符串限定符                                                   |
+| `cn.org.expect.io.CsvFile`                                 | CSV格式文件                                                                                      |
+| `cn.org.expect.database.db2.DB2Dialect`                    |                                                                                                  |
+| `cn.org.expect.database.db2.DB2Dialect11_5`                | DB2 11.5                                                                                         |
+| `cn.org.expect.database.db2.DB2ExportFile`                 | DB2数据库export命令导出文件格式, 逗号分隔，双引号转义字符，双引号是字符串限定符                  |
+| `cn.org.expect.database.export.internal.ExtractFileWriter` | 卸载数据到本地文件                                                                               |
+| `cn.org.expect.os.ftp.FtpCommand`                          | FTP协议的实现类                                                                                  |
+| `cn.org.expect.database.export.internal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径   |
+| `cn.org.expect.os.linux.LinuxRemoteOS`                     |                                                                                                  |
+| `cn.org.expect.database.load.serial.SerialLoadFileEngine`  |                                                                                                  |
+| `cn.org.expect.database.export.internal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径 |
 
 
 
@@ -6708,9 +6726,9 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### ExtractFileWriter
-| Component Class Name                                      | Description        |
-| --------------------------------------------------------- | ------------------ |
-| `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件 |
+| Component Class Name                                       | Description        |
+| ---------------------------------------------------------- | ------------------ |
+| `cn.org.expect.database.export.internal.ExtractFileWriter` | 卸载数据到本地文件 |
 
 
 
@@ -6750,12 +6768,12 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### Flushable
-| Component Class Name                                      | Description                                                                                                                                                                                                                                                  |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
-| `cn.org.expect.database.export.inernal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
-| `cn.org.expect.database.export.inernal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
-| `cn.org.expect.database.export.inernal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
+| Component Class Name                                       | Description                                                                                                                                                                                                                                                  |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `cn.org.expect.database.export.internal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
+| `cn.org.expect.database.export.internal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
+| `cn.org.expect.database.export.internal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
+| `cn.org.expect.database.export.internal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
 
 
 
@@ -6802,9 +6820,9 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### FtpFileWriter
-| Component Class Name                                  | Description                                                                                    |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| `cn.org.expect.database.export.inernal.FtpFileWriter` | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径 |
+| Component Class Name                                   | Description                                                                                    |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
+| `cn.org.expect.database.export.internal.FtpFileWriter` | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径 |
 
 
 
@@ -6812,6 +6830,14 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 | Component Class Name                                   | Description |
 | ------------------------------------------------------ | ----------- |
 | `cn.org.expect.script.command.FunctionCommandCompiler` |             |
+
+
+
+### GaussDBDialect
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.database.gaussdb.GaussDBDialect`   |             |
+| `cn.org.expect.database.gaussdb.OpenGaussDialect` |             |
 
 
 
@@ -6900,9 +6926,9 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### HttpRequestWriter
-| Component Class Name                                      | Description                                                                                                                                                                                                                                                  |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `cn.org.expect.database.export.inernal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
+| Component Class Name                                       | Description                                                                                                                                                                                                                                                  |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `cn.org.expect.database.export.internal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
 
 
 
@@ -7152,6 +7178,13 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 
+### OpenGaussDialect
+| Component Class Name                              | Description |
+| ------------------------------------------------- | ----------- |
+| `cn.org.expect.database.gaussdb.OpenGaussDialect` |             |
+
+
+
 ### OracleDialect
 | Component Class Name                          | Description |
 | --------------------------------------------- | ----------- |
@@ -7237,9 +7270,9 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### ReaderFactory
-| Component Class Name                                  | Description |
-| ----------------------------------------------------- | ----------- |
-| `cn.org.expect.database.export.inernal.ReaderFactory` |             |
+| Component Class Name                                   | Description |
+| ------------------------------------------------------ | ----------- |
+| `cn.org.expect.database.export.internal.ReaderFactory` |             |
 
 
 
@@ -7391,10 +7424,10 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### SftpFileWriter
-| Component Class Name                                   | Description                                                                                      |
-| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
-| `cn.org.expect.database.export.inernal.FtpFileWriter`  | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径   |
-| `cn.org.expect.database.export.inernal.SftpFileWriter` | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径 |
+| Component Class Name                                    | Description                                                                                      |
+| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `cn.org.expect.database.export.internal.FtpFileWriter`  | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径   |
+| `cn.org.expect.database.export.internal.SftpFileWriter` | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径 |
 
 
 
@@ -7790,12 +7823,12 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 ### ExtractWriter
 **Container use component factory `cn.org.expect.database.export.ExtractWriterFactory` to create instance**
-| Component Class Name                                      | Description                                                                                                                                                                                                                                                  |
-| --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `cn.org.expect.database.export.inernal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
-| `cn.org.expect.database.export.inernal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
-| `cn.org.expect.database.export.inernal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
-| `cn.org.expect.database.export.inernal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
+| Component Class Name                                       | Description                                                                                                                                                                                                                                                  |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `cn.org.expect.database.export.internal.FtpFileWriter`     | 卸载数据到远程ftp服务器<br>ftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                               |
+| `cn.org.expect.database.export.internal.HttpRequestWriter` | 卸载数据到用户浏览器<br>http://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse） |
+| `cn.org.expect.database.export.internal.ExtractFileWriter` | 卸载数据到本地文件                                                                                                                                                                                                                                           |
+| `cn.org.expect.database.export.internal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
 
 
 

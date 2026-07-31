@@ -3,14 +3,19 @@ package cn.org.expect.database.db2.expconv;
 import cn.org.expect.database.db2.format.DB2DoubleFormat;
 import cn.org.expect.database.export.converter.AbstractConverter;
 
+/**
+ * 在数据库字段值与 Java 对象之间执行类型转换
+ */
 public class DoubleConverter extends AbstractConverter {
 
     protected DB2DoubleFormat format;
 
+    /** {@inheritDoc} */
     public void init() throws Exception {
         this.format = new DB2DoubleFormat();
     }
 
+    /** {@inheritDoc} */
     public void execute() throws Exception {
         Double value = this.resultSet.getDouble(this.column);
         if (this.resultSet.wasNull()) {

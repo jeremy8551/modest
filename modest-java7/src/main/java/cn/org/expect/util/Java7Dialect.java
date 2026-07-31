@@ -13,6 +13,9 @@ import java.sql.Connection;
 import java.util.Date;
 import java.util.Set;
 
+/**
+ * 提供 7 版本对应的 Java 平台能力适配
+ */
 public class Java7Dialect extends Java6Dialect {
 
     public int getNetworkTimeout(Connection conn) {
@@ -23,6 +26,7 @@ public class Java7Dialect extends Java6Dialect {
         }
     }
 
+    /** {@inheritDoc} */
     public boolean isChineseLetter(UnicodeBlock ub) {
         return ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C //
             || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D //
@@ -54,6 +58,7 @@ public class Java7Dialect extends Java6Dialect {
         }
     }
 
+    /** {@inheritDoc} */
     public String toLongname(File file) {
         try {
             StringBuilder buf = new StringBuilder();

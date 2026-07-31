@@ -12,9 +12,13 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.script.io.PathExpression;
 
+/**
+ * 编译 daemon 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "daemon")
 public class DaemonCommandCompiler extends ExecuteFileCommandCompiler {
 
+    /** {@inheritDoc} */
     public UniversalScriptCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String command) throws IOException {
         String expression = analysis.trim(command.substring("daemon".length()), 0, 1); // 表达式
         List<String> list = analysis.split(expression, new ArrayList<String>());

@@ -8,10 +8,16 @@ import java.util.Set;
 import cn.org.expect.os.OSCommandStdouts;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 汇总操作系统命令的标准输出与错误输出
+ */
 public class OSCommandStdoutsImpl implements OSCommandStdouts {
 
     private Map<String, List<String>> map;
 
+    /**
+     * 初始化 OSCommandStdoutsImpl
+     */
     public OSCommandStdoutsImpl() {
         this.map = new LinkedHashMap<String, List<String>>();
     }
@@ -24,10 +30,12 @@ public class OSCommandStdoutsImpl implements OSCommandStdouts {
         return this.map.get(commandid);
     }
 
+    /** {@inheritDoc} */
     public Set<String> keys() {
         return this.map.keySet();
     }
 
+    /** {@inheritDoc} */
     public String toString() {
         return StringUtils.toString(this.map);
     }

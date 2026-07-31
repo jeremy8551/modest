@@ -6,12 +6,19 @@ import cn.org.expect.ioc.impl.DefaultBeanEntry;
 import cn.org.expect.script.annotation.EasyVariableMethod;
 import com.google.auto.service.AutoService;
 
+/**
+ * 描述 IoC 或脚本扩展点支持的注解契约
+ */
 @AutoService(EasyBeanAnnotation.class)
 public class EasyVariableMethodAnnotation implements EasyBeanAnnotation {
 
+    /**
+     * 初始化 EasyVariableMethodAnnotation
+     */
     public EasyVariableMethodAnnotation() {
     }
 
+    /** {@inheritDoc} */
     public boolean isPresent(Class<?> type) {
         return type.isAnnotationPresent(EasyVariableMethod.class);
     }

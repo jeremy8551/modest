@@ -12,18 +12,25 @@ import cn.org.expect.script.UniversalScriptVariable;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.util.Settings;
 
+/**
+ * 封装脚本命令的运行逻辑
+ */
 public class StacktraceCommand extends AbstractTraceCommand implements NohupCommandSupported {
 
     private boolean printScript;
 
     private boolean printLineNumber;
 
+    /**
+     * 初始化 StacktraceCommand
+     */
     public StacktraceCommand(UniversalCommandCompiler compiler, String command, boolean printScript, boolean printLineNumber) {
         super(compiler, command);
         this.printScript = printScript;
         this.printLineNumber = printLineNumber;
     }
 
+    /** {@inheritDoc} */
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         if (session.isEchoEnable() || forceStdout) {
             UniversalScriptException exp = session.getSystemVariable(UniversalScriptVariable.SYSTEM_LASTEXCEPTION);
@@ -50,6 +57,7 @@ public class StacktraceCommand extends AbstractTraceCommand implements NohupComm
         return 0;
     }
 
+    /** {@inheritDoc} */
     public boolean enableNohup() {
         return true;
     }

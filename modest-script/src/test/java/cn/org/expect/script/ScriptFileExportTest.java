@@ -6,6 +6,7 @@ import java.util.Properties;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.test.ModestRunner;
+import cn.org.expect.test.annotation.RunWithFeature;
 import cn.org.expect.test.annotation.RunWithLogSettings;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +16,7 @@ import org.junit.runner.RunWith;
  */
 @RunWith(ModestRunner.class)
 @RunWithLogSettings("sout+:info")
+@RunWithFeature("db2")
 public class ScriptFileExportTest {
 
     @EasyBean

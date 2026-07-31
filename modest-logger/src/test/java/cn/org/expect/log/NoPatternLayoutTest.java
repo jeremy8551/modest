@@ -3,6 +3,7 @@ package cn.org.expect.log;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.Executor;
 
 import cn.org.expect.log.file.FileAppender;
 import cn.org.expect.log.internal.LogContextImpl;
@@ -65,5 +66,55 @@ public class NoPatternLayoutTest {
         Assert.assertTrue(content, list.size() >= 2);
         Assert.assertEquals("test", list.get(0));
         Assert.assertEquals("java.lang.NullPointerException", list.get(1).toString().trim());
+    }
+
+    /**
+     * 验证异步日志任务在关闭后才启动时能够正常退出
+     *
+     * @throws Exception 线程等待被中断
+     */
+    @Test
+    public void shouldExitWhenClosedBeforeAsyncJobStarts() throws Exception {
+        File file = FileUtils.createTempFile("NoPatternLayoutTest2.log");
+        DelayedExecutor executor = new DelayedExecutor();
+        LogContext context = new LogContextImpl();
+        Assert.assertEquals(0, new LogSettings(context).load("info:sout").length);
+
+        PatternConsoleAppender consoleAppender = context.findAppender(PatternConsoleAppender.class);
+        Assert.assertNotNull(consoleAppender);
+        Appender fileAppender = new FileAppender(executor, file.getAbsolutePath(), CharsetName.UTF_8, consoleAppender.getPattern(), 5000, true).setup(context);
+        context.removeAppender(PatternConsoleAppender.class);
+
+        Log log = LogFactory.getLog(context, NoPatternLayoutTest.class);
+        log.info("test");
+        fileAppender.close();
+
+        Thread thread = executor.start();
+        thread.join(1000);
+        Assert.assertFalse("异步日志线程未正常退出", thread.isAlive());
+    }
+
+    /**
+     * 延迟启动任务的执行器
+     */
+    private static class DelayedExecutor implements Executor {
+
+        /** 待执行任务 */
+        private Runnable command;
+
+        public void execute(Runnable command) {
+            this.command = command;
+        }
+
+        /**
+         * 启动待执行任务
+         *
+         * @return 执行任务的线程
+         */
+        public Thread start() {
+            Thread thread = new Thread(this.command, DelayedExecutor.class.getSimpleName());
+            thread.start();
+            return thread;
+        }
     }
 }

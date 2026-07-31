@@ -21,6 +21,9 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 编译 declare 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "declare", keywords = {"declare", "global", "catalog"})
 public class DeclareCatalogCommandCompiler extends AbstractGlobalCommandCompiler {
 
@@ -30,14 +33,17 @@ public class DeclareCatalogCommandCompiler extends AbstractGlobalCommandCompiler
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
+    /** {@inheritDoc} */
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
         return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readSinglelineScript();
     }
 
+    /** {@inheritDoc} */
     public UniversalScriptCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String command) throws IOException {
         WordIterator it = analysis.parse(command);
         it.assertNext("declare");

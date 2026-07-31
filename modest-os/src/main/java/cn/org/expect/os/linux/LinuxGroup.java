@@ -61,6 +61,6 @@ public class LinuxGroup implements OSUserGroup {
     }
 
     public String toString() {
-        return "LinuxGroup [name=" + name + ", password=" + password + ", gid=" + gid + ", users=" + StringUtils.toString(users) + "]";
+        return "LinuxGroup [name=" + name + ", password=******, gid=" + gid + ", users=" + StringUtils.toString(users) + "]";
     }
 }

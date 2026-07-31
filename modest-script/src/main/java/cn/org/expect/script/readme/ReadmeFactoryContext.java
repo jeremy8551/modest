@@ -2,6 +2,9 @@ package cn.org.expect.script.readme;
 
 import java.io.File;
 
+/**
+ * 维护 README 生成过程中共享的组件与上下文
+ */
 public class ReadmeFactoryContext {
 
     private String sourceDirectory;

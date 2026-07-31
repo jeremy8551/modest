@@ -16,12 +16,19 @@ import cn.org.expect.util.CharTable;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 封装脚本命令的运行逻辑
+ */
 public class DfCommand extends AbstractTraceCommand implements NohupCommandSupported {
 
+    /**
+     * 初始化 DfCommand
+     */
     public DfCommand(UniversalCommandCompiler compiler, String command) {
         super(compiler, command);
     }
 
+    /** {@inheritDoc} */
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         OS os = context.getContainer().getBean(OS.class);
         try {
@@ -53,6 +60,7 @@ public class DfCommand extends AbstractTraceCommand implements NohupCommandSuppo
         }
     }
 
+    /** {@inheritDoc} */
     public boolean enableNohup() {
         return true;
     }

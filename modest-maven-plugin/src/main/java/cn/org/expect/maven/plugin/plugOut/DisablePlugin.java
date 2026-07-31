@@ -2,6 +2,9 @@ package cn.org.expect.maven.plugin.plugOut;
 
 import java.util.List;
 
+/**
+ * 从 Maven 模型中移除指定插件配置
+ */
 public class DisablePlugin {
 
     private String groupId;
@@ -34,6 +37,7 @@ public class DisablePlugin {
         this.goals = goals;
     }
 
+    /** {@inheritDoc} */
     public String toString() {
         return "DisablePlugin{" + "groupId='" + groupId + '\'' + ", artifactId='" + artifactId + '\'' + ", goals=" + goals + '}';
     }

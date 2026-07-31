@@ -2,6 +2,9 @@ package cn.org.expect.database.internal;
 
 import cn.org.expect.os.OSAccount;
 
+/**
+ * 封装数据库所在操作系统的账户信息
+ */
 public class StandardOSAccount implements OSAccount {
 
     private String username;
@@ -10,10 +13,16 @@ public class StandardOSAccount implements OSAccount {
 
     private boolean admin;
 
+    /**
+     * 初始化 StandardOSAccount
+     */
     public StandardOSAccount() {
         super();
     }
 
+    /**
+     * 初始化 StandardOSAccount
+     */
     public StandardOSAccount(String username, String password, boolean admin) {
         this();
         this.username = username;
@@ -37,6 +46,7 @@ public class StandardOSAccount implements OSAccount {
         this.password = password;
     }
 
+    /** {@inheritDoc} */
     public boolean isAdmin() {
         return admin;
     }
@@ -45,6 +55,7 @@ public class StandardOSAccount implements OSAccount {
         this.admin = admin;
     }
 
+    /** {@inheritDoc} */
     public OSAccount clone() {
         StandardOSAccount obj = new StandardOSAccount();
         obj.username = this.username;
@@ -53,6 +64,7 @@ public class StandardOSAccount implements OSAccount {
         return obj;
     }
 
+    /** {@inheritDoc} */
     public String toString() {
         return this.username;
     }

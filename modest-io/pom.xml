@@ -27,14 +27,9 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-printer</artifactId>
+            <artifactId>modest-tool</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-cn</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>

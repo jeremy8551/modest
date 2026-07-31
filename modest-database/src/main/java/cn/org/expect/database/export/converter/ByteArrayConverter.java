@@ -4,8 +4,12 @@ import java.io.InputStream;
 
 import cn.org.expect.collection.ByteBuffer;
 
+/**
+ * 在数据库字段值与 Java 对象之间执行类型转换
+ */
 public class ByteArrayConverter extends BlobConverter {
 
+    /** {@inheritDoc} */
     public void execute() throws Exception {
         InputStream in = this.resultSet.getBinaryStream(this.column);
         if (in == null) {

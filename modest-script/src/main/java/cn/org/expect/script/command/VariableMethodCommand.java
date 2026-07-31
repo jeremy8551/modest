@@ -19,7 +19,7 @@ import cn.org.expect.script.UniversalScriptVariableMethod;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.method.VariableMethodEntry;
 import cn.org.expect.script.method.VariableMethodRepository;
-import cn.org.expect.script.method.inernal.MethodParameters;
+import cn.org.expect.script.method.internal.MethodParameters;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;

@@ -4,7 +4,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import cn.org.expect.database.JdbcConverterMapper;
-import cn.org.expect.database.load.inernal.DataWriterContext;
+import cn.org.expect.database.load.internal.DataWriterContext;
 import cn.org.expect.printer.Progress;
 import cn.org.expect.util.Attribute;
 

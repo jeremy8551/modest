@@ -6,6 +6,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+/**
+ * 提供 6 版本对应的 Java 平台能力适配
+ */
 public class Java6Dialect extends Java5Dialect {
 
     public void setClientInfo(Connection conn, Properties p) {
@@ -23,10 +26,12 @@ public class Java6Dialect extends Java5Dialect {
         }
     }
 
+    /** {@inheritDoc} */
     public boolean canExecute(File file) {
         return file.canExecute();
     }
 
+    /** {@inheritDoc} */
     public boolean isStatementClosed(Statement statement) throws SQLException {
         return statement == null || statement.isClosed();
     }

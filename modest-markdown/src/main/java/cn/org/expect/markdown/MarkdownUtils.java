@@ -6,6 +6,9 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.util.FileUtils;
 
+/**
+ * 提供 Markdown 文档解析与链接处理工具
+ */
 public class MarkdownUtils {
     private final static Log log = LogFactory.getLog(MarkdownUtils.class);
 

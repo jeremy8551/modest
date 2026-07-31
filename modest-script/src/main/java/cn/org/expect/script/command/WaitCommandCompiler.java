@@ -12,13 +12,18 @@ import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 编译 wait 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "wait")
 public class WaitCommandCompiler extends AbstractTraceCommandCompiler {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readSinglelineScript();
     }
 
+    /** {@inheritDoc} */
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
         WordIterator it = analysis.parse(command);
         it.assertNext("wait");

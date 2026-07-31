@@ -12,12 +12,19 @@ import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.internal.FtpList;
 import cn.org.expect.util.ResourcesUtils;
 
+/**
+ * 封装脚本命令的运行逻辑
+ */
 public class ByeCommand extends AbstractTraceCommand {
 
+    /**
+     * 初始化 ByeCommand
+     */
     public ByeCommand(UniversalCommandCompiler compiler, String command) {
         super(compiler, command);
     }
 
+    /** {@inheritDoc} */
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         if (session.isEchoEnable() || forceStdout) {
             stdout.println("bye");

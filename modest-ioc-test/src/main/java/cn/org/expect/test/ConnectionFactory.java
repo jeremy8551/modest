@@ -12,9 +12,13 @@ import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 创建并配置当前模块使用的对象实例
+ */
 @EasyBean
 public class ConnectionFactory implements EasyBeanFactory<Connection> {
 
+    /** {@inheritDoc} */
     public Connection build(EasyContext context, Object... args) throws Exception {
         String name = ArrayUtils.indexOf(args, String.class, 0); // EasyBean 的名字
         ClassLoader classLoader = context.getClassLoader();

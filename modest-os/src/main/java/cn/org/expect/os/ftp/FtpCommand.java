@@ -34,6 +34,9 @@ import cn.org.expect.util.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.parser.FTPFileEntryParserFactory;
 
+/**
+ * 基于 Apache Commons Net 的 FTP 命令实现。
+ */
 @EasyBean(value = "ftp", description = "FTP协议的实现类")
 public class FtpCommand implements OSFtpCommand, EasyContextAware {
     private final static Log log = LogFactory.getLog(FtpCommand.class);
@@ -65,7 +68,7 @@ public class FtpCommand implements OSFtpCommand, EasyContextAware {
 
     public synchronized boolean connect(String host, int port, String username, String password) {
         if (log.isDebugEnabled()) {
-            log.debug("ftp.apache.stdout.message001", username + "@" + host + ":" + port + "?password=" + password);
+            log.debug("ftp.apache.stdout.message001", username + "@" + host + ":" + port + "?password=******");
         }
 
         try {
@@ -81,7 +84,7 @@ public class FtpCommand implements OSFtpCommand, EasyContextAware {
             }
         } catch (Exception e) {
             if (log.isErrorEnabled()) {
-                log.error("ftp " + username + "@" + host + ":" + port + "?password=" + password + " fail!", e);
+                log.error("ftp " + username + "@" + host + ":" + port + "?password=****** fail!", e);
             }
             this.close();
             return false;

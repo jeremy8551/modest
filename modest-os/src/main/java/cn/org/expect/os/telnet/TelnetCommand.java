@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import cn.org.expect.collection.ByteBuffer;
 import cn.org.expect.io.BufferedLineReader;
@@ -15,6 +17,7 @@ import cn.org.expect.log.LogFactory;
 import cn.org.expect.os.OSCommandException;
 import cn.org.expect.os.OSCommandStdouts;
 import cn.org.expect.os.OSShellCommand;
+import cn.org.expect.os.internal.OSCommandExecutors;
 import cn.org.expect.os.internal.OSCommandStdoutsImpl;
 import cn.org.expect.os.internal.OSCommandUtils;
 import cn.org.expect.util.ArrayUtils;
@@ -40,6 +43,12 @@ import org.apache.commons.net.telnet.TerminalTypeOptionHandler;
 public class TelnetCommand extends Terminator implements Runnable, TelnetNotificationHandler, OSShellCommand {
     private final static Log log = LogFactory.getLog(TelnetCommand.class);
 
+    /** 异步读取 Telnet 响应的受管执行器 */
+    private final ExecutorService executor;
+
+    /** 当前 Telnet 响应读取任务 */
+    private Future<?> readerFuture;
+
     private TelnetClient client;
 
     private String host;
@@ -51,6 +60,25 @@ public class TelnetCommand extends Terminator implements Runnable, TelnetNotific
 
     /** 命令的标准信息的输出接口 */
     private OutputStream stdout;
+
+    /**
+     * 使用模块共享执行器初始化
+     */
+    public TelnetCommand() {
+        this(OSCommandExecutors.getExecutorService());
+    }
+
+    /**
+     * 使用指定的受管执行器初始化
+     *
+     * @param executor 异步读取 Telnet 响应的执行器，不允许为 null
+     */
+    public TelnetCommand(ExecutorService executor) {
+        if (executor == null) {
+            throw new IllegalArgumentException("executor");
+        }
+        this.executor = executor;
+    }
 
     public boolean connect(String host, int port, String username, String password) {
         this.host = host;
@@ -102,8 +130,7 @@ public class TelnetCommand extends Terminator implements Runnable, TelnetNotific
     private String connect(long wait) throws IOException {
         this.client.connect(this.host, this.port);
         this.client.registerNotifHandler(this);
-        Thread thread = new Thread(this);
-        thread.start();
+        this.readerFuture = this.executor.submit(this);
         return this.getResponse(wait);
     }
 
@@ -112,14 +139,19 @@ public class TelnetCommand extends Terminator implements Runnable, TelnetNotific
     }
 
     public void close() {
-        if (client != null && client.isConnected()) {
+        if (this.client != null && this.client.isConnected()) {
             try {
-                client.disconnect();
+                this.client.disconnect();
             } catch (Exception e) {
                 log.error("disconnect", e);
             } finally {
                 this.terminate = true;
             }
+        }
+
+        if (this.readerFuture != null) {
+            this.readerFuture.cancel(true);
+            this.readerFuture = null;
         }
     }
 

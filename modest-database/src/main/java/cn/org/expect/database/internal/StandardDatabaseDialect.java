@@ -13,8 +13,14 @@ import cn.org.expect.database.DatabaseURL;
 import cn.org.expect.database.JdbcConverterMapper;
 import cn.org.expect.database.JdbcDao;
 
+/**
+ * 提供数据库方言的基础默认实现
+ */
 public class StandardDatabaseDialect extends AbstractDialect {
 
+    /**
+     * 初始化 StandardDatabaseDialect
+     */
     public StandardDatabaseDialect() {
         super();
     }
@@ -23,6 +29,7 @@ public class StandardDatabaseDialect extends AbstractDialect {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     public List<DatabaseURL> parseJdbcUrl(String url) {
         throw new UnsupportedOperationException();
     }
@@ -35,39 +42,49 @@ public class StandardDatabaseDialect extends AbstractDialect {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     public boolean isOverLengthException(Throwable e) {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     public boolean isRebuildTableException(Throwable e) {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     public boolean isPrimaryRepeatException(Throwable e) {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     public boolean isIndexExistsException(Throwable e) {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     public void reorgRunstatsIndexs(Connection conn, List<DatabaseIndex> indexs) throws SQLException {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     public void openLoadMode(JdbcDao conn, String fullTableName) throws SQLException {
     }
 
+    /** {@inheritDoc} */
     public void closeLoadMode(JdbcDao conn, String fullTableName) throws SQLException {
     }
 
+    /** {@inheritDoc} */
     public void commitLoadData(JdbcDao conn, String fullTableName) throws SQLException {
     }
 
+    /** {@inheritDoc} */
     public boolean expandLength(final DatabaseTableColumn column, final String value, final String charsetName) {
         return false;
     }
 
+    /** {@inheritDoc} */
     public void expandLength(final Connection conn, final DatabaseTableColumnList oldTableColumnList, final List<DatabaseTableColumn> newTableColumnList) throws SQLException {
     }
 
@@ -79,6 +96,7 @@ public class StandardDatabaseDialect extends AbstractDialect {
         return null;
     }
 
+    /** {@inheritDoc} */
     public DatabaseDDL generateDDL(Connection connection, DatabaseProcedure procedure) {
         throw new UnsupportedOperationException();
     }
@@ -87,10 +105,12 @@ public class StandardDatabaseDialect extends AbstractDialect {
         throw new UnsupportedOperationException();
     }
 
+    /** {@inheritDoc} */
     public boolean supportedMergeStatement() {
         return false;
     }
 
+    /** {@inheritDoc} */
     public String generateMergeStatement(String tableName, List<DatabaseTableColumn> columns, List<String> mergeColumn) {
         throw new UnsupportedOperationException();
     }

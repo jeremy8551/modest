@@ -14,9 +14,5 @@
     <description>Adaptation for JDK 1.5</description>
 
     <dependencies>
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-tool</artifactId>
-        </dependency>
     </dependencies>
 </project>

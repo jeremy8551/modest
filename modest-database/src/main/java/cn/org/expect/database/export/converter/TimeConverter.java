@@ -5,13 +5,18 @@ import java.text.SimpleDateFormat;
 
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 在数据库字段值与 Java 对象之间执行类型转换
+ */
 public class TimeConverter extends DateConverter {
 
+    /** {@inheritDoc} */
     public void init() throws Exception {
         String pattern = StringUtils.coalesce((String) this.getAttribute(PARAM_TIMEFORMAT), "hh:mm:ss");
         this.format = new SimpleDateFormat(pattern);
     }
 
+    /** {@inheritDoc} */
     public void execute() throws Exception {
         Time value = this.resultSet.getTime(this.column);
         if (value == null) {

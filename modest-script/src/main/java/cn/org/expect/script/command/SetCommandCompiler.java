@@ -13,9 +13,13 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 编译 Set 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = {"set", "var"}, keywords = {"set", "var"})
 public class SetCommandCompiler extends AbstractGlobalCommandCompiler {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         String line = in.previewline();
         int index = analysis.indexOf(line, "=", 0, 2, 2);
@@ -31,6 +35,7 @@ public class SetCommandCompiler extends AbstractGlobalCommandCompiler {
         }
     }
 
+    /** {@inheritDoc} */
     public SetCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String command) throws Exception {
         CommandExpression expr = new CommandExpression(session.getAnalysis(), "set|var [-E|-e] {0|1}", command);
         int optionSize = expr.getOptionSize();

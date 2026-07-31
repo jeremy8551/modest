@@ -23,7 +23,7 @@
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>jsr250-api</artifactId>
-            <version>1.0</version>
+            <version>${jsr250.api.version}</version>
         </dependency>
 
         <!-- 自动生成ServiceLoader文件 -->

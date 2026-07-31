@@ -1,9 +1,9 @@
 package cn.org.expect.database.export;
 
-import cn.org.expect.database.export.inernal.ExtractFileWriter;
-import cn.org.expect.database.export.inernal.FtpFileWriter;
-import cn.org.expect.database.export.inernal.HttpRequestWriter;
-import cn.org.expect.database.export.inernal.SftpFileWriter;
+import cn.org.expect.database.export.internal.ExtractFileWriter;
+import cn.org.expect.database.export.internal.FtpFileWriter;
+import cn.org.expect.database.export.internal.HttpRequestWriter;
+import cn.org.expect.database.export.internal.SftpFileWriter;
 import cn.org.expect.expression.BaseAnalysis;
 import cn.org.expect.expression.LoginExpression;
 import cn.org.expect.ioc.EasyBeanEntry;

@@ -22,22 +22,22 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-cn</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.org.expect</groupId>
             <artifactId>modest-expression</artifactId>
         </dependency>
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-crypto</artifactId>
+            <artifactId>modest-tool</artifactId>
         </dependency>
 
         <dependency>
             <groupId>cn.org.expect</groupId>
             <artifactId>modest-io</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-concurrent</artifactId>
         </dependency>
 
         <dependency>
@@ -59,21 +59,21 @@
         <dependency>
             <groupId>org.apache.sshd</groupId>
             <artifactId>sshd-core</artifactId>
-            <version>2.12.1</version>
+            <version>${apache.sshd.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.sshd</groupId>
             <artifactId>sshd-sftp</artifactId>
-            <version>2.12.1</version>
+            <version>${apache.sshd.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.sshd</groupId>
             <artifactId>sshd-scp</artifactId>
-            <version>2.12.1</version>
+            <version>${apache.sshd.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

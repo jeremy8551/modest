@@ -103,9 +103,9 @@
                                         ${project.build.outputDirectory}
                                         ${project.build.outputDirectory}/META-INF/scm/cn.org.expect/modest-script/git.properties
                                         ${project.parent.basedir}/modest-spring-boot-starter
-                                        ${project.build.sourceDirectory}/cn/org/expect/script/sample/ScriptSample.java
-                                        ${project.parent.basedir}/modest-script-engine/src/main/java/cn/org/expect/javax/script/sample/ScriptSample.java
-                                        ${project.parent.basedir}/modest-ssm-demo/src/main/java/cn/org/expect/ssm/controller/HelloControllerSample.java
+                                        ${project.build.testSourceDirectory}/cn/org/expect/script/ScriptSample.java
+                                        ${project.parent.basedir}/modest-script-engine/src/test/java/cn/org/expect/javax/script/ScriptSample.java
+                                        ${project.parent.basedir}/modest-spring-boot-starter/src/test/java/cn/org/expect/controller/HelloControllerSample.java
                                         ${project.basedir}/src/test/java/cn/org/expect/script/sample/MysqlTest.java
                                         ${project.basedir}/src/test/resources/script/sample/mysql.sql
                                         ${project.basedir}/src/test/java/cn/org/expect/script/sample/SQLProcedureTest.java

@@ -6,6 +6,9 @@ import javax.annotation.Resource;
 import cn.org.expect.ioc.EasyResourceAnnotation;
 import com.google.auto.service.AutoService;
 
+/**
+ * 描述 IoC 或脚本扩展点支持的注解契约
+ */
 @AutoService(EasyResourceAnnotation.class)
 public class ResourceAnnotation implements EasyResourceAnnotation {
 

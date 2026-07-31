@@ -6,9 +6,13 @@ import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.ioc.impl.DefaultBeanEntry;
 import com.google.auto.service.AutoService;
 
+/**
+ * 描述 IoC 或脚本扩展点支持的注解契约
+ */
 @AutoService(EasyBeanAnnotation.class)
 public class BeanAnnotation implements EasyBeanAnnotation {
 
+    /** {@inheritDoc} */
     public boolean isPresent(Class<?> type) {
         return type.isAnnotationPresent(EasyBean.class);
     }

@@ -7,7 +7,7 @@ import cn.org.expect.script.UniversalScriptException;
 import cn.org.expect.script.UniversalScriptVariableMethod;
 import cn.org.expect.script.annotation.EasyVariableMethod;
 import cn.org.expect.script.internal.MethodNote;
-import cn.org.expect.script.method.inernal.MethodReflection;
+import cn.org.expect.script.method.internal.MethodReflection;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.StringUtils;

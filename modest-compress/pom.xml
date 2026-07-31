@@ -42,22 +42,21 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-crypto</artifactId>
-            <scope>test</scope>
+            <artifactId>modest-tool</artifactId>
         </dependency>
 
         <!-- slf4j日志门面 -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.9</version>
+            <version>${slf4j.legacy.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <version>1.7.9</version> <!-- 根据你的slf4j-api版本匹配 -->
+            <version>${slf4j.legacy.version}</version> <!-- 根据 slf4j-api 版本匹配 -->
             <scope>test</scope>
         </dependency>
     </dependencies>

@@ -13,13 +13,18 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 
+/**
+ * 编译 nohup 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "nohup")
 public class NohupCommandCompiler extends AbstractCommandCompiler {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readSinglelineScript();
     }
 
+    /** {@inheritDoc} */
     public UniversalScriptCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String command) throws Exception {
         String str = analysis.trim(command.substring("nohup".length()), 0, 1);
         String script;

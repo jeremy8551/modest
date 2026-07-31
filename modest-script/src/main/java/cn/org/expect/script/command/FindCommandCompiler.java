@@ -13,13 +13,18 @@ import cn.org.expect.util.CharsetUtils;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 编译 find 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "find", keywords = {"find"})
 public class FindCommandCompiler extends AbstractTraceCommandCompiler {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readSinglelineScript();
     }
 
+    /** {@inheritDoc} */
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
         CommandExpression expr = new CommandExpression(analysis, "find -hdpR -enos: {1}", command);
         String filepath = expr.getParameter();

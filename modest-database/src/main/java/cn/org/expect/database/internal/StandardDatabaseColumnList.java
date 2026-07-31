@@ -7,18 +7,30 @@ import cn.org.expect.database.DatabaseTableColumn;
 import cn.org.expect.database.DatabaseTableColumnList;
 import cn.org.expect.util.Ensure;
 
+/**
+ * 提供集合视图及其边界访问能力
+ */
 public class StandardDatabaseColumnList extends ArrayList<DatabaseTableColumn> implements DatabaseTableColumnList {
 
     private final static long serialVersionUID = 1L;
 
+    /**
+     * 初始化 StandardDatabaseColumnList
+     */
     public StandardDatabaseColumnList() {
         super();
     }
 
+    /**
+     * 初始化 StandardDatabaseColumnList
+     */
     public StandardDatabaseColumnList(Collection<? extends DatabaseTableColumn> c) {
         super(c);
     }
 
+    /**
+     * 初始化 StandardDatabaseColumnList
+     */
     public StandardDatabaseColumnList(int initialCapacity) {
         super(initialCapacity);
     }
@@ -43,6 +55,7 @@ public class StandardDatabaseColumnList extends ArrayList<DatabaseTableColumn> i
         return null;
     }
 
+    /** {@inheritDoc} */
     public DatabaseTableColumnList clone() {
         StandardDatabaseColumnList list = new StandardDatabaseColumnList(this.size());
         for (int i = 0; i < this.size(); i++) {
@@ -72,6 +85,7 @@ public class StandardDatabaseColumnList extends ArrayList<DatabaseTableColumn> i
         return array;
     }
 
+    /** {@inheritDoc} */
     public DatabaseTableColumn[] toArray() {
         DatabaseTableColumn[] array = new DatabaseTableColumn[this.size()];
         for (int i = 0; i < array.length; i++) {
@@ -81,6 +95,7 @@ public class StandardDatabaseColumnList extends ArrayList<DatabaseTableColumn> i
         return array;
     }
 
+    /** {@inheritDoc} */
     public int compareTo(DatabaseTableColumnList columns) {
         Ensure.notNull(columns);
         if (this.size() != columns.size()) {
@@ -96,6 +111,7 @@ public class StandardDatabaseColumnList extends ArrayList<DatabaseTableColumn> i
         return 0;
     }
 
+    /** {@inheritDoc} */
     public DatabaseTableColumn indexOfColumn(String name) {
         for (DatabaseTableColumn column : this) {
             if (column != null && column.getName().equals(name)) {
@@ -105,6 +121,7 @@ public class StandardDatabaseColumnList extends ArrayList<DatabaseTableColumn> i
         return null;
     }
 
+    /** {@inheritDoc} */
     public DatabaseTableColumnList indexOfColumns(String... names) {
         StandardDatabaseColumnList list = new StandardDatabaseColumnList(names.length);
         for (String name : names) {

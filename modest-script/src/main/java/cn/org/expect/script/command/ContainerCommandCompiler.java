@@ -18,13 +18,18 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 编译 container 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "container")
 public class ContainerCommandCompiler extends AbstractCommandCompiler {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readPieceofScript("begin", "end");
     }
 
+    /** {@inheritDoc} */
     public UniversalScriptCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String command) throws Exception {
         WordIterator it = analysis.parse(command);
         it.assertNext("container");

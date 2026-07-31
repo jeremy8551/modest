@@ -2,11 +2,16 @@ package cn.org.expect.database.export.converter;
 
 import java.math.BigDecimal;
 
+/**
+ * 在数据库字段值与 Java 对象之间执行类型转换
+ */
 public class BigDecimalConverter extends AbstractConverter {
 
+    /** {@inheritDoc} */
     public void init() throws Exception {
     }
 
+    /** {@inheritDoc} */
     public void execute() throws Exception {
         BigDecimal value = this.resultSet.getBigDecimal(this.column);
         if (value == null) {

@@ -20,30 +20,62 @@
         <maven.compiler.source>5</maven.compiler.source>
         <maven.compiler.target>5</maven.compiler.target>
         <maven.plugin.version>3.5.2</maven.plugin.version> <!-- Maven插件版本 -->
+        <!-- 注解处理器依赖版本 -->
         <manifold.version>2024.1.35</manifold.version>
+        <auto.service.version>1.1.1</auto.service.version>
+        <lombok.version>1.18.34</lombok.version>
+        <!-- 测试依赖版本 -->
+        <junit.platform.version>1.10.0</junit.platform.version>
+        <junit.jupiter.version>5.10.0</junit.jupiter.version>
+        <h2.version>2.2.224</h2.version>
+        <ssm.h2.version>2.2.220</ssm.h2.version>
+        <maven.plugin.testing.version>3.3.0</maven.plugin.testing.version>
+        <apache.sshd.version>2.12.1</apache.sshd.version>
+        <!-- 基础类库依赖版本 -->
+        <servlet.api.version>3.1.0</servlet.api.version>
+        <activation.version>1.1.1</activation.version>
+        <jsr250.api.version>1.0</jsr250.api.version>
+        <javax.inject.version>1</javax.inject.version>
+        <plexus.component.annotations.version>1.5.5</plexus.component.annotations.version>
+        <slf4j.legacy.version>1.7.9</slf4j.legacy.version>
+        <slf4j.version>2.0.16</slf4j.version>
+        <logback.version>1.3.6</logback.version>
+        <jsch.version>0.1.54</jsch.version>
+        <commons.compress.version>1.14</commons.compress.version>
+        <junrar.version>7.4.0</junrar.version>
+        <commons.net.version>2.2</commons.net.version>
+        <commons.email.version>1.4</commons.email.version>
+        <okhttp.version>4.12.0</okhttp.version>
+        <json.version>20231013</json.version>
+        <!-- 数据库依赖版本 -->
+        <db2.db2jcc.version>db2jcc4</db2.db2jcc.version>
+        <db2.jcc.version>11.5.8.0</db2.jcc.version>
+        <mysql.connector.version>8.0.33</mysql.connector.version>
+        <ssm.mysql.connector.version>8.2.0</ssm.mysql.connector.version>
+        <opengauss.jdbc.version>6.0.0</opengauss.jdbc.version>
+        <!-- 是否启用本地开发（在桌面创建 README.md，处理 markdown 文档）-->
         <activeDevelop>false</activeDevelop>
+        <!-- 是否启用Docker构建 -->
+        <docker.build.enable>false</docker.build.enable>
     </properties>
 
     <!-- 子模块 -->
     <modules>
-        <module>modest-tool</module>
         <module>modest-java5</module>
         <module>modest-java6</module>
         <module>modest-java7</module>
         <module>modest-java12</module>
-        <module>modest-core</module>
+        <module>modest-tool</module>
+        <module>modest-annotation-processor</module>
         <module>modest-maven-plugin</module>
-        <module>modest-crypto</module>
         <module>modest-logger</module>
         <module>modest-concurrent</module>
         <module>modest-expression</module>
         <module>modest-markdown</module>
-        <module>modest-printer</module>
         <module>modest-ioc</module>
         <module>modest-ioc-test</module>
         <module>modest-compress</module>
         <module>modest-mail</module>
-        <module>modest-cn</module>
         <module>modest-io</module>
         <module>modest-os</module>
         <module>modest-database</module>
@@ -53,7 +85,6 @@
         <module>modest-spring-boot-starter</module>
         <module>modest-build</module>
         <module>modest-api</module>
-        <module>modest-ssm-demo</module>
     </modules>
 
     <!-- Apache Licene 2.0 开源软件许可证 -->
@@ -115,7 +146,7 @@
             <dependency>
                 <groupId>org.junit.platform</groupId>
                 <artifactId>junit-platform-launcher</artifactId>
-                <version>1.10.0</version>
+                <version>${junit.platform.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -123,7 +154,7 @@
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter-engine</artifactId>
-                <version>5.10.0</version>
+                <version>${junit.jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -131,7 +162,7 @@
             <dependency>
                 <groupId>org.junit.vintage</groupId>
                 <artifactId>junit-vintage-engine</artifactId>
-                <version>5.10.0</version>
+                <version>${junit.jupiter.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -139,14 +170,22 @@
             <dependency>
                 <groupId>com.google.auto.service</groupId>
                 <artifactId>auto-service</artifactId>
-                <version>1.1.1</version>
+                <version>${auto.service.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- 生成 SPI 配置文件注解 -->
+            <dependency>
+                <groupId>com.google.auto.service</groupId>
+                <artifactId>auto-service-annotations</artifactId>
+                <version>${auto.service.version}</version>
             </dependency>
 
             <!-- 内存数据库 -->
             <dependency>
                 <groupId>com.h2database</groupId>
                 <artifactId>h2</artifactId>
-                <version>2.2.224</version>
+                <version>${h2.version}</version>
                 <scope>test</scope>
             </dependency>
 
@@ -185,7 +224,7 @@
             <dependency>
                 <groupId>javax.servlet</groupId>
                 <artifactId>javax.servlet-api</artifactId>
-                <version>3.1.0</version>
+                <version>${servlet.api.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -193,7 +232,7 @@
             <dependency>
                 <groupId>com.ibm.db2.jcc</groupId>
                 <artifactId>db2jcc</artifactId>
-                <version>db2jcc4</version>
+                <version>${db2.db2jcc.version}</version>
                 <scope>runtime</scope>
             </dependency>
 
@@ -201,36 +240,43 @@
             <dependency>
                 <groupId>com.ibm.db2</groupId>
                 <artifactId>jcc</artifactId>
-                <version>11.5.8.0</version>
+                <version>${db2.jcc.version}</version>
             </dependency>
 
             <!-- mysql数据库驱动 -->
             <dependency>
                 <groupId>com.mysql</groupId>
                 <artifactId>mysql-connector-j</artifactId>
-                <version>8.0.33</version>
+                <version>${mysql.connector.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <!-- 高斯数据库驱动 -->
+            <dependency>
+                <groupId>org.opengauss</groupId>
+                <artifactId>opengauss-jdbc</artifactId>
+                <version>${opengauss.jdbc.version}</version>
             </dependency>
 
             <!-- SSH2客户端 -->
             <dependency>
                 <groupId>com.jcraft</groupId>
                 <artifactId>jsch</artifactId>
-                <version>0.1.54</version>
+                <version>${jsch.version}</version>
             </dependency>
 
             <!-- 用于实现压缩与解压（tar、zip）文件 -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-compress</artifactId>
-                <version>1.14</version>
+                <version>${commons.compress.version}</version>
             </dependency>
 
             <!-- 用于实现rar解压功能 -->
             <dependency>
                 <groupId>com.github.junrar</groupId>
                 <artifactId>junrar</artifactId>
-                <version>7.4.0</version>
+                <version>${junrar.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.slf4j</groupId>
@@ -243,14 +289,14 @@
             <dependency>
                 <groupId>commons-net</groupId>
                 <artifactId>commons-net</artifactId>
-                <version>2.2</version>
+                <version>${commons.net.version}</version>
             </dependency>
 
             <!-- 用于实现收发邮件功能 -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-email</artifactId>
-                <version>1.4</version>
+                <version>${commons.email.version}</version>
                 <exclusions>
                     <exclusion>
                         <groupId>javax.activation</groupId>
@@ -263,21 +309,21 @@
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>
                 <artifactId>okhttp</artifactId>
-                <version>4.12.0</version>
+                <version>${okhttp.version}</version>
             </dependency>
 
             <!-- 脚本引擎变量方法使用的 JSON API  -->
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
-                <version>20231013</version>
+                <version>${json.version}</version>
             </dependency>
 
             <!-- org.apache.commons:commons-email 使用的组件 -->
             <dependency>
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
-                <version>1.1.1</version>
+                <version>${activation.version}</version>
             </dependency>
 
             <!-- modest 工具包 -->
@@ -308,13 +354,6 @@
                 <version>${revision}</version>
             </dependency>
 
-            <!-- modest 输出模块 -->
-            <dependency>
-                <groupId>cn.org.expect</groupId>
-                <artifactId>modest-printer</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
             <!-- modest 容器模块 -->
             <dependency>
                 <groupId>cn.org.expect</groupId>
@@ -340,20 +379,6 @@
             <dependency>
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-io</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <!-- modest 中文模块 -->
-            <dependency>
-                <groupId>cn.org.expect</groupId>
-                <artifactId>modest-cn</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <!-- modest 核心包 -->
-            <dependency>
-                <groupId>cn.org.expect</groupId>
-                <artifactId>modest-core</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -424,13 +449,6 @@
             <dependency>
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-mail</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <!-- modest 加密模块 -->
-            <dependency>
-                <groupId>cn.org.expect</groupId>
-                <artifactId>modest-crypto</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -506,6 +524,13 @@
                                 <goal>format</goal> <!-- 格式化文件 -->
                             </goals>
                         </execution>
+                        <execution>
+                            <id>clean-class-scan-config</id>
+                            <phase>process-classes</phase>
+                            <goals>
+                                <goal>cleanScan</goal>
+                            </goals>
+                        </execution>
                     </executions>
                     <configuration>
                         <uninstall>*</uninstall> <!-- 卸载本地maven库中所有版本的jar文件 -->
@@ -571,35 +596,6 @@
                         <testFailureIgnore>false</testFailureIgnore>
                         <useModulePath>false</useModulePath>
                     </configuration>
-                </plugin>
-
-                <!-- 生成单元测试覆盖率 -->
-                <plugin>
-                    <!--
-                        Code Coverage
-                        config example: https://github.com/codecov/example-java
-                        plugin docs: https://eclemma.org/jacoco/trunk/doc/
-                    -->
-                    <groupId>org.jacoco</groupId>
-                    <artifactId>jacoco-maven-plugin</artifactId>
-                    <version>0.8.11</version>
-                    <executions>
-                        <execution>
-                            <id>jacoco-prepare</id>
-                            <goals>
-                                <goal>prepare-agent</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>jacoco-report</id>
-                            <goals>
-                                <goal>report</goal>
-                            </goals>
-                            <configuration>
-                                <skip>${skipTests}</skip>
-                            </configuration>
-                        </execution>
-                    </executions>
                 </plugin>
 
                 <!-- 编译插件 -->
@@ -768,12 +764,6 @@
                 <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
 
-            <!-- 单元测试覆盖率 -->
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-            </plugin>
-
             <!-- 生成 javaSource.jar -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -801,9 +791,210 @@
     </build>
 
     <profiles>
-        <!-- 发布jar文件 -->
+        <!-- git-commit-id -->
+        <!--        <profile>-->
+        <!--            <id>enable-git</id>-->
+        <!--            <activation>-->
+        <!--                <jdk>[1.8,)</jdk>-->
+        <!--            </activation>-->
+
+        <!--            <build>-->
+        <!--                <pluginManagement>-->
+        <!--                    <plugins>-->
+        <!--                        &lt;!&ndash; 插件将构建时 Git 仓库信息写入到 properties 文件中，让别人知道是从哪个版本构建的（适合大型分布式系统）&ndash;&gt;-->
+        <!--                        <plugin>-->
+        <!--                            <groupId>io.github.git-commit-id</groupId>-->
+        <!--                            <artifactId>git-commit-id-maven-plugin</artifactId>-->
+        <!--                            <version>4.9.9</version>-->
+        <!--                        </plugin>-->
+        <!--                    </plugins>-->
+        <!--                </pluginManagement>-->
+        <!--                <plugins>-->
+        <!--                    &lt;!&ndash; Git插件：检查是否有未提交代码 &ndash;&gt;-->
+        <!--                    <plugin>-->
+        <!--                        <groupId>io.github.git-commit-id</groupId>-->
+        <!--                        <artifactId>git-commit-id-maven-plugin</artifactId>-->
+        <!--                        &lt;!&ndash; DO NOT upgrade to v5+, since don't support java 8 &ndash;&gt;-->
+        <!--                        &lt;!&ndash; https://github.com/git-commit-id/git-commit-id-maven-plugin &ndash;&gt;-->
+        <!--                        <executions>-->
+        <!--                            <execution>-->
+        <!--                                <id>get-the-git-infos</id>-->
+        <!--                                <goals>-->
+        <!--                                    <goal>revision</goal>-->
+        <!--                                </goals>-->
+        <!--                            </execution>-->
+        <!--                            <execution>-->
+        <!--                                <id>validate-the-git-infos</id>-->
+        <!--                                <goals>-->
+        <!--                                    <goal>validateRevision</goal>-->
+        <!--                                </goals>-->
+        <!--                            </execution>-->
+        <!--                        </executions>-->
+        <!--                        <configuration>-->
+        <!--                            &lt;!&ndash;                        <validationProperties>&ndash;&gt;-->
+        <!--                            &lt;!&ndash;                            &lt;!&ndash; verify that the current repository is not dirty &ndash;&gt;&ndash;&gt;-->
+        <!--                            &lt;!&ndash;                            <validationProperty>&ndash;&gt;-->
+        <!--                            &lt;!&ndash;                                <name>validating git dirty</name>&ndash;&gt;-->
+        <!--                            &lt;!&ndash;                                <value>${git.dirty}</value>&ndash;&gt;-->
+        <!--                            &lt;!&ndash;                                <shouldMatchTo>false</shouldMatchTo>&ndash;&gt;-->
+        <!--                            &lt;!&ndash;                            </validationProperty>&ndash;&gt;-->
+        <!--                            &lt;!&ndash;                        </validationProperties>&ndash;&gt;-->
+        <!--                            <generateGitPropertiesFile>true</generateGitPropertiesFile>-->
+        <!--                            <generateGitPropertiesFilename>${project.build.outputDirectory}/META-INF/scm/${project.groupId}/${project.artifactId}/git.properties</generateGitPropertiesFilename>-->
+        <!--                        </configuration>-->
+        <!--                    </plugin>-->
+        <!--                </plugins>-->
+        <!--            </build>-->
+        <!--        </profile>-->
+
+        <!--        &lt;!&ndash; 校验代码格式 &ndash;&gt;-->
+        <!--        <profile>-->
+        <!--            <id>enable-checkstyle</id>-->
+        <!--            <activation>-->
+        <!--                <jdk>[1.5.0,)</jdk>-->
+        <!--            </activation>-->
+
+        <!--            <build>-->
+        <!--                <plugins>-->
+        <!--                    &lt;!&ndash; 生成 Source XRef, 与 maven-pmd-plugin 插件配合使用 &ndash;&gt;-->
+        <!--                    <plugin>-->
+        <!--                        <groupId>org.apache.maven.plugins</groupId>-->
+        <!--                        <artifactId>maven-jxr-plugin</artifactId>-->
+        <!--                        <version>2.5</version>-->
+        <!--                        <executions>-->
+        <!--                            <execution>-->
+        <!--                                <phase>generate-sources</phase>-->
+        <!--                                <goals>-->
+        <!--                                    <goal>jxr</goal>-->
+        <!--                                </goals>-->
+        <!--                            </execution>-->
+        <!--                        </executions>-->
+        <!--                    </plugin>-->
+
+        <!--                    &lt;!&ndash; 代码质量控制: 代码冗余、复杂度过高、重复代码、自定义规则集 &ndash;&gt;-->
+        <!--                    <plugin>-->
+        <!--                        <groupId>org.apache.maven.plugins</groupId>-->
+        <!--                        <artifactId>maven-pmd-plugin</artifactId>-->
+        <!--                        <version>3.1</version>-->
+        <!--                        <executions>-->
+        <!--                            <execution>-->
+        <!--                                <phase>verify</phase>-->
+        <!--                                <goals>-->
+        <!--                                    <goal>check</goal>-->
+        <!--                                    <goal>cpd-check</goal> &lt;!&ndash; 重复代码检测 &ndash;&gt;-->
+        <!--                                </goals>-->
+        <!--                            </execution>-->
+        <!--                        </executions>-->
+        <!--                        <configuration>-->
+        <!--                            <failOnViolation>false</failOnViolation> &lt;!&ndash; 检查到违规报错 &ndash;&gt;-->
+        <!--                            &lt;!&ndash; <rulesets> &ndash;&gt;-->
+        <!--                            &lt;!&ndash;   &lt;!&ndash; PMD 规则集，默认使用 quickstart.xml（可以换成 bestpractices.xml、design.xml 等）&ndash;&gt; &ndash;&gt;-->
+        <!--                            &lt;!&ndash;   <ruleset>${project.basedir}/src/maven-pmd-plugin/quickstart.xml</ruleset> &ndash;&gt;-->
+        <!--                            &lt;!&ndash; </rulesets> &ndash;&gt;-->
+        <!--                            &lt;!&ndash; <linkXref>true</linkXref> &lt;!&ndash; 生成带超链接的 HTML 报告 &ndash;&gt;&ndash;&gt;-->
+        <!--                            &lt;!&ndash; <outputDirectory>${project.build.directory}/pmd</outputDirectory> &lt;!&ndash; HTML 报告文件名 &ndash;&gt;&ndash;&gt;-->
+        <!--                            &lt;!&ndash; <minimumTokenCount>3</minimumTokenCount> &lt;!&ndash; 重复代码的最小 token 数，超过这个数量才会被检测 &ndash;&gt;&ndash;&gt;-->
+        <!--                        </configuration>-->
+        <!--                    </plugin>-->
+
+        <!--                    &lt;!&ndash; Bug 检测: 潜在的 bug、线程安全问题、性能问题 和 安全漏洞 &ndash;&gt;-->
+        <!--                    &lt;!&ndash;                    <plugin>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                        <groupId>com.github.spotbugs</groupId>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                        <artifactId>spotbugs-maven-plugin</artifactId>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                        <version>3.1.0-RC5</version>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                        <dependencies>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                            <dependency>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                                <groupId>com.github.spotbugs</groupId>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                                <artifactId>spotbugs-annotations</artifactId>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                                <version>4.8.3</version>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                            </dependency>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                        </dependencies>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                        <executions>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                            <execution>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                                <phase>none</phase>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                                &lt;!&ndash; <phase>verify</phase>&ndash;&gt;&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                                <goals>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                                    <goal>check</goal>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                                </goals>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                            </execution>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                        </executions>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                        <configuration>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                            <effort>Max</effort>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                            <threshold>Low</threshold>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                            <failOnError>false</failOnError>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                            <xmlOutput>false</xmlOutput>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                            &lt;!&ndash; <htmlOutput>true</htmlOutput>&ndash;&gt;&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                            <outputDirectory>${project.build.directory}/spotbugs</outputDirectory>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                        </configuration>&ndash;&gt;-->
+        <!--                    &lt;!&ndash;                    </plugin>&ndash;&gt;-->
+
+        <!--                    &lt;!&ndash; 代码格式检查 &ndash;&gt;-->
+        <!--                    <plugin>-->
+        <!--                        <groupId>org.apache.maven.plugins</groupId>-->
+        <!--                        <artifactId>maven-checkstyle-plugin</artifactId>-->
+        <!--                        <version>3.1.2</version>-->
+        <!--                        <dependencies>-->
+        <!--                            &lt;!&ndash; 代码检查的核心库，用来执行 Java 代码风格检查 &ndash;&gt;-->
+        <!--                            <dependency>-->
+        <!--                                <groupId>com.puppycrawl.tools</groupId>-->
+        <!--                                <artifactId>checkstyle</artifactId>-->
+        <!--                                <version>8.45.1</version>-->
+        <!--                            </dependency>-->
+        <!--                            &lt;!&ndash; Spring 提供的 NoHTTP 规则集，用于检测 http:// 资源，并强制使用 https://  &ndash;&gt;-->
+        <!--                            <dependency>-->
+        <!--                                <groupId>io.spring.nohttp</groupId>-->
+        <!--                                <artifactId>nohttp-checkstyle</artifactId>-->
+        <!--                                <version>0.0.10</version>-->
+        <!--                            </dependency>-->
+        <!--                        </dependencies>-->
+        <!--                        <executions>-->
+        <!--                            <execution>-->
+        <!--                                <id>checkstyle-validation</id>-->
+        <!--                                <phase>validate</phase>-->
+        <!--                                <goals>-->
+        <!--                                    <goal>check</goal>-->
+        <!--                                </goals>-->
+        <!--                                <configuration>-->
+        <!--                                    <skip>false</skip>-->
+        <!--                                    <failsOnError>false</failsOnError>-->
+        <!--                                    <failOnViolation>false</failOnViolation>-->
+        <!--                                    <sourceDirectories>${project.basedir}</sourceDirectories>-->
+        <!--                                    &lt;!&ndash; <configLocation>sun_checks.xml</configLocation>&ndash;&gt;-->
+        <!--                                    <configLocation>google_checks.xml</configLocation>-->
+        <!--                                    &lt;!&ndash; <configLocation>${project.basedir}/src/maven-checkstyle-plugin/modest-checks.xml</configLocation>&ndash;&gt;-->
+        <!--                                    <includes>**/*</includes>-->
+        <!--                                    <excludes>**/.git/**/*,**/.idea/**/*,**/target/**/,**/*.xml,mvnw*,**/*.txt,**/resources**,**/.gitignore,**/.sdkmanrc,**/*.md</excludes>-->
+        <!--                                </configuration>-->
+        <!--                            </execution>-->
+        <!--                        </executions>-->
+        <!--                    </plugin>-->
+
+        <!--                    &lt;!&ndash; 代码格式化工具 &ndash;&gt;-->
+        <!--                    <plugin>-->
+        <!--                        <groupId>io.spring.javaformat</groupId>-->
+        <!--                        <artifactId>spring-javaformat-maven-plugin</artifactId>-->
+        <!--                        <version>0.0.31</version>-->
+        <!--                        <executions>-->
+        <!--                            <execution>-->
+        <!--                                &lt;!&ndash;<phase>generate-sources</phase>&ndash;&gt;-->
+        <!--                                <phase>none</phase>-->
+        <!--                                <goals>-->
+        <!--                                    <goal>apply</goal>-->
+        <!--                                </goals>-->
+        <!--                            </execution>-->
+        <!--                        </executions>-->
+        <!--                        <configuration>-->
+        <!--                            <skip>false</skip>-->
+        <!--                            <lineSeparator>LF</lineSeparator>-->
+        <!--                            <encoding>${project.build.sourceEncoding}</encoding>-->
+        <!--                        </configuration>-->
+        <!--                    </plugin>-->
+        <!--                </plugins>-->
+        <!--            </build>-->
+        <!--        </profile>-->
+
         <profile>
-            <id>enable-deploy</id>
+            <id>enable-deploy-plugins</id>
 
             <build>
                 <plugins>
@@ -828,203 +1019,76 @@
             </build>
         </profile>
 
-        <!-- git-commit-id -->
+        <!-- 在 settings.xml 中配置属性 sonar.host.url 与 sonar.login -->
         <profile>
-            <id>enable-git</id>
+            <id>enable-sonarqube</id>
             <activation>
-                <jdk>[1.8,)</jdk>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>sonar.host.url</name>
+                </property>
             </activation>
 
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <!-- 插件将构建时 Git 仓库信息写入到 properties 文件中，让别人知道是从哪个版本构建的（适合大型分布式系统）-->
-                        <plugin>
-                            <groupId>io.github.git-commit-id</groupId>
-                            <artifactId>git-commit-id-maven-plugin</artifactId>
-                            <version>4.9.9</version>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-                <plugins>
-                    <!-- Git插件：检查是否有未提交代码 -->
-                    <plugin>
-                        <groupId>io.github.git-commit-id</groupId>
-                        <artifactId>git-commit-id-maven-plugin</artifactId>
-                        <!-- DO NOT upgrade to v5+, since don't support java 8 -->
-                        <!-- https://github.com/git-commit-id/git-commit-id-maven-plugin -->
-                        <executions>
-                            <execution>
-                                <id>get-the-git-infos</id>
-                                <goals>
-                                    <goal>revision</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>validate-the-git-infos</id>
-                                <goals>
-                                    <goal>validateRevision</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <!--                        <validationProperties>-->
-                            <!--                            &lt;!&ndash; verify that the current repository is not dirty &ndash;&gt;-->
-                            <!--                            <validationProperty>-->
-                            <!--                                <name>validating git dirty</name>-->
-                            <!--                                <value>${git.dirty}</value>-->
-                            <!--                                <shouldMatchTo>false</shouldMatchTo>-->
-                            <!--                            </validationProperty>-->
-                            <!--                        </validationProperties>-->
-                            <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                            <generateGitPropertiesFilename>${project.build.outputDirectory}/META-INF/scm/${project.groupId}/${project.artifactId}/git.properties</generateGitPropertiesFilename>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <!-- 校验代码格式 -->
-        <profile>
-            <id>enable-checkstyle</id>
-            <activation>
-                <jdk>[1.5.0,)</jdk>
-            </activation>
+            <properties>
+                <!-- <sonar.host.url>http://localhost:9000</sonar.host.url> -->
+                <!-- <sonar.login>${sonar.token}</sonar.login>-->
+                <sonar.projectKey>${project.artifactId}</sonar.projectKey>
+                <sonar.projectName>${project.artifactId}</sonar.projectName>
+                <sonar.projectVersion>1.0</sonar.projectVersion>
+                <sonar.language>java</sonar.language>
+                <sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
+                <sonar.java.binaries>target/classes</sonar.java.binaries>
+                <sonar.java.source>1.8</sonar.java.source>
+                <sonar.java.target>1.8</sonar.java.target>
+                <sonar.sources>src/main</sonar.sources>
+                <sonar.coverage.jacoco.xmlReportPaths>target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
+                <sonar.qualitygate.wait>false</sonar.qualitygate.wait>
+            </properties>
 
             <build>
                 <plugins>
-                    <!-- 生成 Source XRef, 与 maven-pmd-plugin 插件配合使用 -->
+                    <!-- 生成单元测试覆盖率 -->
                     <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jxr-plugin</artifactId>
-                        <version>2.5</version>
+                        <!--
+                            Code Coverage
+                            config example: https://github.com/codecov/example-java
+                            plugin docs: https://eclemma.org/jacoco/trunk/doc/
+                        -->
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.11</version>
                         <executions>
                             <execution>
-                                <phase>generate-sources</phase>
+                                <id>jacoco-prepare</id>
                                 <goals>
-                                    <goal>jxr</goal>
+                                    <goal>prepare-agent</goal>
                                 </goals>
                             </execution>
-                        </executions>
-                    </plugin>
-
-                    <!-- 代码质量控制: 代码冗余、复杂度过高、重复代码、自定义规则集 -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-pmd-plugin</artifactId>
-                        <version>3.1</version>
-                        <executions>
                             <execution>
-                                <phase>verify</phase>
+                                <id>jacoco-report</id>
                                 <goals>
-                                    <goal>check</goal>
-                                    <goal>cpd-check</goal> <!-- 重复代码检测 -->
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <failOnViolation>false</failOnViolation> <!-- 检查到违规报错 -->
-                            <!-- <rulesets> -->
-                            <!--   &lt;!&ndash; PMD 规则集，默认使用 quickstart.xml（可以换成 bestpractices.xml、design.xml 等）&ndash;&gt; -->
-                            <!--   <ruleset>${project.basedir}/src/maven-pmd-plugin/quickstart.xml</ruleset> -->
-                            <!-- </rulesets> -->
-                            <!-- <linkXref>true</linkXref> &lt;!&ndash; 生成带超链接的 HTML 报告 &ndash;&gt;-->
-                            <!-- <outputDirectory>${project.build.directory}/pmd</outputDirectory> &lt;!&ndash; HTML 报告文件名 &ndash;&gt;-->
-                            <!-- <minimumTokenCount>3</minimumTokenCount> &lt;!&ndash; 重复代码的最小 token 数，超过这个数量才会被检测 &ndash;&gt;-->
-                        </configuration>
-                    </plugin>
-
-                    <!-- Bug 检测: 潜在的 bug、线程安全问题、性能问题 和 安全漏洞 -->
-                    <!--                    <plugin>-->
-                    <!--                        <groupId>com.github.spotbugs</groupId>-->
-                    <!--                        <artifactId>spotbugs-maven-plugin</artifactId>-->
-                    <!--                        <version>3.1.0-RC5</version>-->
-                    <!--                        <dependencies>-->
-                    <!--                            <dependency>-->
-                    <!--                                <groupId>com.github.spotbugs</groupId>-->
-                    <!--                                <artifactId>spotbugs-annotations</artifactId>-->
-                    <!--                                <version>4.8.3</version>-->
-                    <!--                            </dependency>-->
-                    <!--                        </dependencies>-->
-                    <!--                        <executions>-->
-                    <!--                            <execution>-->
-                    <!--                                <phase>none</phase>-->
-                    <!--                                &lt;!&ndash; <phase>verify</phase>&ndash;&gt;-->
-                    <!--                                <goals>-->
-                    <!--                                    <goal>check</goal>-->
-                    <!--                                </goals>-->
-                    <!--                            </execution>-->
-                    <!--                        </executions>-->
-                    <!--                        <configuration>-->
-                    <!--                            <effort>Max</effort>-->
-                    <!--                            <threshold>Low</threshold>-->
-                    <!--                            <failOnError>false</failOnError>-->
-                    <!--                            <xmlOutput>false</xmlOutput>-->
-                    <!--                            &lt;!&ndash; <htmlOutput>true</htmlOutput>&ndash;&gt;-->
-                    <!--                            <outputDirectory>${project.build.directory}/spotbugs</outputDirectory>-->
-                    <!--                        </configuration>-->
-                    <!--                    </plugin>-->
-
-                    <!-- 代码格式检查 -->
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-checkstyle-plugin</artifactId>
-                        <version>3.1.2</version>
-                        <dependencies>
-                            <!-- 代码检查的核心库，用来执行 Java 代码风格检查 -->
-                            <dependency>
-                                <groupId>com.puppycrawl.tools</groupId>
-                                <artifactId>checkstyle</artifactId>
-                                <version>8.45.1</version>
-                            </dependency>
-                            <!-- Spring 提供的 NoHTTP 规则集，用于检测 http:// 资源，并强制使用 https://  -->
-                            <dependency>
-                                <groupId>io.spring.nohttp</groupId>
-                                <artifactId>nohttp-checkstyle</artifactId>
-                                <version>0.0.10</version>
-                            </dependency>
-                        </dependencies>
-                        <executions>
-                            <execution>
-                                <id>checkstyle-validation</id>
-                                <phase>validate</phase>
-                                <goals>
-                                    <goal>check</goal>
+                                    <goal>report</goal>
                                 </goals>
                                 <configuration>
-                                    <skip>false</skip>
-                                    <failsOnError>false</failsOnError>
-                                    <failOnViolation>false</failOnViolation>
-                                    <sourceDirectories>${project.basedir}</sourceDirectories>
-                                    <!-- <configLocation>sun_checks.xml</configLocation>-->
-                                    <configLocation>google_checks.xml</configLocation>
-                                    <!-- <configLocation>${project.basedir}/src/maven-checkstyle-plugin/modest-checks.xml</configLocation>-->
-                                    <includes>**/*</includes>
-                                    <excludes>**/.git/**/*,**/.idea/**/*,**/target/**/,**/*.xml,mvnw*,**/*.txt,**/resources**,**/.gitignore,**/.sdkmanrc,**/*.md</excludes>
+                                    <skip>${skipTests}</skip>
                                 </configuration>
                             </execution>
                         </executions>
                     </plugin>
 
-                    <!-- 代码格式化工具 -->
+                    <!-- 与SonarQube版本兼容的插件版本，官网查对应表 -->
                     <plugin>
-                        <groupId>io.spring.javaformat</groupId>
-                        <artifactId>spring-javaformat-maven-plugin</artifactId>
-                        <version>0.0.31</version>
+                        <groupId>org.sonarsource.scanner.maven</groupId>
+                        <artifactId>sonar-maven-plugin</artifactId>
+                        <version>3.10.0.2594</version>
                         <executions>
                             <execution>
-                                <!--<phase>generate-sources</phase>-->
-                                <phase>none</phase>
+                                <phase>verify</phase>
                                 <goals>
-                                    <goal>apply</goal>
+                                    <goal>sonar</goal>
                                 </goals>
                             </execution>
                         </executions>
-                        <configuration>
-                            <skip>false</skip>
-                            <lineSeparator>LF</lineSeparator>
-                            <encoding>${project.build.sourceEncoding}</encoding>
-                        </configuration>
                     </plugin>
                 </plugins>
             </build>

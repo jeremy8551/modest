@@ -10,7 +10,7 @@ import java.sql.Statement;
 import java.util.Date;
 import java.util.Properties;
 
-public class Java5Dialect implements JavaDialect {
+public class Java5Dialect {
 
     public int getNetworkTimeout(Connection conn) throws SQLException {
         return 0;

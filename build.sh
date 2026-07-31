@@ -227,7 +227,7 @@ echo "docker run -d --name jdksetup -p 3306:3306 -v ~/.m2:/home/user/.m2 -e JDK_
 docker run -d --name jdksetup -p 3306:3306 -v ~/.m2:/home/user/.m2 -e JDK_SETUP_DIR=${HOME}/.m2/jdks jeremy8551/jdksetup:latest
 
 
-# 等容器启动稳定 2 秒（可选）
+# 等容器启动稳定 12 秒（可选）
 sleep 12
 
 

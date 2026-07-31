@@ -28,7 +28,7 @@
 
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-core</artifactId>
+            <artifactId>modest-tool</artifactId>
         </dependency>
     </dependencies>
 
