@@ -53,6 +53,7 @@
         <mysql.connector.version>8.0.33</mysql.connector.version>
         <ssm.mysql.connector.version>8.2.0</ssm.mysql.connector.version>
         <opengauss.jdbc.version>6.0.0</opengauss.jdbc.version>
+        <poi.version>5.4.1</poi.version>
         <!-- 是否启用本地开发（在桌面创建 README.md，处理 markdown 文档）-->
         <activeDevelop>false</activeDevelop>
         <!-- 是否启用Docker构建 -->
@@ -82,9 +83,9 @@
         <module>modest-increment</module>
         <module>modest-script</module>
         <module>modest-script-engine</module>
+        <module>modest-codegen</module>
         <module>modest-spring-boot-starter</module>
         <module>modest-build</module>
-        <module>modest-api</module>
     </modules>
 
     <!-- Apache Licene 2.0 开源软件许可证 -->
@@ -256,6 +257,12 @@
                 <groupId>org.opengauss</groupId>
                 <artifactId>opengauss-jdbc</artifactId>
                 <version>${opengauss.jdbc.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi.version}</version>
             </dependency>
 
             <!-- SSH2客户端 -->

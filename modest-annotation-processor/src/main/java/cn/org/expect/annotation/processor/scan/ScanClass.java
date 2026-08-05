@@ -14,36 +14,36 @@ import cn.org.expect.util.StringUtils;
 /**
  * 读取注解处理器生成的类索引
  */
-public class ClassScan {
+public class ScanClass {
 
     /**
      * 加载指定父类型对应的实现类
      *
      * @param classLoader 类加载器
-     * @param superType 父类或接口
+     * @param superType   父类或接口
      * @return 按索引顺序排列的实现类集合
      */
     public static Set<Class<?>> loadBySuper(ClassLoader classLoader, Class<?> superType) {
-        String resourceName = ClassScanProcessor.SUPER_OUTPUT_PATH + superType.getName();
+        String resourceName = ScanClassProcessor.SUPER_OUTPUT_PATH + superType.getName();
         return load(classLoader, resourceName);
     }
 
     /**
      * 加载指定注解对应的类
      *
-     * @param classLoader 类加载器
+     * @param classLoader    类加载器
      * @param annotationType 注解类型
      * @return 按索引顺序排列的类集合
      */
     public static Set<Class<?>> loadByAnnotation(ClassLoader classLoader, Class<?> annotationType) {
-        String resourceName = ClassScanProcessor.ANNOTATION_OUTPUT_PATH + annotationType.getName();
+        String resourceName = ScanClassProcessor.ANNOTATION_OUTPUT_PATH + annotationType.getName();
         return load(classLoader, resourceName);
     }
 
     /**
      * 从类路径读取索引并加载其中的类
      *
-     * @param classLoader 类加载器
+     * @param classLoader  类加载器
      * @param resourceName 索引资源名称
      * @return 按索引顺序排列的类集合
      */

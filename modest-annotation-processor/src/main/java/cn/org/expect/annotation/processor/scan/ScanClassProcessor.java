@@ -40,8 +40,8 @@ import com.google.auto.service.AutoService;
  */
 @AutoService(Processor.class)
 @SupportedSourceVersion(SourceVersion.RELEASE_6)
-@SupportedOptions({ClassScanProcessor.SUPER_TYPES_OPTION, ClassScanProcessor.ANNOTATIONS_OPTION})
-public class ClassScanProcessor extends AbstractProcessor {
+@SupportedOptions({ScanClassProcessor.SUPER_TYPES_OPTION, ScanClassProcessor.ANNOTATIONS_OPTION})
+public class ScanClassProcessor extends AbstractProcessor {
 
     /** 需要扫描的父类型配置项 */
     public static final String SUPER_TYPES_OPTION = "scan.superTypes";
@@ -56,10 +56,10 @@ public class ClassScanProcessor extends AbstractProcessor {
     public static final String SCAN_ANNOTATION_CONFIG_FILE = "META-INF/scan/annotations.txt";
 
     /** 父类型索引文件输出目录 */
-    public static final String SUPER_OUTPUT_PATH = "META-INF/" + ClassScanProcessor.class.getPackage().getName() + "/super/";
+    public static final String SUPER_OUTPUT_PATH = "META-INF/" + ScanClassProcessor.class.getPackage().getName() + "/super/";
 
     /** 注解索引文件输出目录 */
-    public static final String ANNOTATION_OUTPUT_PATH = "META-INF/" + ClassScanProcessor.class.getPackage().getName() + "/annotation/";
+    public static final String ANNOTATION_OUTPUT_PATH = "META-INF/" + ScanClassProcessor.class.getPackage().getName() + "/annotation/";
 
     /** 按父类型分组的类索引 */
     public final Map<String, Set<String>> superTypeIndexes = new LinkedHashMap<String, Set<String>>();

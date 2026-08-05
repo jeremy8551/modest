@@ -1,12 +1,16 @@
 package cn.org.expect.message;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import cn.org.expect.util.Ensure;
+import cn.org.expect.util.IO;
 import cn.org.expect.util.Logs;
 import cn.org.expect.util.StringUtils;
 
@@ -88,6 +92,30 @@ public class ResourceScanner implements Iterator<InputStream> {
         } else {
             throw new NoSuchElementException();
         }
+    }
+
+    /**
+     * 获取下一个文件内容
+     *
+     * @param charsetName 字符编码
+     * @return 文件内容
+     * @throws IOException 读文件错误
+     */
+    public String readFile(String charsetName) throws IOException {
+        return new String(IO.read(this.next()), charsetName);
+    }
+
+    /**
+     * 获取下一个文件的行内容
+     *
+     * @param charsetName 字符编码
+     * @return 文件内容
+     * @throws IOException 读文件错误
+     */
+    public List<String> readFileLines(String charsetName) throws IOException {
+        List<String> list = new ArrayList<String>();
+        StringUtils.splitLines(this.readFile(charsetName), list);
+        return list;
     }
 
     public void remove() {

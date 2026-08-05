@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * 类索引处理器测试
  */
-class ClassScanProcessorTest {
+class ScanClassProcessorTest {
 
     /** 编译输出目录 */
     @TempDir
@@ -40,13 +40,13 @@ class ClassScanProcessorTest {
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         List<SourceFile> sourceFiles = Arrays.asList(source("example.ScanService", "package example; public interface ScanService<T> {}"), source("example.ChildService", "package example; public interface ChildService extends ScanService<String> {}"), source("example.AbstractService", "package example; public abstract class AbstractService implements ScanService<String> {}"), source("example.FirstService", "package example; public class FirstService extends AbstractService {}"), source("example.SecondService", "package example; public class SecondService implements ScanService<String> {}"), source("example.Indexed", "package example; public @interface Indexed {}"), source("example.AnnotatedService", "package example; @Indexed public class AnnotatedService {}"));
 
-        List<String> options = Arrays.asList("-d", outputDirectory.toString(), "-A" + ClassScanProcessor.SUPER_TYPES_OPTION + "=example.ScanService", "-A" + ClassScanProcessor.ANNOTATIONS_OPTION + "=example.Indexed");
+        List<String> options = Arrays.asList("-d", outputDirectory.toString(), "-A" + ScanClassProcessor.SUPER_TYPES_OPTION + "=example.ScanService", "-A" + ScanClassProcessor.ANNOTATIONS_OPTION + "=example.Indexed");
         JavaCompiler.CompilationTask task = compiler.getTask(null, null, null, options, null, sourceFiles);
-        task.setProcessors(Collections.singletonList(new ClassScanProcessor()));
+        task.setProcessors(Collections.singletonList(new ScanClassProcessor()));
 
         assertTrue(task.call());
-        assertEquals(Arrays.asList("example.ChildService", "example.FirstService", "example.SecondService"), readIndex(ClassScanProcessor.SUPER_OUTPUT_PATH + "example.ScanService"));
-        assertEquals(Collections.singletonList("example.AnnotatedService"), readIndex(ClassScanProcessor.ANNOTATION_OUTPUT_PATH + "example.Indexed"));
+        assertEquals(Arrays.asList("example.ChildService", "example.FirstService", "example.SecondService"), readIndex(ScanClassProcessor.SUPER_OUTPUT_PATH + "example.ScanService"));
+        assertEquals(Collections.singletonList("example.AnnotatedService"), readIndex(ScanClassProcessor.ANNOTATION_OUTPUT_PATH + "example.Indexed"));
     }
 
     /**
@@ -56,12 +56,12 @@ class ClassScanProcessorTest {
      */
     @Test
     void shouldProcessAvailableAnnotationWhenConfiguredSuperTypeDoesNotExist() throws IOException {
-        List<String> options = Arrays.asList("-A" + ClassScanProcessor.SUPER_TYPES_OPTION + "=missing.ScanService", "-A" + ClassScanProcessor.ANNOTATIONS_OPTION + "=example.Indexed");
+        List<String> options = Arrays.asList("-A" + ScanClassProcessor.SUPER_TYPES_OPTION + "=missing.ScanService", "-A" + ScanClassProcessor.ANNOTATIONS_OPTION + "=example.Indexed");
         List<SourceFile> sourceFiles = Arrays.asList(source("example.Indexed", "package example; public @interface Indexed {}"), source("example.Service", "package example; @Indexed public class Service {}"));
 
         assertTrue(compile(options, sourceFiles));
-        assertFalse(new File(outputDirectory, ClassScanProcessor.SUPER_OUTPUT_PATH + "missing.ScanService").exists());
-        assertEquals(Collections.singletonList("example.Service"), readIndex(ClassScanProcessor.ANNOTATION_OUTPUT_PATH + "example.Indexed"));
+        assertFalse(new File(outputDirectory, ScanClassProcessor.SUPER_OUTPUT_PATH + "missing.ScanService").exists());
+        assertEquals(Collections.singletonList("example.Service"), readIndex(ScanClassProcessor.ANNOTATION_OUTPUT_PATH + "example.Indexed"));
     }
 
     /**
@@ -71,12 +71,12 @@ class ClassScanProcessorTest {
      */
     @Test
     void shouldProcessAvailableSuperTypeWhenConfiguredAnnotationDoesNotExist() throws IOException {
-        List<String> options = Arrays.asList("-A" + ClassScanProcessor.SUPER_TYPES_OPTION + "=example.ScanService", "-A" + ClassScanProcessor.ANNOTATIONS_OPTION + "=missing.Indexed");
+        List<String> options = Arrays.asList("-A" + ScanClassProcessor.SUPER_TYPES_OPTION + "=example.ScanService", "-A" + ScanClassProcessor.ANNOTATIONS_OPTION + "=missing.Indexed");
         List<SourceFile> sourceFiles = Arrays.asList(source("example.ScanService", "package example; public interface ScanService {}"), source("example.Service", "package example; public class Service implements ScanService {}"));
 
         assertTrue(compile(options, sourceFiles));
-        assertEquals(Collections.singletonList("example.Service"), readIndex(ClassScanProcessor.SUPER_OUTPUT_PATH + "example.ScanService"));
-        assertFalse(new File(outputDirectory, ClassScanProcessor.ANNOTATION_OUTPUT_PATH + "missing.Indexed").exists());
+        assertEquals(Collections.singletonList("example.Service"), readIndex(ScanClassProcessor.SUPER_OUTPUT_PATH + "example.ScanService"));
+        assertFalse(new File(outputDirectory, ScanClassProcessor.ANNOTATION_OUTPUT_PATH + "missing.Indexed").exists());
     }
 
     /**
@@ -84,12 +84,12 @@ class ClassScanProcessorTest {
      */
     @Test
     void shouldNotGenerateEmptyIndexes() {
-        List<String> options = Arrays.asList("-A" + ClassScanProcessor.SUPER_TYPES_OPTION + "=example.ScanService", "-A" + ClassScanProcessor.ANNOTATIONS_OPTION + "=example.Indexed");
+        List<String> options = Arrays.asList("-A" + ScanClassProcessor.SUPER_TYPES_OPTION + "=example.ScanService", "-A" + ScanClassProcessor.ANNOTATIONS_OPTION + "=example.Indexed");
         List<SourceFile> sourceFiles = Arrays.asList(source("example.ScanService", "package example; public interface ScanService {}"), source("example.Indexed", "package example; public @interface Indexed {}"), source("example.Other", "package example; public class Other {}"));
 
         assertTrue(compile(options, sourceFiles));
-        assertFalse(new File(outputDirectory, ClassScanProcessor.SUPER_OUTPUT_PATH + "example.ScanService").exists());
-        assertFalse(new File(outputDirectory, ClassScanProcessor.ANNOTATION_OUTPUT_PATH + "example.Indexed").exists());
+        assertFalse(new File(outputDirectory, ScanClassProcessor.SUPER_OUTPUT_PATH + "example.ScanService").exists());
+        assertFalse(new File(outputDirectory, ScanClassProcessor.ANNOTATION_OUTPUT_PATH + "example.Indexed").exists());
     }
 
     /**
@@ -106,7 +106,7 @@ class ClassScanProcessorTest {
         compilerOptions.add(outputDirectory.toString());
         compilerOptions.addAll(options);
         JavaCompiler.CompilationTask task = compiler.getTask(null, null, null, compilerOptions, null, sourceFiles);
-        task.setProcessors(Collections.singletonList(new ClassScanProcessor()));
+        task.setProcessors(Collections.singletonList(new ScanClassProcessor()));
         return task.call().booleanValue();
     }
 
