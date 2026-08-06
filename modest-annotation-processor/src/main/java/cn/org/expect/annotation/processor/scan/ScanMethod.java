@@ -64,7 +64,7 @@ public class ScanMethod {
      * @param classLoader 类加载器
      */
     protected void load(ClassLoader classLoader) {
-        String resourceName = ScanMethodProcessor.DAO_METHOD_PARAMETER_FILE;
+        String resourceName = ScanMethodProcessor.CLASS_METHOD_OUTPUT_PATH;
         ResourceScanner scanner = new ResourceScanner(classLoader, resourceName);
         while (scanner.hasNext()) {
             try {

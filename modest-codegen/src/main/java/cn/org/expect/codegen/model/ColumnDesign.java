@@ -26,6 +26,9 @@ public class ColumnDesign {
     /** 默认值 */
     private final String defaultValue;
 
+    /** 字段格式 */
+    private final String format;
+
     /** 数据字典 */
     private final String dictionary;
 
@@ -38,19 +41,19 @@ public class ColumnDesign {
     /**
      * 创建数据库字段设计
      *
-     * @param name 字段名
-     * @param sqlType 数据库类型
-     * @param description 字段说明
-     * @param primaryKey 是否为主键
-     * @param uniqueIndex 是否为唯一索引
-     * @param notNull 是否不允许为空
+     * @param name         字段名
+     * @param sqlType      数据库类型
+     * @param description  字段说明
+     * @param primaryKey   是否为主键
+     * @param uniqueIndex  是否为唯一索引
+     * @param notNull      是否不允许为空
      * @param defaultValue 默认值
-     * @param dictionary 数据字典
+     * @param format       字段格式
+     * @param dictionary   数据字典
      * @param virtualField 虚拟字段表达式
-     * @param remark 备注
+     * @param remark       备注
      */
-    public ColumnDesign(String name, String sqlType, String description, boolean primaryKey, boolean uniqueIndex,
-                        boolean notNull, String defaultValue, String dictionary, String virtualField, String remark) {
+    public ColumnDesign(String name, String sqlType, String description, boolean primaryKey, boolean uniqueIndex, boolean notNull, String defaultValue, String format, String dictionary, String virtualField, String remark) {
         this.name = name;
         this.sqlType = sqlType;
         this.description = description;
@@ -58,19 +61,70 @@ public class ColumnDesign {
         this.uniqueIndex = uniqueIndex;
         this.notNull = notNull;
         this.defaultValue = defaultValue;
+        this.format = format;
         this.dictionary = dictionary;
         this.virtualField = virtualField;
         this.remark = remark;
     }
 
-    public String name() { return this.name; }
-    public String sqlType() { return this.sqlType; }
-    public String description() { return this.description; }
-    public boolean primaryKey() { return this.primaryKey; }
-    public boolean uniqueIndex() { return this.uniqueIndex; }
-    public boolean notNull() { return this.notNull; }
-    public String defaultValue() { return this.defaultValue; }
-    public String dictionary() { return this.dictionary; }
-    public String virtualField() { return this.virtualField; }
-    public String remark() { return this.remark; }
+    public String name() {
+        return this.name;
+    }
+
+    public String sqlType() {
+        return this.sqlType;
+    }
+
+    public String description() {
+        return this.description;
+    }
+
+    public boolean primaryKey() {
+        return this.primaryKey;
+    }
+
+    public boolean uniqueIndex() {
+        return this.uniqueIndex;
+    }
+
+    public boolean notNull() {
+        return this.notNull;
+    }
+
+    public String defaultValue() {
+        return this.defaultValue;
+    }
+
+    public String getFormat() {
+        return format;
+    }
+
+    public String dictionary() {
+        return this.dictionary;
+    }
+
+    public String virtualField() {
+        return this.virtualField;
+    }
+
+    public String remark() {
+        return this.remark;
+    }
+
+    @Override
+    public String toString() {
+        return ColumnDesign.class.getSimpleName() + "{" + //
+            "name='" + name + '\'' + //
+            ", sqlType='" + sqlType + '\'' + //
+            ", description='" + description + '\'' + //
+            ", primaryKey=" + primaryKey + //
+            ", uniqueIndex=" + uniqueIndex + //
+            ", notNull=" + notNull + //
+            ", defaultValue='" + defaultValue + '\'' + //
+            ", format='" + format + '\'' + //
+            ", dictionary='" + dictionary + '\'' + //
+            ", virtualField='" + virtualField + '\'' + //
+            ", remark='" + remark + '\'' + //
+            '}';
+    }
 }

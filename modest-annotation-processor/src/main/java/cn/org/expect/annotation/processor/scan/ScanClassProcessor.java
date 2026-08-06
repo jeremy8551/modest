@@ -62,10 +62,16 @@ public class ScanClassProcessor extends AbstractProcessor {
     public static final String ANNOTATION_OUTPUT_PATH = "META-INF/" + ScanClassProcessor.class.getPackage().getName() + "/annotation/";
 
     /** 按父类型分组的类索引 */
-    public final Map<String, Set<String>> superTypeIndexes = new LinkedHashMap<String, Set<String>>();
+    public final Map<String, Set<String>> superTypeIndexes;
 
     /** 按注解分组的类索引 */
-    public final Map<String, Set<String>> annotationIndexes = new LinkedHashMap<String, Set<String>>();
+    public final Map<String, Set<String>> annotationIndexes;
+
+    public ScanClassProcessor() {
+        super();
+        this.superTypeIndexes = new LinkedHashMap<String, Set<String>>();
+        this.annotationIndexes = new LinkedHashMap<String, Set<String>>();
+    }
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {

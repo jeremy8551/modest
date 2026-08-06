@@ -13,6 +13,8 @@ import java.util.Set;
 
 import cn.org.expect.codegen.model.ColumnDesign;
 import cn.org.expect.codegen.model.TableDesign;
+import cn.org.expect.util.Ensure;
+import cn.org.expect.util.StringUtils;
 import org.apache.poi.openxml4j.opc.OPCPackage;
 import org.apache.poi.openxml4j.opc.PackageAccess;
 import org.apache.poi.ss.usermodel.DataFormatter;
@@ -32,6 +34,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 public class DatabaseDesignReader {
 
     private static final Set<String> REQUIRED_HEADERS = new HashSet<String>(Arrays.asList(new String[]{"表名", "字段名", "类型", "说明"}));
+
     private static final int MAX_HEADER_SCAN_ROWS = 30;
 
     /**
@@ -124,10 +127,12 @@ public class DatabaseDesignReader {
                 if (this.rowNumber >= MAX_HEADER_SCAN_ROWS) {
                     throw new StopSheetException();
                 }
+
                 Map<String, Integer> candidateHeaders = new HashMap<String, Integer>();
                 for (Map.Entry<Integer, String> entry : this.rowValues.entrySet()) {
-                    candidateHeaders.put(entry.getValue().trim(), entry.getKey());
+                    candidateHeaders.put(StringUtils.trimBlank(entry.getValue()), entry.getKey());
                 }
+
                 if (candidateHeaders.keySet().containsAll(REQUIRED_HEADERS)) {
                     this.headers.putAll(candidateHeaders);
                     this.headerFound = true;
@@ -142,13 +147,28 @@ public class DatabaseDesignReader {
                 }
                 return;
             }
-            this.tableName = firstNonBlank(this.tableName, this.value("表名"));
-            this.tableDescription = firstNonBlank(this.value("表说明"), this.tableDescription);
+
+            this.tableName = StringUtils.coalesce(this.tableName, this.value("表名"));
+            this.tableDescription = StringUtils.coalesce(this.value("表说明"), this.tableDescription);
+
             String sqlType = this.value("类型");
-            if (sqlType.length() == 0) {
-                throw new IllegalArgumentException("工作表 " + this.sheetName + " 的“" + columnName + "”类型不能为空");
-            }
-            this.columns.add(new ColumnDesign(columnName, sqlType, this.value("说明"), this.isYes("主键"), this.isYes("唯一索引"), this.isYes("not null"), this.value("默认值"), this.value("数据字典"), this.value("虚拟字段"), this.value("备注")));
+            Ensure.notBlank(sqlType, "工作表 {} 的“{}”类型不能为空", this.sheetName, columnName);
+
+            this.columns.add( //
+                new ColumnDesign( //
+                    columnName,  //
+                    sqlType,  //
+                    this.value("说明"),  //
+                    this.isYes("主键"),  //
+                    this.isYes("唯一索引"),  //
+                    this.isYes("not null"),  //
+                    this.value("默认值"),  //
+                    this.value("格式"),  //
+                    this.value("数据字典"),  //
+                    this.value("虚拟字段"),  //
+                    this.value("备注") //
+                ) //
+            );
         }
 
         public void cell(String cellReference, String formattedValue) {
@@ -178,10 +198,6 @@ public class DatabaseDesignReader {
             Integer index = this.headers.get(header);
             String value = index == null ? null : this.rowValues.get(index);
             return value == null ? "" : value;
-        }
-
-        private static String firstNonBlank(String preferred, String fallback) {
-            return preferred == null || preferred.trim().length() == 0 ? fallback : preferred;
         }
     }
 

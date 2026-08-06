@@ -22,14 +22,10 @@ public final class SsmCodeGeneratorMain {
      */
     public static void main(String[] args) throws Exception {
         Map<String, String> arguments = parseArguments(args);
-        String input = arguments.get("input");
-        String output = arguments.get("output");
-        if (input == null || output == null) {
-            throw new IllegalArgumentException("必须指定 --input <数据库设计.xlsx> 与 --output <输出目录>");
-        }
+        String input = "/Users/user/Documents/workspace/modest-nas/.doc/数据库设计.xlsx";
 
         GeneratorConfig config = arguments.containsKey("config") ? GeneratorConfig.load(new File(arguments.get("config"))) : GeneratorConfig.defaults();
-        new SsmCodeGenerator(config).generate(new File(input), new File(output));
+        new SsmCodeGenerator().generate(new File(input), null);
     }
 
     /**
