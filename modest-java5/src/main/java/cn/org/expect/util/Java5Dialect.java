@@ -32,7 +32,12 @@ public class Java5Dialect {
     }
 
     public boolean isChineseLetter(UnicodeBlock ub) {
-        return false;
+        return ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS //
+            || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A //
+            || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B //
+            || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS //
+            || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT //
+            ;
     }
 
     public String toLongname(File file) {
@@ -124,5 +129,15 @@ public class Java5Dialect {
         } catch (Throwable e) {
             return null;
         }
+    }
+
+    /**
+     * 判断元素是否为可实例化的具体类
+     *
+     * @param typeElement 类型元素
+     * @return true 表示具体类
+     */
+    public boolean isTypeElement(Object typeElement) {
+        throw new UnsupportedOperationException();
     }
 }

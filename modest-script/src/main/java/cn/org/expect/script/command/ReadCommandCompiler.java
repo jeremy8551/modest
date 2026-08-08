@@ -24,7 +24,7 @@ import cn.org.expect.util.StringUtils;
 @EasyCommandCompiler(name = "while", keywords = {"while", "read", "do", "done"})
 public class ReadCommandCompiler extends AbstractCommandCompiler {
 
-    public final static String REGEX = "^(?i)\\s*while\\s+read\\s+\\S+\\s+do\\s*.*";
+    public final static String REGEX = "^(?i)\\s*while\\s+read\\s+\\S+\\s+do\\b.*";
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 

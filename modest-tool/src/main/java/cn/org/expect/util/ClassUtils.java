@@ -532,6 +532,26 @@ public class ClassUtils {
     }
 
     /**
+     * 解析类中指定接口的泛型
+     *
+     * @param type           类信息
+     * @param interfaceClass 接口类
+     * @return 泛型类
+     */
+    @SuppressWarnings("unchecked")
+    public static <E> Class<E> getGenericClass(Class<?> type, Class<?> interfaceClass) {
+        for (Type t : type.getGenericInterfaces()) {
+            if (t instanceof ParameterizedType) {
+                ParameterizedType pt = (ParameterizedType) t;
+                if (pt.getRawType() == interfaceClass) {
+                    return (Class<E>) pt.getActualTypeArguments()[0];
+                }
+            }
+        }
+        throw new IllegalArgumentException(ResourcesUtils.getMessage("class.stdout.message005", type.getName(), interfaceClass.getName()));
+    }
+
+    /**
      * 判断字符串参数className对应的Java类是否存在
      *
      * @param className java类全名
@@ -870,6 +890,63 @@ public class ClassUtils {
             for (Class<?> c : array) {
                 loadAllInterface(c, filters, list);
             }
+        }
+    }
+
+    /**
+     * 获取代理对象实际执行的接口方法
+     *
+     * @param method 代理方法
+     * @return 匹配的接口方法，未找到时返回 null
+     */
+    public static Method getInterfaceMethod(Method method) {
+        if (method == null) {
+            return null;
+        }
+
+        Class<?> type = method.getDeclaringClass();
+        return findInterfaceMethod(type, method);
+    }
+
+    /**
+     * 递归查找类型及其父类型实现的接口方法
+     *
+     * @param type   当前类型
+     * @param method 待匹配方法
+     * @return 匹配的接口方法，未找到时返回 null
+     */
+    private static Method findInterfaceMethod(Class<?> type, Method method) {
+        if (type == null) {
+            return null;
+        }
+
+        for (Class<?> interfaceClass : type.getInterfaces()) {
+            Method interfaceMethod = findInterfaceMethodInHierarchy(interfaceClass, method);
+            if (interfaceMethod != null) {
+                return interfaceMethod;
+            }
+        }
+        return findInterfaceMethod(type.getSuperclass(), method);
+    }
+
+    /**
+     * 在接口继承体系中查找方法
+     *
+     * @param interfaceClass 接口类型
+     * @param method         待匹配方法
+     * @return 匹配的接口方法，未找到时返回 null
+     */
+    private static Method findInterfaceMethodInHierarchy(Class<?> interfaceClass, Method method) {
+        try {
+            return interfaceClass.getMethod(method.getName(), method.getParameterTypes());
+        } catch (NoSuchMethodException exception) {
+            for (Class<?> parentInterface : interfaceClass.getInterfaces()) {
+                Method interfaceMethod = findInterfaceMethodInHierarchy(parentInterface, method);
+                if (interfaceMethod != null) {
+                    return interfaceMethod;
+                }
+            }
+            return null;
         }
     }
 

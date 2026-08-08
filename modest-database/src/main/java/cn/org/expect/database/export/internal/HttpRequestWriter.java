@@ -13,7 +13,7 @@ import cn.org.expect.io.TableWriter;
 import cn.org.expect.io.TextTable;
 import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.util.Ensure;
-import cn.org.expect.util.ServletUtils;
+import cn.org.expect.util.HttpServletUtils;
 
 @EasyBean(value = "http", description = "卸载数据到用户浏览器\nhttp://download/HttpServletRequest 对象的变量名/HttpServletResponse对象的变量名/下载文件名（需要提前将 HttpServletRequest 对象与 HttpServletResponse 对象保存到脚本引擎变量中，变量分别是: httpServletRequest, httpServletResponse）")
 public class HttpRequestWriter implements ExtractWriter {
@@ -49,7 +49,7 @@ public class HttpRequestWriter implements ExtractWriter {
 
         res.reset();
         res.setContentType("APPLICATION/OCTET-STREAM");
-        res.setHeader("Content-Disposition", "attachment; filename=\"" + ServletUtils.encodeFilename(req, filename) + "\"");
+        res.setHeader("Content-Disposition", "attachment; filename=\"" + HttpServletUtils.encodeFilename(req, filename) + "\"");
 
         ServletOutputStream out = res.getOutputStream();
         OutputStreamWriter writer = new OutputStreamWriter(out, table.getCharsetName());

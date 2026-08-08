@@ -5,6 +5,9 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.math.RoundingMode;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.sql.Clob;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -32,6 +35,9 @@ public class StringUtils {
 
     /** 全角空白字符 */
     public final static String FULLWIDTH_BLANK = "　";
+
+    /** 字符集编码器 */
+    public static final CharsetEncoder GBK_ENCODER = Charset.forName(CharsetName.GBK).newEncoder();
 
     /**
      * 返回字符串参数 str 的字节长度
@@ -250,6 +256,43 @@ public class StringUtils {
      */
     public static boolean isNotBlank(CharSequence str) {
         return !StringUtils.isBlank(str);
+    }
+
+    /**
+     * 将数据库表名转换为大驼峰名称，非字母和数字字符作为单词分隔符
+     *
+     * @param tableName 数据库表名，允许为 null
+     * @return 大驼峰名称，参数为 null 时返回 null
+     */
+    public static String upperCamel(String tableName) {
+        if (tableName == null) {
+            return null;
+        }
+
+        StringBuilder result = new StringBuilder();
+        String[] parts = tableName.split("[^A-Za-z0-9]+");
+        for (int i = 0; i < parts.length; i++) {
+            String part = parts[i];
+            if (part.length() > 0) {
+                result.append(Character.toUpperCase(part.charAt(0)));
+                result.append(part.substring(1).toLowerCase(Locale.ENGLISH));
+            }
+        }
+        return result.toString();
+    }
+
+    /**
+     * 将数据库表名转换为小驼峰名称，非字母和数字字符作为单词分隔符
+     *
+     * @param tableName 数据库表名，允许为 null
+     * @return 小驼峰名称，参数为 null 时返回 null
+     */
+    public static String lowerCamel(String tableName) {
+        String upperCamel = StringUtils.upperCamel(tableName);
+        if (StringUtils.isEmpty(upperCamel)) {
+            return upperCamel;
+        }
+        return Character.toLowerCase(upperCamel.charAt(0)) + upperCamel.substring(1);
     }
 
     /**
@@ -4277,6 +4320,30 @@ public class StringUtils {
     }
 
     /**
+     * 移除字符串参数 str 中每行的前缀 prefix
+     *
+     * @param str    字符串
+     * @param prefix 字符串前缀
+     * @return 字符串
+     */
+    public static String removeLinePrefix(CharSequence str, String prefix) {
+        String lineSeparator = FileUtils.readLineSeparator(str);
+        if (lineSeparator == null) {
+            return StringUtils.removePrefix(str, prefix);
+        }
+
+        int length = prefix.length();
+        List<String> list = StringUtils.splitLines(str, new ArrayList<String>());
+        for (int i = 0; i < list.size(); i++) {
+            String line = list.get(i);
+            if (line.startsWith(prefix)) {
+                list.set(i, line.substring(length));
+            }
+        }
+        return StringUtils.join(list, lineSeparator);
+    }
+
+    /**
      * 生成一个字符串
      *
      * @param c    字符
@@ -5107,5 +5174,408 @@ public class StringUtils {
         Pattern compile = Pattern.compile(regex);
         Matcher matcher = compile.matcher(str);
         return matcher.find() ? matcher : null;
+    }
+
+    /**
+     * 判断字符是否是中文汉字字符
+     *
+     * @param c 字符
+     * @return 返回true表示参数是中文字符 false表示不是中文字符
+     */
+    public static boolean isChineseLetter(char c) {
+        return isChineseLetter(c, GBK_ENCODER);
+    }
+
+    /**
+     * 判断字符是否是中文汉字字符
+     *
+     * @param c       字符
+     * @param encoder 字符编码器
+     * @return 返回true表示是中文字符 false表示非中文字符
+     */
+    public static boolean isChineseLetter(char c, CharsetEncoder encoder) {
+        Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+        if (JavaDialectFactory.get().isChineseLetter(ub) || (c >= 0xe815 && c <= 0xe864)) {
+            if (encoder == null) {
+                encoder = GBK_ENCODER;
+            }
+            return encoder.canEncode(c);
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * 将中文数字替换为阿拉伯数字 <br>
+     * 中文字符范围包括： 零壹贰叁肆伍陆柒捌玖 零一二三四五六七八九 <Br>
+     *
+     * @param c 字符
+     * @return 替换后的字符串
+     */
+    public static char replaceChineseNumber(char c) {
+        for (int i = 0; i <= 9; i++) {
+            if (c == "零壹贰叁肆伍陆柒捌玖".charAt(i) || c == "零一二三四五六七八九".charAt(i)) {
+                return "0123456789".charAt(i);
+            }
+        }
+        return c;
+    }
+
+    /**
+     * 将字符串参数 str 中的中文字符替换为阿拉伯字母 <br>
+     * 中文字符范围包括： 零壹贰叁肆伍陆柒捌玖 零一二三四五六七八九 <Br>
+     *
+     * @param str 字符串
+     * @return 字符串
+     */
+    public static String replaceChineseNumber(CharSequence str) {
+        if (str == null) {
+            return null;
+        }
+
+        int length = str.length();
+        char[] array = new char[length];
+        for (int i = 0; i < length; i++) {
+            array[i] = replaceChineseNumber(str.charAt(i));
+        }
+        return new String(array);
+    }
+
+    /**
+     * 将 BigDecimal 转为汉字大写金额(如：壹万贰仟叁佰肆拾伍元) <br>
+     * 将汉字大写金额转为 BigDecimal 详见方法： {@link #parseChineseNumber(CharSequence)}
+     *
+     * @param value 数值
+     * @return 中文大写金额
+     */
+    public static String toChineseNumber(BigDecimal value) {
+        if (value == null) {
+            return null;
+        }
+
+        StringBuilder str = new StringBuilder();
+        // -1, 0, or 1 as the value of this BigDecimal is negative, zero, or
+        // positive.
+        int signum = value.signum();
+        // 零元整的情况
+        if (signum == 0) {
+            return "零元";
+        }
+
+        // 这里会进行金额的四舍五入
+        long number = value.movePointRight(2).setScale(0, RoundingMode.HALF_UP).abs().longValue();
+        // 得到小数点后两位值
+        long scale = number % 100;
+        int numUnit;
+        int numIndex = 0;
+        boolean getZero = false;
+        // 判断最后两位数，一共有四中情况：00 = 0, 01 = 1, 10, 11
+        if (!(scale > 0)) {
+            numIndex = 2;
+            number = number / 100;
+            getZero = true;
+        }
+        if ((scale > 0) && (!(scale % 10 > 0))) {
+            numIndex = 1;
+            number = number / 10;
+            getZero = true;
+        }
+        int zeroSize = 0;
+        while (true) {
+            if (number <= 0) {
+                break;
+            }
+            // 每次获取到最后一个数
+            numUnit = (int) (number % 10);
+            if (numUnit > 0) {
+                if ((numIndex == 9) && (zeroSize >= 3)) {
+                    str.insert(0, '万');
+                }
+                if ((numIndex == 13) && (zeroSize >= 3)) {
+                    str.insert(0, '亿');
+                }
+                str.insert(0, "分角元拾佰仟万拾佰仟亿拾佰仟兆拾佰仟".charAt(numIndex));
+                str.insert(0, "零壹贰叁肆伍陆柒捌玖".charAt(numUnit));
+                getZero = false;
+                zeroSize = 0;
+            } else {
+                ++zeroSize;
+                if (!(getZero)) {
+                    str.insert(0, "零壹贰叁肆伍陆柒捌玖".charAt(numUnit));
+                }
+                if (numIndex == 2) {
+                    if (number > 0) {
+                        str.insert(0, "分角元拾佰仟万拾佰仟亿拾佰仟兆拾佰仟".charAt(numIndex));
+                    }
+                } else if (((numIndex - 2) % 4 == 0) && (number % 1000 > 0)) {
+                    str.insert(0, "分角元拾佰仟万拾佰仟亿拾佰仟兆拾佰仟".charAt(numIndex));
+                }
+                getZero = true;
+            }
+            // 让number每次都去掉最后一个数
+            number = number / 10;
+            ++numIndex;
+        }
+        // 如果signum == -1，则说明输入的数字为负数，就在最前面追加特殊字符：负
+        if (signum == -1) {
+            str.insert(0, "负");
+        }
+        // 输入的数字小数点后两位为"00"的情况，则要在最后追加特殊字符：整
+//        if (!(scale > 0)) {
+        // str.append(CN_FULL);
+//        }
+        return str.toString();
+    }
+
+    /**
+     * 将中文大写金额转为 BigDecimal 类型 <br>
+     * 将 BigDecimal 转为中文大写字符串详见： {@linkplain  #toChineseNumber(BigDecimal)}
+     *
+     * @param str 字符串, 如: 二千三百四十五万
+     * @return 金额
+     */
+    public static BigDecimal parseChineseNumber(CharSequence str) {
+        Ensure.notBlank(str);
+        str = StringUtils.removeBlank(str);
+        boolean negative = str.charAt(0) == '-' || str.charAt(0) == '负';
+        if (negative) {
+            str = str.subSequence(1, str.length());
+        }
+
+        String[] array = StringUtils.split(str, ArrayUtils.asList("元", "块", "园", ".", "点"), true);
+        if (array.length == 1) {
+            String[] newarray = StringUtils.split(str, ArrayUtils.asList("角", "毛", "分", "厘", "豪", "丝"), true);
+            if (newarray.length > 1) {
+                long v = parseLong(str);
+                BigDecimal value = new BigDecimal("0." + v);
+                return negative ? value.negate() : value;
+            } else {
+                long v = parseLong(str);
+                return negative ? BigDecimal.valueOf(v).negate() : BigDecimal.valueOf(v);
+            }
+        } else if (array.length == 2) {
+            if (StringUtils.isBlank(array[1])) {
+                long v = parseLong((CharSequence) array[0]);
+                return negative ? BigDecimal.valueOf(v).negate() : BigDecimal.valueOf(v);
+            } else {
+                BigDecimal zsw = BigDecimal.valueOf(parseLong((CharSequence) array[0]));
+                if (StringUtils.isBlank(array[1])) {
+                    return negative ? zsw.negate() : zsw;
+                } else {
+                    long xs = parseLong((CharSequence) array[1]);
+                    BigDecimal v = new BigDecimal(zsw + "." + xs);
+                    return negative ? v.negate() : v;
+                }
+            }
+        } else {
+            throw new IllegalArgumentException(String.valueOf(str));
+        }
+    }
+
+    /**
+     * 解析整数部分数字
+     *
+     * @param str 字符串
+     * @return 将字符串转为数字
+     */
+    protected static long parseLong(CharSequence str) {
+        Ensure.notBlank(str);
+        str = StringUtils.removeBlank(str);
+        boolean negative = str.charAt(0) == '-' || str.charAt(0) == '负';
+        long v = 0;
+
+        int level = 0;
+        for (int index = negative ? 1 : 0; index < str.length(); index++) {
+            char c = str.charAt(index);
+            int next = index + 1;
+
+            if (StringUtils.inArray(c, '元', '园')) {
+                continue;
+            } else if (StringUtils.inArray(c, '.', '点')) {
+                throw new IllegalArgumentException("parseLong(\"" + str + "\") exists Illegal character \"" + c + "\" v = " + v);
+            }
+
+            boolean isNumber = false;
+            int n = "0123456789".indexOf(c);
+            if (n == -1) {
+                n = "零一二三四五六七八九".indexOf(c);
+                if (n == -1) {
+                    n = "零壹贰叁肆伍陆柒捌玖".indexOf(c);
+                    if (n == -1) {
+                        throw new IllegalArgumentException("parseLong(\"" + str + "\") exists Illegal character \"" + str.subSequence(0, index + 1) + "\" v = " + v);
+                    }
+                }
+            } else {
+                isNumber = true;
+            }
+
+            if (next < str.length()) {
+                char nc = str.charAt(next);
+                String substr = str.subSequence(next + 1, str.length()).toString();
+
+                if (StringUtils.inArray(nc, '元', '园')) {
+                    continue;
+                } else if (StringUtils.inArray(nc, '.', '点')) {
+                    throw new IllegalArgumentException("Numeric expression \"" + str + "\" exists Illegal character \"" + nc + "\" v = " + v);
+                } else if (nc == '角' || nc == '毛') {
+                    if (level > 0) {
+                        throw new IllegalArgumentException("Numeric expression \"" + str + "\" exists Illegal character \"" + nc + "\" v = " + v);
+                    }
+                    if (level < -1) {
+                        throw new IllegalArgumentException("Numeric expression \"" + str + "\" exists syntax error \"" + nc + "\" v = " + v);
+                    }
+                    v = v * 10 + n;
+                    level = -1;
+                } else if (nc == '分') {
+                    if (level > 0) {
+                        throw new IllegalArgumentException("Numeric expression \"" + str + "\" exists Illegal character \"" + nc + "\" v = " + v);
+                    }
+                    if (level < -2) {
+                        throw new IllegalArgumentException("Numeric expression \"" + str + "\" exists syntax error \"" + nc + "\" v = " + v);
+                    }
+                    v = v * 10 + n;
+                    level = -2;
+                } else if (nc == '厘') {
+                    if (level > 0) {
+                        throw new IllegalArgumentException("Numeric expression \"" + str + "\" exists Illegal character \"" + nc + "\" v = " + v);
+                    }
+                    if (level < -3) {
+                        throw new IllegalArgumentException("Numeric expression \"" + str + "\" exists syntax error \"" + nc + "\" v = " + v);
+                    }
+                    v = v * 10 + n;
+                    level = -3;
+                } else if (nc == '豪') {
+                    if (level > 0) {
+                        throw new IllegalArgumentException("Numeric expression \"" + str + "\" exists Illegal character \"" + nc + "\" v = " + v);
+                    }
+                    if (level < -4) {
+                        throw new IllegalArgumentException("Numeric expression \"" + str + "\" exists syntax error \"" + nc + "\" v = " + v);
+                    }
+                    v = v * 10 + n;
+                    level = -4;
+                } else if (nc == '丝') {
+                    if (level > 0) {
+                        throw new IllegalArgumentException("Numeric expression \"" + str + "\" exists Illegal character \"" + nc + "\" v = " + v);
+                    }
+                    if (level < -5) {
+                        throw new IllegalArgumentException("Numeric expression \"" + str + "\" exists syntax error \"" + nc + "\" v = " + v);
+                    }
+                    v = v * 10 + n;
+                    level = -5;
+                } else if (StringUtils.inArray(nc, '十', '拾')) {
+                    if (level == 0) {
+                        v = (v + n) * 10;
+                        level = 1;
+                    } else if (level < 1) {
+                        v = (v + n) * 10;
+                        level = 1;
+                        if (StringUtils.isNotBlank(substr)) {
+                            v += parseLong((CharSequence) substr);
+                            break;
+                        }
+                    } else {
+                        v += n * 10;
+                    }
+                } else if (StringUtils.inArray(nc, '百', '佰')) {
+                    if (level == 0) {
+                        v = (v + n) * 100;
+                        level = 2;
+                    } else if (level < 2) {
+                        v = (v + n) * 100;
+                        level = 2;
+                        if (StringUtils.isNotBlank(substr)) {
+                            v += parseLong((CharSequence) substr);
+                            break;
+                        }
+                    } else {
+                        v += n * 100;
+                    }
+                } else if (StringUtils.inArray(nc, '千', '仟')) {
+                    if (level == 0) {
+                        v = (v + n) * 1000;
+                        level = 3;
+                    } else if (level < 3) {
+                        v = (v + n) * 1000;
+                        level = 3;
+                        if (StringUtils.isNotBlank(substr)) {
+                            v += parseLong((CharSequence) substr);
+                            break;
+                        }
+                    } else {
+                        v += n * 1000;
+                    }
+                } else if (nc == '万') {
+                    if (level == 0) {
+                        v = (v + n) * 10000;
+                        level = 4;
+                    } else if (level < 4) {
+                        v = (v + n) * 10000;
+                        level = 4;
+                        if (StringUtils.isNotBlank(substr)) {
+                            v += parseLong((CharSequence) substr);
+                            break;
+                        }
+                    } else {
+                        v += n * 10000;
+                    }
+                } else if (nc == '亿') {
+                    if (level == 0) {
+                        v = (v + n) * (long) Math.pow(10, 8);
+                        level = 5;
+                    } else if (level < 5) {
+                        v = (v + n) * (long) Math.pow(10, 8);
+                        level = 5;
+                        if (StringUtils.isNotBlank(substr)) {
+                            v += parseLong((CharSequence) substr);
+                            break;
+                        }
+                    } else {
+                        v += n * Math.pow(10, 8);
+                    }
+                } else if (nc == '兆') {
+                    if (level == 0) {
+                        v = (v + n) * (long) Math.pow(10, 12);
+                        level = 6;
+                    } else if (level < 6) {
+                        v = (v + n) * (long) Math.pow(10, 12);
+                        level = 6;
+                        if (StringUtils.isNotBlank(substr)) {
+                            v += parseLong((CharSequence) substr);
+                            break;
+                        }
+                    } else {
+                        v += n * Math.pow(10, 12);
+                    }
+                } else if ("0123456789零一二三四五六七八九零壹贰叁肆伍陆柒捌玖".indexOf(nc) != -1) {
+                    if (!isNumber && n == 0) { // c为零
+                    } else {
+                        v = (v * 10) + n;
+                    }
+
+                    if (level < 0) {
+                        level--;
+                    } else {
+                        level++;
+                    }
+                    continue;
+                } else {
+                    throw new IllegalArgumentException("string " + str + " Illegal character in " + nc + " !");
+                }
+
+                index++;
+            } else {
+                if (level < 0) {
+                    level--;
+                    v = v * 10 + n;
+                } else {
+                    if (isNumber) {
+                        v = v * 10 + n;
+                    } else {
+                        v += n;
+                    }
+                }
+            }
+        }
+        return negative ? -v : v;
     }
 }

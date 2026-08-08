@@ -26,12 +26,6 @@
             <artifactId>modest-tool</artifactId>
         </dependency>
 
-        <!-- 代码生成器 -->
-        <dependency>
-            <groupId>cn.org.expect</groupId>
-            <artifactId>modest-codegen</artifactId>
-        </dependency>
-
         <!-- Maven 插件API -->
         <dependency>
             <groupId>org.apache.maven</groupId>

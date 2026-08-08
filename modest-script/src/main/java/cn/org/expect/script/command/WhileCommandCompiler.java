@@ -23,7 +23,7 @@ import cn.org.expect.script.internal.CommandList;
 @EasyCommandCompiler(name = "while", keywords = {"while", "loop", "end"})
 public class WhileCommandCompiler extends AbstractCommandCompiler {
 
-    public final static String REGEX = "^(?i)\\s*while\\s+[^read]+.*";
+    public final static String REGEX = "^(?i)\\s*while\\s+(?!read\\b).+?\\s+loop\\b.*";
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
@@ -48,7 +48,7 @@ public class WhileCommandCompiler extends AbstractCommandCompiler {
         it.assertLast("loop");
         it.assertLast("end");
         if (log.isDebugEnabled()) {
-             log.debug("script.stdout.message029", "while", condition);
+            log.debug("script.stdout.message029", "while", condition);
         }
 
         String body = it.readOther();

@@ -3259,6 +3259,27 @@ add(Object object)
 ```java
 cn.org.expect.script.method.CollectionExtension.add(java.util.Collection,java.lang.Object)
 ```
+### asList()
+转换为 List
+
+**Variable**
+
+`Object[]` 数组
+
+
+**Method**
+```java
+asList()
+```
+
+**Return Value**
+
+List
+
+**Implement Class**
+```java
+cn.org.expect.script.method.ArrayExtension.asList(java.lang.Object[])
+```
 ### booleanValue()
 将字符串转为布尔值
 
@@ -4417,6 +4438,27 @@ lower()
 ```java
 cn.org.expect.script.method.StringExtension.lower(java.lang.CharSequence)
 ```
+### lowerCamel()
+将字符串转换为小写驼峰命名
+
+**Variable**
+
+`CharSequence` 字符串
+
+
+**Method**
+```java
+lowerCamel()
+```
+
+**Return Value**
+
+小写驼峰命名
+
+**Implement Class**
+```java
+cn.org.expect.script.method.StringExtension.lowerCamel(java.lang.CharSequence)
+```
 ### ls()
 显示目录中的文件
 
@@ -4676,6 +4718,31 @@ readTag(String tagName, int from)
 **Implement Class**
 ```java
 cn.org.expect.script.method.XmlExtension.readTag(java.lang.String,java.lang.String,int)
+```
+### removeLinePrefix(String)
+移除字符串中所有行的指定前缀
+
+**Variable**
+
+`CharSequence` 字符串
+
+
+**Method**
+```java
+removeLinePrefix(String prefix)
+```
+**Parameter 1**
+
+前缀
+
+
+**Return Value**
+
+移除后的字符串
+
+**Implement Class**
+```java
+cn.org.expect.script.method.StringExtension.removeLinePrefix(java.lang.CharSequence,java.lang.String)
 ```
 ### removePrefix(CharSequence)
 从字符串 str 的最左段移除字符串 prefix
@@ -5331,6 +5398,27 @@ upper()
 **Implement Class**
 ```java
 cn.org.expect.script.method.StringExtension.upper(java.lang.CharSequence)
+```
+### upperCamel()
+将字符串转换为大写驼峰命名
+
+**Variable**
+
+`CharSequence` 字符串
+
+
+**Method**
+```java
+upperCamel()
+```
+
+**Return Value**
+
+大写驼峰命名
+
+**Implement Class**
+```java
+cn.org.expect.script.method.StringExtension.upperCamel(java.lang.CharSequence)
 ```
 
 

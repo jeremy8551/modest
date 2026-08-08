@@ -26,10 +26,14 @@ public class Java7Dialect extends Java6Dialect {
         }
     }
 
-    /** {@inheritDoc} */
     public boolean isChineseLetter(UnicodeBlock ub) {
-        return ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C //
+        return ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS //
+            || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A //
+            || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B //
+            || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C //
             || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D //
+            || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS //
+            || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT //
             ;
     }
 

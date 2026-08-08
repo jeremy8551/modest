@@ -338,4 +338,35 @@ public class StringExtension {
     public static String removePrefix(CharSequence str, CharSequence prefix) {
         return StringUtils.removePrefix(str, prefix);
     }
+
+    /**
+     * 将字符串转换为大写驼峰命名
+     *
+     * @param tableName 字符串
+     * @return 大写驼峰命名
+     */
+    public static String upperCamel(CharSequence tableName) {
+        return StringUtils.upperCamel(tableName.toString());
+    }
+
+    /**
+     * 将字符串转换为小写驼峰命名
+     *
+     * @param tableName 字符串
+     * @return 小写驼峰命名
+     */
+    public static String lowerCamel(CharSequence tableName) {
+        return StringUtils.lowerCamel(tableName.toString());
+    }
+
+    /**
+     * 移除字符串中所有行的指定前缀
+     *
+     * @param str    字符串
+     * @param prefix 前缀
+     * @return 移除后的字符串
+     */
+    public static String removeLinePrefix(CharSequence str, String prefix) {
+        return StringUtils.removeLinePrefix(str, prefix);
+    }
 }

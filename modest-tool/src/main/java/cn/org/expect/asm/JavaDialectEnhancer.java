@@ -1,4 +1,4 @@
-package cn.org.expect.util;
+package cn.org.expect.asm;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -108,7 +108,7 @@ public class JavaDialectEnhancer {
                 throw new IllegalArgumentException("Unexpected class: " + name);
             }
 
-            if (!contains(interfaces, JAVA_DIALECT_INTERFACE)) {
+            if (!contains(interfaces)) {
                 String[] enhancedInterfaces = new String[interfaces.length + 1];
                 System.arraycopy(interfaces, 0, enhancedInterfaces, 0, interfaces.length);
                 enhancedInterfaces[interfaces.length] = JAVA_DIALECT_INTERFACE;
@@ -120,13 +120,12 @@ public class JavaDialectEnhancer {
         /**
          * 判断接口表是否已包含目标接口
          *
-         * @param interfaces    接口表
-         * @param interfaceName 接口的字节码名称
+         * @param interfaces 接口表
          * @return true 表示已经包含
          */
-        private static boolean contains(String[] interfaces, String interfaceName) {
+        private static boolean contains(String[] interfaces) {
             for (String value : interfaces) {
-                if (interfaceName.equals(value)) {
+                if (JavaDialectEnhancer.JAVA_DIALECT_INTERFACE.equals(value)) {
                     return true;
                 }
             }

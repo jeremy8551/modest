@@ -9,24 +9,19 @@
         <version>${revision}</version>
     </parent>
 
-    <artifactId>modest-codegen</artifactId>
+    <artifactId>modest-java16</artifactId>
     <name>${project.artifactId}</name>
-    <description>Generate SSM persistence code from database design workbooks</description>
+    <description>Adaptation for JDK 14</description>
 
     <properties>
-        <ssm.poi.version>3.10.1</ssm.poi.version>
+        <maven.compiler.source>16</maven.compiler.source>
+        <maven.compiler.target>16</maven.compiler.target>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>cn.org.expect</groupId>
-            <artifactId>modest-script-engine</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-            <version>${ssm.poi.version}</version>
+            <artifactId>modest-java12</artifactId>
         </dependency>
     </dependencies>
 
@@ -35,10 +30,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-toolchains-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>toolchain</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <toolchains>
                         <jdk>
-                            <version>8</version>
+                            <version>17</version>
                         </jdk>
                     </toolchains>
                 </configuration>

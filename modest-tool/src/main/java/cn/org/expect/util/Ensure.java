@@ -53,6 +53,21 @@ public class Ensure {
     }
 
     /**
+     * 检查参数是否是 true，此方法主要用于在方法和构造函数中进行参数验证
+     *
+     * @param value 布尔参数
+     * @param array 异常信息
+     * @return 返回true
+     */
+    public static boolean isTrue(boolean value, String message, Object... array) {
+        if (value) {
+            return true;
+        } else {
+            throw new IllegalArgumentException(StringUtils.replaceEmptyHolder(message, array));
+        }
+    }
+
+    /**
      * 检查参数是否是整数，此方法主要用于在方法和构造函数中进行参数验证
      *
      * @param str 字符串

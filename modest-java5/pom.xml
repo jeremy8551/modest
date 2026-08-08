@@ -12,7 +12,4 @@
     <artifactId>modest-java5</artifactId>
     <name>${project.artifactId}</name>
     <description>Adaptation for JDK 1.5</description>
-
-    <dependencies>
-    </dependencies>
 </project>

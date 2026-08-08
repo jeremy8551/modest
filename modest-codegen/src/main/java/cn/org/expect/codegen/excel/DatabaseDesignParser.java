@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import cn.org.expect.codegen.model.ColumnDesign;
+import cn.org.expect.codegen.mapper.DBTypeMapper;
+import cn.org.expect.codegen.model.TableColumnDesign;
 import cn.org.expect.codegen.model.TableDesign;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
@@ -31,9 +32,9 @@ import org.xml.sax.helpers.XMLReaderFactory;
 /**
  * 按列名流式读取数据库设计工作簿
  */
-public class DatabaseDesignReader {
+public class DatabaseDesignParser {
 
-    private static final Set<String> REQUIRED_HEADERS = new HashSet<String>(Arrays.asList(new String[]{"表名", "字段名", "类型", "说明"}));
+    private static final Set<String> REQUIRED_HEADERS = new HashSet<String>(Arrays.asList("表名", "字段名", "类型", "说明"));
 
     private static final int MAX_HEADER_SCAN_ROWS = 30;
 
@@ -44,10 +45,9 @@ public class DatabaseDesignReader {
      * @return 数据库表设计列表
      * @throws IOException 工作簿读取失败时抛出
      */
-    public List<TableDesign> read(File workbookFile) throws IOException {
-        OPCPackage packageFile = null;
+    public List<TableDesign> execute(File workbookFile) throws Exception {
+        OPCPackage packageFile = OPCPackage.open(workbookFile, PackageAccess.READ);
         try {
-            packageFile = OPCPackage.open(workbookFile, PackageAccess.READ);
             XSSFReader reader = new XSSFReader(packageFile);
             StylesTable styles = reader.getStylesTable();
             ReadOnlySharedStringsTable strings = new ReadOnlySharedStringsTable(packageFile);
@@ -67,16 +67,8 @@ public class DatabaseDesignReader {
                 }
             }
             return tables;
-        } catch (SAXException exception) {
-            throw new IOException("解析数据库设计工作簿失败", exception);
-        } catch (IOException exception) {
-            throw exception;
-        } catch (Exception exception) {
-            throw new IOException("读取数据库设计工作簿失败", exception);
         } finally {
-            if (packageFile != null) {
-                packageFile.close();
-            }
+            packageFile.close();
         }
     }
 
@@ -106,7 +98,7 @@ public class DatabaseDesignReader {
         private final String sheetName;
         private final Map<Integer, String> rowValues = new HashMap<Integer, String>();
         private final Map<String, Integer> headers = new HashMap<String, Integer>();
-        private final List<ColumnDesign> columns = new ArrayList<ColumnDesign>();
+        private final List<TableColumnDesign> columns = new ArrayList<TableColumnDesign>();
         private String tableName = "";
         private String tableDescription;
         private boolean headerFound;
@@ -155,9 +147,10 @@ public class DatabaseDesignReader {
             Ensure.notBlank(sqlType, "工作表 {} 的“{}”类型不能为空", this.sheetName, columnName);
 
             this.columns.add( //
-                new ColumnDesign( //
+                new TableColumnDesign( //
                     columnName,  //
                     sqlType,  //
+                    DBTypeMapper.mapping(sqlType), //
                     this.value("说明"),  //
                     this.isYes("主键"),  //
                     this.isYes("唯一索引"),  //

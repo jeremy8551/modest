@@ -21,8 +21,6 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
@@ -32,6 +30,7 @@ import javax.tools.StandardLocation;
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
+import cn.org.expect.util.JavaDialectFactory;
 import cn.org.expect.util.StringUtils;
 import com.google.auto.service.AutoService;
 
@@ -150,11 +149,11 @@ public class ScanClassProcessor extends AbstractProcessor {
     private void collectType(Element element, Map<String, TypeMirror> configuredSuperTypes, Set<String> configuredAnnotations) {
         if (element instanceof TypeElement) {
             TypeElement typeElement = (TypeElement) element;
-            if (isConcreteClass(typeElement) || typeElement.getKind() == ElementKind.INTERFACE) {
+            if (JavaDialectFactory.get().isTypeElement(typeElement)) {
                 this.collectSuperTypes(typeElement, configuredSuperTypes);
             }
 
-            if (isConcreteClass(typeElement)) {
+            if (JavaDialectFactory.get().isTypeElement(typeElement)) {
                 this.collectAnnotations(typeElement, configuredAnnotations);
             }
 
@@ -164,16 +163,6 @@ public class ScanClassProcessor extends AbstractProcessor {
                 }
             }
         }
-    }
-
-    /**
-     * 判断元素是否为可实例化的具体类
-     *
-     * @param typeElement 类型元素
-     * @return true 表示具体类
-     */
-    private boolean isConcreteClass(TypeElement typeElement) {
-        return typeElement.getKind() == ElementKind.CLASS && !typeElement.getModifiers().contains(Modifier.ABSTRACT);
     }
 
     /**

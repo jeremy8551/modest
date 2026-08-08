@@ -1,5 +1,8 @@
 package cn.org.expect.script.method;
 
+import java.util.Arrays;
+import java.util.List;
+
 import cn.org.expect.script.annotation.EasyVariableExtension;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.StringUtils;
@@ -193,5 +196,15 @@ public class ArrayExtension {
      */
     public static Object[] subArray(Object[] array, long begin, long end) {
         return subArray(array, (int) begin, (int) end);
+    }
+
+    /**
+     * 转换为 List
+     *
+     * @param array 数组
+     * @return List
+     */
+    public static List<Object> asList(Object[] array) {
+        return Arrays.asList(array);
     }
 }

@@ -3,13 +3,16 @@ package cn.org.expect.codegen.model;
 /**
  * 数据库字段设计
  */
-public class ColumnDesign {
+public class TableColumnDesign {
 
     /** 字段名 */
     private final String name;
 
     /** 数据库类型 */
     private final String sqlType;
+
+    /** java类型 */
+    private final String javaType;
 
     /** 字段说明 */
     private final String description;
@@ -43,6 +46,7 @@ public class ColumnDesign {
      *
      * @param name         字段名
      * @param sqlType      数据库类型
+     * @param javaType     java类型
      * @param description  字段说明
      * @param primaryKey   是否为主键
      * @param uniqueIndex  是否为唯一索引
@@ -53,9 +57,10 @@ public class ColumnDesign {
      * @param virtualField 虚拟字段表达式
      * @param remark       备注
      */
-    public ColumnDesign(String name, String sqlType, String description, boolean primaryKey, boolean uniqueIndex, boolean notNull, String defaultValue, String format, String dictionary, String virtualField, String remark) {
+    public TableColumnDesign(String name, String sqlType, String javaType, String description, boolean primaryKey, boolean uniqueIndex, boolean notNull, String defaultValue, String format, String dictionary, String virtualField, String remark) {
         this.name = name;
         this.sqlType = sqlType;
+        this.javaType = javaType;
         this.description = description;
         this.primaryKey = primaryKey;
         this.uniqueIndex = uniqueIndex;
@@ -67,53 +72,57 @@ public class ColumnDesign {
         this.remark = remark;
     }
 
-    public String name() {
-        return this.name;
+    public String getName() {
+        return name;
     }
 
-    public String sqlType() {
-        return this.sqlType;
+    public String getSqlType() {
+        return sqlType;
     }
 
-    public String description() {
-        return this.description;
+    public String getJavaType() {
+        return javaType;
     }
 
-    public boolean primaryKey() {
-        return this.primaryKey;
+    public String getDescription() {
+        return description;
     }
 
-    public boolean uniqueIndex() {
-        return this.uniqueIndex;
+    public boolean isPrimaryKey() {
+        return primaryKey;
     }
 
-    public boolean notNull() {
-        return this.notNull;
+    public boolean isUniqueIndex() {
+        return uniqueIndex;
     }
 
-    public String defaultValue() {
-        return this.defaultValue;
+    public boolean isNotNull() {
+        return notNull;
+    }
+
+    public String getDefaultValue() {
+        return defaultValue;
     }
 
     public String getFormat() {
         return format;
     }
 
-    public String dictionary() {
-        return this.dictionary;
+    public String getDictionary() {
+        return dictionary;
     }
 
-    public String virtualField() {
-        return this.virtualField;
+    public String getVirtualField() {
+        return virtualField;
     }
 
-    public String remark() {
-        return this.remark;
+    public String getRemark() {
+        return remark;
     }
 
     @Override
     public String toString() {
-        return ColumnDesign.class.getSimpleName() + "{" + //
+        return TableColumnDesign.class.getSimpleName() + "{" + //
             "name='" + name + '\'' + //
             ", sqlType='" + sqlType + '\'' + //
             ", description='" + description + '\'' + //

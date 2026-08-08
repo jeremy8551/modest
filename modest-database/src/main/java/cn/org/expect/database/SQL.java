@@ -829,4 +829,39 @@ public class SQL {
         }
         return buf.toString();
     }
+
+    /**
+     * 转义 SQL LIKE 查询参数
+     *
+     * @param value 原始字符串
+     * @return LIKE 转义后的字符串
+     */
+    public static String escapeLike(String value, char escapeChar) {
+        if (escapeChar == '%' || escapeChar == '_') {
+            throw new IllegalArgumentException("escapeChar cannot be % or _");
+        }
+        if (value == null || value.length() == 0) {
+            return value;
+        }
+
+        StringBuilder buf = new StringBuilder(value.length() + 3);
+        for (int i = 0; i < value.length(); i++) {
+            char c = value.charAt(i);
+
+            if (c == escapeChar) {
+                buf.append(escapeChar);
+                buf.append(c);
+            } else if (c == '%') {
+                buf.append(escapeChar);
+                buf.append(c);
+            } else if (c == '_') {
+                buf.append(escapeChar);
+                buf.append(c);
+            } else {
+                buf.append(c);
+            }
+        }
+
+        return buf.toString();
+    }
 }

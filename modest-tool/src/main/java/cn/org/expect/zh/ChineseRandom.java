@@ -1,6 +1,8 @@
 package cn.org.expect.zh;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -9,6 +11,9 @@ import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.Property;
 import cn.org.expect.util.StringUtils;
+import cn.org.expect.util.XMLUtils;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * 中文信息随机生成器，包括：<br>
@@ -350,7 +355,7 @@ public class ChineseRandom {
      */
     public String nextIdCard(Date start, Date end) {
         if (this.areacodes.isEmpty()) {
-            List<Property> list = ChinaUtils.getProperties("5527"); // 行政区划
+            List<Property> list = this.getProperties("5527"); // 行政区划
             List<String> areas = new ArrayList<String>();
             for (Property p : list) {
                 areas.add(p.getKey());
@@ -364,6 +369,49 @@ public class ChineseRandom {
         buf.append(StringUtils.right(this.random.nextInt(999), 3, '0')); // 随机获取落户派出所代码（第15、16位） + 性别代码（第17位） 直接生成三位数
         buf.append(this.toValidCode(buf)); // 生成随机身份证编号的校验位
         return buf.toString();
+    }
+
+    /**
+     * 读取配置信息集合
+     *
+     * @param nameOrType 参数名或参数类型值, 相见 china.xml 中的 {@literal <item name="xxx" type="xxx"> }
+     * @return 属性集合
+     */
+    protected List<Property> getProperties(String nameOrType) {
+        Ensure.notBlank(nameOrType);
+        List<Property> list = new ArrayList<Property>();
+        Document document = XMLUtils.newDocument(ChineseRandom.class.getResourceAsStream("china.xml"));
+        Node root = XMLUtils.getChildNode(document, "config");
+        List<Node> nodes = XMLUtils.getChildNodes(root, "item");
+        for (int i = 0; i < nodes.size(); i++) {
+            Node node = nodes.get(i);
+            String name = StringUtils.removeBlank(XMLUtils.getAttribute(node, "name"));
+            String type = StringUtils.removeBlank(XMLUtils.getAttribute(node, "type"));
+
+            if (name.equalsIgnoreCase(nameOrType) || type.equalsIgnoreCase(nameOrType)) {
+                List<Node> properties = XMLUtils.getChildNodes(node, "property");
+                for (int j = 0; j < properties.size(); j++) {
+                    Node property = properties.get(j);
+                    String code = StringUtils.trimBlank(XMLUtils.getAttribute(property, "code"));
+                    String notes = StringUtils.trimBlank(XMLUtils.getAttribute(property, "notes"));
+                    String order = StringUtils.trimBlank(XMLUtils.getAttribute(property, "orders", String.valueOf(Integer.MAX_VALUE)));
+
+                    Property p = new Property();
+                    p.setKey(code);
+                    p.setValue(notes);
+                    p.setOrder(StringUtils.parseInt(order, Integer.MAX_VALUE));
+                    list.add(p);
+                }
+
+                Collections.sort(list, new Comparator<Property>() {
+                    public int compare(Property o1, Property o2) {
+                        return o1.getOrder() - o2.getOrder();
+                    }
+                });
+                return list;
+            }
+        }
+        return list;
     }
 
     /**

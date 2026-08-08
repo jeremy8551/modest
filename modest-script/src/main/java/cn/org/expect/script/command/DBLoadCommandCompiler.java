@@ -34,7 +34,7 @@ import cn.org.expect.util.StringUtils;
 @EasyCommandCompiler(name = "db")
 public class DBLoadCommandCompiler extends AbstractTraceCommandCompiler {
 
-    public final static String REGEX = "^(?i)db\\s+load\\s+from\\s+.*";
+    public final static String REGEX = "^(?i)db\\s+load\\s+(?:client\\s+)?from\\s+.*";
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
