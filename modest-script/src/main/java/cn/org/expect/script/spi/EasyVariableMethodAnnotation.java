@@ -12,13 +12,6 @@ import com.google.auto.service.AutoService;
 @AutoService(EasyBeanAnnotation.class)
 public class EasyVariableMethodAnnotation implements EasyBeanAnnotation {
 
-    /**
-     * 初始化 EasyVariableMethodAnnotation
-     */
-    public EasyVariableMethodAnnotation() {
-    }
-
-    /** {@inheritDoc} */
     public boolean isPresent(Class<?> type) {
         return type.isAnnotationPresent(EasyVariableMethod.class);
     }

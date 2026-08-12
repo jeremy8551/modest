@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>cn.org.expect</groupId>
+        <artifactId>modest</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>modest-hutool</artifactId>
+    <name>${project.artifactId}</name>
+    <description>Aggregation of Hutool adaptation modules</description>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>modest-hutool5.7</module>
+        <module>modest-hutool5.8</module>
+    </modules>
+</project>

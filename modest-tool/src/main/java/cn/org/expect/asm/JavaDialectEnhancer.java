@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import cn.org.expect.util.Java5Dialect;
+import cn.org.expect.util.JavaDialect;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
@@ -18,10 +20,10 @@ import org.objectweb.asm.Opcodes;
 public class JavaDialectEnhancer {
 
     /** Java 方言接口的字节码名称 */
-    private static final String JAVA_DIALECT_INTERFACE = "cn/org/expect/util/JavaDialect";
+    private static final String JAVA_DIALECT_INTERFACE = JavaDialect.class.getName().replace('.', '/');
 
     /** Java5 方言类的字节码名称 */
-    private static final String JAVA5_DIALECT_CLASS = "cn/org/expect/util/Java5Dialect";
+    private static final String JAVA5_DIALECT_CLASS = Java5Dialect.class.getName().replace('.', '/');
 
     /**
      * 执行 Java5 方言字节码增强
@@ -31,12 +33,12 @@ public class JavaDialectEnhancer {
      */
     public static void main(String[] args) throws IOException {
         if (args == null || args.length != 1) {
-            throw new IllegalArgumentException("Java5Dialect class file path is required");
+            throw new IllegalArgumentException("target path is required");
         }
 
-        File classFile = new File(args[0]);
+        File classFile = new File(args[0], JAVA5_DIALECT_CLASS + ".class");
         if (!classFile.isFile()) {
-            throw new IOException("Java5Dialect class file not found: " + classFile.getAbsolutePath());
+            throw new IOException("class file not found: " + classFile.getAbsolutePath());
         }
 
         byte[] source = read(classFile);

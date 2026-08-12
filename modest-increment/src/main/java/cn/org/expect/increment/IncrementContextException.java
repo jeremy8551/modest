@@ -1,6 +1,6 @@
 package cn.org.expect.increment;
 
-import cn.org.expect.ModestRuntimeException;
+import cn.org.expect.exception.ModestRuntimeException;
 
 /**
  * 增量剥离上下文信息错误

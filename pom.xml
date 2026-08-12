@@ -44,7 +44,9 @@
         <commons.compress.version>1.14</commons.compress.version>
         <junrar.version>7.4.0</junrar.version>
         <commons.net.version>2.2</commons.net.version>
-        <commons.email.version>1.4</commons.email.version>
+        <hutool.version>5.8.46</hutool.version>
+        <hutool57.version>5.7.22</hutool57.version>
+        <hutool58.version>5.8.46</hutool58.version>
         <okhttp.version>4.12.0</okhttp.version>
         <json.version>20231013</json.version>
         <!-- 数据库依赖版本 -->
@@ -53,8 +55,9 @@
         <mysql.connector.version>8.0.33</mysql.connector.version>
         <ssm.mysql.connector.version>8.2.0</ssm.mysql.connector.version>
         <opengauss.jdbc.version>6.0.0</opengauss.jdbc.version>
-        <poi.version>5.4.1</poi.version>
-        <!-- 是否启用本地开发（在桌面创建 README.md，处理 markdown 文档）-->
+        <!-- 代码生成插件依赖版本 -->
+        <poi.codegen.version>3.10.1</poi.codegen.version>
+        <!-- 是否启用本地开发（在桌面创建 README.md）-->
         <activeDevelop>false</activeDevelop>
         <!-- 是否启用Docker构建 -->
         <docker.build.enable>false</docker.build.enable>
@@ -62,29 +65,23 @@
 
     <!-- 子模块 -->
     <modules>
-        <module>modest-java5</module>
-        <module>modest-java6</module>
-        <module>modest-java7</module>
-        <module>modest-java12</module>
-        <module>modest-java16</module>
+        <module>modest-java</module>
+        <module>modest-hutool</module>
         <module>modest-tool</module>
         <module>modest-annotation-processor</module>
         <module>modest-maven-plugin</module>
         <module>modest-logger</module>
         <module>modest-concurrent</module>
         <module>modest-expression</module>
-        <module>modest-markdown</module>
         <module>modest-ioc</module>
         <module>modest-ioc-test</module>
         <module>modest-compress</module>
-        <module>modest-mail</module>
         <module>modest-io</module>
         <module>modest-os</module>
         <module>modest-database</module>
         <module>modest-increment</module>
         <module>modest-script</module>
         <module>modest-script-engine</module>
-        <module>modest-codegen</module>
         <module>modest-spring-boot-starter</module>
         <module>modest-build</module>
     </modules>
@@ -230,12 +227,19 @@
                 <scope>provided</scope>
             </dependency>
 
+            <!-- Jakarta Servlet-API -->
+            <dependency>
+                <groupId>jakarta.servlet</groupId>
+                <artifactId>jakarta.servlet-api</artifactId>
+                <version>6.0.0</version>
+                <scope>provided</scope>
+            </dependency>
+
             <!-- DB2数据库驱动 -->
             <dependency>
                 <groupId>com.ibm.db2.jcc</groupId>
                 <artifactId>db2jcc</artifactId>
                 <version>${db2.db2jcc.version}</version>
-                <scope>runtime</scope>
             </dependency>
 
             <!-- DB2数据库驱动 -->
@@ -250,7 +254,6 @@
                 <groupId>com.mysql</groupId>
                 <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.connector.version}</version>
-                <scope>test</scope>
             </dependency>
 
             <!-- 高斯数据库驱动 -->
@@ -260,10 +263,32 @@
                 <version>${opengauss.jdbc.version}</version>
             </dependency>
 
+            <!-- ASM 依赖 -->
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm</artifactId>
+                <version>9.7</version>
+            </dependency>
+
+            <!-- ASM 依赖 -->
+            <dependency>
+                <groupId>org.ow2.asm</groupId>
+                <artifactId>asm-commons</artifactId>
+                <version>9.7</version>
+            </dependency>
+
+            <!-- Spring Web 依赖 -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>5.3.31</version>
+            </dependency>
+
+            <!-- 代码生成器使用的POI依赖 -->
             <dependency>
                 <groupId>org.apache.poi</groupId>
                 <artifactId>poi-ooxml</artifactId>
-                <version>${poi.version}</version>
+                <version>${poi.codegen.version}</version>
             </dependency>
 
             <!-- SSH2客户端 -->
@@ -300,17 +325,11 @@
                 <version>${commons.net.version}</version>
             </dependency>
 
-            <!-- 用于实现收发邮件功能 -->
+            <!-- Hutool 工具包 -->
             <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-email</artifactId>
-                <version>${commons.email.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>javax.activation</groupId>
-                        <artifactId>activation</artifactId>
-                    </exclusion>
-                </exclusions>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
             </dependency>
 
             <!-- HTTP客户端 -->
@@ -327,7 +346,7 @@
                 <version>${json.version}</version>
             </dependency>
 
-            <!-- org.apache.commons:commons-email 使用的组件 -->
+            <!-- 邮件组件使用的 Activation API -->
             <dependency>
                 <groupId>javax.activation</groupId>
                 <artifactId>activation</artifactId>
@@ -338,13 +357,6 @@
             <dependency>
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-tool</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <!-- SSM 代码生成器 -->
-            <dependency>
-                <groupId>cn.org.expect</groupId>
-                <artifactId>modest-codegen</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -425,6 +437,25 @@
                 <version>${revision}</version>
             </dependency>
 
+            <!-- modest JDK适配器 -->
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-java16</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-hutool5.7</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.org.expect</groupId>
+                <artifactId>modest-hutool5.8</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
             <!-- modest 线程池模块 -->
             <dependency>
                 <groupId>cn.org.expect</groupId>
@@ -457,13 +488,6 @@
             <dependency>
                 <groupId>cn.org.expect</groupId>
                 <artifactId>modest-compress</artifactId>
-                <version>${revision}</version>
-            </dependency>
-
-            <!-- modest 邮件 -->
-            <dependency>
-                <groupId>cn.org.expect</groupId>
-                <artifactId>modest-mail</artifactId>
                 <version>${revision}</version>
             </dependency>
 

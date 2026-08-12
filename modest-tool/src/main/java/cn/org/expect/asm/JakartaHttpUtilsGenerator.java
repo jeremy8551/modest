@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.org.expect.util.Settings;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.commons.ClassRemapper;
@@ -20,7 +21,7 @@ import org.objectweb.asm.commons.Remapper;
 public class JakartaHttpUtilsGenerator {
 
     /** 工具类所在的字节码包路径 */
-    private static final String PACKAGE_PATH = "cn/org/expect/util/";
+    private static final String PACKAGE_PATH = Settings.class.getPackage().getName().replace('.', '/') + "/";
 
     /** javax Servlet 字节码包前缀 */
     private static final String JAVAX_SERVLET_PREFIX = "javax/servlet/";
@@ -95,7 +96,6 @@ public class JakartaHttpUtilsGenerator {
      */
     private static class JakartaRemapper extends Remapper {
 
-        /** {@inheritDoc} */
         public String map(String internalName) {
             String targetName = CLASS_NAMES.get(internalName);
             if (targetName != null) {

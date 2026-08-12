@@ -1,6 +1,6 @@
 package cn.org.expect.expression;
 
-import cn.org.expect.ModestRuntimeException;
+import cn.org.expect.exception.ModestRuntimeException;
 
 /**
  * 文本表达式异常错误

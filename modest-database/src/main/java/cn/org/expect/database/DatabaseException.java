@@ -1,6 +1,6 @@
 package cn.org.expect.database;
 
-import cn.org.expect.ModestRuntimeException;
+import cn.org.expect.exception.ModestRuntimeException;
 
 /**
  * 数据库错误

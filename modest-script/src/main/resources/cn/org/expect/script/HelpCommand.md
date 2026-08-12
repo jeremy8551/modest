@@ -2319,6 +2319,24 @@ $ unzip 压缩文件路径
 
 
 
+# codegen
+
+使用 codegen 命令读取《数据库设计.xlsx》命令执行后，读取到的 List<TableDesign> 会保存为脚本引擎局部变量 tables，同时作为命令返回值。
+
+## 语法
+
+```java
+codegen <数据库设计文档绝对路径>
+```
+
+## 示例
+
+```shell
+$ codegen ${project.basedir}/.codegen/build.sql
+```
+
+
+
 # help
 
 打印帮助信息

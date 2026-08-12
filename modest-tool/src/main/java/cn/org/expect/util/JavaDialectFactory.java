@@ -1,6 +1,6 @@
 package cn.org.expect.util;
 
-import cn.org.expect.ModestRuntimeException;
+import cn.org.expect.exception.ModestRuntimeException;
 
 /**
  * JAVA 方言工厂

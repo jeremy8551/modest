@@ -1,6 +1,6 @@
 package cn.org.expect.crypto;
 
-import cn.org.expect.ModestRuntimeException;
+import cn.org.expect.exception.ModestRuntimeException;
 
 /**
  * 加密工具发生错误

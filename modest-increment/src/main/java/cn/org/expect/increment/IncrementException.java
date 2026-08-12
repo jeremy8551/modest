@@ -1,6 +1,6 @@
 package cn.org.expect.increment;
 
-import cn.org.expect.ModestException;
+import cn.org.expect.exception.ModestException;
 
 /**
  * 表示当前模块执行失败时抛出的异常

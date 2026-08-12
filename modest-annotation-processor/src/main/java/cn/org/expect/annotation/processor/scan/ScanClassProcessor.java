@@ -31,6 +31,7 @@ import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.JavaDialectFactory;
+import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 import com.google.auto.service.AutoService;
 
@@ -55,10 +56,10 @@ public class ScanClassProcessor extends AbstractProcessor {
     public static final String SCAN_ANNOTATION_CONFIG_FILE = "META-INF/scan/annotations.txt";
 
     /** 父类型索引文件输出目录 */
-    public static final String SUPER_OUTPUT_PATH = "META-INF/" + ScanClassProcessor.class.getPackage().getName() + "/super/";
+    public static final String SUPER_OUTPUT_PATH = "META-INF/" + Settings.getProjectName() + "/scanClass/super/";
 
     /** 注解索引文件输出目录 */
-    public static final String ANNOTATION_OUTPUT_PATH = "META-INF/" + ScanClassProcessor.class.getPackage().getName() + "/annotation/";
+    public static final String ANNOTATION_OUTPUT_PATH = "META-INF/" + Settings.getProjectName() + "/scanClass/annotation/";
 
     /** 按父类型分组的类索引 */
     public final Map<String, Set<String>> superTypeIndexes;

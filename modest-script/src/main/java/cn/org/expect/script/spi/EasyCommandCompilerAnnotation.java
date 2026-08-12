@@ -16,12 +16,8 @@ import com.google.auto.service.AutoService;
 @AutoService(EasyBeanAnnotation.class)
 public class EasyCommandCompilerAnnotation implements EasyBeanAnnotation {
 
-    /** {@inheritDoc} */
     public boolean isPresent(Class<?> type) {
-        return type.isAnnotationPresent(EasyCommandCompiler.class) //
-            && ClassUtils.isAssignableFrom(UniversalCommandCompiler.class, type) //
-            && !Modifier.isAbstract(type.getModifiers()) //
-            ;
+        return type.isAnnotationPresent(EasyCommandCompiler.class) && ClassUtils.isAssignableFrom(UniversalCommandCompiler.class, type) && !Modifier.isAbstract(type.getModifiers());
     }
 
     public EasyBeanEntry getBean(Class<?> type) {

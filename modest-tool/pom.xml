@@ -16,6 +16,27 @@
 
     <dependencies>
         <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-hutool5.7</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-hutool5.8</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-java5</artifactId>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <scope>provided</scope>
@@ -25,7 +46,6 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.0.0</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
@@ -42,15 +62,14 @@
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
-            <version>9.7</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
 
+        <!-- 编译期修改 JDK 方言 class 的接口表 -->
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
-            <version>9.7</version>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
@@ -59,7 +78,14 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <version>5.3.31</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- 代码生成器使用的POI依赖 -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
             <scope>provided</scope>
             <optional>true</optional>
         </dependency>
@@ -101,31 +127,43 @@
                             <outputDirectory>${project.build.outputDirectory}</outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>${project.parent.basedir}/modest-java5/target/classes</directory>
+                                    <directory>${project.parent.basedir}/modest-java/modest-java5/target/classes</directory>
                                     <includes>
                                         <include>**/*.class</include>
                                     </includes>
                                 </resource>
                                 <resource>
-                                    <directory>${project.parent.basedir}/modest-java6/target/classes</directory>
+                                    <directory>${project.parent.basedir}/modest-java/modest-java6/target/classes</directory>
                                     <includes>
                                         <include>**/*.class</include>
                                     </includes>
                                 </resource>
                                 <resource>
-                                    <directory>${project.parent.basedir}/modest-java7/target/classes</directory>
+                                    <directory>${project.parent.basedir}/modest-java/modest-java7/target/classes</directory>
                                     <includes>
                                         <include>**/*.class</include>
                                     </includes>
                                 </resource>
                                 <resource>
-                                    <directory>${project.parent.basedir}/modest-java12/target/classes</directory>
+                                    <directory>${project.parent.basedir}/modest-java/modest-java12/target/classes</directory>
                                     <includes>
                                         <include>**/*.class</include>
                                     </includes>
                                 </resource>
                                 <resource>
-                                    <directory>${project.parent.basedir}/modest-java16/target/classes</directory>
+                                    <directory>${project.parent.basedir}/modest-java/modest-java16/target/classes</directory>
+                                    <includes>
+                                        <include>**/*.class</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>${project.parent.basedir}/modest-hutool/modest-hutool5.7/target/classes</directory>
+                                    <includes>
+                                        <include>**/*.class</include>
+                                    </includes>
+                                </resource>
+                                <resource>
+                                    <directory>${project.parent.basedir}/modest-hutool/modest-hutool5.8/target/classes</directory>
                                     <includes>
                                         <include>**/*.class</include>
                                     </includes>
@@ -150,7 +188,7 @@
                         <configuration>
                             <target>
                                 <java classname="cn.org.expect.asm.JavaDialectEnhancer" fork="false" failonerror="true">
-                                    <arg value="${project.build.outputDirectory}/cn/org/expect/util/Java5Dialect.class"/>
+                                    <arg value="${project.build.outputDirectory}"/>
                                     <classpath>
                                         <pathelement location="${project.build.outputDirectory}"/>
                                         <path refid="maven.plugin.classpath"/>
@@ -160,7 +198,25 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>generate-jakarta-http-utils</id>
+                        <id>enhance-mail-implement</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <java classname="cn.org.expect.asm.MailEnhancer" fork="false" failonerror="true">
+                                    <arg value="${project.build.outputDirectory}"/>
+                                    <classpath>
+                                        <pathelement location="${project.build.outputDirectory}"/>
+                                        <path refid="maven.plugin.classpath"/>
+                                    </classpath>
+                                </java>
+                            </target>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enhance-jakarta-generator</id>
                         <phase>compile</phase>
                         <goals>
                             <goal>run</goal>

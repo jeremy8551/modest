@@ -3059,6 +3059,24 @@ $ unzip 压缩文件路径
 
 
 
+### codegen
+
+使用 codegen 命令读取《数据库设计.xlsx》命令执行后，读取到的 List<TableDesign> 会保存为脚本引擎局部变量 tables，同时作为命令返回值。
+
+#### 语法
+
+```java
+codegen <数据库设计文档绝对路径>
+```
+
+#### 示例
+
+```shell
+$ codegen ${project.basedir}/.codegen/build.sql
+```
+
+
+
 ### help
 
 打印帮助信息
@@ -6070,6 +6088,7 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 | `cn.org.expect.script.command.CallbackCommandCompiler`           |             |
 | `cn.org.expect.script.command.CatCommandCompiler`                |             |
 | `cn.org.expect.script.command.CdCommandCompiler`                 |             |
+| `cn.org.expect.script.command.CodegenCommandCompiler`            |             |
 | `cn.org.expect.script.command.CommitCommandCompiler`             |             |
 | `cn.org.expect.script.command.ContainerCommandCompiler`          |             |
 | `cn.org.expect.script.command.ContinueCommandCompiler`           |             |
@@ -6253,6 +6272,7 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 | `cn.org.expect.script.command.CallProcudureCommandCompiler`      |             |
 | `cn.org.expect.script.command.CatCommandCompiler`                |             |
 | `cn.org.expect.script.command.CdCommandCompiler`                 |             |
+| `cn.org.expect.script.command.CodegenCommandCompiler`            |             |
 | `cn.org.expect.script.command.CommitCommandCompiler`             |             |
 | `cn.org.expect.script.command.ContinueCommandCompiler`           |             |
 | `cn.org.expect.script.command.CpCommandCompiler`                 |             |
@@ -6454,6 +6474,13 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 | `cn.org.expect.database.export.internal.SftpFileWriter`    | 卸载数据到远程sftp服务器<br>sftp://用户名@远程服务器host:端口?password=登陆密码/数据文件存储路径                                                                                                                                                             |
 | `cn.org.expect.compress.TarCompress`                       |                                                                                                                                                                                                                                                              |
 | `cn.org.expect.compress.ZipCompress`                       |                                                                                                                                                                                                                                                              |
+
+
+
+### CodegenCommandCompiler
+| Component Class Name                                  | Description |
+| ----------------------------------------------------- | ----------- |
+| `cn.org.expect.script.command.CodegenCommandCompiler` |             |
 
 
 
@@ -7240,20 +7267,6 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 | Component Class Name           | Description |
 | ------------------------------ | ----------- |
 | `cn.org.expect.os.macos.MacOS` |             |
-
-
-
-### Mail
-| Component Class Name          | Description |
-| ----------------------------- | ----------- |
-| `cn.org.expect.mail.MailImpl` |             |
-
-
-
-### MailImpl
-| Component Class Name          | Description |
-| ----------------------------- | ----------- |
-| `cn.org.expect.mail.MailImpl` |             |
 
 
 

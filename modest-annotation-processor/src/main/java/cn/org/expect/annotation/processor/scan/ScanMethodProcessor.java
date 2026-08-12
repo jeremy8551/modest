@@ -25,6 +25,7 @@ import javax.tools.StandardLocation;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
+import cn.org.expect.util.Settings;
 import cn.org.expect.util.StringUtils;
 import com.google.auto.service.AutoService;
 
@@ -45,7 +46,7 @@ public class ScanMethodProcessor extends AbstractProcessor {
     public static final String SCAN_CLASS_METHOD_ANNOTATION_OPTION = "scan.methodAnnotations";
 
     /** Dao 方法参数索引文件 */
-    public static final String CLASS_METHOD_OUTPUT_PATH = "META-INF/" + ScanMethodProcessor.class.getPackage().getName() + "/ClassMethod.txt";
+    public static final String CLASS_METHOD_OUTPUT_PATH = "META-INF/" + Settings.getProjectName() + "/scanMethod/" + ScanMethodProcessor.class.getName();
 
     /** 已生成的方法记录 */
     private final Set<String> methodRecords;
