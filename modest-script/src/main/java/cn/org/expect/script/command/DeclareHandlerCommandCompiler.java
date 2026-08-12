@@ -24,13 +24,13 @@ import cn.org.expect.script.internal.CommandList;
 @EasyCommandCompiler(name = "declare", keywords = {"declare", "global", "handler", "begin", "end", UniversalScriptVariable.VARNAME_SQLSTATE, UniversalScriptVariable.VARNAME_EXCEPTION, UniversalScriptVariable.VARNAME_ERRORCODE, UniversalScriptVariable.VARNAME_EXITCODE, UniversalScriptVariable.VARNAME_ERRORSCRIPT})
 public class DeclareHandlerCommandCompiler extends AbstractGlobalCommandCompiler {
 
-    public final static String REGEX = "^(?i)\\s*declare\\s+([global\\s+]*)(\\S+)\\s+handler\\s+for\\s+(.*)\\s+begin\\s*.*";
+    public final static String REGEX = "^(?i)\\s*declare\\s+((?:global\\s+)?)(\\S+)\\s+handler\\s+for\\s+(.*)\\s+begin\\s*.*";
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
     /** {@inheritDoc} */
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
-        return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return pattern.matcher(script).matches() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
     /** {@inheritDoc} */

@@ -20,13 +20,13 @@ import cn.org.expect.util.StringUtils;
 @EasyCommandCompiler(name = "extract", keywords = {"extract"})
 public class IncrementCommandCompiler extends AbstractTraceCommandCompiler {
 
-    public final static String REGEX = "^(?i)extract\\s+increment\\s+compare\\s+.*";
+    public final static String REGEX = "^(?i)\\s*extract\\s+increment\\s+compare\\s+.*";
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
     /** {@inheritDoc} */
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
-        return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return pattern.matcher(script).matches() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
     /** {@inheritDoc} */

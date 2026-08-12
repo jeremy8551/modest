@@ -23,6 +23,9 @@ public class TableColumnDesign {
     /** 是否为唯一索引 */
     private final boolean uniqueIndex;
 
+    /** 是否是业务字段 */
+    private final boolean isBusiness;
+
     /** 是否不允许为空 */
     private final boolean notNull;
 
@@ -57,13 +60,14 @@ public class TableColumnDesign {
      * @param virtualField 虚拟字段表达式
      * @param remark       备注
      */
-    public TableColumnDesign(String name, String sqlType, String javaType, String description, boolean primaryKey, boolean uniqueIndex, boolean notNull, String defaultValue, String format, String dictionary, String virtualField, String remark) {
+    public TableColumnDesign(String name, String sqlType, String javaType, String description, boolean primaryKey, boolean uniqueIndex, boolean isBusiness, boolean notNull, String defaultValue, String format, String dictionary, String virtualField, String remark) {
         this.name = name;
         this.sqlType = sqlType;
         this.javaType = javaType;
         this.description = description;
         this.primaryKey = primaryKey;
         this.uniqueIndex = uniqueIndex;
+        this.isBusiness = isBusiness;
         this.notNull = notNull;
         this.defaultValue = defaultValue;
         this.format = format;
@@ -94,6 +98,10 @@ public class TableColumnDesign {
 
     public boolean isUniqueIndex() {
         return uniqueIndex;
+    }
+
+    public boolean isBusiness() {
+        return isBusiness;
     }
 
     public boolean isNotNull() {

@@ -154,6 +154,7 @@ public class DatabaseDesignParser {
                     this.value("说明"),  //
                     this.isYes("主键"),  //
                     this.isYes("唯一索引"),  //
+                    this.isYes("业务字段"),  //
                     this.isYes("not null"),  //
                     this.value("默认值"),  //
                     this.value("格式"),  //

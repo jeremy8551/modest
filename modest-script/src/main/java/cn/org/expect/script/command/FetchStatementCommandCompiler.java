@@ -21,13 +21,13 @@ import cn.org.expect.script.annotation.EasyCommandCompiler;
 @EasyCommandCompiler(name = "fetch", keywords = {"fetch", "insert"})
 public class FetchStatementCommandCompiler extends AbstractCommandCompiler {
 
-    public final static String REGEX = "^(?i)\\s*fetch\\s+.+\\s+insert\\s+.+";
+    public final static String REGEX = "^(?i)\\s*fetch\\s+(?!\\S+\\s+into\\b).+?\\s+insert\\s+.+";
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
     /** {@inheritDoc} */
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
-        return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return pattern.matcher(script).matches() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
     /** {@inheritDoc} */

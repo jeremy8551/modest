@@ -40,4 +40,18 @@ public class ScriptEvalTest {
             engine.evaluate("exit 0");
         }
     }
+
+    /**
+     * 验证 for 循环可通过 with 关键字声明从零开始的索引变量
+     */
+    @Test
+    public void testForWithIndex() throws IOException {
+        UniversalScriptEngineFactory factory = this.context.getBean(UniversalScriptEngineFactory.class);
+        UniversalScriptEngine engine = factory.getScriptEngine();
+        engine.evaluate("set result = ''; for element in ('a','b','c') with elementIndex loop "
+            + "set result = \"${result}${elementIndex}${element}\"; end loop");
+        Assert.assertEquals("0a1b2c", engine.getContext().getVariable("result"));
+        Assert.assertFalse(engine.getContext().containsVariable("element"));
+        Assert.assertFalse(engine.getContext().containsVariable("elementIndex"));
+    }
 }

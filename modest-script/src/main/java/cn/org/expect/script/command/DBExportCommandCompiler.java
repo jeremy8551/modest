@@ -19,13 +19,13 @@ import cn.org.expect.util.StringUtils;
 @EasyCommandCompiler(name = "db")
 public class DBExportCommandCompiler extends AbstractTraceCommandCompiler {
 
-    public final static String REGEX = "^(?i)db\\s+export\\s+to\\s*.*";
+    public final static String REGEX = "^(?i)\\s*db\\s+export\\s+to\\s*.*";
 
     private final Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
     /** {@inheritDoc} */
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
-        return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return pattern.matcher(script).matches() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
     /** {@inheritDoc} */

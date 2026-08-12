@@ -5578,4 +5578,114 @@ public class StringUtils {
         }
         return negative ? -v : v;
     }
+
+    /**
+     * 删除代码整体在宿主文本中的缩进，但保留内部的相对缩进
+     *
+     * @param str 字符串
+     * @return 格式化后的字符串
+     */
+    public static String removeIndent(CharSequence str) {
+        String lineSeparator = FileUtils.readLineSeparator(str);
+        if (lineSeparator == null) {
+            return StringUtils.trimBlank(str.toString());
+        }
+
+        str = StringUtils.trimBlank(str);
+        List<String> list = StringUtils.splitLines(str, new ArrayList<String>());
+
+        // 获取前缀
+        String indent = "";
+        for (String line : list) {
+            if (line.length() == 0) {
+                continue;
+            }
+
+            int length = StringUtils.indexOfNotBlank(line, 0, -1);
+            if (length != -1 && length != 0) {
+                if (indent.length() == 0 || indent.length() > length) {
+                    indent = line.substring(0, length);
+                }
+            }
+        }
+
+        // 移除前缀
+        int length = indent.length();
+        for (int i = 0; i < list.size(); i++) {
+            String line = list.get(i);
+            if (line.startsWith(indent)) {
+                list.set(i, line.substring(length));
+            }
+        }
+        return StringUtils.join(list, lineSeparator);
+    }
+
+    /**
+     * 添加字符串整体在宿主文本中的缩进
+     *
+     * @param str        字符串
+     * @param indentSize 缩进大小
+     * @return 格式化后的字符串
+     */
+    public static String addIndent(CharSequence str, int indentSize) {
+        String lineSeparator = FileUtils.readLineSeparator(str);
+        if (lineSeparator == null) {
+            return StringUtils.trimBlank(str.toString());
+        }
+
+        String indent = StringUtils.left("", indentSize, ' ');
+        List<String> list = StringUtils.splitLines(str, new ArrayList<String>());
+        for (int i = 0; i < list.size(); i++) {
+            String line = list.get(i);
+
+            if (StringUtils.isNotBlank(line)) {
+                list.set(i, indent + line);
+            }
+        }
+        return StringUtils.join(list, lineSeparator);
+    }
+
+    /**
+     * 删除字符串中重复的行
+     *
+     * @param str 字符串
+     * @return 删除后的字符串
+     */
+    public static String removeDuplicateLine(CharSequence str) {
+        String lineSeparator = FileUtils.readLineSeparator(str);
+        if (lineSeparator == null) {
+            return str.toString();
+        }
+
+        List<String> list = StringUtils.splitLines(str, new ArrayList<String>());
+        return StringUtils.join(CollectionUtils.removeDuplicates(list, null), lineSeparator);
+    }
+
+    /**
+     * 合并名称
+     * <p>
+     * 如果 tableName 的后缀与 sqlFieldName 的前缀相同，
+     * 则合并重叠部分；否则使用下划线连接。
+     *
+     * @param name1 第一个名称
+     * @param name2 第二个名称
+     * @return 合并后的名称
+     */
+    public static String mergeSqlName(String name1, String name2) {
+        if (name1 == null || name1.length() == 0) {
+            return name2;
+        }
+
+        if (name2 == null || name2.length() == 0) {
+            return name1;
+        }
+
+        int maxLength = Math.min(name1.length(), name2.length());
+        for (int length = maxLength; length > 0; length--) {
+            if (name1.regionMatches(name1.length() - length, name2, 0, length)) {
+                return name1 + name2.substring(length);
+            }
+        }
+        return name1 + "_" + name2;
+    }
 }

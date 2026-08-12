@@ -1860,15 +1860,17 @@ end loop
 
 ### for
 
-**for** 循环语句，用于便利数组与集合中的元素，可通过变量名在循环体中使用数组或集合中的元素。
+**for** 循环语句，用于遍历数组与集合中的元素，可通过变量名在循环体中使用元素及其索引。
 
 #### 语法
 
 ```shell
-for 变量名 in 表达式 loop
+for 元素变量名 in 表达式 [with 索引变量名] loop
 ..
 end loop
 ```
+
+`with 索引变量名` 为可选语法，索引从 0 开始。
 
 表达式：
 
@@ -3259,6 +3261,31 @@ add(Object object)
 ```java
 cn.org.expect.script.method.CollectionExtension.add(java.util.Collection,java.lang.Object)
 ```
+### addIndent(int)
+添加字符串整体缩进
+
+**Variable**
+
+`CharSequence` 字符串
+
+
+**Method**
+```java
+addIndent(int indentSize)
+```
+**Parameter 1**
+
+缩进大小
+
+
+**Return Value**
+
+格式化后的字符串
+
+**Implement Class**
+```java
+cn.org.expect.script.method.StringExtension.addIndent(java.lang.CharSequence,int)
+```
 ### asList()
 转换为 List
 
@@ -4572,6 +4599,31 @@ ltrim(String chars)
 ```java
 cn.org.expect.script.method.StringExtension.ltrim(java.lang.CharSequence,java.lang.String)
 ```
+### mergeSqlName(CharSequence)
+合并两个 SQL 名称
+
+**Variable**
+
+`CharSequence` 名称1
+
+
+**Method**
+```java
+mergeSqlName(CharSequence name2)
+```
+**Parameter 1**
+
+名称2
+
+
+**Return Value**
+
+合并后的名称
+
+**Implement Class**
+```java
+cn.org.expect.script.method.StringExtension.mergeSqlName(java.lang.CharSequence,java.lang.CharSequence)
+```
 ### mkdir()
 创建目录
 
@@ -4718,6 +4770,48 @@ readTag(String tagName, int from)
 **Implement Class**
 ```java
 cn.org.expect.script.method.XmlExtension.readTag(java.lang.String,java.lang.String,int)
+```
+### removeDuplicateLine()
+移除字符串中所有行的重复行
+
+**Variable**
+
+`CharSequence` 字符串
+
+
+**Method**
+```java
+removeDuplicateLine()
+```
+
+**Return Value**
+
+移除后的字符串
+
+**Implement Class**
+```java
+cn.org.expect.script.method.StringExtension.removeDuplicateLine(java.lang.CharSequence)
+```
+### removeIndent()
+移除字符串中所有行的缩进
+
+**Variable**
+
+`CharSequence` 字符串
+
+
+**Method**
+```java
+removeIndent()
+```
+
+**Return Value**
+
+格式化后的字符串
+
+**Implement Class**
+```java
+cn.org.expect.script.method.StringExtension.removeIndent(java.lang.CharSequence)
 ```
 ### removeLinePrefix(String)
 移除字符串中所有行的指定前缀

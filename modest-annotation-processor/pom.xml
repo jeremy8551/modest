@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>modest-annotation-processor</artifactId>
+    <description>Generate compile-time indexes, CRUD controllers, DTOs and MyBatis enum adapters</description>
 
     <properties>
         <maven.compiler.source>6</maven.compiler.source>

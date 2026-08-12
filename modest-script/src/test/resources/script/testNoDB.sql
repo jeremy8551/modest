@@ -134,6 +134,14 @@ for i in (1,2,3,4, 'test') loop
   
 end loop
 
+set forIndexResult = ""
+for element in ('a','b','c') with elementIndex loop
+  set forIndexResult = "${forIndexResult}${elementIndex}${element}"
+end loop
+if "${forIndexResult}" != "0a1b2c" then
+  exit 5
+fi
+
 for i in (1 2 3 4 'test') loop
   echo "Iterate over elements in a for loop $i"
   

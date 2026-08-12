@@ -52,6 +52,9 @@ public class ForCommand extends AbstractCommand implements WithBodyCommandSuppor
     /** 变量集合 */
     protected String collection;
 
+    /** 索引变量名 */
+    protected String indexName;
+
     /** for循环体 */
     protected CommandList body;
 
@@ -61,58 +64,75 @@ public class ForCommand extends AbstractCommand implements WithBodyCommandSuppor
     /** 种类编号 */
     protected int type;
 
-    public ForCommand(UniversalCommandCompiler compiler, String command, String name, String collection, CommandList body) {
+    public ForCommand(UniversalCommandCompiler compiler, String command, String name, String collection, String indexName, CommandList body) {
         super(compiler, command);
         this.name = name;
-        this.collection = collection;
+        this.collection = StringUtils.trimBlank(collection);
+        this.indexName = indexName;
         this.body = body;
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
         String variableName = this.name; // 变量名
-        List<Object> list = this.toCollection(session, context, this.collection);  // 集合
+        List<Object> list = this.toCollection(session, context, stdout, stderr, this.collection);  // 集合
 
         boolean exists = context.containsVariable(variableName);
         Object oldValue = context.getVariable(variableName);
         int scope = context.getVariableScope(variableName);
+
+        // 索引变量名
+        boolean indexExists = this.indexName != null && context.containsVariable(this.indexName);
+
+        // 保存重名变量的值与域
+        Object oldIndexValue = indexExists ? context.getVariable(this.indexName) : null;
+        int indexScope = indexExists ? context.getVariableScope(this.indexName) : -1;
+
         try {
             ScriptMainProcess process = session.getMainProcess();
             boolean isbreak = false, iscontinue;
+            int index = 0;
             for (Iterator<Object> it = list.iterator(); !session.isTerminate() && it.hasNext(); ) {
                 iscontinue = false;
                 Object element = it.next();
                 context.addLocalVariable(variableName, element);
+                if (this.indexName != null) {
+                    context.addLocalVariable(this.indexName, index);
+                }
 
                 // 遍历所有命令
-                for (int i = 0; !session.isTerminate() && i < this.body.size(); i++) {
-                    UniversalScriptCommand command = this.body.get(i);
-                    this.command = command;
-                    if (command == null) {
-                        continue;
-                    }
+                try {
+                    for (int i = 0; !session.isTerminate() && i < this.body.size(); i++) {
+                        UniversalScriptCommand command = this.body.get(i);
+                        this.command = command;
+                        if (command == null) {
+                            continue;
+                        }
 
-                    UniversalCommandResultSet result = process.execute(session, context, stdout, stderr, forceStdout, command);
-                    int value = result.getExitcode();
-                    if (value != 0) {
-                        return value;
-                    }
-
-                    if (command instanceof LoopCommandKind) {
-                        LoopCommandKind cmd = (LoopCommandKind) command;
-                        int type = cmd.kind();
-                        this.type = cmd.kind();
-                        if (type == LoopCommandKind.BREAK_COMMAND) { // break
-                            isbreak = true;
-                            break;
-                        } else if (type == LoopCommandKind.CONTINUE_COMMAND) { // continue
-                            iscontinue = true;
-                            break;
-                        } else if (type == LoopCommandKind.EXIT_COMMAND) { // Exit script
-                            return value;
-                        } else if (type == LoopCommandKind.RETURN_COMMAND) { // Exit the result set loop
+                        UniversalCommandResultSet result = process.execute(session, context, stdout, stderr, forceStdout, command);
+                        int value = result.getExitcode();
+                        if (value != 0) {
                             return value;
                         }
+
+                        if (command instanceof LoopCommandKind) {
+                            LoopCommandKind cmd = (LoopCommandKind) command;
+                            int type = cmd.kind();
+                            this.type = cmd.kind();
+                            if (type == LoopCommandKind.BREAK_COMMAND) { // break
+                                isbreak = true;
+                                break;
+                            } else if (type == LoopCommandKind.CONTINUE_COMMAND) { // continue
+                                iscontinue = true;
+                                break;
+                            } else if (type == LoopCommandKind.EXIT_COMMAND) { // Exit script
+                                return value;
+                            } else if (type == LoopCommandKind.RETURN_COMMAND) { // Exit the result set loop
+                                return value;
+                            }
+                        }
                     }
+                } finally {
+                    index++;
                 }
 
                 if (isbreak) {
@@ -133,21 +153,31 @@ public class ForCommand extends AbstractCommand implements WithBodyCommandSuppor
             this.command = null;
             if (exists) {
                 context.addVariable(variableName, oldValue, scope);
+            } else {
+                context.removeVariable(variableName, UniversalScriptContext.ENGINE_SCOPE);
+            }
+
+            if (this.indexName != null) {
+                if (indexExists) {
+                    context.addVariable(this.indexName, oldIndexValue, indexScope);
+                } else {
+                    context.removeVariable(this.indexName, UniversalScriptContext.ENGINE_SCOPE);
+                }
             }
         }
     }
 
     @SuppressWarnings("unchecked")
-    protected List<Object> toCollection(UniversalScriptSession session, UniversalScriptContext context, String collection) {
+    protected List<Object> toCollection(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, String collection) {
         List<Object> list = new ArrayList<Object>();
 
         // 变量的名字
         String variableName;
         List<String> variableNames = StringUtils.splitVariable(collection, new ArrayList<String>());
-        if (variableNames.size() == 1) {
+        if (variableNames.size() == 1 && StringUtils.startsWith(collection, "$", 0, true, true)) {
             variableName = variableNames.get(0); // ${name}
         } else {
-            variableName = collection; // name
+            variableName = StringUtils.trimBlank(collection); // name
         }
 
         // 变量
@@ -177,18 +207,37 @@ public class ForCommand extends AbstractCommand implements WithBodyCommandSuppor
                 return list;
             }
 
-            throw new UniversalScriptException(variable.getClass().getName() + " not supported for loop");
+            throw new UniversalScriptException("variableName: " + variableName + ": " + variable.getClass().getName() + " not supported for loop");
         }
 
-        // 字符串常量: (1,2,3,4)
-        UniversalScriptAnalysis analysis = session.getAnalysis();
-        String value = analysis.replaceShellVariable(session, context, collection, true, true);
-        String str = analysis.trim(analysis.removeSide(value, '(', ')'), 0, 0);
-        List<String> strList = new ArrayList<String>();
-        analysis.split(str, strList, analysis.getSegment());
-        for (String element : strList) {
-            list.add(new Expression(element).value());
+        // 字符串常量: (1,2,3,4) 或 命令替换: `echo 1 2 3 4`
+        if (StringUtils.startsWith(collection, "(", 0, true, true) || StringUtils.startsWith(collection, "`", 0, true, true)) {
+            UniversalScriptAnalysis analysis = session.getAnalysis();
+            String value = analysis.replaceShellVariable(session, context, collection, true, true);
+            String str = analysis.trim(analysis.removeSide(value, '(', ')'), 0, 0);
+            List<String> strList = new ArrayList<String>();
+            analysis.split(str, strList, analysis.getSegment());
+            for (String element : strList) {
+                list.add(new Expression(element).value());
+            }
+            return list;
         }
+
+        // 脚本引擎执行表达式
+        int evaluate = context.getEngine().evaluate(session, context, stdout, stderr, collection);
+        if (evaluate != 0) {
+            throw new UniversalScriptException("script.stderr.message108", collection);
+        }
+
+        Object value = session.getValue();
+        if (value instanceof Iterable) {
+            for (Iterator<?> it = ((Iterable<?>) value).iterator(); it.hasNext(); ) {
+                list.add(it.next());
+            }
+        } else {
+            throw new UniversalScriptException("script.stderr.message058", this.getScript(), value.getClass().getName());
+        }
+
         return list;
     }
 

@@ -34,13 +34,13 @@ import cn.org.expect.util.StringUtils;
 @EasyCommandCompiler(name = "db")
 public class DBLoadCommandCompiler extends AbstractTraceCommandCompiler {
 
-    public final static String REGEX = "^(?i)db\\s+load\\s+(?:client\\s+)?from\\s+.*";
+    public final static String REGEX = "^(?i)\\s*db\\s+load\\s+(?:client\\s+)?from\\s+.*";
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
     /** {@inheritDoc} */
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
-        return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return pattern.matcher(script).matches() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
     /** {@inheritDoc} */

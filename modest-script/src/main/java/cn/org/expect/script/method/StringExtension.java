@@ -369,4 +369,46 @@ public class StringExtension {
     public static String removeLinePrefix(CharSequence str, String prefix) {
         return StringUtils.removeLinePrefix(str, prefix);
     }
+
+    /**
+     * 移除字符串中所有行的缩进
+     *
+     * @param str 字符串
+     * @return 格式化后的字符串
+     */
+    public static String removeIndent(CharSequence str) {
+        return StringUtils.removeIndent(str);
+    }
+
+    /**
+     * 添加字符串整体缩进
+     *
+     * @param str        字符串
+     * @param indentSize 缩进大小
+     * @return 格式化后的字符串
+     */
+    public static String addIndent(CharSequence str, int indentSize) {
+        return StringUtils.addIndent(str, indentSize);
+    }
+
+    /**
+     * 移除字符串中所有行的重复行
+     *
+     * @param str 字符串
+     * @return 移除后的字符串
+     */
+    public static String removeDuplicateLine(CharSequence str) {
+        return StringUtils.removeDuplicateLine(str);
+    }
+
+    /**
+     * 合并两个 SQL 名称
+     *
+     * @param name1 名称1
+     * @param name2 名称2
+     * @return 合并后的名称
+     */
+    public static String mergeSqlName(CharSequence name1, CharSequence name2) {
+        return StringUtils.mergeSqlName(name1.toString(), name2.toString());
+    }
 }

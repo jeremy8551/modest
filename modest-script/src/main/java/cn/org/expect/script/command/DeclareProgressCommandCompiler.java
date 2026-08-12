@@ -19,13 +19,13 @@ import cn.org.expect.script.annotation.EasyCommandCompiler;
 @EasyCommandCompiler(name = "declare", keywords = {"declare", "global", "progress"})
 public class DeclareProgressCommandCompiler extends AbstractGlobalCommandCompiler {
 
-    public final static String REGEX = "^(?i)\\s*declare\\s+([\\S+\\s+]*)progress\\s+use\\s+(.*)\\s+print\\s+(.*)\\s+total\\s+(\\S+)\\s+times\\s*[\\;]*.*";
+    public final static String REGEX = "^(?i)\\s*declare\\s+((?:global\\s+)?(?:\\S+\\s+)?)progress\\s+use\\s+(.*)\\s+print\\s+(.*)\\s+total\\s+(\\S+)\\s+times\\s*;?.*";
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
     /** {@inheritDoc} */
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
-        return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return pattern.matcher(script).matches() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
     /** {@inheritDoc} */

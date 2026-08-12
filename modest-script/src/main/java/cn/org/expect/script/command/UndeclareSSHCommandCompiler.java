@@ -18,13 +18,13 @@ import cn.org.expect.script.annotation.EasyCommandCompiler;
 @EasyCommandCompiler(name = "undeclare", keywords = {"undeclare"})
 public class UndeclareSSHCommandCompiler extends AbstractTraceCommandCompiler {
 
-    public final static String REGEX = "^(?i)\\s*undeclare\\s+(\\S+)\\s+ssh\\s+(\\S+)\\s*[\\;\\*]*";
+    public final static String REGEX = "^(?i)\\s*undeclare\\s+(\\S+)\\s+ssh\\s+(client|tunnel)\\s*;?\\s*";
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
     /** {@inheritDoc} */
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
-        return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return pattern.matcher(script).matches() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
     /** {@inheritDoc} */

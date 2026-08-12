@@ -18,13 +18,13 @@ import cn.org.expect.script.annotation.EasyCommandCompiler;
 @EasyCommandCompiler(name = "db")
 public class DBGetCfgForCommandCompiler extends AbstractTraceCommandCompiler {
 
-    public final static String REGEX = "^(?i)db\\s+get\\s+cfg\\s+for\\s+(.*)";
+    public final static String REGEX = "^(?i)\\s*db\\s+get\\s+cfg\\s+for\\s+(.+)";
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
     /** {@inheritDoc} */
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
-        return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return pattern.matcher(script).matches() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
     /** {@inheritDoc} */
