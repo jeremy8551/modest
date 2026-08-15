@@ -9,7 +9,10 @@ import java.util.List;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptException;
+import cn.org.expect.script.UniversalScriptExpression;
 import cn.org.expect.script.UniversalScriptSession;
+import cn.org.expect.script.UniversalScriptStderr;
+import cn.org.expect.script.UniversalScriptStdout;
 import cn.org.expect.script.UniversalScriptVariableMethodParameters;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.Dates;
@@ -26,25 +29,73 @@ public class MethodParameters implements UniversalScriptVariableMethodParameters
 
     private final List<String> list;
 
+    private final List<Object> values;
+
     /**
      * 初始化 MethodParameters
      */
     public MethodParameters() {
         this.list = new ArrayList<String>();
+        this.values = new ArrayList<Object>();
     }
 
-    public void parse(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptAnalysis analysis, String expression) {
+    /**
+     * 解析并计算变量方法参数
+     *
+     * @param session    用户会话信息
+     * @param context    脚本引擎上下文信息
+     * @param stdout     标准信息输出接口
+     * @param stderr     错误信息输出接口
+     * @param analysis   语句分析器
+     * @param expression 参数表达式
+     */
+    public void parse(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout,
+        UniversalScriptStderr stderr, UniversalScriptAnalysis analysis, String expression) {
         this.context = context;
         this.analysis = analysis;
         this.list.clear();
+        this.values.clear();
         if (StringUtils.isNotBlank(expression)) {
-            analysis.split(expression, this.list, analysis.getSegment());
+            this.split(expression);
             for (int i = 0; i < this.list.size(); i++) {
                 String str = this.list.get(i);
                 String value = analysis.replaceShellVariable(session, context, str, true, true);
                 this.list.set(i, value);
+                this.values.add(new UniversalScriptExpression(session, context, stdout, stderr, value).value());
             }
         }
+    }
+
+    /**
+     * 按顶层参数分隔符拆分表达式
+     *
+     * @param expression 参数表达式
+     */
+    private void split(String expression) {
+        int begin = 0;
+        for (int i = 0; i < expression.length(); i++) {
+            char character = expression.charAt(i);
+            if (character == '(') {
+                i = this.analysis.indexOfParenthes(expression, i);
+            } else if (character == '[') {
+                i = this.analysis.indexOfBracket(expression, i);
+            } else if (character == '{') {
+                i = this.analysis.indexOfBrace(expression, i);
+            } else if (character == '\'') {
+                i = this.analysis.indexOfQuotation(expression, i);
+            } else if (character == '"') {
+                i = this.analysis.indexOfDoubleQuotation(expression, i);
+            } else if (character == this.analysis.getSegment()) {
+                this.list.add(StringUtils.trimBlank(expression.substring(begin, i)));
+                begin = i + 1;
+            }
+
+            if (i == -1) {
+                this.list.add(StringUtils.trimBlank(expression.substring(begin)));
+                return;
+            }
+        }
+        this.list.add(StringUtils.trimBlank(expression.substring(begin)));
     }
 
     public String get(int index) {
@@ -53,15 +104,16 @@ public class MethodParameters implements UniversalScriptVariableMethodParameters
 
     public Object getValue(int index, Class<?> type) {
         String value = this.get(index);
+        Object expressionValue = this.values.get(index);
 
         // null
-        if ("null".equalsIgnoreCase(value)) {
+        if (expressionValue == null) {
             return null;
         }
 
-        // 对象
-        if (Object.class.equals(type) && this.analysis.containsQuotation(value)) {
-            return this.analysis.unQuotation(value);
+        // 表达式结果可直接赋值
+        if (Object.class.equals(type) || ClassUtils.isAssignableFrom(type, expressionValue.getClass())) {
+            return expressionValue;
         }
 
         // 字符串
@@ -84,25 +136,12 @@ public class MethodParameters implements UniversalScriptVariableMethodParameters
     }
 
     public String getString(int index) {
-        String value = this.get(index);
-
-        // null
-        if ("null".equalsIgnoreCase(value)) {
-            return null;
+        Object value = this.values.get(index);
+        if (value == null || value instanceof CharSequence) {
+            return value == null ? null : value.toString();
         }
 
-        // 字符串两端有引号
-        if (this.analysis.containsQuotation(value)) {
-            return this.analysis.unescapeString(this.analysis.unQuotation(value));
-        }
-
-        // 字符串变量
-        CharSequence strValue = this.getVariable(CharSequence.class, value);
-        if (strValue != null) {
-            return strValue.toString();
-        }
-
-        throw new UniversalScriptException("script.stderr.message113", index, value, String.class.getName());
+        throw new UniversalScriptException("script.stderr.message113", index, this.get(index), String.class.getName());
     }
 
     public int getInt(int index) {
@@ -205,20 +244,8 @@ public class MethodParameters implements UniversalScriptVariableMethodParameters
 
     /** {@inheritDoc} */
     public boolean isString(int index) {
-        String value = this.get(index);
-
-        // null
-        if ("null".equalsIgnoreCase(value)) {
-            return true;
-        }
-
-        // 字符串两端有引号
-        if (this.analysis.containsQuotation(value)) {
-            return true;
-        }
-
-        // 字符串变量
-        return this.getVariable(CharSequence.class, value) != null;
+        Object value = this.values.get(index);
+        return value == null || value instanceof CharSequence;
     }
 
     @SuppressWarnings("unchecked")
@@ -273,12 +300,18 @@ public class MethodParameters implements UniversalScriptVariableMethodParameters
             return true;
         }
 
-        String value = this.get(index);
+        Object expressionValue = this.values.get(index);
 
         // null
-        if ("null".equalsIgnoreCase(value)) {
+        if (expressionValue == null) {
             return true;
         }
+
+        if (ClassUtils.isAssignableFrom(type, expressionValue.getClass())) {
+            return true;
+        }
+
+        String value = this.get(index);
 
         // 变量
         if (this.context.containsVariable(value)) {

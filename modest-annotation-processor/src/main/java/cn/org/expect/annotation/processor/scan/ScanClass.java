@@ -19,6 +19,16 @@ public class ScanClass {
     /**
      * 加载指定父类型对应的实现类
      *
+     * @param superType 父类或接口
+     * @return 按索引顺序排列的实现类集合
+     */
+    public static Set<Class<?>> loadBySuper(Class<?> superType) {
+        return loadBySuper(ClassUtils.getClassLoader(), superType);
+    }
+
+    /**
+     * 加载指定父类型对应的实现类
+     *
      * @param classLoader 类加载器
      * @param superType   父类或接口
      * @return 按索引顺序排列的实现类集合
@@ -26,6 +36,16 @@ public class ScanClass {
     public static Set<Class<?>> loadBySuper(ClassLoader classLoader, Class<?> superType) {
         String resourceName = ScanClassProcessor.SUPER_OUTPUT_PATH + superType.getName();
         return load(classLoader, resourceName);
+    }
+
+    /**
+     * 加载指定注解对应的类
+     *
+     * @param annotationType 注解类型
+     * @return 按索引顺序排列的类集合
+     */
+    public static Set<Class<?>> loadByAnnotation(Class<?> annotationType) {
+        return loadByAnnotation(ClassUtils.getClassLoader(), annotationType);
     }
 
     /**

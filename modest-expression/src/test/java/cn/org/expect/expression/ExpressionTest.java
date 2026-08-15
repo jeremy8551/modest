@@ -46,6 +46,8 @@ public class ExpressionTest {
     public void test() throws Exception {
         Assert.assertEquals(45, (double) ((Double) new Expression("12.00 + 11 + ( 11*2) ").doubleValue()), 0.0);
         Assert.assertEquals(45, (double) ((Double) new Expression("12.00+11+(11*2)").doubleValue()), 0.0);
+        Assert.assertEquals(23, new Expression("12 += 11").longValue().longValue());
+        Assert.assertEquals("ab", new Expression("'a'+='b'").stringValue());
 
         Assert.assertFalse(new Expression("1==2 && 1==1 && 2==2").booleanValue());
         Assert.assertFalse(new Expression("1==1 && 1==2 && 2==2").booleanValue());

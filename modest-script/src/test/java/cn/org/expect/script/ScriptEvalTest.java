@@ -45,13 +45,38 @@ public class ScriptEvalTest {
      * 验证 for 循环可通过 with 关键字声明从零开始的索引变量
      */
     @Test
-    public void testForWithIndex() throws IOException {
+    public void testForWithIndex() {
         UniversalScriptEngineFactory factory = this.context.getBean(UniversalScriptEngineFactory.class);
         UniversalScriptEngine engine = factory.getScriptEngine();
-        engine.evaluate("set result = ''; for element in ('a','b','c') with elementIndex loop "
-            + "set result = \"${result}${elementIndex}${element}\"; end loop");
+        engine.evaluate("set result = ''; for element in ('a','b','c') with elementIndex loop " + "set result = \"${result}${elementIndex}${element}\"; end loop");
         Assert.assertEquals("0a1b2c", engine.getContext().getVariable("result"));
         Assert.assertFalse(engine.getContext().containsVariable("element"));
         Assert.assertFalse(engine.getContext().containsVariable("elementIndex"));
+    }
+
+    /**
+     * 验证 set 命令支持通过 += 追加变量值
+     */
+    @Test
+    public void testSetAppend() {
+        UniversalScriptEngineFactory factory = this.context.getBean(UniversalScriptEngineFactory.class);
+        UniversalScriptEngine engine = factory.getScriptEngine();
+        engine.evaluate("set name = \"name\"; set name += \"1\"");
+        Assert.assertEquals("name1", engine.getContext().getVariable("name"));
+
+        engine.evaluate("set intval = 1; set intval += 1");
+        Assert.assertEquals(Long.valueOf(2), engine.getContext().getVariable("intval"));
+    }
+
+    /**
+     * 验证变量方法参数支持表达式
+     */
+    @Test
+    public void testVariableMethodParameterExpression() {
+        UniversalScriptEngineFactory factory = this.context.getBean(UniversalScriptEngineFactory.class);
+        UniversalScriptEngine engine = factory.getScriptEngine();
+        engine.evaluate("set enumTableName = \"USER\"; set sql = \"USER_INSERT(value)\"; "
+            + "set position = sql.indexOf(enumTableName + \"_INSERT(\")");
+        Assert.assertEquals(Long.valueOf(0), engine.getContext().getVariable("position"));
     }
 }

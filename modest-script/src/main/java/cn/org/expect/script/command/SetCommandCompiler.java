@@ -7,6 +7,7 @@ import cn.org.expect.expression.Expression;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptException;
+import cn.org.expect.script.UniversalScriptExpression;
 import cn.org.expect.script.UniversalScriptParser;
 import cn.org.expect.script.UniversalScriptReader;
 import cn.org.expect.script.UniversalScriptSession;
@@ -58,14 +59,23 @@ public class SetCommandCompiler extends AbstractGlobalCommandCompiler {
             throw new UniversalScriptException("script.stderr.message109", command);
         }
 
-        // name=value
-        String name = StringUtils.trimBlank(str.substring(0, index)); // 截取变量名
+        // name=value 或 name+=value
+        boolean append = index > 0 && str.charAt(index - 1) == '+';
+        int nameEnd = append ? index - 1 : index;
+        String name = StringUtils.trimBlank(str.substring(0, nameEnd)); // 截取变量名
         if (!context.getEngine().getChecker().checkVariableName(name) || name.startsWith("$")) {
             throw new UniversalScriptException("script.stderr.message069", command, name);
         }
 
         // 变量值
         String value = StringUtils.trimBlank(analysis.removeComment(str.substring(index + 1), null));
+
+        if (append) {
+            if (value.length() == 0) {
+                throw new UniversalScriptException("script.stderr.message109", command);
+            }
+            return new SetCommand(this, command, name, name + " += " + value, 0);
+        }
 
         // set name=select * from table 表示查询SQL语句
         if (analysis.startsWith(value, "select", 0, true) //

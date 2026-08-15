@@ -190,9 +190,10 @@ public class ExecuteMojo extends AbstractMojo {
      * 统一使用Maven插件日志
      */
     protected void useMavenPluginLog(ClassLoader classLoader) {
+        MavenPluginLogImpl pluginLog = new MavenPluginLogImpl(this);
         List<MavenPluginLogAware> list = SPI.load(classLoader, MavenPluginLogAware.class);
         for (MavenPluginLogAware logAware : list) {
-            logAware.use(new MavenPluginLogImpl(this));
+            logAware.use(pluginLog);
         }
     }
 

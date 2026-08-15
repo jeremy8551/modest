@@ -120,7 +120,7 @@ public class VariableMethodCommand extends AbstractTraceCommand implements Nohup
         }
 
         // 参数
-        this.parameters.parse(session, context, analysis, methodExpression.substring(paramBegin, paramEnd));
+        this.parameters.parse(session, context, stdout, stderr, analysis, methodExpression.substring(paramBegin, paramEnd));
 
         // 方法返回值
         Object value;
