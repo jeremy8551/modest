@@ -2,9 +2,11 @@ package cn.org.expect.maven.plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import cn.org.expect.util.CharsetName;
 import cn.org.expect.util.FileUtils;
+import cn.org.expect.util.Settings;
 import cn.org.expect.util.SourceIndex;
 import org.apache.maven.model.Resource;
 import org.apache.maven.plugin.AbstractMojo;
@@ -24,18 +26,28 @@ public class SourceIndexMojo extends AbstractMojo {
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
     private MavenProject project;
 
+    @Parameter
+    private List<String> addSourceIndex;
+
+    @Parameter
+    private List<String> addResourceIndex;
+
     @Override
     public void execute() throws MojoExecutionException {
         String outputDirectory = project.getBuild().getOutputDirectory();
+        String projectBuildDirectory = project.getBuild().getDirectory();
         String groupId = project.getGroupId();
         String artifactId = project.getArtifactId();
         String module = groupId + ":" + artifactId;
         StringBuilder buf = new StringBuilder();
 
+        String sourceFlag = "source";
+        String resourceFlag = "resource";
+
         // Java 源码目录
-        for (String path : project.getCompileSourceRoots()) {
-            if (FileUtils.isDirectory(path)) {
-                buf.append(module).append(",").append("source").append(",").append(path).append("\n");
+        for (String source : project.getCompileSourceRoots()) {
+            if (FileUtils.isDirectory(source)) {
+                buf.append(module).append(",").append(sourceFlag).append(",").append(source).append("\n");
             }
         }
 
@@ -43,20 +55,35 @@ public class SourceIndexMojo extends AbstractMojo {
         for (Resource resource : project.getResources()) {
             String resourcePath = resource.getDirectory();
             if (FileUtils.isDirectory(resourcePath)) {
-                buf.append(module).append(",").append("resource").append(",").append(resourcePath).append("\n");
+                buf.append(module).append(",").append(resourceFlag).append(",").append(resourcePath).append("\n");
             }
         }
 
-        for (String path : project.getTestCompileSourceRoots()) {
-            if (FileUtils.isDirectory(path)) {
-                buf.append(module).append(",").append("testSource").append(",").append(path).append("\n");
+        for (String testSource : project.getTestCompileSourceRoots()) {
+            if (FileUtils.isDirectory(testSource)) {
+                buf.append(module).append(",").append("testSource").append(",").append(testSource).append("\n");
             }
         }
 
-        for (Resource resource : project.getTestResources()) {
-            String resourcePath = resource.getDirectory();
+        for (Resource testResource : project.getTestResources()) {
+            String resourcePath = testResource.getDirectory();
             if (FileUtils.isDirectory(resourcePath)) {
                 buf.append(module).append(",").append("testResource").append(",").append(resourcePath).append("\n");
+            }
+        }
+
+        buf.append(module).append(",").append(sourceFlag).append(",").append(FileUtils.joinPath(projectBuildDirectory, "generated-sources/annotations")).append("\n");
+        buf.append(module).append(",").append(sourceFlag).append(",").append(FileUtils.joinPath(projectBuildDirectory, Settings.getProjectName(), "codegen/java")).append("\n");
+
+        if (this.addSourceIndex != null) {
+            for (String source : this.addSourceIndex) {
+                buf.append(module).append(",").append(sourceFlag).append(",").append(source).append("\n");
+            }
+        }
+
+        if (this.addResourceIndex != null) {
+            for (String resource : this.addResourceIndex) {
+                buf.append(module).append(",").append(resourceFlag).append(",").append(resource).append("\n");
             }
         }
 
