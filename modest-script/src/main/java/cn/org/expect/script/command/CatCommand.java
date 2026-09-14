@@ -19,18 +19,25 @@ import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 封装脚本命令的运行逻辑
+ */
 public class CatCommand extends AbstractFileCommand implements UniversalScriptInputStream, NohupCommandSupported {
 
     private String charsetName;
 
     private String filepath;
 
+    /**
+     * 初始化 CatCommand
+     */
     public CatCommand(UniversalCommandCompiler compiler, String command, String charsetName, String filepath) {
         super(compiler, command);
         this.charsetName = charsetName;
         this.filepath = filepath;
     }
 
+    /** {@inheritDoc} */
     public void read(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, Reader in) throws IOException {
         if (analysis.isBlank(this.filepath)) {
             this.filepath = StringUtils.trimBlank(IO.read(in, new StringBuilder()));
@@ -39,6 +46,7 @@ public class CatCommand extends AbstractFileCommand implements UniversalScriptIn
         }
     }
 
+    /** {@inheritDoc} */
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         File file = PathExpression.toFile(session, context, this.filepath);
         String content = FileUtils.readline(file, StringUtils.coalesce(this.charsetName, context.getCharsetName()), 0);
@@ -51,6 +59,7 @@ public class CatCommand extends AbstractFileCommand implements UniversalScriptIn
         return 0;
     }
 
+    /** {@inheritDoc} */
     public boolean enableNohup() {
         return true;
     }

@@ -36,11 +36,12 @@
                             <eval>
                                 <job>
                                     <command>export set projectBasedir="${project.basedir}"; export set revision="${revision}"; . classpath:cn/org/expect/build/docker-file.usl</command>
+                                    <active>${docker.build.enable}</active>
                                 </job>
                                 <job>
                                     <command>os export REVISION=${revision} &amp;&amp; export PROJECT_BASEDIR=${project.basedir} &amp;&amp; export DOCKER_HUB_USERNAME=${dockerhub.login.username} &amp;&amp; export DOCKER_HUB_PASSWORD=${dockerhub.login.password} &amp;&amp; cd ${project.basedir} &amp;&amp; ./docker-build.sh 2>&amp;1</command>
                                     <os>macos</os>
-                                    <active>${activeDevelop}</active>
+                                    <active>${docker.build.enable}</active>
                                 </job>
                             </eval>
                         </configuration>

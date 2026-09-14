@@ -15,17 +15,24 @@ import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.io.ScriptStdbuf;
 import cn.org.expect.script.session.ScriptMainProcess;
 
+/**
+ * 封装脚本命令的运行逻辑
+ */
 public class PipeCommand extends AbstractCommand implements NohupCommandSupported {
 
     private final List<UniversalScriptCommand> list;
 
     private UniversalScriptCommand run;
 
+    /**
+     * 初始化 PipeCommand
+     */
     public PipeCommand(UniversalCommandCompiler compiler, String command, List<UniversalScriptCommand> commands) {
         super(compiler, command);
         this.list = commands;
     }
 
+    /** {@inheritDoc} */
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout) throws Exception {
         int size = this.list.size();
         int last = size - 1;
@@ -57,6 +64,7 @@ public class PipeCommand extends AbstractCommand implements NohupCommandSupporte
         return this.terminate ? UniversalScriptCommand.TERMINATE : 0;
     }
 
+    /** {@inheritDoc} */
     public void terminate() throws Exception {
         super.terminate();
         if (this.run != null) {
@@ -64,6 +72,7 @@ public class PipeCommand extends AbstractCommand implements NohupCommandSupporte
         }
     }
 
+    /** {@inheritDoc} */
     public boolean enableNohup() {
         return true;
     }

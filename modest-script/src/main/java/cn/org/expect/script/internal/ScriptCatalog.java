@@ -7,9 +7,15 @@ import java.util.Set;
 import cn.org.expect.util.CollectionUtils;
 import cn.org.expect.util.Ensure;
 
+/**
+ * 维护脚本会话中的数据库编目信息
+ */
 public class ScriptCatalog extends Hashtable<String, Properties> {
     private final static long serialVersionUID = 1L;
 
+    /**
+     * 初始化 ScriptCatalog
+     */
     public ScriptCatalog() {
         super();
     }

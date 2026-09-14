@@ -7,8 +7,6 @@ import java.util.List;
 
 import cn.org.expect.expression.LoginExpression;
 import cn.org.expect.expression.WordIterator;
-import cn.org.expect.ioc.EasyContext;
-import cn.org.expect.mail.MailFile;
 import cn.org.expect.script.UniversalScriptAnalysis;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptParser;
@@ -68,13 +66,11 @@ public class EmailSendCommandCompiler extends AbstractTraceCommandCompiler {
         String sender = attrs.getAttribute("sender"); // 发送地址
         String charsetName = attrs.getAttribute("charset"); // 邮件服务器字符集
         String content = FileUtils.readline(new File(filepath), charsetName, 0); // 正文
-        EasyContext ioc = context.getContainer();
-
         // 附件
         String[] attaches = StringUtils.split(attrs.getAttribute("attach"), ',');
-        MailFile[] mfs = new MailFile[attaches.length];
+        File[] attachmentFiles = new File[attaches.length];
         for (int i = 0; i < attaches.length; i++) {
-            mfs[i] = new MailFile(ioc, new File(attaches[i]));
+            attachmentFiles[i] = new File(attaches[i]);
         }
 
         // 登陆表达式
@@ -84,6 +80,6 @@ public class EmailSendCommandCompiler extends AbstractTraceCommandCompiler {
         int port = StringUtils.parseInt(loginExpression.getLoginPort(), -1); // 默认值 -1
         String host = loginExpression.getLoginHost();
 
-        return new EmailSendCommand(this, orginalScript, host, username, password, charsetName, port, protocal, ssl, sender, receiverList, title, content, mfs);
+        return new EmailSendCommand(this, orginalScript, host, username, password, charsetName, port, protocal, ssl, sender, receiverList, title, content, attachmentFiles);
     }
 }

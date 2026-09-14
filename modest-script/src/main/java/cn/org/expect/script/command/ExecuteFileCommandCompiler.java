@@ -13,13 +13,18 @@ import cn.org.expect.script.UniversalScriptVariable;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.script.io.PathExpression;
 
+/**
+ * 编译 ExecuteFile 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = {"."}, keywords = {UniversalScriptVariable.SESSION_VARNAME_THIS, UniversalScriptVariable.SESSION_VARNAME_SCRIPTFILE, UniversalScriptVariable.SESSION_VARNAME_HOME, UniversalScriptVariable.SESSION_VARNAME_PWD, UniversalScriptVariable.SESSION_VARNAME_OLDPWD, UniversalScriptVariable.SESSION_VARNAME_TEMP})
 public class ExecuteFileCommandCompiler extends AbstractTraceCommandCompiler {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readSinglelineScript();
     }
 
+    /** {@inheritDoc} */
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
         String expression = analysis.trim(command.substring(".".length()), 0, 1); // 表达式
         List<String> list = analysis.split(expression, new ArrayList<String>());

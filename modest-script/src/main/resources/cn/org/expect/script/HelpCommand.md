@@ -1120,15 +1120,17 @@ end loop
 
 # for
 
-**for** 循环语句，用于便利数组与集合中的元素，可通过变量名在循环体中使用数组或集合中的元素。
+**for** 循环语句，用于遍历数组与集合中的元素，可通过变量名在循环体中使用元素及其索引。
 
 ## 语法
 
 ```shell
-for 变量名 in 表达式 loop
+for 元素变量名 in 表达式 [with 索引变量名] loop
 ..
 end loop
 ```
+
+`with 索引变量名` 为可选语法，索引从 0 开始。
 
 表达式：
 
@@ -2314,6 +2316,24 @@ $ unzip 压缩文件路径
 ```
 
 `-d` 选项：设置解压文件的目录
+
+
+
+# codegen
+
+使用 codegen 命令读取《数据库设计.xlsx》命令执行后，读取到的 List<TableDesign> 会保存为脚本引擎局部变量 tables，同时作为命令返回值。
+
+## 语法
+
+```java
+codegen <数据库设计文档绝对路径>
+```
+
+## 示例
+
+```shell
+$ codegen ${project.basedir}/.codegen/build.sql
+```
 
 
 

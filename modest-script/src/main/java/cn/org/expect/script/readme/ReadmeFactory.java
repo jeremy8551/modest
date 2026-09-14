@@ -2,7 +2,6 @@ package cn.org.expect.script.readme;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -168,7 +167,6 @@ public class ReadmeFactory {
 
     public String newInstance(UniversalScriptContext context, ReadmeFactoryContext factoryContext) throws IOException {
         MavenPom scriptPom = MavenPomFactory.newInstance(UniversalScriptContext.class.getPackage().getName());
-        String gitBranch = FileUtils.loadProperties(new FileInputStream(factoryContext.getGitProperties())).getProperty("git.branch"); // 分支名
 
         Object[] args = { //
             scriptPom.getGroupID() // 0 groupId
@@ -176,7 +174,7 @@ public class ReadmeFactory {
             , scriptPom.getVersion() // 2 version
             , factoryContext.getModestSpringBootStarterName() // 3
             , "" // 4
-            , "-b " + gitBranch // 5
+            , "" // 5
             , UniversalScriptVariable.VARNAME_CHARSET // 6
             , "" // 7
             , UniversalScriptVariable.SESSION_VARNAME_THIS // 8

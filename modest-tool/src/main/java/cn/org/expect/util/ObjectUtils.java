@@ -31,4 +31,16 @@ public class ObjectUtils {
     public static <E> E coalesce(E obj, E def) {
         return obj == null ? def : obj;
     }
+
+    /**
+     * 类型转换
+     *
+     * @param obj 对象
+     * @param <E> 对象类型
+     * @return 类型转换后的对象
+     */
+    @SuppressWarnings("all")
+    public static <E> E cast(Object obj) {
+        return (E) obj;
+    }
 }

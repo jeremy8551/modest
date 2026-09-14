@@ -3,8 +3,8 @@ package cn.org.expect.script.command;
 import java.io.File;
 import java.util.List;
 
-import cn.org.expect.mail.MailCommand;
-import cn.org.expect.mail.MailFile;
+import cn.org.expect.mail.Mail;
+import cn.org.expect.mail.MailFactory;
 import cn.org.expect.script.UniversalCommandCompiler;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.script.UniversalScriptSession;
@@ -43,9 +43,9 @@ public class EmailSendCommand extends AbstractTraceCommand {
 
     private String content; // 正文
 
-    private MailFile[] attchments; // 附件
+    private File[] attachments; // 附件
 
-    public EmailSendCommand(UniversalCommandCompiler compiler, String script, String host, String username, String password, String charset, int port, String protocal, boolean ssl, String sender, List<String> receivers, String title, String content, MailFile[] attchments) {
+    public EmailSendCommand(UniversalCommandCompiler compiler, String script, String host, String username, String password, String charset, int port, String protocal, boolean ssl, String sender, List<String> receivers, String title, String content, File[] attachments) {
         super(compiler, script);
         this.host = host;
         this.username = username;
@@ -58,15 +58,15 @@ public class EmailSendCommand extends AbstractTraceCommand {
         this.receivers = receivers;
         this.title = title;
         this.content = content;
-        this.attchments = attchments;
+        this.attachments = attachments;
     }
 
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
-        MailCommand mail = context.getContainer().getBean(MailCommand.class);
+        Mail mail = MailFactory.build();
         mail.setHost(this.host);
         mail.setUser(this.username, this.password);
         mail.setCharsetName(this.charset);
-        String number = mail.send(this.protocal, this.port, this.ssl, this.sender, this.receivers, this.title, this.content, this.attchments);
+        String number = mail.send(this.protocal, this.port, this.ssl, this.sender, this.receivers, this.title, this.content, this.attachments);
         if (session.isEchoEnable() || forceStdout) {
             stdout.println(ResourcesUtils.getMessage("script.stdout.message042") + Settings.getLineSeparator() + number);
         }

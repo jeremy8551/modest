@@ -5,11 +5,16 @@ import java.sql.Blob;
 
 import cn.org.expect.collection.ByteBuffer;
 
+/**
+ * 在数据库字段值与 Java 对象之间执行类型转换
+ */
 public class BlobConverter extends AbstractConverter {
 
+    /** {@inheritDoc} */
     public void init() throws Exception {
     }
 
+    /** {@inheritDoc} */
     public void execute() throws Exception {
         Blob value = this.resultSet.getBlob(this.column);
         if (value == null) {

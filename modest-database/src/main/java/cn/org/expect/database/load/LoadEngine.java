@@ -1,7 +1,7 @@
 package cn.org.expect.database.load;
 
 import cn.org.expect.concurrent.AbstractJob;
-import cn.org.expect.database.load.inernal.LoadEngineContextImpl;
+import cn.org.expect.database.load.internal.LoadEngineContextImpl;
 import cn.org.expect.ioc.EasyContext;
 import cn.org.expect.ioc.EasyContextAware;
 

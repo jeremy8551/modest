@@ -1,6 +1,6 @@
 package cn.org.expect.time;
 
-import cn.org.expect.ModestRuntimeException;
+import cn.org.expect.exception.ModestRuntimeException;
 
 /**
  * 定时器组件异常

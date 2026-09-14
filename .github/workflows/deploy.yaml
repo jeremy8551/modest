@@ -247,8 +247,8 @@ jobs:
           
           echo "BRANCH_VERSION=${branch_version}" >> $GITHUB_ENV
           
-          echo "./mvnw clean deploy -Drevision=${branch_version}${SNAPSHOT_SUFFIX} -Dmaven.test.skip=true -P enable-deploy,enable-deploy-config"
-          ./mvnw clean deploy -Drevision=${branch_version}${SNAPSHOT_SUFFIX} -Dmaven.test.skip=true -P enable-deploy,enable-deploy-config
+          echo "./mvnw clean deploy -Drevision=${branch_version}${SNAPSHOT_SUFFIX} -Dmaven.test.skip=true -P enable-deploy-plugins,enable-deploy,enable-deploy-config"
+          ./mvnw clean deploy -Drevision=${branch_version}${SNAPSHOT_SUFFIX} -Dmaven.test.skip=true -P enable-deploy-plugins,enable-deploy,enable-deploy-config
 
       - name: Docker Login
         uses: docker/login-action@v3

@@ -8,7 +8,9 @@ import cn.org.expect.log.internal.LogBuilderAppender;
 import cn.org.expect.log.internal.LogContextImpl;
 import cn.org.expect.log.internal.PatternConsoleAppender;
 import cn.org.expect.log.internal.PatternLogBuilder;
+import cn.org.expect.printer.StandardPrinter;
 import cn.org.expect.util.ClassUtils;
+import cn.org.expect.util.Logs;
 import cn.org.expect.util.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,6 +19,32 @@ import org.junit.Test;
  * 测试嵌套日志的场景（代理类 LogProxy 没有继承 AbstractLogger 或 LevelLogger等）
  */
 public class FqcnTest {
+
+    /**
+     * 测试标准输出接口通过 Logs 门面输出时能够定位调用位置
+     */
+    @Test
+    public void testStandardPrinterLocation() {
+        Log original = Logs.getLog();
+        try {
+            LogContext context = new LogContextImpl();
+            context.setBuilder(new PatternLogBuilder());
+            context.removeAppender(PatternConsoleAppender.class);
+            Appender appender = new LogBuilderAppender("%c|%l|%m%n").setup(context);
+            Logs.setLogger(LogFactory.getLog(context, Logs.class, Logs.class.getName(), true));
+
+            StandardPrinter printer = new StandardPrinter();
+            printer.println("location");
+
+            String line = StringUtils.splitLines(appender.toString(), new ArrayList<String>()).get(0);
+            String[] fields = StringUtils.split(line, '|');
+            Assert.assertEquals(StandardPrinter.class.getName(), fields[0]);
+            Assert.assertTrue(fields[1].startsWith("StandardPrinter.println(StandardPrinter.java:"));
+            Assert.assertEquals("location", fields[2]);
+        } finally {
+            Logs.setLogger(original);
+        }
+    }
 
     @Test
     public void test() throws Exception {

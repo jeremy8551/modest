@@ -77,27 +77,20 @@ public class IfCommandCompiler extends AbstractCommandCompiler {
     static class QueryTail implements WordQuery {
 
         public int indexOf(CharSequence src, List<Word> list, int index, int last) {
+            int nestedDepth = 0;
             int i = index;
             for (; i <= last && i < list.size(); i++) {
-                Word obj = list.get(i);
-                String word = obj.getContent();
+                String word = list.get(i).getContent();
 
-                // 如果是 elseif 或 else 关键字
-                if (StringUtils.inArrayIgnoreCase(word, "elseif", "else")) {
+                // 只有当前层的分支关键字才能结束当前代码块
+                if (nestedDepth == 0 && StringUtils.inArrayIgnoreCase(word, "elseif", "else")) {
                     return i;
                 }
 
-                // 嵌套 if 语句
                 if (word.equalsIgnoreCase("if")) {
-                    for (int j = i + 1; j <= last && j < list.size(); j++) {
-                        obj = list.get(j);
-                        word = obj.getContent();
-                        if (word.equalsIgnoreCase("fi")) { // 嵌套语句结束位置
-                            i = j;
-                            break;
-                        }
-                    }
-                    continue;
+                    nestedDepth++;
+                } else if (nestedDepth > 0 && word.equalsIgnoreCase("fi")) {
+                    nestedDepth--;
                 }
             }
 

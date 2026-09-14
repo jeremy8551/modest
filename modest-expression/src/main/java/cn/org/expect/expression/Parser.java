@@ -107,6 +107,9 @@ public abstract class Parser {
                 if (isData) { // 表示加法符
                     PlusOperator oper = new PlusOperator();
                     operations.add(oper);
+                    if (next < length && str.charAt(next) == '=') {
+                        i = next;
+                    }
                     isData = false;
                 }
                 // 表示正整数符时，可以忽略向下执行

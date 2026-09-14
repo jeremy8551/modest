@@ -28,21 +28,27 @@ import cn.org.expect.script.internal.ScriptProgress;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 编译 db 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "db")
 public class DBLoadCommandCompiler extends AbstractTraceCommandCompiler {
 
-    public final static String REGEX = "^(?i)db\\s+load\\s+from\\s+.*";
+    public final static String REGEX = "^(?i)\\s*db\\s+load\\s+(?:client\\s+)?from\\s+.*";
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
+    /** {@inheritDoc} */
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
-        return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return pattern.matcher(script).matches() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readMultilineScript();
     }
 
+    /** {@inheritDoc} */
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
         ScriptDataSource dataSource = ScriptDataSource.get(context);
         DBLoadCommand cmd = new DBLoadCommand(this, orginalScript);

@@ -16,7 +16,7 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogFactory;
 import cn.org.expect.script.UniversalScriptException;
 import cn.org.expect.script.internal.MethodNote;
-import cn.org.expect.script.method.inernal.ClassMethodCollection;
+import cn.org.expect.script.method.internal.ClassMethodCollection;
 import cn.org.expect.util.CharsetUtils;
 import cn.org.expect.util.ClassUtils;
 import cn.org.expect.util.FileUtils;

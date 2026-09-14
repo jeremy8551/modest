@@ -6,8 +6,12 @@ import cn.org.expect.expression.parameter.Parameter;
 import cn.org.expect.util.Numbers;
 import cn.org.expect.util.ResourcesUtils;
 
+/**
+ * 实现表达式计算所需的运算规则
+ */
 public class InOperator implements Operator {
 
+    /** {@inheritDoc} */
     public Parameter execute(Parameter d1, Parameter d2) {
         if (Numbers.inArray(d1.getType(), Parameter.STRING, Parameter.DATE, Parameter.DOUBLE, Parameter.LONG) && d2.getType() == Parameter.ARRAY) {
             ExpressionParameter data = new ExpressionParameter();
@@ -23,6 +27,7 @@ public class InOperator implements Operator {
         return 7;
     }
 
+    /** {@inheritDoc} */
     public String toString() {
         return ResourcesUtils.getMessage("expression.stdout.message009");
     }

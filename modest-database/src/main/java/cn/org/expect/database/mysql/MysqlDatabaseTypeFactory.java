@@ -8,8 +8,12 @@ import cn.org.expect.database.DatabaseTypeFactory;
 import cn.org.expect.database.Jdbc;
 import cn.org.expect.database.internal.StandardDatabaseType;
 
+/**
+ * 创建并配置当前模块使用的对象实例
+ */
 public class MysqlDatabaseTypeFactory implements DatabaseTypeFactory {
 
+    /** {@inheritDoc} */
     public DatabaseType newInstance(ResultSet resultSet) throws SQLException {
         StandardDatabaseType type = new StandardDatabaseType();
         type.setName(resultSet.getString("TYPE_NAME"));

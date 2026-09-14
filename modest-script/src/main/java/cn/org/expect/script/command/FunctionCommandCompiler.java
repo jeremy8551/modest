@@ -16,13 +16,18 @@ import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.script.command.feature.LoopCommandSupported;
 import cn.org.expect.script.internal.CommandList;
 
+/**
+ * 编译 function 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "function", keywords = {"function"})
 public class FunctionCommandCompiler extends AbstractCommandCompiler {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readPieceofScript("{", "}");
     }
 
+    /** {@inheritDoc} */
     public UniversalScriptCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String command) throws Exception {
         WordIterator it = analysis.parse(command);
         it.assertNext("function");

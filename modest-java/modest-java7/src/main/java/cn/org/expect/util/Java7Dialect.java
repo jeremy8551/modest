@@ -1,0 +1,111 @@
+package cn.org.expect.util;
+
+import java.io.File;
+import java.lang.Character.UnicodeBlock;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
+import java.sql.Connection;
+import java.util.Date;
+import java.util.Set;
+
+/**
+ * 提供 7 版本对应的 Java 平台能力适配
+ */
+public class Java7Dialect extends Java6Dialect {
+
+    public int getNetworkTimeout(Connection conn) {
+        try {
+            return conn.getNetworkTimeout();
+        } catch (Throwable e) {
+            return 0;
+        }
+    }
+
+    public boolean isChineseLetter(UnicodeBlock ub) {
+        return ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS //
+            || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A //
+            || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B //
+            || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_C //
+            || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_D //
+            || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS //
+            || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT //
+            ;
+    }
+
+    public String getLink(File file) {
+        try {
+            Path filepath = file.toPath();
+            Path realPath = filepath.toRealPath();
+            if (realPath.equals(filepath)) {
+                return realPath.toFile().getAbsolutePath();
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(file.getAbsolutePath(), e);
+        }
+    }
+
+    public Date getCreateTime(String filepath) {
+        try {
+            Path path = Paths.get(filepath);
+            BasicFileAttributeView view = Files.getFileAttributeView(path, BasicFileAttributeView.class, LinkOption.NOFOLLOW_LINKS);
+            BasicFileAttributes attrs = view.readAttributes();
+            return new Date(attrs.creationTime().toMillis());
+        } catch (Exception e) {
+            throw new RuntimeException(filepath, e);
+        }
+    }
+
+    /** {@inheritDoc} */
+    public String toLongname(File file) {
+        try {
+            StringBuilder buf = new StringBuilder();
+            Path path = Paths.get(file.getAbsolutePath());
+            Set<PosixFilePermission> ps = Files.getPosixFilePermissions(path);
+            if (ps.contains(PosixFilePermission.GROUP_READ)) {
+                buf.append('r');
+            } else {
+                buf.append('-');
+            }
+
+            if (ps.contains(PosixFilePermission.GROUP_WRITE)) {
+                buf.append('w');
+            } else {
+                buf.append('-');
+            }
+
+            if (ps.contains(PosixFilePermission.GROUP_EXECUTE)) {
+                buf.append('x');
+            } else {
+                buf.append('-');
+            }
+
+            if (ps.contains(PosixFilePermission.OTHERS_READ)) {
+                buf.append('r');
+            } else {
+                buf.append('-');
+            }
+
+            if (ps.contains(PosixFilePermission.OTHERS_WRITE)) {
+                buf.append('w');
+            } else {
+                buf.append('-');
+            }
+
+            if (ps.contains(PosixFilePermission.OTHERS_EXECUTE)) {
+                buf.append('x');
+            } else {
+                buf.append('-');
+            }
+            return buf.toString();
+        } catch (Exception e) {
+            return "";
+        }
+    }
+}

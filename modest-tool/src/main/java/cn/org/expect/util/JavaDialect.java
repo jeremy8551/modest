@@ -129,4 +129,12 @@ public interface JavaDialect {
      * @return 属性值
      */
     <E> E getField(Object obj, String fieldName);
+
+    /**
+     * 返回 true 表示 obj 是一个类型元素
+     *
+     * @param obj 元素
+     * @return true 表示 obj 是一个类型元素
+     */
+    boolean isTypeElement(Object obj);
 }

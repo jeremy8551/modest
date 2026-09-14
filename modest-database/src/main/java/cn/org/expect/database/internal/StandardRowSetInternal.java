@@ -9,12 +9,18 @@ import javax.sql.RowSetMetaData;
 
 import cn.org.expect.util.ObjectUtils;
 
+/**
+ * 提供数据库行集的内部默认实现
+ */
 public class StandardRowSetInternal implements RowSetInternal {
 
     private Statement statement;
 
     private ResultSet resultSet;
 
+    /**
+     * 初始化 StandardRowSetInternal
+     */
     public StandardRowSetInternal(Statement statement, ResultSet resultSet) {
         this.statement = statement;
         this.resultSet = resultSet;

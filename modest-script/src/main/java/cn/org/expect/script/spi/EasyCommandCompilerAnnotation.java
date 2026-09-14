@@ -10,14 +10,14 @@ import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.util.ClassUtils;
 import com.google.auto.service.AutoService;
 
+/**
+ * 描述 IoC 或脚本扩展点支持的注解契约
+ */
 @AutoService(EasyBeanAnnotation.class)
 public class EasyCommandCompilerAnnotation implements EasyBeanAnnotation {
 
     public boolean isPresent(Class<?> type) {
-        return type.isAnnotationPresent(EasyCommandCompiler.class) //
-            && ClassUtils.isAssignableFrom(UniversalCommandCompiler.class, type) //
-            && !Modifier.isAbstract(type.getModifiers()) //
-            ;
+        return type.isAnnotationPresent(EasyCommandCompiler.class) && ClassUtils.isAssignableFrom(UniversalCommandCompiler.class, type) && !Modifier.isAbstract(type.getModifiers());
     }
 
     public EasyBeanEntry getBean(Class<?> type) {

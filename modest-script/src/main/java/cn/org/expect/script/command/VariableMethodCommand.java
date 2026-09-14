@@ -19,7 +19,7 @@ import cn.org.expect.script.UniversalScriptVariableMethod;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.method.VariableMethodEntry;
 import cn.org.expect.script.method.VariableMethodRepository;
-import cn.org.expect.script.method.inernal.MethodParameters;
+import cn.org.expect.script.method.internal.MethodParameters;
 import cn.org.expect.util.ArrayUtils;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;
@@ -120,7 +120,7 @@ public class VariableMethodCommand extends AbstractTraceCommand implements Nohup
         }
 
         // 参数
-        this.parameters.parse(session, context, analysis, methodExpression.substring(paramBegin, paramEnd));
+        this.parameters.parse(session, context, stdout, stderr, analysis, methodExpression.substring(paramBegin, paramEnd));
 
         // 方法返回值
         Object value;

@@ -1,6 +1,6 @@
 package cn.org.expect.script;
 
-import cn.org.expect.ModestRuntimeException;
+import cn.org.expect.exception.ModestRuntimeException;
 
 /**
  * 脚本引擎异常信息

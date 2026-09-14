@@ -15,6 +15,17 @@ import java.util.List;
 public class ArrayUtils {
 
     /**
+     * 判断数组中是否包含指定元素
+     *
+     * @param value 待搜索的元素
+     * @param array 待搜索的数组
+     * @return true 表示包含
+     */
+    public static boolean contains(Object value, Object... array) {
+        return indexOf(array, 0, value) != -1;
+    }
+
+    /**
      * 在参数数组 array 中搜索 cls 类首次出现的数组元素
      *
      * @param <E>    元素类型
@@ -70,7 +81,7 @@ public class ArrayUtils {
         } else {
             for (int i = from; i < array.length; i++) {
                 Object obj = array[i];
-                if (obj != null && obj.equals(value)) {
+                if (obj != null && (obj == value || obj.equals(value))) {
                     return i;
                 }
             }

@@ -22,18 +22,25 @@ import cn.org.expect.script.io.PathExpression;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 封装脚本命令的运行逻辑
+ */
 public class CdCommand extends AbstractFileCommand implements UniversalScriptInputStream, NohupCommandSupported {
 
     private String filepath;
 
     private final boolean localhost;
 
+    /**
+     * 初始化 CdCommand
+     */
     public CdCommand(UniversalCommandCompiler compiler, String command, String filepath, boolean localhost) {
         super(compiler, command);
         this.filepath = filepath;
         this.localhost = localhost;
     }
 
+    /** {@inheritDoc} */
     public void read(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, Reader in) throws IOException {
         if (analysis.isBlank(this.filepath)) {
             this.filepath = StringUtils.trimBlank(IO.read(in, new StringBuilder()));
@@ -42,6 +49,7 @@ public class CdCommand extends AbstractFileCommand implements UniversalScriptInp
         }
     }
 
+    /** {@inheritDoc} */
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         boolean print = session.isEchoEnable() || forceStdout;
         OSFtpCommand ftp = FtpList.get(context).getFTPClient();
@@ -77,6 +85,7 @@ public class CdCommand extends AbstractFileCommand implements UniversalScriptInp
         }
     }
 
+    /** {@inheritDoc} */
     public boolean enableNohup() {
         return true;
     }

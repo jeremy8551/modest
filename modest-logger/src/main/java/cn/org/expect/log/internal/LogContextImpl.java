@@ -11,6 +11,7 @@ import cn.org.expect.log.Log;
 import cn.org.expect.log.LogAliveSet;
 import cn.org.expect.log.LogBuilder;
 import cn.org.expect.log.LogContext;
+import cn.org.expect.log.LogFactory;
 import cn.org.expect.log.LogLevel;
 import cn.org.expect.log.LogLevelAware;
 import cn.org.expect.log.LogLevelManager;
@@ -20,6 +21,7 @@ import cn.org.expect.message.ResourceMessageBundle;
 import cn.org.expect.util.CharTable;
 import cn.org.expect.util.Dates;
 import cn.org.expect.util.Ensure;
+import cn.org.expect.util.Logs;
 import cn.org.expect.util.ResourcesUtils;
 
 /**
@@ -118,6 +120,7 @@ public class LogContextImpl implements LogContext {
 
     public synchronized void setBuilder(LogBuilder builder) {
         this.builder = Ensure.notNull(builder);
+        Logs.setLogger(LogFactory.getLog(LogContext.class));
     }
 
     public LogBuilder getBuilder() {

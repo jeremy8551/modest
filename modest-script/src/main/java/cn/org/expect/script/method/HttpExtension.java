@@ -5,6 +5,9 @@ import java.net.UnknownHostException;
 import cn.org.expect.script.UniversalScriptEngine;
 import cn.org.expect.script.annotation.EasyVariableExtension;
 
+/**
+ * 向脚本运行环境提供扩展方法
+ */
 @EasyVariableExtension
 public class HttpExtension {
 

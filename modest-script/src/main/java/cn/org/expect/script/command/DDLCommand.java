@@ -14,6 +14,9 @@ import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.script.internal.ScriptDataSource;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 封装脚本命令的运行逻辑
+ */
 public class DDLCommand extends AbstractTraceCommand implements NohupCommandSupported {
 
     private String tableName;
@@ -22,12 +25,16 @@ public class DDLCommand extends AbstractTraceCommand implements NohupCommandSupp
 
     private volatile JdbcDao dao;
 
+    /**
+     * 初始化 DDLCommand
+     */
     public DDLCommand(UniversalCommandCompiler compiler, String command, String tableName, String schema) {
         super(compiler, command);
         this.tableName = tableName;
         this.schema = schema;
     }
 
+    /** {@inheritDoc} */
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         UniversalScriptAnalysis analysis = session.getAnalysis();
         if (session.isEchoEnable() || forceStdout) {
@@ -50,6 +57,7 @@ public class DDLCommand extends AbstractTraceCommand implements NohupCommandSupp
         return 0;
     }
 
+    /** {@inheritDoc} */
     public void terminate() throws Exception {
         super.terminate();
         if (this.dao != null) {
@@ -57,6 +65,7 @@ public class DDLCommand extends AbstractTraceCommand implements NohupCommandSupp
         }
     }
 
+    /** {@inheritDoc} */
     public boolean enableNohup() {
         return true;
     }

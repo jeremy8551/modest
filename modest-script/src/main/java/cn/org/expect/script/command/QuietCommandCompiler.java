@@ -14,13 +14,18 @@ import cn.org.expect.script.command.feature.DefaultCommandSupported;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 编译 quiet 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "quiet", keywords = {"quiet"})
 public class QuietCommandCompiler extends AbstractTraceCommandCompiler implements DefaultCommandSupported {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readSinglelineScript();
     }
 
+    /** {@inheritDoc} */
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws Exception {
         String subcommand = StringUtils.ltrimBlank(command.substring("quiet".length()));
         List<UniversalScriptCommand> list = parser.read(subcommand);

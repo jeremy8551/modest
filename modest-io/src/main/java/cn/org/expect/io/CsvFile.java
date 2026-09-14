@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import cn.org.expect.ModestRuntimeException;
+import cn.org.expect.exception.ModestRuntimeException;
 import cn.org.expect.ioc.annotation.EasyBean;
 import cn.org.expect.util.Ensure;
 import cn.org.expect.util.StringUtils;

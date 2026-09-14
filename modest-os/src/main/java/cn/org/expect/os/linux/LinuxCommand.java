@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeoutException;
 
 import cn.org.expect.collection.ByteBuffer;
 import cn.org.expect.io.BufferedLineReader;
@@ -16,6 +19,7 @@ import cn.org.expect.os.OSCommand;
 import cn.org.expect.os.OSCommandException;
 import cn.org.expect.os.OSCommandStdouts;
 import cn.org.expect.os.OSShellCommand;
+import cn.org.expect.os.internal.OSCommandExecutors;
 import cn.org.expect.os.internal.OSCommandStdoutsImpl;
 import cn.org.expect.os.internal.OSCommandUtils;
 import cn.org.expect.util.ArrayUtils;
@@ -47,10 +51,26 @@ public class LinuxCommand extends Terminator implements OSCommand {
 
     protected String charsetName;
 
+    /** 异步读取进程输出流的受管执行器 */
+    private final ExecutorService executor;
+
     /**
-     * 初始化
+     * 使用模块共享执行器初始化
      */
     public LinuxCommand() {
+        this(OSCommandExecutors.getExecutorService());
+    }
+
+    /**
+     * 使用指定的受管执行器初始化
+     *
+     * @param executor 异步读取进程输出流的执行器，不允许为 null
+     */
+    public LinuxCommand(ExecutorService executor) {
+        if (executor == null) {
+            throw new IllegalArgumentException("executor");
+        }
+        this.executor = executor;
         this.stdout = new ByteBuffer();
         this.stderr = new ByteBuffer();
         this.config = new Properties();
@@ -137,98 +157,97 @@ public class LinuxCommand extends Terminator implements OSCommand {
         final long timeoutSec = (timeout / 1000);
         final TimeWatch watch = new TimeWatch();
         Process process = null;
+        Future<String> stdoutFuture = null;
+        Future<String> stderrFuture = null;
         try {
             final String cmd = this.toShellCommand(command);
             process = Runtime.getRuntime().exec(new String[]{"/bin/sh", "-c", cmd});
 
             // 从进程的标准输出流中读取信息
-            final byte[] array = new byte[1024];
             final Process finalProcess = process;
             final ByteBuffer stdoutBuf = this.stdout;
-            Thread stdoutThread = new Thread(new FutureTask<String>(new Callable<String>() {
+            stdoutFuture = this.executor.submit(new Callable<String>() {
                 public String call() throws Exception {
                     InputStream in = finalProcess.getInputStream();
-                    for (int len = in.read(array, 0, array.length); len != -1; len = in.read(array, 0, array.length)) {
-                        if (timeout > 0 && watch.useSeconds() > timeoutSec) {
-                            if (log.isDebugEnabled()) {
-                                log.debug("os.stdout.message005", cmd);
+                    try {
+                        byte[] array = new byte[1024];
+                        for (int len = in.read(array, 0, array.length); len != -1; len = in.read(array, 0, array.length)) {
+                            if (timeout > 0 && watch.useSeconds() > timeoutSec) {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("os.stdout.message005", cmd);
+                                }
+                                break;
                             }
-                            break;
-                        }
 
-                        int size = extractPid(array, len);
-                        stdoutBuf.append(array, 0, size);
+                            int size = extractPid(array, len);
+                            stdoutBuf.append(array, 0, size);
 
-                        if (log.isDebugEnabled()) {
-                            log.debug(new String(array, 0, size, getCharsetName()));
-                        }
+                            if (log.isDebugEnabled()) {
+                                log.debug(new String(array, 0, size, getCharsetName()));
+                            }
 
-                        if (stdout != null) {
-                            stdout.write(array, 0, size);
-                            stdout.flush();
+                            if (stdout != null) {
+                                stdout.write(array, 0, size);
+                                stdout.flush();
+                            }
                         }
+                    } finally {
+                        IO.close(in);
                     }
                     return "";
                 }
-            }));
-            stdoutThread.start();
+            });
 
             final Process finalProcess1 = process;
-            final ByteBuffer stderrBuffer = this.stdout;
-            Thread stderrThread = new Thread(new FutureTask<String>(new Callable<String>() {
+            final ByteBuffer stderrBuffer = this.stderr;
+            stderrFuture = this.executor.submit(new Callable<String>() {
                 public String call() throws Exception {
                     InputStream is = finalProcess1.getErrorStream();
-                    for (int len = is.read(array, 0, array.length); len != -1; len = is.read(array, 0, array.length)) {
-                        if (timeout > 0 && watch.useSeconds() > timeoutSec) {
-                            if (log.isDebugEnabled()) {
-                                log.debug("os.stdout.message006", cmd);
+                    try {
+                        byte[] array = new byte[1024];
+                        for (int len = is.read(array, 0, array.length); len != -1; len = is.read(array, 0, array.length)) {
+                            if (timeout > 0 && watch.useSeconds() > timeoutSec) {
+                                if (log.isDebugEnabled()) {
+                                    log.debug("os.stdout.message006", cmd);
+                                }
+                                break;
                             }
-                            break;
-                        }
 
-                        stderrBuffer.append(array, 0, len);
+                            stderrBuffer.append(array, 0, len);
 
-                        if (log.isDebugEnabled()) {
-                            log.debug(new String(array, 0, len, getCharsetName()));
-                        }
+                            if (log.isDebugEnabled()) {
+                                log.debug(new String(array, 0, len, getCharsetName()));
+                            }
 
-                        if (stderr != null) {
-                            stderr.write(array, 0, len);
-                            stderr.flush();
+                            if (stderr != null) {
+                                stderr.write(array, 0, len);
+                                stderr.flush();
+                            }
                         }
+                    } finally {
+                        IO.close(is);
                     }
-
                     return "";
                 }
-            }));
-            stderrThread.start();
+            });
 
-            if (timeout > 0) {
-                int count = 0;
-                while (process.waitFor() != 0) {
-                    if (++count <= 100 && log.isDebugEnabled()) {
-                        log.debug("os.stdout.message004", cmd);
-                    }
-                }
-                // while (!process.waitFor(timeout, TimeUnit.MILLISECONDS)) {
-                // if (++count <= 100 && log.isDebugEnabled()) {
-                // log.debug("os.stdout.message004", cmd);
-                // }
-                // }
-            } else {
-                if (log.isDebugEnabled()) {
-                    log.debug("os.stdout.message004", cmd);
-                }
-                process.waitFor();
-            }
-
-            stdoutThread.join();
-            stderrThread.join();
+            this.waitForProcess(process, timeout, cmd);
+            this.waitForFuture(stdoutFuture);
+            this.waitForFuture(stderrFuture);
 
             return process.exitValue();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new OSCommandException("os.stderr.message001", command, e);
         } catch (Throwable e) {
             throw new OSCommandException("os.stderr.message001", command, e);
         } finally {
+            if (stdoutFuture != null && !stdoutFuture.isDone()) {
+                stdoutFuture.cancel(true);
+            }
+            if (stderrFuture != null && !stderrFuture.isDone()) {
+                stderrFuture.cancel(true);
+            }
             if (process != null) {
                 process.destroy();
             }
@@ -236,6 +255,54 @@ public class LinuxCommand extends Terminator implements OSCommand {
             if (log.isDebugEnabled()) {
                 log.debug("os.stdout.message007", command, this.getStdout(), this.getStderr());
             }
+        }
+    }
+
+    /**
+     * 等待进程结束，并在达到超时时间后终止进程
+     *
+     * @param process 运行中的进程
+     * @param timeout 超时时间，单位为毫秒，小于等于零表示不限制
+     * @param command 用于异常信息的命令
+     * @throws InterruptedException 当前线程被中断
+     * @throws TimeoutException     命令执行超时
+     */
+    private void waitForProcess(Process process, long timeout, String command) throws InterruptedException, TimeoutException {
+        if (timeout <= 0) {
+            process.waitFor();
+            return;
+        }
+
+        long deadline = System.currentTimeMillis() + timeout;
+        while (true) {
+            try {
+                process.exitValue();
+                return;
+            } catch (IllegalThreadStateException e) {
+                if (System.currentTimeMillis() >= deadline) {
+                    process.destroy();
+                    throw new TimeoutException(command);
+                }
+                Thread.sleep(10);
+            }
+        }
+    }
+
+    /**
+     * 等待流读取任务结束并展开任务异常
+     *
+     * @param future 流读取任务
+     * @throws Exception 流读取失败或等待被中断
+     */
+    private void waitForFuture(Future<String> future) throws Exception {
+        try {
+            future.get();
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof Exception) {
+                throw (Exception) cause;
+            }
+            throw e;
         }
     }
 

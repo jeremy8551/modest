@@ -153,6 +153,10 @@ public class ByteBuffer implements Appendable, CharsetName {
      * @param length 扩充的容量大小
      */
     protected final void expandValueArray(int length) {
+        if (length < 0 || length > Integer.MAX_VALUE - this.count) {
+            throw new IllegalArgumentException(String.valueOf(length));
+        }
+
         int valueLength = this.value.length; // 当前value数组可用空间大小
         int newCount = this.count + length; // 需要的空间大小
         if (newCount > valueLength) {
@@ -318,7 +322,7 @@ public class ByteBuffer implements Appendable, CharsetName {
         if (array == null) {
             return this;
         }
-        if (length < 0 || offset < 0 || (offset + length) > array.length) {
+        if (length < 0 || offset < 0 || offset > array.length - length) {
             throw new IllegalArgumentException(StringUtils.toString(array, " ") + ", " + offset + ", " + length);
         }
 

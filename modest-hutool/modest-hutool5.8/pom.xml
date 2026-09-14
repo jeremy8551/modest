@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>cn.org.expect</groupId>
+        <artifactId>modest-hutool</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>modest-hutool5.8</artifactId>
+    <name>${project.artifactId}</name>
+    <description>Adaptation for Hutool 5.8</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.org.expect</groupId>
+            <artifactId>modest-hutool5.7</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hutool58.version}</version>
+        </dependency>
+    </dependencies>
+</project>

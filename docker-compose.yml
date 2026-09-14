@@ -68,3 +68,25 @@ services:
       DB2INST1_PASSWORD: db2inst1
       DBNAME: testDB
     privileged: true
+
+  postgres:
+    image: postgres:13
+    container_name: sonarqube-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonar
+      POSTGRES_DB: sonarqube
+
+  sonarqube:
+    image: sonarqube:lts
+    container_name: sonarqube
+    depends_on:
+      - postgres
+    ports:
+      - "9000:9000"
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://postgres:5432/sonarqube
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: sonar

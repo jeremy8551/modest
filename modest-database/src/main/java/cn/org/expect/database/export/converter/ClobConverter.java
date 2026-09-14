@@ -5,14 +5,19 @@ import java.sql.Clob;
 
 import cn.org.expect.util.IO;
 
+/**
+ * 在数据库字段值与 Java 对象之间执行类型转换
+ */
 public class ClobConverter extends AbstractConverter {
 
     protected StringBuilder cache;
 
+    /** {@inheritDoc} */
     public void init() throws Exception {
         this.cache = new StringBuilder(this.contains("cacheSize") ? Integer.parseInt((String) this.getAttribute("cacheSize")) : 2048);
     }
 
+    /** {@inheritDoc} */
     public void execute() throws Exception {
         Clob value = this.resultSet.getClob(this.column);
         if (value == null) {

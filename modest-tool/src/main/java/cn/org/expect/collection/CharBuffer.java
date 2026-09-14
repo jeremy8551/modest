@@ -49,11 +49,16 @@ public class CharBuffer implements Appendable, CharSequence {
     }
 
     /**
-     * 重置缓冲区的长度
+     * 截断缓冲区到指定长度。
+     * 为避免暴露已清除或尚未写入的字符，不允许将长度扩展到当前内容之外。
      *
      * @param length 长度，大于等于零
      */
     public void setLength(int length) {
+        if (length < 0 || length > this.count) {
+            throw new IllegalArgumentException(String.valueOf(length));
+        }
+
         this.count = length;
     }
 
@@ -163,14 +168,13 @@ public class CharBuffer implements Appendable, CharSequence {
             return this;
         }
 
-        int end = offset + length;
         int size = str.length();
         if (length == 0 || offset >= size) {
             return this;
-        } else if (end > size) {
+        } else if (length > size - offset) {
             length = size - offset;
-            end = size;
         }
+        int end = offset + length;
 
         this.expandCapacity(length);
         str.getChars(offset, end, this.value, this.count);
@@ -366,9 +370,12 @@ public class CharBuffer implements Appendable, CharSequence {
      * @param length 扩容大小
      */
     public int expandCapacity(int length) {
+        if (length < 0 || length > Integer.MAX_VALUE - this.count) {
+            throw new IllegalArgumentException(String.valueOf(length));
+        }
+
         int valueLength = this.value.length; // 当前value数组可用空间大小
         int newCount = this.count + length; // 需要的空间大小
-
         if (newCount > valueLength) {
             int newValueLength = valueLength + this.incrCapacity; // 扩充value后的可用容量
             if (newCount > newValueLength) {
@@ -443,7 +450,7 @@ public class CharBuffer implements Appendable, CharSequence {
      * @return 截取的字符串
      */
     public String substring(int begin, int end) {
-        if (begin < 0 || begin >= this.count || begin > end) {
+        if (begin < 0 || end > this.count || begin > end) {
             throw new IllegalArgumentException(begin + " " + end + " " + this.count);
         }
 

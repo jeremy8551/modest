@@ -17,21 +17,27 @@ import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.script.command.feature.LoopCommandSupported;
 import cn.org.expect.script.internal.CommandList;
 
+/**
+ * 编译 while 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "while", keywords = {"while", "loop", "end"})
 public class WhileCommandCompiler extends AbstractCommandCompiler {
 
-    public final static String REGEX = "^(?i)\\s*while\\s+[^read]+.*";
+    public final static String REGEX = "^(?i)\\s*while\\s+(?!read\\b).+?\\s+loop\\b.*";
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
+    /** {@inheritDoc} */
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
-        return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return pattern.matcher(script).matches() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readPieceofScript("loop", "end loop");
     }
 
+    /** {@inheritDoc} */
     public UniversalScriptCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String command) throws Exception {
         WordIterator it = analysis.parse(command);
         it.assertNext("while");
@@ -42,7 +48,7 @@ public class WhileCommandCompiler extends AbstractCommandCompiler {
         it.assertLast("loop");
         it.assertLast("end");
         if (log.isDebugEnabled()) {
-             log.debug("script.stdout.message029", "while", condition);
+            log.debug("script.stdout.message029", "while", condition);
         }
 
         String body = it.readOther();

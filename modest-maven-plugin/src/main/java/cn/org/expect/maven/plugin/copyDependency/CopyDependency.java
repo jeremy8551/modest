@@ -1,5 +1,8 @@
 package cn.org.expect.maven.plugin.copyDependency;
 
+/**
+ * 描述需要复制的 Maven 依赖及其目标位置
+ */
 public class CopyDependency {
 
     private String copy;
@@ -22,6 +25,7 @@ public class CopyDependency {
         this.to = to;
     }
 
+    /** {@inheritDoc} */
     public String toString() {
         return "DependencyModule{" + "copy='" + copy + '\'' + ", to='" + to + '\'' + '}';
     }

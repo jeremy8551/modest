@@ -10,13 +10,18 @@ import cn.org.expect.script.UniversalScriptReader;
 import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 
+/**
+ * 编译 date 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "date", keywords = {"date", "day", "month", "year", "minute", "hour", "second", "millisecond"})
 public class DateCommandCompiler extends AbstractTraceCommandCompiler {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readSinglelineScript();
     }
 
+    /** {@inheritDoc} */
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
         int option = analysis.indexOf(command, "-d", 0, 0, 0);
         int index = analysis.indexOf(command, new char[]{'+', '-'}, option == -1 ? 0 : option + 1);

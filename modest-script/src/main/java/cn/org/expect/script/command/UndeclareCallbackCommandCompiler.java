@@ -23,12 +23,12 @@ import cn.org.expect.script.annotation.EasyCommandCompiler;
 @EasyCommandCompiler(name = "undeclare", keywords = {"undeclare"})
 public class UndeclareCallbackCommandCompiler extends AbstractGlobalCommandCompiler {
 
-    public final static String REGEX = "^(?i)\\s*undeclare\\s+([global\\s+]*)command\\s+callback\\s+for\\s+.*";
+    public final static String REGEX = "^(?i)\\s*undeclare\\s+((?:global\\s+)?)command\\s+callback\\s+for\\s+.+";
 
     private Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
-        return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return pattern.matcher(script).matches() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {

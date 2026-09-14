@@ -10,7 +10,23 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+/**
+ * {@link ByteBuffer} 的单元测试。
+ */
 public class ByteBufferTest {
+
+    /**
+     * 验证极端区间参数不会因整数溢出绕过边界检查。
+     */
+    @Test
+    public void testAppendRejectsOverflowingRange() {
+        try {
+            new ByteBuffer(0, 1).append(new byte[1], 1, Integer.MAX_VALUE);
+            Assert.fail("Expected IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+            // expected
+        }
+    }
 
     @Before
     public void setUp() throws Exception {

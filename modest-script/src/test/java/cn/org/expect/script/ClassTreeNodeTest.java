@@ -1,7 +1,7 @@
 package cn.org.expect.script;
 
 import cn.org.expect.log.LogFactory;
-import cn.org.expect.script.method.inernal.ClassTreeNode;
+import cn.org.expect.script.method.internal.ClassTreeNode;
 import cn.org.expect.util.MessySequence;
 import org.junit.Test;
 

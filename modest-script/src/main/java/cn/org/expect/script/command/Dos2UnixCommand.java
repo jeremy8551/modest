@@ -12,15 +12,22 @@ import cn.org.expect.script.command.feature.JumpCommandSupported;
 import cn.org.expect.script.command.feature.NohupCommandSupported;
 import cn.org.expect.util.FileUtils;
 
+/**
+ * 封装脚本命令的运行逻辑
+ */
 public class Dos2UnixCommand extends AbstractTraceCommand implements JumpCommandSupported, NohupCommandSupported {
 
     private String value;
 
+    /**
+     * 初始化 Dos2UnixCommand
+     */
     public Dos2UnixCommand(UniversalCommandCompiler compiler, String command, String value) {
         super(compiler, command);
         this.value = value;
     }
 
+    /** {@inheritDoc} */
     public int execute(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptStdout stdout, UniversalScriptStderr stderr, boolean forceStdout, File outfile, File errfile) throws Exception {
         UniversalScriptAnalysis analysis = session.getAnalysis();
         if (session.isEchoEnable() || forceStdout) {
@@ -38,10 +45,12 @@ public class Dos2UnixCommand extends AbstractTraceCommand implements JumpCommand
         return 0;
     }
 
+    /** {@inheritDoc} */
     public boolean enableNohup() {
         return true;
     }
 
+    /** {@inheritDoc} */
     public boolean enableJump() {
         return true;
     }

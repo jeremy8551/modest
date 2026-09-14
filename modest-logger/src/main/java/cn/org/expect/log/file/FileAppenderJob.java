@@ -29,7 +29,6 @@ public class FileAppenderJob extends Terminator implements Runnable {
 
     public void run() {
         this.running = true;
-        this.terminate = false;
         try {
             while (!this.terminate) {
                 this.out.write();

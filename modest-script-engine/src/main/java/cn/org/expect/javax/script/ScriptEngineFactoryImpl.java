@@ -8,15 +8,24 @@ import cn.org.expect.script.UniversalScriptEngineFactory;
 import cn.org.expect.util.Ensure;
 import com.google.auto.service.AutoService;
 
+/**
+ * 提供 JSR 223 脚本引擎工厂的默认实现
+ */
 @AutoService(ScriptEngineFactory.class)
 public class ScriptEngineFactoryImpl implements ScriptEngineFactory {
 
     protected UniversalScriptEngineFactory factory;
 
+    /**
+     * 初始化 ScriptEngineFactoryImpl
+     */
     public ScriptEngineFactoryImpl() {
         this(new UniversalScriptEngineFactory());
     }
 
+    /**
+     * 初始化 ScriptEngineFactoryImpl
+     */
     public ScriptEngineFactoryImpl(UniversalScriptEngineFactory factory) {
         this.factory = Ensure.notNull(factory);
     }

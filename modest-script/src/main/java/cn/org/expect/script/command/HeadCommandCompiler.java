@@ -12,13 +12,18 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 编译 head 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "head", keywords = {"head"})
 public class HeadCommandCompiler extends AbstractFileCommandCompiler {
 
+    /** {@inheritDoc} */
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
         return in.readSinglelineScript();
     }
 
+    /** {@inheritDoc} */
     public AbstractTraceCommand compile(UniversalScriptSession session, UniversalScriptContext context, UniversalScriptParser parser, UniversalScriptAnalysis analysis, String orginalScript, String command) throws IOException {
         CommandExpression expr = new CommandExpression(analysis, "head -n: --lang: {0-1}", command);
         String charsetName = expr.getOptionValue("-lang");

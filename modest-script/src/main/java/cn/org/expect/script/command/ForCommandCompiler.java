@@ -15,15 +15,18 @@ import cn.org.expect.script.UniversalScriptSession;
 import cn.org.expect.script.annotation.EasyCommandCompiler;
 import cn.org.expect.script.internal.CommandList;
 
+/**
+ * 编译 for 脚本命令并创建对应的可执行命令
+ */
 @EasyCommandCompiler(name = "for", keywords = {"for", "loop", "end"})
 public class ForCommandCompiler extends AbstractCommandCompiler {
 
-    public final static String REGEX = "^(?i)for\\s+\\S+\\s+in\\s*.*";
+    public final static String REGEX = "^(?i)\\s*for\\s+\\S+\\s+in\\s+.*\\s+loop\\b.*";
 
     private final Pattern pattern = Pattern.compile(REGEX, Pattern.DOTALL | Pattern.MULTILINE);
 
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String script) {
-        return pattern.matcher(script).find() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return pattern.matcher(script).matches() ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {
@@ -35,12 +38,17 @@ public class ForCommandCompiler extends AbstractCommandCompiler {
         it.assertNext("for");
         String name = analysis.trim(it.next(), 0, 0);
         it.assertNext("in");
-        String collection = it.readUntil("loop");
+        String collection = it.readUntil("with", "loop");
+        String indexVariableName = null;
+        if (it.equals("with")) {
+            indexVariableName = analysis.trim(it.next(), 0, 0);
+            it.assertNext("loop");
+        }
         it.assertLast("loop");
         it.assertLast("end");
         String script = it.readOther();
         List<UniversalScriptCommand> list = parser.read(script);
-        CommandList cmdlist = new CommandList("for", list, command);
-        return new ForCommand(this, command, name, collection, cmdlist);
+        CommandList cmdList = new CommandList("for", list, command);
+        return new ForCommand(this, command, name, collection, indexVariableName, cmdList);
     }
 }

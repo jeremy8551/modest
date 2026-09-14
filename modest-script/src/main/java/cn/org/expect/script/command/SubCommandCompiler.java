@@ -15,7 +15,7 @@ import cn.org.expect.script.annotation.EasyCommandCompiler;
 public class SubCommandCompiler extends AbstractCommandCompiler {
 
     public UniversalCommandCompilerResult match(UniversalScriptAnalysis analysis, String name, String line) {
-        return line.charAt(0) == '`' ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
+        return line.length() > 0 && line.charAt(0) == '`' ? UniversalCommandCompilerResult.NEUTRAL : UniversalCommandCompilerResult.IGNORE;
     }
 
     public String read(UniversalScriptReader in, UniversalScriptAnalysis analysis) throws IOException {

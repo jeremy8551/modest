@@ -1,6 +1,9 @@
 package cn.org.expect.util;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.math.BigDecimal;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -17,6 +20,26 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class StringUtilsTest {
+
+    @Test
+    public void testUpperCamel() {
+        Assert.assertNull(StringUtils.upperCamel(null));
+        Assert.assertEquals("", StringUtils.upperCamel(""));
+        Assert.assertEquals("User", StringUtils.upperCamel("USER"));
+        Assert.assertEquals("UserAccount", StringUtils.upperCamel("USER_ACCOUNT"));
+        Assert.assertEquals("UserAccount2", StringUtils.upperCamel("user__account_2"));
+        Assert.assertEquals("UserAccount", StringUtils.upperCamel("_user-account_"));
+    }
+
+    @Test
+    public void testLowerCamel() {
+        Assert.assertNull(StringUtils.lowerCamel(null));
+        Assert.assertEquals("", StringUtils.lowerCamel(""));
+        Assert.assertEquals("user", StringUtils.lowerCamel("USER"));
+        Assert.assertEquals("userAccount", StringUtils.lowerCamel("USER_ACCOUNT"));
+        Assert.assertEquals("userAccount2", StringUtils.lowerCamel("user__account_2"));
+        Assert.assertEquals("userAccount", StringUtils.lowerCamel("_user-account_"));
+    }
 
     @Test
     public void testGetProtocaol() throws MalformedURLException {
@@ -1990,5 +2013,102 @@ public class StringUtilsTest {
         Assert.assertEquals("{a}+{b}3", StringUtils.replaceIndexHolder("{a}+{b}3", new Object[]{"1", "2", "3"}));
         Assert.assertEquals("{a}+{b}3\\", StringUtils.replaceIndexHolder("{a}+{b}3\\", new Object[]{"1", "2", "3"}));
         Assert.assertEquals("11", StringUtils.replaceIndexHolder("{10}", new Object[]{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11"}));
+    }
+    @Test
+    public void testTranslateChineseNumberChar() {
+        Assert.assertEquals('0', StringUtils.replaceChineseNumber('零'));
+        Assert.assertEquals('9', StringUtils.replaceChineseNumber('九'));
+        Assert.assertEquals('9', StringUtils.replaceChineseNumber('玖'));
+        Assert.assertEquals('1', StringUtils.replaceChineseNumber('壹'));
+    }
+
+    @Test
+    public void testTranslateChineseNumberString() {
+        Assert.assertNull(StringUtils.replaceChineseNumber(null));
+        Assert.assertEquals("1998", StringUtils.replaceChineseNumber("一九九八"));
+        Assert.assertEquals("1998 2月 9 0", StringUtils.replaceChineseNumber("一九九八 贰月 玖 零"));
+        Assert.assertEquals(" ", StringUtils.replaceChineseNumber(" "));
+    }
+
+    @Test
+    public void testTranslateTraditionalChineseNumberBigDecimal() {
+        Assert.assertNull(StringUtils.toChineseNumber(null));
+        Assert.assertEquals("壹仟元", StringUtils.toChineseNumber(new BigDecimal("1000")));
+        Assert.assertEquals("壹拾元", StringUtils.toChineseNumber(new BigDecimal("10")));
+        Assert.assertEquals("壹拾壹元", StringUtils.toChineseNumber(new BigDecimal("11")));
+        Assert.assertEquals("捌拾壹元", StringUtils.toChineseNumber(new BigDecimal("81")));
+        Assert.assertEquals("负壹万贰仟叁佰肆拾伍元陆角柒分", StringUtils.toChineseNumber(new BigDecimal("-12345.67")));
+        Assert.assertEquals("壹万贰仟叁佰肆拾伍元陆角柒分", StringUtils.toChineseNumber(new BigDecimal("12345.67")));
+        Assert.assertEquals("壹拾贰万叁仟肆佰伍拾陆元壹角贰分", StringUtils.toChineseNumber(new BigDecimal("123456.12")));
+        Assert.assertEquals("壹佰贰拾叁万肆仟伍佰陆拾柒元壹角贰分", StringUtils.toChineseNumber(new BigDecimal("1234567.12")));
+        Assert.assertEquals("壹仟贰佰叁拾肆万伍仟陆佰柒拾捌元壹角贰分", StringUtils.toChineseNumber(new BigDecimal("12345678.12")));
+        Assert.assertEquals("壹亿贰仟叁佰肆拾伍万陆仟柒佰捌拾玖元壹角贰分", StringUtils.toChineseNumber(new BigDecimal("123456789.12")));
+        Assert.assertEquals("壹拾贰亿叁仟肆佰伍拾陆万柒仟捌佰玖拾元零壹角贰分", StringUtils.toChineseNumber(new BigDecimal("1234567890.12")));
+        Assert.assertEquals("壹佰贰拾叁亿肆仟伍佰陆拾柒万捌仟玖佰零壹元壹角贰分", StringUtils.toChineseNumber(new BigDecimal("12345678901.12")));
+
+        Assert.assertEquals("肆仟陆佰肆拾万零贰仟玖佰壹拾伍元", StringUtils.toChineseNumber(new BigDecimal("46402915.00")));
+        Assert.assertEquals("壹仟玖佰玖拾万零陆仟零捌拾元", StringUtils.toChineseNumber(new BigDecimal("19906080")));
+    }
+
+    @Test
+    public void testisChineseLetter() {
+        Assert.assertTrue(StringUtils.isChineseLetter('一'));
+        Assert.assertTrue(StringUtils.isChineseLetter('飞'));
+        Assert.assertTrue(StringUtils.isChineseLetter('中'));
+        Assert.assertTrue(StringUtils.isChineseLetter('国'));
+        Assert.assertTrue(StringUtils.isChineseLetter(''));
+        Assert.assertTrue(StringUtils.isChineseLetter(''));
+        Assert.assertTrue(StringUtils.isChineseLetter(''));
+        Assert.assertFalse(StringUtils.isChineseLetter('1'));
+        Assert.assertFalse(StringUtils.isChineseLetter('='));
+        Assert.assertFalse(StringUtils.isChineseLetter('。'));
+    }
+
+    @Test
+    public void testParseBigDecimalString() {
+        Assert.assertEquals("12345678901.12345", StringUtils.parseChineseNumber("壹佰贰拾叁亿肆仟伍佰陆拾柒万捌仟玖佰壹元壹角贰分叁厘肆豪伍丝").toString());
+        Assert.assertEquals(BigDecimal.ZERO, StringUtils.parseChineseNumber("0"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("0.1"), new BigDecimal("0.1"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("0.12"), new BigDecimal("0.12"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("120.00"), new BigDecimal("120.0"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("120.12345"), new BigDecimal("120.12345"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("一百二十"), new BigDecimal("120"));
+
+        Assert.assertEquals(StringUtils.parseChineseNumber("一万二千三百四十五兆 六千7百八十九亿 一千二百三十四万 五千六百七十八元 9角1分2厘3豪4丝56"), new BigDecimal("12345678912345678.9123456"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("负一万二千三百四十五兆 六千7百八十九亿 一千二百三十四万 五千六百七十八元 9角1分2厘3豪4丝56"), new BigDecimal("-12345678912345678.9123456"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("负一万二千三百四十五兆 六千7百八十九亿 一千二百三十四万 五千六百七十八元"), new BigDecimal("-12345678912345678"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("9角1分2厘3豪4丝56789"), new BigDecimal("0.9123456789"));
+
+        Assert.assertEquals(StringUtils.parseChineseNumber("二千三百四十五万"), new BigDecimal("23450000"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("一万二千三百四十五万"), new BigDecimal("62340"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("一万二千三百四十"), new BigDecimal("12340"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("一万二十"), new BigDecimal("10020"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("一万零二十"), new BigDecimal("10020"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("一万零二兆"), new BigDecimal("10002000000000000"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("贰仟伍佰伍拾元"), new BigDecimal("2550"));
+        Assert.assertEquals(StringUtils.parseChineseNumber("壹仟叁佰陆拾肆元伍角"), new BigDecimal("1364.5"));
+    }
+
+
+    @Test
+    public void testIsChineseLetter() throws IOException {
+        File file = FileUtils.createTempFile("chinese_charactors.txt");
+        Logs.info("汉字字符文件 file://{}", file);
+
+        OutputStreamWriter out = IO.getFileWriter(file, Settings.getFileEncoding(), false);
+        try {
+            for (int i = 0; i < 65536; i++) {
+                char c = (char) i;
+                boolean letter = StringUtils.isChineseLetter(c);
+                if (letter) {
+                    String line = "汉字字符: " + Long.toHexString(i) + " " + i + " " + c + " " + letter;
+                    out.write(line);
+                    out.write(Settings.getLineSeparator());
+                }
+            }
+            out.flush();
+        } finally {
+            out.close();
+        }
     }
 }

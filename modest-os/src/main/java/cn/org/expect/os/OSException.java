@@ -1,6 +1,6 @@
 package cn.org.expect.os;
 
-import cn.org.expect.ModestRuntimeException;
+import cn.org.expect.exception.ModestRuntimeException;
 
 /**
  * 操作系统异常

@@ -27,6 +27,17 @@ public class Ensure {
     }
 
     /**
+     * 参数不能是空白的字符序列
+     *
+     * @param value 字符串
+     */
+    public static void notBlank(CharSequence value, String message, Object... array) {
+        if (StringUtils.isBlank(value)) {
+            throw new IllegalArgumentException(StringUtils.replaceEmptyHolder(message, array));
+        }
+    }
+
+    /**
      * 检查参数是否是 true，此方法主要用于在方法和构造函数中进行参数验证
      *
      * @param value 布尔参数
@@ -38,6 +49,21 @@ public class Ensure {
             return true;
         } else {
             throw new IllegalArgumentException(array.length == 0 ? "" : Arrays.toString(array));
+        }
+    }
+
+    /**
+     * 检查参数是否是 true，此方法主要用于在方法和构造函数中进行参数验证
+     *
+     * @param value 布尔参数
+     * @param array 异常信息
+     * @return 返回true
+     */
+    public static boolean isTrue(boolean value, String message, Object... array) {
+        if (value) {
+            return true;
+        } else {
+            throw new IllegalArgumentException(StringUtils.replaceEmptyHolder(message, array));
         }
     }
 

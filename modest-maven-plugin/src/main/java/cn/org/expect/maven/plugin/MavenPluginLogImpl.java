@@ -8,12 +8,18 @@ import cn.org.expect.util.StringUtils;
 import org.apache.maven.plugin.Mojo;
 import org.apache.maven.plugin.logging.Log;
 
+/**
+ * 将模块日志输出适配到 Maven 插件日志
+ */
 public class MavenPluginLogImpl implements MavenPluginLog {
 
     private final Log log;
 
     private final Mojo mojo;
 
+    /**
+     * 初始化 MavenPluginLogImpl
+     */
     public MavenPluginLogImpl(Mojo mojo) {
         this.mojo = mojo;
         this.log = mojo.getLog();
@@ -23,33 +29,41 @@ public class MavenPluginLogImpl implements MavenPluginLog {
         return this.mojo.getClass().getName();
     }
 
+    /** {@inheritDoc} */
     public boolean isTraceEnabled() {
         return false;
     }
 
+    /** {@inheritDoc} */
     public boolean isDebugEnabled() {
         return log.isDebugEnabled();
     }
 
+    /** {@inheritDoc} */
     public boolean isInfoEnabled() {
         return log.isInfoEnabled();
     }
 
+    /** {@inheritDoc} */
     public boolean isWarnEnabled() {
         return log.isWarnEnabled();
     }
 
+    /** {@inheritDoc} */
     public boolean isErrorEnabled() {
         return log.isErrorEnabled();
     }
 
+    /** {@inheritDoc} */
     public boolean isFatalEnabled() {
         return log.isErrorEnabled();
     }
 
+    /** {@inheritDoc} */
     public void trace(Object message, Object... args) {
     }
 
+    /** {@inheritDoc} */
     public void debug(Object message, Object... args) {
         List<String> list = new ArrayList<String>();
         StringUtils.splitLines(Logs.toString(message, args), list);
@@ -58,6 +72,7 @@ public class MavenPluginLogImpl implements MavenPluginLog {
         }
     }
 
+    /** {@inheritDoc} */
     public void info(Object message, Object... args) {
         List<String> list = new ArrayList<String>();
         StringUtils.splitLines(Logs.toString(message, args), list);
@@ -66,6 +81,7 @@ public class MavenPluginLogImpl implements MavenPluginLog {
         }
     }
 
+    /** {@inheritDoc} */
     public void warn(Object message, Object... args) {
         List<String> list = new ArrayList<String>();
         StringUtils.splitLines(Logs.toString(message, args), list);
@@ -74,6 +90,7 @@ public class MavenPluginLogImpl implements MavenPluginLog {
         }
     }
 
+    /** {@inheritDoc} */
     public void error(Object message, Object... args) {
         List<String> list = new ArrayList<String>();
         StringUtils.splitLines(Logs.toString(message, args), list);
@@ -82,6 +99,7 @@ public class MavenPluginLogImpl implements MavenPluginLog {
         }
     }
 
+    /** {@inheritDoc} */
     public void fatal(Object message, Object... args) {
         List<String> list = new ArrayList<String>();
         StringUtils.splitLines(Logs.toString(message, args), list);

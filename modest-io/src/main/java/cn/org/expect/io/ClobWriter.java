@@ -8,7 +8,7 @@ import java.io.Writer;
 import java.sql.Clob;
 import java.sql.SQLException;
 
-import cn.org.expect.ModestRuntimeException;
+import cn.org.expect.exception.ModestRuntimeException;
 import cn.org.expect.util.FileUtils;
 import cn.org.expect.util.IO;
 import cn.org.expect.util.StringUtils;

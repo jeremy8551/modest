@@ -1,8 +1,8 @@
 package cn.org.expect.database.parallel;
 
 import cn.org.expect.concurrent.AbstractJob;
-import cn.org.expect.database.load.inernal.DataWriter;
-import cn.org.expect.database.load.inernal.DataWriterFactory;
+import cn.org.expect.database.load.internal.DataWriter;
+import cn.org.expect.database.load.internal.DataWriterFactory;
 import cn.org.expect.database.load.serial.LoadFileExecutorContext;
 import cn.org.expect.io.TextTableFile;
 import cn.org.expect.io.TextTableFileReader;

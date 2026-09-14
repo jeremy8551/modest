@@ -1,6 +1,6 @@
 package cn.org.expect.log;
 
-import cn.org.expect.ModestRuntimeException;
+import cn.org.expect.exception.ModestRuntimeException;
 
 /**
  * 日志错误

@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -83,12 +84,11 @@ public class CollectionUtils {
             }
             return newList;
         } else if (c == null) {
-            HashSet<E> set = new HashSet<E>();
-            set.addAll(list);
+            Set<E> set = new LinkedHashSet<E>(list);
             newList.addAll(set);
             return newList;
         } else {
-            TreeSet<E> set = new TreeSet<E>(c);
+            Set<E> set = new TreeSet<E>(c);
             set.addAll(list);
             newList.addAll(set);
             return newList;

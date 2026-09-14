@@ -9,10 +9,16 @@ import javax.script.ScriptContext;
 import cn.org.expect.script.UniversalScriptContext;
 import cn.org.expect.util.Ensure;
 
+/**
+ * 提供 JSR 223 脚本上下文的默认实现
+ */
 public class ScriptContextImpl implements ScriptContext {
 
     protected UniversalScriptContext context;
 
+    /**
+     * 初始化 ScriptContextImpl
+     */
     public ScriptContextImpl(UniversalScriptContext context) {
         this.context = Ensure.notNull(context);
     }
@@ -33,6 +39,7 @@ public class ScriptContextImpl implements ScriptContext {
         return this.context.getVariable(name, scope);
     }
 
+    /** {@inheritDoc} */
     public Object removeAttribute(String name, int scope) {
         return this.context.removeVariable(name, scope);
     }

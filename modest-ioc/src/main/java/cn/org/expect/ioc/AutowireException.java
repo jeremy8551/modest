@@ -1,6 +1,6 @@
 package cn.org.expect.ioc;
 
-import cn.org.expect.ModestRuntimeException;
+import cn.org.expect.exception.ModestRuntimeException;
 
 /**
  * 注入发生错误

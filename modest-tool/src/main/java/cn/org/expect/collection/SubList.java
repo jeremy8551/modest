@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
+/**
+ * 提供集合视图及其边界访问能力
+ */
 public class SubList<E> extends RandomAccessList<E> {
     private final static long serialVersionUID = 1L;
 
@@ -18,6 +21,9 @@ public class SubList<E> extends RandomAccessList<E> {
 
     private int expectedModCount;
 
+    /**
+     * 初始化 SubList
+     */
     public SubList(RandomAccessList<E> list, int from, int index) {
         if (from < 0) {
             throw new IndexOutOfBoundsException(String.valueOf(from));
@@ -47,11 +53,13 @@ public class SubList<E> extends RandomAccessList<E> {
         return list.get(index + offset);
     }
 
+    /** {@inheritDoc} */
     public int size() {
         checkFor();
         return size;
     }
 
+    /** {@inheritDoc} */
     public void add(int index, E element) {
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException();
@@ -64,6 +72,7 @@ public class SubList<E> extends RandomAccessList<E> {
         modCount++;
     }
 
+    /** {@inheritDoc} */
     public E remove(int index) {
         rangeCheck(index);
         checkFor();
@@ -74,6 +83,7 @@ public class SubList<E> extends RandomAccessList<E> {
         return result;
     }
 
+    /** {@inheritDoc} */
     protected void removeRange(int fromIndex, int toIndex) {
         checkFor();
         list.removeRange(fromIndex + offset, toIndex + offset);
@@ -82,10 +92,12 @@ public class SubList<E> extends RandomAccessList<E> {
         modCount++;
     }
 
+    /** {@inheritDoc} */
     public boolean addAll(Collection<? extends E> c) {
         return addAll(size, c);
     }
 
+    /** {@inheritDoc} */
     public boolean addAll(int index, Collection<? extends E> c) {
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + size);
@@ -103,10 +115,12 @@ public class SubList<E> extends RandomAccessList<E> {
         return true;
     }
 
+    /** {@inheritDoc} */
     public Iterator<E> iterator() {
         return listIterator();
     }
 
+    /** {@inheritDoc} */
     public ListIterator<E> listIterator(final int index) {
         checkFor();
         if (index < 0 || index > size) {
@@ -116,10 +130,12 @@ public class SubList<E> extends RandomAccessList<E> {
         return new ListIterator<E>() {
             private ListIterator<E> i = list.listIterator(index + offset);
 
+            /** {@inheritDoc} */
             public boolean hasNext() {
                 return nextIndex() < size;
             }
 
+            /** {@inheritDoc} */
             public E next() {
                 if (hasNext()) {
                     return i.next();
@@ -128,10 +144,12 @@ public class SubList<E> extends RandomAccessList<E> {
                 }
             }
 
+            /** {@inheritDoc} */
             public boolean hasPrevious() {
                 return previousIndex() >= 0;
             }
 
+            /** {@inheritDoc} */
             public E previous() {
                 if (hasPrevious()) {
                     return i.previous();
@@ -140,14 +158,17 @@ public class SubList<E> extends RandomAccessList<E> {
                 }
             }
 
+            /** {@inheritDoc} */
             public int nextIndex() {
                 return i.nextIndex() - offset;
             }
 
+            /** {@inheritDoc} */
             public int previousIndex() {
                 return i.previousIndex() - offset;
             }
 
+            /** {@inheritDoc} */
             public void remove() {
                 i.remove();
                 expectedModCount = list.modCount;
@@ -159,6 +180,7 @@ public class SubList<E> extends RandomAccessList<E> {
                 i.set(o);
             }
 
+            /** {@inheritDoc} */
             public void add(E o) {
                 i.add(o);
                 expectedModCount = list.modCount;
@@ -168,6 +190,7 @@ public class SubList<E> extends RandomAccessList<E> {
         };
     }
 
+    /** {@inheritDoc} */
     public List<E> subList(int fromIndex, int toIndex) {
         return new SubList<E>(this, fromIndex, toIndex);
     }

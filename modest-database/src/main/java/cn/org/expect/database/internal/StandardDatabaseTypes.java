@@ -11,10 +11,16 @@ import cn.org.expect.util.CharTable;
 import cn.org.expect.util.ResourcesUtils;
 import cn.org.expect.util.StringUtils;
 
+/**
+ * 维护数据库支持的数据类型集合
+ */
 public class StandardDatabaseTypes implements DatabaseTypeSet {
 
     private Map<String, DatabaseType> map;
 
+    /**
+     * 初始化 StandardDatabaseTypes
+     */
     public StandardDatabaseTypes() {
         this.map = new CaseSensitivMap<DatabaseType>();
     }
@@ -38,6 +44,7 @@ public class StandardDatabaseTypes implements DatabaseTypeSet {
         return null;
     }
 
+    /** {@inheritDoc} */
     public String toString() {
         CharTable table = new CharTable();
         String[] array = ResourcesUtils.getMessageArray("database.stdout.message021");
