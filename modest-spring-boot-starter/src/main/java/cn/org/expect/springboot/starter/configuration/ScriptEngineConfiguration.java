@@ -25,12 +25,16 @@ import org.springframework.context.annotation.ScopedProxyMode;
 @Configuration
 public class ScriptEngineConfiguration {
 
+    /** springContext变量名 */
+    public final static String SPRING_CONTEXT_VARIABLE_NAME = "springContext";
+
     @Lazy
     @Bean
     @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
     public UniversalScriptEngine getUniversalScriptEngine(EasyContext context, UniversalScriptEngineFactory factory) {
         UniversalScriptEngine engine = factory.getScriptEngine();
         ApplicationContext springContext = context.getBean(ApplicationContext.class);
+        engine.getContext().addVariable(SPRING_CONTEXT_VARIABLE_NAME, springContext, UniversalScriptContext.GLOBAL_SCOPE);
         engine.getContext().addVariable(new SpringEnvironment(springContext), UniversalScriptContext.ENVIRONMENT_SCOPE);
         return engine;
     }
@@ -41,6 +45,7 @@ public class ScriptEngineConfiguration {
     public ScriptEngine getScriptEngine(EasyContext context, ScriptEngineFactory factory) {
         ScriptEngine engine = factory.getScriptEngine();
         ApplicationContext springContext = context.getBean(ApplicationContext.class);
+        engine.getContext().getBindings(UniversalScriptContext.GLOBAL_SCOPE).put(SPRING_CONTEXT_VARIABLE_NAME, springContext);
         engine.setBindings(new SpringBindings(springContext), UniversalScriptContext.ENVIRONMENT_SCOPE);
         return engine;
     }
