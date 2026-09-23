@@ -4488,6 +4488,31 @@ public class StringUtils {
     }
 
     /**
+     * 从字符串 str 的最右端移除字符串 suffix
+     *
+     * @param str    字符串
+     * @param suffix 字符串
+     * @return 移除后的字符串
+     */
+    public static String removeSuffix(CharSequence str, CharSequence suffix) {
+        if (str == null) {
+            return null;
+        }
+        if (str.length() == 0 || suffix == null || suffix.length() == 0 || str.length() < suffix.length()) {
+            return str.toString();
+        }
+
+        int offset = str.length() - suffix.length();
+        int index = 0;
+        for (; index < suffix.length(); index++) {
+            if (str.charAt(offset + index) != suffix.charAt(index)) {
+                break;
+            }
+        }
+        return index == suffix.length() ? str.subSequence(0, offset).toString() : str.toString();
+    }
+
+    /**
      * 删除字符串右侧的回车或回车换行符
      *
      * @param str 字符串

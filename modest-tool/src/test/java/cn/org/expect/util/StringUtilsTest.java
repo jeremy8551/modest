@@ -2091,6 +2091,51 @@ public class StringUtilsTest {
 
 
     @Test
+    public void testRemoveSuffix() {
+        // str 为 null
+        Assert.assertNull(StringUtils.removeSuffix(null, null));
+        Assert.assertNull(StringUtils.removeSuffix(null, ""));
+        Assert.assertNull(StringUtils.removeSuffix(null, "abc"));
+
+        // str 为空字符串
+        Assert.assertEquals("", StringUtils.removeSuffix("", ""));
+        Assert.assertEquals("", StringUtils.removeSuffix("", "abc"));
+
+        // suffix 为 null 或空
+        Assert.assertEquals("abc", StringUtils.removeSuffix("abc", null));
+        Assert.assertEquals("abc", StringUtils.removeSuffix("abc", ""));
+
+        // suffix 比 str 长
+        Assert.assertEquals("ab", StringUtils.removeSuffix("ab", "abc"));
+        Assert.assertEquals("a", StringUtils.removeSuffix("a", "ab"));
+
+        // 完全匹配
+        Assert.assertEquals("", StringUtils.removeSuffix("abc", "abc"));
+        Assert.assertEquals("", StringUtils.removeSuffix("a", "a"));
+
+        // str 以 suffix 结尾，正常移除
+        Assert.assertEquals("ab", StringUtils.removeSuffix("abc", "c"));
+        Assert.assertEquals("a", StringUtils.removeSuffix("abc", "bc"));
+        Assert.assertEquals("12", StringUtils.removeSuffix("123", "3"));
+        Assert.assertEquals("1", StringUtils.removeSuffix("123", "23"));
+
+        // str 不以 suffix 结尾，返回原字符串
+        Assert.assertEquals("123", StringUtils.removeSuffix("123", "1"));
+        Assert.assertEquals("123", StringUtils.removeSuffix("123", "4"));
+        Assert.assertEquals("abc", StringUtils.removeSuffix("abc", "d"));
+        Assert.assertEquals("hello", StringUtils.removeSuffix("hello", "lo!"));
+
+        // 空格相关
+        Assert.assertEquals(" ", StringUtils.removeSuffix("  ", " "));
+        Assert.assertEquals("1", StringUtils.removeSuffix("1 ", " "));
+        Assert.assertEquals(" 1", StringUtils.removeSuffix(" 1 ", " "));
+
+        // 中文字符
+        Assert.assertEquals("中文", StringUtils.removeSuffix("中文测试", "测试"));
+        Assert.assertEquals("中文测试", StringUtils.removeSuffix("中文测试", "英文"));
+    }
+
+    @Test
     public void testIsChineseLetter() throws IOException {
         File file = FileUtils.createTempFile("chinese_charactors.txt");
         Logs.info("汉字字符文件 file://{}", file);
