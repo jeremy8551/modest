@@ -39,7 +39,6 @@ public class ScriptContextImpl implements ScriptContext {
         return this.context.getVariable(name, scope);
     }
 
-    /** {@inheritDoc} */
     public Object removeAttribute(String name, int scope) {
         return this.context.removeVariable(name, scope);
     }

@@ -340,6 +340,17 @@ public class StringExtension {
     }
 
     /**
+     * 从字符串 str 的最右端移除字符串 suffix
+     *
+     * @param str    字符串
+     * @param suffix 字符串
+     * @return 移除后的字符串
+     */
+    public static String removeSuffix(CharSequence str, CharSequence suffix) {
+        return StringUtils.removeSuffix(str, suffix);
+    }
+
+    /**
      * 将字符串转换为大写驼峰命名
      *
      * @param tableName 字符串

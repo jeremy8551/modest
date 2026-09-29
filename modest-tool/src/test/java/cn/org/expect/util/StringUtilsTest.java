@@ -807,6 +807,106 @@ public class StringUtilsTest {
         Assert.assertEquals("test", StringUtils.replaceVariable("${HOME}", "HOME", "test"));
     }
 
+    /**
+     * 验证空字符串和非正字节上限返回空串
+     *
+     * @throws UnsupportedEncodingException 字符集不受支持时抛出
+     */
+    @Test
+    public void testSubstringMaxBytesEmptyInput() throws UnsupportedEncodingException {
+        Assert.assertEquals("", StringUtils.substring(null, 10, "UTF-8"));
+        Assert.assertEquals("", StringUtils.substring("", 10, "UTF-8"));
+        Assert.assertEquals("", StringUtils.substring("中文abc", 0, "UTF-8"));
+        Assert.assertEquals("", StringUtils.substring("中文abc", -1, "UTF-8"));
+        Assert.assertEquals("", StringUtils.substring("abc", Integer.MIN_VALUE, "UTF-8"));
+    }
+
+    /**
+     * 验证单字节字符的截断、恰好容纳及超长上限
+     *
+     * @throws UnsupportedEncodingException 字符集不受支持时抛出
+     */
+    @Test
+    public void testSubstringMaxBytesAscii() throws UnsupportedEncodingException {
+        Assert.assertEquals("a", StringUtils.substring("abc", 1, "US-ASCII"));
+        Assert.assertEquals("ab", StringUtils.substring("abc", 2, "US-ASCII"));
+        Assert.assertEquals("abc", StringUtils.substring("abc", 3, "US-ASCII"));
+        Assert.assertEquals("abc", StringUtils.substring("abc", 4, "US-ASCII"));
+        Assert.assertEquals("abc", StringUtils.substring("abc", Integer.MAX_VALUE, "US-ASCII"));
+    }
+
+    /**
+     * 验证 UTF-8 中文在字符边界处截取
+     *
+     * @throws UnsupportedEncodingException 字符集不受支持时抛出
+     */
+    @Test
+    public void testSubstringMaxBytesUtf8Chinese() throws UnsupportedEncodingException {
+        String[] expected = {"", "", "", "中", "中", "中", "中文", "中文"};
+        for (int i = 0; i < expected.length; i++) {
+            Assert.assertEquals("maxBytes=" + i, expected[i], StringUtils.substring("中文", i, "UTF-8"));
+        }
+    }
+
+    /**
+     * 验证 GBK 中文按双字节边界截取并支持字符集别名
+     *
+     * @throws UnsupportedEncodingException 字符集不受支持时抛出
+     */
+    @Test
+    public void testSubstringMaxBytesGbkChinese() throws UnsupportedEncodingException {
+        String[] expected = {"", "", "中", "中", "中文", "中文"};
+        for (int i = 0; i < expected.length; i++) {
+            Assert.assertEquals("maxBytes=" + i, expected[i], StringUtils.substring("中文", i, "gbk"));
+        }
+    }
+
+    /**
+     * 验证混合文本保留连续前缀，不跳过无法容纳的字符
+     *
+     * @throws UnsupportedEncodingException 字符集不受支持时抛出
+     */
+    @Test
+    public void testSubstringMaxBytesMixedText() throws UnsupportedEncodingException {
+        Assert.assertEquals("A", StringUtils.substring("A中B文C", 3, "UTF-8"));
+        Assert.assertEquals("A中", StringUtils.substring("A中B文C", 4, "UTF-8"));
+        Assert.assertEquals("A中B", StringUtils.substring("A中B文C", 7, "UTF-8"));
+        Assert.assertEquals("A中B文", StringUtils.substring("A中B文C", 8, "UTF-8"));
+        Assert.assertEquals("A中B文C", StringUtils.substring("A中B文C", 9, "UTF-8"));
+        Assert.assertEquals("", StringUtils.substring("中A", 2, "UTF-8"));
+        Assert.assertEquals("A", StringUtils.substring("A中B", 2, "GBK"));
+        Assert.assertEquals("A中", StringUtils.substring("A中B", 3, "GBK"));
+        Assert.assertEquals("A中B", StringUtils.substring("A中B", 4, "GBK"));
+    }
+
+    /**
+     * 验证 UTF-8 双字节字符和四字节 Emoji 不被截断
+     *
+     * @throws UnsupportedEncodingException 字符集不受支持时抛出
+     */
+    @Test
+    public void testSubstringMaxBytesUnicode() throws UnsupportedEncodingException {
+        Assert.assertEquals("", StringUtils.substring("éA", 1, "UTF-8"));
+        Assert.assertEquals("é", StringUtils.substring("éA", 2, "UTF-8"));
+        Assert.assertEquals("éA", StringUtils.substring("éA", 3, "UTF-8"));
+        String emoji = "\uD83D\uDE00";
+        Assert.assertEquals("", StringUtils.substring(emoji + "B", 3, "UTF-8"));
+        Assert.assertEquals(emoji, StringUtils.substring(emoji + "B", 4, "UTF-8"));
+        Assert.assertEquals("A", StringUtils.substring("A" + emoji + "B", 4, "UTF-8"));
+        Assert.assertEquals("A" + emoji, StringUtils.substring("A" + emoji + "B", 5, "UTF-8"));
+        Assert.assertEquals("A" + emoji + "B", StringUtils.substring("A" + emoji + "B", 6, "UTF-8"));
+    }
+
+    /**
+     * 验证不支持的字符集抛出编码异常
+     *
+     * @throws UnsupportedEncodingException 使用无效字符集时预期抛出
+     */
+    @Test(expected = UnsupportedEncodingException.class)
+    public void testSubstringMaxBytesUnsupportedCharset() throws UnsupportedEncodingException {
+        StringUtils.substring("abc", 1, "unsupported-charset");
+    }
+
     @Test
     public void testSubstrStringIntInt() {
         Assert.assertNull(StringUtils.substring((String) null, 0, 0, CharsetName.UTF_8));
@@ -2089,6 +2189,51 @@ public class StringUtilsTest {
         Assert.assertEquals(StringUtils.parseChineseNumber("壹仟叁佰陆拾肆元伍角"), new BigDecimal("1364.5"));
     }
 
+
+    @Test
+    public void testRemoveSuffix() {
+        // str 为 null
+        Assert.assertNull(StringUtils.removeSuffix(null, null));
+        Assert.assertNull(StringUtils.removeSuffix(null, ""));
+        Assert.assertNull(StringUtils.removeSuffix(null, "abc"));
+
+        // str 为空字符串
+        Assert.assertEquals("", StringUtils.removeSuffix("", ""));
+        Assert.assertEquals("", StringUtils.removeSuffix("", "abc"));
+
+        // suffix 为 null 或空
+        Assert.assertEquals("abc", StringUtils.removeSuffix("abc", null));
+        Assert.assertEquals("abc", StringUtils.removeSuffix("abc", ""));
+
+        // suffix 比 str 长
+        Assert.assertEquals("ab", StringUtils.removeSuffix("ab", "abc"));
+        Assert.assertEquals("a", StringUtils.removeSuffix("a", "ab"));
+
+        // 完全匹配
+        Assert.assertEquals("", StringUtils.removeSuffix("abc", "abc"));
+        Assert.assertEquals("", StringUtils.removeSuffix("a", "a"));
+
+        // str 以 suffix 结尾，正常移除
+        Assert.assertEquals("ab", StringUtils.removeSuffix("abc", "c"));
+        Assert.assertEquals("a", StringUtils.removeSuffix("abc", "bc"));
+        Assert.assertEquals("12", StringUtils.removeSuffix("123", "3"));
+        Assert.assertEquals("1", StringUtils.removeSuffix("123", "23"));
+
+        // str 不以 suffix 结尾，返回原字符串
+        Assert.assertEquals("123", StringUtils.removeSuffix("123", "1"));
+        Assert.assertEquals("123", StringUtils.removeSuffix("123", "4"));
+        Assert.assertEquals("abc", StringUtils.removeSuffix("abc", "d"));
+        Assert.assertEquals("hello", StringUtils.removeSuffix("hello", "lo!"));
+
+        // 空格相关
+        Assert.assertEquals(" ", StringUtils.removeSuffix("  ", " "));
+        Assert.assertEquals("1", StringUtils.removeSuffix("1 ", " "));
+        Assert.assertEquals(" 1", StringUtils.removeSuffix(" 1 ", " "));
+
+        // 中文字符
+        Assert.assertEquals("中文", StringUtils.removeSuffix("中文测试", "测试"));
+        Assert.assertEquals("中文测试", StringUtils.removeSuffix("中文测试", "英文"));
+    }
 
     @Test
     public void testIsChineseLetter() throws IOException {

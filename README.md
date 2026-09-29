@@ -4881,6 +4881,31 @@ removePrefix(CharSequence prefix)
 ```java
 cn.org.expect.script.method.StringExtension.removePrefix(java.lang.CharSequence,java.lang.CharSequence)
 ```
+### removeSuffix(CharSequence)
+从字符串 str 的最右端移除字符串 suffix
+
+**Variable**
+
+`CharSequence` 字符串
+
+
+**Method**
+```java
+removeSuffix(CharSequence suffix)
+```
+**Parameter 1**
+
+字符串
+
+
+**Return Value**
+
+移除后的字符串
+
+**Implement Class**
+```java
+cn.org.expect.script.method.StringExtension.removeSuffix(java.lang.CharSequence,java.lang.CharSequence)
+```
 ### replace(String, String)
 替换字符串中的内容
 

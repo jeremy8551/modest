@@ -1,6 +1,7 @@
 package cn.org.expect.maven.plugin.execute;
 
 import java.util.List;
+import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -39,7 +40,9 @@ public class EvaluateMojo extends ExecuteMojo {
         this.useMavenPluginLog(classLoader);
         ScriptEngineManager manager = new ScriptEngineManager(classLoader);
         ScriptEngine engine = manager.getEngineByExtension("usl");
-        engine.getContext().getBindings(ScriptContext.GLOBAL_SCOPE).put("project.basedir", this.project.getBasedir().getAbsolutePath());
+        Bindings bindings = engine.getContext().getBindings(ScriptContext.GLOBAL_SCOPE);
+        bindings.put("project.basedir", this.project.getBasedir().getAbsolutePath());
+        bindings.put("project", this.project);
         for (Job job : this.eval) {
             if (job.ignore(this)) {
                 continue;

@@ -3,6 +3,7 @@ package cn.org.expect.script.internal;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.sql.DataSource;
 
 import cn.org.expect.database.Jdbc;
@@ -56,7 +57,7 @@ public class ScriptDataSource {
      * 初始化
      */
     public ScriptDataSource(UniversalScriptContext context) {
-        this.map = new Hashtable<String, DataSource>();
+        this.map = new ConcurrentHashMap<String, DataSource>();
         this.dao = new JdbcDao(context.getContainer());
         this.catalog = null;
         this.context = context;
@@ -124,6 +125,20 @@ public class ScriptDataSource {
         DataSource dataSourceProxy = Jdbc.getDataSourceLogger(this.context.getContainer(), dataSource);
         this.map.put(key, dataSourceProxy); // 保存到用户自定义数据库连接池集合中
         return dataSourceProxy;
+    }
+
+    /**
+     * 将指定数据库连接池保存起来
+     *
+     * @param name       数据库编目名
+     * @param dataSource 数据库连接池
+     */
+    public void put(String name, DataSource dataSource) {
+        if (this.map.containsKey(name)) {
+            throw new UniversalScriptException("script.stderr.message014", name);
+        }
+
+        this.map.put(name, dataSource);
     }
 
     /**

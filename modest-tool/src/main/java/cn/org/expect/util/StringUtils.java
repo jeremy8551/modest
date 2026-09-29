@@ -1,6 +1,7 @@
 package cn.org.expect.util;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -24,6 +25,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import cn.hutool.core.util.StrUtil;
 
 /**
  * 字符串工具
@@ -1338,6 +1341,38 @@ public class StringUtils {
             }
         }
         return new String(array);
+    }
+
+    /**
+     * 按指定字符集的“字节数”截取字符串，同时保证中文字符不会被截成半个
+     *
+     * @param str         字符串
+     * @param maxBytes    最大字节长度
+     * @param charsetName 字符集
+     * @return 字符串
+     */
+    public static String substring(String str, int maxBytes, String charsetName) throws UnsupportedEncodingException {
+        if (isEmpty(str) || maxBytes <= 0) {
+            return "";
+        }
+
+        int byteLength = 0;
+        int endIndex = 0;
+
+        while (endIndex < str.length()) {
+            int codePoint = str.codePointAt(endIndex);
+            String character = new String(Character.toChars(codePoint));
+
+            int charBytes = character.getBytes(charsetName).length;
+            if (byteLength + charBytes > maxBytes) {
+                break;
+            }
+
+            byteLength += charBytes;
+            endIndex += Character.charCount(codePoint);
+        }
+
+        return str.substring(0, endIndex);
     }
 
     /**
@@ -4485,6 +4520,31 @@ public class StringUtils {
         } else {
             return str.length() == 0 ? str.toString() : str.subSequence(0, str.length() - 1).toString();
         }
+    }
+
+    /**
+     * 从字符串 str 的最右端移除字符串 suffix
+     *
+     * @param str    字符串
+     * @param suffix 字符串
+     * @return 移除后的字符串
+     */
+    public static String removeSuffix(CharSequence str, CharSequence suffix) {
+        if (str == null) {
+            return null;
+        }
+        if (str.length() == 0 || suffix == null || suffix.length() == 0 || str.length() < suffix.length()) {
+            return str.toString();
+        }
+
+        int offset = str.length() - suffix.length();
+        int index = 0;
+        for (; index < suffix.length(); index++) {
+            if (str.charAt(offset + index) != suffix.charAt(index)) {
+                break;
+            }
+        }
+        return index == suffix.length() ? str.subSequence(0, offset).toString() : str.toString();
     }
 
     /**
