@@ -9,12 +9,10 @@ import cn.org.expect.script.UniversalScriptEngine;
 import cn.org.expect.script.UniversalScriptEngineFactory;
 import cn.org.expect.springboot.starter.script.SpringBindings;
 import cn.org.expect.springboot.starter.script.SpringEnvironment;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
 
 /**
  * 脚本引擎的Spring配置类
@@ -22,15 +20,14 @@ import org.springframework.context.annotation.ScopedProxyMode;
  * @author jeremy8551@gmail.com
  * @createtime 2023/10/3
  */
-@Configuration
+@AutoConfiguration
 public class ScriptEngineConfiguration {
 
     /** springContext变量名 */
     public final static String SPRING_CONTEXT_VARIABLE_NAME = "springContext";
 
-    @Lazy
     @Bean
-    @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
+    @ConditionalOnMissingBean(UniversalScriptEngine.class)
     public UniversalScriptEngine getUniversalScriptEngine(EasyContext context, UniversalScriptEngineFactory factory) {
         UniversalScriptEngine engine = factory.getScriptEngine();
         ApplicationContext springContext = context.getBean(ApplicationContext.class);
@@ -39,9 +36,8 @@ public class ScriptEngineConfiguration {
         return engine;
     }
 
-    @Lazy
     @Bean
-    @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
+    @ConditionalOnMissingBean(ScriptEngine.class)
     public ScriptEngine getScriptEngine(EasyContext context, ScriptEngineFactory factory) {
         ScriptEngine engine = factory.getScriptEngine();
         ApplicationContext springContext = context.getBean(ApplicationContext.class);

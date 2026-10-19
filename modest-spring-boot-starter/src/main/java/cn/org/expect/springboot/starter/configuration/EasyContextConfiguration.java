@@ -1,12 +1,14 @@
 package cn.org.expect.springboot.starter.configuration;
 
 import cn.org.expect.ioc.EasyContext;
+import cn.org.expect.springboot.starter.listener.ScriptListener;
 import cn.org.expect.springboot.starter.script.SpringArgument;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.Import;
 
 /**
  * 脚本引擎容器的Spring配置类 <br>
@@ -16,13 +18,12 @@ import org.springframework.context.annotation.Scope;
  * @author jeremy8551@gmail.com
  * @createtime 2023/10/3
  */
-@Configuration
+@AutoConfiguration
 public class EasyContextConfiguration {
 
-    @Lazy
     @Bean
-    @Scope("singleton")
-    public synchronized EasyContext getEasyContext(ApplicationContext springContext, SpringArgument argument) {
+    @ConditionalOnMissingBean(EasyContext.class)
+    public synchronized EasyContext getEasyContext(SpringArgument argument, ApplicationContext springContext) {
         return EasyContextFactory.newInstance(argument, springContext);
     }
 }
