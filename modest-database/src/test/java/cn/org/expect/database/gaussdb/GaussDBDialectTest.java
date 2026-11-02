@@ -6,6 +6,10 @@ import java.util.List;
 
 import cn.org.expect.database.DatabaseTableColumn;
 import cn.org.expect.database.DatabaseURL;
+import cn.org.expect.database.JdbcConverterMapper;
+import cn.org.expect.database.export.converter.StringConverter;
+import cn.org.expect.database.export.converter.IntegerConverter;
+import cn.org.expect.database.export.converter.LongConverter;
 import cn.org.expect.database.internal.StandardDatabaseTableColumn;
 import org.junit.Assert;
 import org.junit.Test;
@@ -75,6 +79,50 @@ public class GaussDBDialectTest {
         Assert.assertTrue(dialect.isPrimaryRepeatException(new SQLException("duplicate key", "23505")));
         Assert.assertTrue(dialect.isIndexExistsException(new SQLException("relation already exists", "42P07")));
         Assert.assertTrue(dialect.isRebuildTableException(new SQLException("syntax error", "42601")));
+    }
+
+    /**
+     * 高斯驱动返回的 bpchar 类型应复用 CHAR 的字符串导出逻辑。
+     */
+    @Test
+    public void testExportBpchar() {
+        GaussDBDialect dialect = new GaussDBDialect();
+        JdbcConverterMapper converters = dialect.getObjectConverters();
+        Assert.assertTrue(converters.contains("bpchar"));
+        Assert.assertTrue(converters.contains("BPCHAR"));
+        Assert.assertTrue(converters.get("bpchar") instanceof StringConverter);
+    }
+
+    /**
+     * 自增类型别名应按底层整数宽度进行导出和导入。
+     */
+    @Test
+    public void testSerialConverters() {
+        GaussDBDialect dialect = new GaussDBDialect();
+        for (String type : new String[]{"smallserial", "serial2", "serial", "serial4"}) {
+            Assert.assertTrue(dialect.getObjectConverters().get(type) instanceof IntegerConverter);
+            Assert.assertTrue(dialect.getStringConverters().get(type) instanceof cn.org.expect.database.load.converter.IntegerConverter);
+        }
+        for (String type : new String[]{"bigserial", "serial8"}) {
+            Assert.assertTrue(dialect.getObjectConverters().get(type) instanceof LongConverter);
+            Assert.assertTrue(dialect.getStringConverters().get(type) instanceof cn.org.expect.database.load.converter.LongConverter);
+        }
+    }
+
+    /**
+     * 扩展类型与动态类型均应创建独立的文本十六进制转换器。
+     */
+    @Test
+    public void testExtendedTypes() {
+        GaussDBDialect dialect = new GaussDBDialect();
+        for (String type : new String[]{"timestamptz", "timetz", "interval", "smalldatetime", "nvarchar2", "json", "jsonb", "xml", "uuid", "money", "bit", "varbit", "inet", "cidr", "macaddr", "point", "line", "lseg", "box", "path", "polygon", "circle", "_int4", "_text", "custom_enum", "custom_domain", "custom_composite"}) {
+            cn.org.expect.database.export.converter.TextConverter export = dialect.getObjectConverters().get(type);
+            cn.org.expect.database.load.converter.TextConverter load = dialect.getStringConverters().get(type);
+            Assert.assertNotNull(export);
+            Assert.assertNotNull(load);
+            Assert.assertNotSame(export, dialect.getObjectConverters().get(type));
+        }
+        Assert.assertNull(dialect.getObjectConverters().get(""));
     }
 
     private DatabaseTableColumn newColumn(String name) {

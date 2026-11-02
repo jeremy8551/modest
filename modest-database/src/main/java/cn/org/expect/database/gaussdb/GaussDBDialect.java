@@ -21,6 +21,7 @@ import cn.org.expect.database.JdbcQueryStatement;
 import cn.org.expect.database.SQL;
 import cn.org.expect.database.export.converter.AbstractConverter;
 import cn.org.expect.database.export.converter.BlobConverter;
+import cn.org.expect.database.export.converter.TextConverter;
 import cn.org.expect.database.export.converter.ByteArrayConverter;
 import cn.org.expect.database.export.converter.DateConverter;
 import cn.org.expect.database.export.converter.FloatConverter;
@@ -215,10 +216,39 @@ public class GaussDBDialect extends AbstractDialect {
 
     public JdbcConverterMapper getObjectConverters() {
         if (this.exp == null) {
-            this.exp = new StandardJdbcConverterMapper();
+            this.exp = new GaussDBConverterMapper(TextConverter.class);
             this.exp.add("BOOL", cn.org.expect.database.export.converter.BooleanConverter.class);
             this.exp.add("BOOLEAN", cn.org.expect.database.export.converter.BooleanConverter.class);
+            // 扩展类型保留数据库文本表示，避免丢失时区、结构及数组边界。
+            this.exp.add("TIMESTAMPTZ", TextConverter.class);
+            this.exp.add("TIMESTAMP WITH TIME ZONE", TextConverter.class);
+            this.exp.add("TIMETZ", TextConverter.class);
+            this.exp.add("TIME WITH TIME ZONE", TextConverter.class);
+            this.exp.add("INTERVAL", TextConverter.class);
+            this.exp.add("SMALLDATETIME", TextConverter.class);
+            this.exp.add("NVARCHAR2", TextConverter.class);
+            this.exp.add("JSON", TextConverter.class);
+            this.exp.add("JSONB", TextConverter.class);
+            this.exp.add("XML", TextConverter.class);
+            this.exp.add("UUID", TextConverter.class);
+            this.exp.add("MONEY", TextConverter.class);
+            this.exp.add("BIT", TextConverter.class);
+            this.exp.add("VARBIT", TextConverter.class);
+            this.exp.add("BIT VARYING", TextConverter.class);
+            this.exp.add("INET", TextConverter.class);
+            this.exp.add("CIDR", TextConverter.class);
+            this.exp.add("MACADDR", TextConverter.class);
+            this.exp.add("MACADDR8", TextConverter.class);
+            this.exp.add("POINT", TextConverter.class);
+            this.exp.add("LINE", TextConverter.class);
+            this.exp.add("LSEG", TextConverter.class);
+            this.exp.add("BOX", TextConverter.class);
+            this.exp.add("PATH", TextConverter.class);
+            this.exp.add("POLYGON", TextConverter.class);
+            this.exp.add("CIRCLE", TextConverter.class);
             this.exp.add("CHAR", StringConverter.class);
+            // PostgreSQL 协议驱动将高斯定长 CHAR 字段报告为 bpchar。
+            this.exp.add("BPCHAR", StringConverter.class);
             this.exp.add("CHARACTER", StringConverter.class);
             this.exp.add("VARCHAR", StringConverter.class);
             this.exp.add("CHARACTER VARYING", StringConverter.class);
@@ -231,8 +261,15 @@ public class GaussDBDialect extends AbstractDialect {
             this.exp.add("INTEGER", IntegerConverter.class);
             this.exp.add("INT", IntegerConverter.class);
             this.exp.add("INT4", IntegerConverter.class);
+            // 驱动可能将自增整数报告为 serial 系列别名。
+            this.exp.add("SMALLSERIAL", IntegerConverter.class);
+            this.exp.add("SERIAL2", IntegerConverter.class);
+            this.exp.add("SERIAL", IntegerConverter.class);
+            this.exp.add("SERIAL4", IntegerConverter.class);
             this.exp.add("BIGINT", LongConverter.class);
             this.exp.add("INT8", LongConverter.class);
+            this.exp.add("BIGSERIAL", LongConverter.class);
+            this.exp.add("SERIAL8", LongConverter.class);
             this.exp.add("NUMERIC", cn.org.expect.database.export.converter.BigDecimalConverter.class);
             this.exp.add("DECIMAL", cn.org.expect.database.export.converter.BigDecimalConverter.class);
             this.exp.add("REAL", FloatConverter.class);
@@ -250,9 +287,37 @@ public class GaussDBDialect extends AbstractDialect {
 
     public JdbcConverterMapper getStringConverters() {
         if (this.map == null) {
-            this.map = new StandardJdbcConverterMapper();
+            this.map = new GaussDBConverterMapper(cn.org.expect.database.load.converter.TextConverter.class);
             this.map.add("BOOL", cn.org.expect.database.load.converter.BooleanConverter.class);
             this.map.add("BOOLEAN", cn.org.expect.database.load.converter.BooleanConverter.class);
+            // 扩展类型保留数据库文本表示，避免丢失时区、结构及数组边界。
+            this.map.add("TIMESTAMPTZ", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("TIMESTAMP WITH TIME ZONE", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("TIMETZ", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("TIME WITH TIME ZONE", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("INTERVAL", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("SMALLDATETIME", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("NVARCHAR2", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("JSON", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("JSONB", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("XML", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("UUID", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("MONEY", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("BIT", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("VARBIT", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("BIT VARYING", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("INET", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("CIDR", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("MACADDR", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("MACADDR8", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("POINT", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("LINE", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("LSEG", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("BOX", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("PATH", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("POLYGON", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("CIRCLE", cn.org.expect.database.load.converter.TextConverter.class);
+            this.map.add("BPCHAR", cn.org.expect.database.load.converter.StringConverter.class);
             this.map.add("CHAR", cn.org.expect.database.load.converter.StringConverter.class);
             this.map.add("CHARACTER", cn.org.expect.database.load.converter.StringConverter.class);
             this.map.add("VARCHAR", cn.org.expect.database.load.converter.StringConverter.class);
@@ -266,8 +331,15 @@ public class GaussDBDialect extends AbstractDialect {
             this.map.add("INTEGER", cn.org.expect.database.load.converter.IntegerConverter.class);
             this.map.add("INT", cn.org.expect.database.load.converter.IntegerConverter.class);
             this.map.add("INT4", cn.org.expect.database.load.converter.IntegerConverter.class);
+            // 驱动可能将自增整数报告为 serial 系列别名。
+            this.map.add("SMALLSERIAL", cn.org.expect.database.load.converter.IntegerConverter.class);
+            this.map.add("SERIAL2", cn.org.expect.database.load.converter.IntegerConverter.class);
+            this.map.add("SERIAL", cn.org.expect.database.load.converter.IntegerConverter.class);
+            this.map.add("SERIAL4", cn.org.expect.database.load.converter.IntegerConverter.class);
             this.map.add("BIGINT", cn.org.expect.database.load.converter.LongConverter.class);
             this.map.add("INT8", cn.org.expect.database.load.converter.LongConverter.class);
+            this.map.add("BIGSERIAL", cn.org.expect.database.load.converter.LongConverter.class);
+            this.map.add("SERIAL8", cn.org.expect.database.load.converter.LongConverter.class);
             this.map.add("NUMERIC", cn.org.expect.database.load.converter.BigDecimalConverter.class);
             this.map.add("DECIMAL", cn.org.expect.database.load.converter.BigDecimalConverter.class);
             this.map.add("REAL", cn.org.expect.database.load.converter.FloatConverter.class);
