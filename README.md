@@ -5877,15 +5877,16 @@ FileUtils.getTempDir(String[]);
 
 已注册的数据库方言如下所示：
 
-|   Database    | Description |                       Database Dialect Class Name |
-| ------------- | ----------- | ------------------------------------------------- |
-|    **db2**    |             |           `cn.org.expect.database.db2.DB2Dialect` |
-|    **db2**    | DB2 11.5    |       `cn.org.expect.database.db2.DB2Dialect11_5` |
-|  **gaussdb**  |             |   `cn.org.expect.database.gaussdb.GaussDBDialect` |
-|    **h2**     |             |             `cn.org.expect.database.h2.H2Dialect` |
-|   **mysql**   |             |       `cn.org.expect.database.mysql.MysqlDialect` |
-| **opengauss** |             | `cn.org.expect.database.gaussdb.OpenGaussDialect` |
-|  **oracle**   |             |     `cn.org.expect.database.oracle.OracleDialect` |
+|    Database    | Description |                             Database Dialect Class Name |
+| -------------- | ----------- | ------------------------------------------------------- |
+|    **db2**     |             |                 `cn.org.expect.database.db2.DB2Dialect` |
+|    **db2**     | DB2 11.5    |             `cn.org.expect.database.db2.DB2Dialect11_5` |
+|  **gaussdb**   |             |         `cn.org.expect.database.gaussdb.GaussDBDialect` |
+|     **h2**     |             |                   `cn.org.expect.database.h2.H2Dialect` |
+|   **mysql**    |             |             `cn.org.expect.database.mysql.MysqlDialect` |
+| **opengauss**  |             |       `cn.org.expect.database.gaussdb.OpenGaussDialect` |
+|   **oracle**   |             |           `cn.org.expect.database.oracle.OracleDialect` |
+| **postgresql** |             | `cn.org.expect.database.gaussdb.PostgresqlGaussDialect` |
 
 
 
@@ -6222,15 +6223,16 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### AbstractDialect
-| Component Class Name                              | Description |
-| ------------------------------------------------- | ----------- |
-| `cn.org.expect.database.db2.DB2Dialect`           |             |
-| `cn.org.expect.database.db2.DB2Dialect11_5`       | DB2 11.5    |
-| `cn.org.expect.database.gaussdb.GaussDBDialect`   |             |
-| `cn.org.expect.database.h2.H2Dialect`             |             |
-| `cn.org.expect.database.mysql.MysqlDialect`       |             |
-| `cn.org.expect.database.gaussdb.OpenGaussDialect` |             |
-| `cn.org.expect.database.oracle.OracleDialect`     |             |
+| Component Class Name                                    | Description |
+| ------------------------------------------------------- | ----------- |
+| `cn.org.expect.database.db2.DB2Dialect`                 |             |
+| `cn.org.expect.database.db2.DB2Dialect11_5`             | DB2 11.5    |
+| `cn.org.expect.database.gaussdb.GaussDBDialect`         |             |
+| `cn.org.expect.database.h2.H2Dialect`                   |             |
+| `cn.org.expect.database.mysql.MysqlDialect`             |             |
+| `cn.org.expect.database.gaussdb.OpenGaussDialect`       |             |
+| `cn.org.expect.database.oracle.OracleDialect`           |             |
+| `cn.org.expect.database.gaussdb.PostgresqlGaussDialect` |             |
 
 
 
@@ -7068,10 +7070,11 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 
 
 ### GaussDBDialect
-| Component Class Name                              | Description |
-| ------------------------------------------------- | ----------- |
-| `cn.org.expect.database.gaussdb.GaussDBDialect`   |             |
-| `cn.org.expect.database.gaussdb.OpenGaussDialect` |             |
+| Component Class Name                                    | Description |
+| ------------------------------------------------------- | ----------- |
+| `cn.org.expect.database.gaussdb.GaussDBDialect`         |             |
+| `cn.org.expect.database.gaussdb.OpenGaussDialect`       |             |
+| `cn.org.expect.database.gaussdb.PostgresqlGaussDialect` |             |
 
 
 
@@ -7430,6 +7433,13 @@ System.setProperty("cn.org.expect.linux.builtin.accounts", "daemon,apache");
 | Component Class Name                               | Description |
 | -------------------------------------------------- | ----------- |
 | `cn.org.expect.script.command.PipeCommandCompiler` |             |
+
+
+
+### PostgresqlGaussDialect
+| Component Class Name                                    | Description |
+| ------------------------------------------------------- | ----------- |
+| `cn.org.expect.database.gaussdb.PostgresqlGaussDialect` |             |
 
 
 
