@@ -1,5 +1,6 @@
 package cn.org.expect.util;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -20,6 +21,20 @@ import cn.org.expect.exception.ModestRuntimeException;
  * @createtime 2010-01-08
  */
 public class Dates {
+
+    /** 操作系统默认日期格式 */
+    public final static String JVM_DATE_FORMAT = getPattern(DateFormat.getDateInstance(DateFormat.SHORT));
+
+    /** 操作系统默认时间格式 */
+    public final static String JVM_TIME_FORMAT = getPattern(DateFormat.getTimeInstance(DateFormat.MEDIUM));
+
+    /** 操作系统默认日期时间格式 */
+    public final static String JVM_DATE_TIME_FORMAT = getPattern(DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM));
+
+    // 放在类中
+    static String getPattern(DateFormat format) {
+        return format instanceof SimpleDateFormat ? ((SimpleDateFormat) format).toPattern() : null;
+    }
 
     /** 日期中的分隔符，例如：年与月之间的分隔符、月与日之间的分隔符 */
     public final static String PROPERTY_DATE_DELIMITERS = Settings.getPropertyName("date.delimiters");

@@ -3,6 +3,7 @@ package cn.org.expect.util;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -21,6 +22,24 @@ public class DatesTest {
 
     @Before
     public void setUp() {
+    }
+
+    /**
+     * 验证 JVM 格式常量与当前区域设置下的 JDK 默认格式一致。
+     */
+    @Test
+    public void testJvmFormats() {
+        System.out.printf("JVM_DATE_FORMAT = %s%n", Dates.JVM_DATE_FORMAT);
+        System.out.printf("JVM_TIME_FORMAT = %s%n", Dates.JVM_TIME_FORMAT);
+        System.out.printf("JVM_DATE_TIME_FORMAT = %s%n", Dates.JVM_DATE_TIME_FORMAT);
+
+        SimpleDateFormat dateFormat = (SimpleDateFormat) DateFormat.getDateInstance(DateFormat.SHORT);
+        SimpleDateFormat timeFormat = (SimpleDateFormat) DateFormat.getTimeInstance(DateFormat.MEDIUM);
+        SimpleDateFormat dateTimeFormat = (SimpleDateFormat) DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.MEDIUM);
+
+        Assert.assertEquals("JVM_DATE_FORMAT", dateFormat.toPattern(), Dates.JVM_DATE_FORMAT);
+        Assert.assertEquals("JVM_TIME_FORMAT", timeFormat.toPattern(), Dates.JVM_TIME_FORMAT);
+        Assert.assertEquals("JVM_DATE_TIME_FORMAT", dateTimeFormat.toPattern(), Dates.JVM_DATE_TIME_FORMAT);
     }
 
     @Test
